@@ -56,6 +56,7 @@ function App() {
                 {/*일반 유저 Layout */}
                 <Route element={<UserHeaderLayout/>}>
                     <Route path="/" element={<Main/>}></Route>
+                    <Route path="/"></Route>
                 </Route>
 
                 {/*벤더 유저 Layout */}
