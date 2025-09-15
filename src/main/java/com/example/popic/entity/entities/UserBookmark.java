@@ -1,6 +1,6 @@
 package com.example.popic.entity.entities;
 
-import com.example.entity.Serializables.UserBookmarkId;
+import com.example.popic.entity.serializables.UserBookmarkId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
