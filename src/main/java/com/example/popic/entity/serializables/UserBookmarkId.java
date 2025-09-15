@@ -1,4 +1,4 @@
-package com.example.popic.entity.Serializables;
+package com.example.popic.entity.serializables;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;
