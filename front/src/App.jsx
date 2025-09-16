@@ -7,6 +7,7 @@ import VendorHeader from "./components/VendorHeader.jsx";
 import AdminHeader from "./components/AdminHeader.jsx";
 import VendorMain from "./pages/VendorMain.jsx";
 import AdminMain from "./pages/AdminMain.jsx";
+import Board from "./pages/Board.jsx";
 
 function App() {
 
@@ -46,9 +47,6 @@ function App() {
         )
     }
 
-
-
-
   return (
         <Routes>
             <Route element={<FooterLayout/>}>
@@ -66,6 +64,11 @@ function App() {
                 {/*어드민 Layout */}
                 <Route element={<AdminHeaderLayout/>}>
                     <Route path="/admin" element={<AdminMain/>}></Route>
+                </Route>
+
+                {/*소통게시판*/}
+                <Route element={<UserHeaderLayout/>}>
+                    <Route path="/board" element={<Board/>}></Route>
                 </Route>
 
             </Route>
