@@ -73,7 +73,7 @@ function App() {
 
                 {/*소통게시판*/}
                 <Route element={<UserHeaderLayout/>}>
-                    <Route path="/community" element={<CommunityList/>}></Route>
+                    <Route path="/board" element={<CommunityList/>}></Route>
                 </Route>
 
             </Route>

@@ -1,5 +1,6 @@
 package com.example.popic.community.dto;
 
+import com.example.popic.entity.entities.BoardComment;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +24,7 @@ public class CommunityCommentDTO {
     private Long parentId; // 부모 댓글 ID
     private List<CommunityCommentDTO> replies; // 대댓글 리스트
 
-    public static CommunityCommentDTO fromEntity(com.example.popic.entity.entities.CommunityComment comment) {
+    public static CommunityCommentDTO fromEntity(BoardComment comment) {
         return CommunityCommentDTO.builder()
                 .commentId(comment.getComment_id())
                 .content(comment.getContent())

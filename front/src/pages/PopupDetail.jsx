@@ -19,7 +19,6 @@ const PopupDetail = ()=>{
         fetchPopupDetail();
     },[])
 
-
     return(
         <div className={"popupStore-detail"}>
             {popupDetail ? (

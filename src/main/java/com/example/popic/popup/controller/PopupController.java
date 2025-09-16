@@ -1,7 +1,5 @@
 package com.example.popic.popup.controller;
 
-import com.example.popic.entity.entities.Image;
-import com.example.popic.entity.entities.PopupStore;
 import com.example.popic.popup.dto.PopupDTO;
 import com.example.popic.popup.service.PopupService;
 import lombok.RequiredArgsConstructor;

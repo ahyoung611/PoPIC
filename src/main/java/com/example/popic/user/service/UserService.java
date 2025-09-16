@@ -14,9 +14,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public Long joinUser(User user) {
-        if (userRepository.existsByLogin_id(user.getLogin_id())) {
-            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
-        }
+//        if (userRepository.existsByLogin_id(user.getLogin_id())) {
+//            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+//        }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(ROLE.USER);
