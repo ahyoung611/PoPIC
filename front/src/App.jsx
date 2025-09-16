@@ -1,5 +1,5 @@
 import './App.css'
-import {Routes, Route, Link, BrowserRouter, Outlet} from "react-router-dom"
+import {Outlet, Route, Routes} from "react-router-dom"
 import Main from "./pages/Main.jsx";
 import UserHeader from "./components/commons/UserHeader.jsx";
 import Footer from "./components/commons/Footer.jsx";
@@ -7,21 +7,23 @@ import VendorHeader from "./components/commons/VendorHeader.jsx";
 import AdminHeader from "./components/commons/AdminHeader.jsx";
 import VendorMain from "./pages/vendor/VendorMain.jsx";
 import AdminMain from "./pages/admin/AdminMain.jsx";
+import PopupDetail from "./pages/PopupDetail.jsx";
+import CommunityList from "./pages/user/CommunityList.jsx";
 
 
 function App() {
 
-    function UserHeaderLayout(){
-        return(
-        <>
-            <UserHeader></UserHeader>
-            <Outlet></Outlet>
-        </>
+    function UserHeaderLayout() {
+        return (
+            <>
+                <UserHeader></UserHeader>
+                <Outlet></Outlet>
+            </>
         );
     }
 
-    function VendorHeaderLayout(){
-        return(
+    function VendorHeaderLayout() {
+        return (
             <>
                 <VendorHeader></VendorHeader>
                 <Outlet></Outlet>
@@ -29,8 +31,8 @@ function App() {
         )
     }
 
-    function  AdminHeaderLayout(){
-        return(
+    function AdminHeaderLayout() {
+        return (
             <>
                 <AdminHeader></AdminHeader>
                 <Outlet></Outlet>
@@ -38,8 +40,8 @@ function App() {
         )
     }
 
-    function FooterLayout(){
-        return(
+    function FooterLayout() {
+        return (
             <>
                 <Outlet></Outlet>
                 <Footer></Footer>
@@ -47,14 +49,14 @@ function App() {
         )
     }
 
-  return (
+    return (
         <Routes>
             <Route element={<FooterLayout/>}>
 
                 {/*일반 유저 Layout */}
                 <Route element={<UserHeaderLayout/>}>
                     <Route path={"/"} element={<Main/>}></Route>
-                    <Route path={"/popupStore/detail"} element={}></Route>
+                    <Route path={"/popupStore/detail"} element={<PopupDetail/>}></Route>
                 </Route>
 
                 {/*벤더 유저 Layout */}
@@ -69,12 +71,12 @@ function App() {
 
                 {/*소통게시판*/}
                 <Route element={<UserHeaderLayout/>}>
-                    <Route path="/board" element={<Board/>}></Route>
+                    <Route path="/community" element={<CommunityList/>}></Route>
                 </Route>
 
             </Route>
         </Routes>
-  )
+    )
 }
 
 export default App

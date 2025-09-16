@@ -9,13 +9,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig {
 
     @Bean
-    public WebMvcConfigurer corsConfigurer(){
+    public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/react/**")
-                        .allowedOrigins("http://localhost:5173/")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE");
+                registry.addMapping("/**") // 모든 요청에 대해
+                        .allowedOrigins("http://localhost:5173") // 허용할 프론트 주소
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowCredentials(true);
             }
         };
     }
