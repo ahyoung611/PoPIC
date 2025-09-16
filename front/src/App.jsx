@@ -7,6 +7,7 @@ import VendorHeader from "./components/commons/VendorHeader.jsx";
 import AdminHeader from "./components/commons/AdminHeader.jsx";
 import VendorMain from "./pages/vendor/VendorMain.jsx";
 import AdminMain from "./pages/admin/AdminMain.jsx";
+import PopupDetail from "./pages/PopupDetail.jsx";
 
 
 function App() {
@@ -54,7 +55,7 @@ function App() {
                 {/*일반 유저 Layout */}
                 <Route element={<UserHeaderLayout/>}>
                     <Route path={"/"} element={<Main/>}></Route>
-                    <Route path={"/popupStore/detail"} element={}></Route>
+                    <Route path={"/popupStore/detail"} element={<PopupDetail/>}></Route>
                 </Route>
 
                 {/*벤더 유저 Layout */}
@@ -69,7 +70,7 @@ function App() {
 
                 {/*소통게시판*/}
                 <Route element={<UserHeaderLayout/>}>
-                    <Route path="/board" element={<Board/>}></Route>
+                    {/*<Route path="/board" element={<Board/>}></Route>*/}
                 </Route>
 
             </Route>
