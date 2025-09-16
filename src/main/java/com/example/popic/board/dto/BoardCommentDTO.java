@@ -1,4 +1,4 @@
-package com.example.popic.community.dto;
+package com.example.popic.board.dto;
 
 import com.example.popic.entity.entities.BoardComment;
 import lombok.*;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CommunityCommentDTO {
+public class BoardCommentDTO {
 
     private Long commentId;
     private String content;
@@ -22,10 +22,10 @@ public class CommunityCommentDTO {
     private int status;
 
     private Long parentId; // 부모 댓글 ID
-    private List<CommunityCommentDTO> replies; // 대댓글 리스트
+    private List<BoardCommentDTO> replies; // 대댓글 리스트
 
-    public static CommunityCommentDTO fromEntity(BoardComment comment) {
-        return CommunityCommentDTO.builder()
+    public static BoardCommentDTO fromEntity(BoardComment comment) {
+        return BoardCommentDTO.builder()
                 .commentId(comment.getComment_id())
                 .content(comment.getContent())
                 .writerName(comment.getUser().getName())
@@ -36,7 +36,7 @@ public class CommunityCommentDTO {
                 .parentId(comment.getParent() != null ? comment.getParent().getComment_id() : null)
                 .replies(
                         comment.getReplies().stream()
-                                .map(CommunityCommentDTO::fromEntity)
+                                .map(BoardCommentDTO::fromEntity)
                                 .collect(Collectors.toList())
                 )
                 .build();
