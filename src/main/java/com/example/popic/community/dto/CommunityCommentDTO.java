@@ -1,0 +1,43 @@
+package com.example.popic.community.dto;
+
+import lombok.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CommunityCommentDTO {
+
+    private Long commentId;
+    private String content;
+    private String writerName;  // User.username
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
+    private int status;
+
+    private Long parentId; // 부모 댓글 ID
+    private List<CommunityCommentDTO> replies; // 대댓글 리스트
+
+    public static CommunityCommentDTO fromEntity(com.example.popic.entity.entities.CommunityComment comment) {
+        return CommunityCommentDTO.builder()
+                .commentId(comment.getComment_id())
+                .content(comment.getContent())
+                .writerName(comment.getUser().getName())
+                .createdAt(comment.getCreated_at())
+                .updatedAt(comment.getUpdated_at())
+                .deletedAt(comment.getDeleted_at())
+                .status(comment.getStatus())
+                .parentId(comment.getParent() != null ? comment.getParent().getComment_id() : null)
+                .replies(
+                        comment.getReplies().stream()
+                                .map(CommunityCommentDTO::fromEntity)
+                                .collect(Collectors.toList())
+                )
+                .build();
+    }
+}
