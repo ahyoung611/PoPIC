@@ -19,4 +19,10 @@ public class UserController {
     }
 
     public record ApiRes(String status, Long id) {}
+
+//    public record ApiRes(boolean result, String message, Long id) {
+//        public static ApiRes ok(Long id) { return new ApiRes(true, "가입 성공", id); }
+//        public static ApiRes fail(String message) { return new ApiRes(false, message, null); }
+//    }
+
 }

@@ -1,31 +1,3 @@
-:root {
-    --main-color: #FF5148;
-    --main-hover-color: #E0443C;
-    --black-color: #333333;
-    --white-color: #ffffff;
-    --gray-color: #B0B0B0;
-    --gray-hover-color: #d9d9d9;
-    --blue-color: #287ED8;
-    --blue-hover-color: #0056b3;
-    --border-color: #E0E0E0;
-    --bg-color: #F5F5F7;
-
-    /* Font Sizes */
-    --font-title-xl-d: 32px;
-    --font-title-lg-d: 22px;
-    --font-subtitle-xl-d: 20px;
-    --font-subtitle-lg-d: 18px;
-    --font-body: 18px;
-    --font-size-base: 16px;
-    --font-small: 14px;
-    --font-caption: 12px;
-    --font-button: 16px;
-
-    --font-title-xl-m: 28px;
-    --font-title-lg-m: 22px;
-    --font-subtitle-xl-m: 18px;
-    --font-subtitle-lg-m: 16px;
-}
 
 * {
     box-sizing: border-box;
@@ -35,13 +7,6 @@ html, body {
     height: 100%;
 }
 
-body {
-    margin: 0;
-    background: var(--bg-color);
-    color: var(--black-color);
-    font-size: var(--font-size-base);
-    font-family: Inter, system-ui, "Noto Sans KR", Arial, sans-serif;
-}
 
 /* 레이아웃 */
 .join {
