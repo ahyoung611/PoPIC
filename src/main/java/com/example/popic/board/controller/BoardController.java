@@ -1,19 +1,19 @@
-package com.example.popic.community.controller;
+package com.example.popic.board.controller;
 
-import com.example.popic.community.service.CommunityService;
+import com.example.popic.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/community")
+@RequestMapping("/board")
 @RequiredArgsConstructor
-public class CommunityController {
-    private final CommunityService communityService;
+public class BoardController {
+    private final BoardService boardService;
 
     @GetMapping
-    public String community(){
+    public String board(){
         return "";
     }
 

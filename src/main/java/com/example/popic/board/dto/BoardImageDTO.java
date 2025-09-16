@@ -1,5 +1,6 @@
-package com.example.popic.community.dto;
+package com.example.popic.board.dto;
 
+import com.example.popic.entity.entities.BoardImage;
 import lombok.*;
 
 @Getter
@@ -7,14 +8,14 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CommunityImageDTO {
+public class BoardImageDTO {
 
     private Long imageId;
     private String originalName;
     private String savedName;
 
-    public static CommunityImageDTO fromEntity(com.example.popic.entity.entities.CommunityImage image) {
-        return CommunityImageDTO.builder()
+    public static BoardImageDTO fromEntity(BoardImage image) {
+        return BoardImageDTO.builder()
                 .imageId(image.getImage_id())
                 .originalName(image.getOriginal_name())
                 .savedName(image.getSaved_name())

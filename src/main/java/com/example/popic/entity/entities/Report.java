@@ -22,7 +22,7 @@ public class Report {
 
     @ManyToOne
     @JoinColumn(name = "board_id", nullable = false)
-    private Community community; // 신고 대상 게시글
+    private Board community; // 신고 대상 게시글
 
     @Column(name = "reason", nullable = false, length = 500)
     private String reason; // 신고 사유

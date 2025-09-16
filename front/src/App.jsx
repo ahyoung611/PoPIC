@@ -8,7 +8,7 @@ import AdminHeader from "./components/commons/AdminHeader.jsx";
 import VendorMain from "./pages/vendor/VendorMain.jsx";
 import AdminMain from "./pages/admin/AdminMain.jsx";
 import PopupDetail from "./pages/PopupDetail.jsx";
-import CommunityList from "./pages/user/CommunityList.jsx";
+import BoardList from "./pages/user/BoardList.jsx";
 
 
 function App() {
@@ -71,7 +71,7 @@ function App() {
 
                 {/*소통게시판*/}
                 <Route element={<UserHeaderLayout/>}>
-                    <Route path="/community" element={<CommunityList/>}></Route>
+                    <Route path="/board" element={<BoardList/>}></Route>
                 </Route>
 
             </Route>

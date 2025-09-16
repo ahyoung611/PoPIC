@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommunityComment {
+public class BoardComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
@@ -22,7 +22,7 @@ public class CommunityComment {
 
     @ManyToOne
     @JoinColumn(name = "board_id", nullable = false)
-    private Community community; // 게시글
+    private Board board; // 게시글
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -46,8 +46,8 @@ public class CommunityComment {
     // 자기참조 관계: 대댓글
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private CommunityComment parent; // 상위 댓글 (null이면 일반 댓글)
+    private BoardComment parent; // 상위 댓글 (null이면 일반 댓글)
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommunityComment> replies = new ArrayList<>(); // 하위 댓글(대댓글)
+    private List<BoardComment> replies = new ArrayList<>(); // 하위 댓글(대댓글)
 }

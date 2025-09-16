@@ -8,14 +8,14 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommunityImage {
+public class BoardImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long image_id; // PK
 
     @ManyToOne
     @JoinColumn(name = "board_id", nullable = false)
-    private Community community;
+    private Board board;
 
     @Column(nullable = false, length = 255)
     private String original_name;
