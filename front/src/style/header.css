@@ -1,0 +1,52 @@
+/* 공통 헤더 프레임 */
+.header {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--white-color);
+    border-bottom: 1px solid var(--border-color);
+    width: 100vw;
+}
+.header__inner {
+    height: 64px; display: flex; align-items: center; gap: 16px;
+    max-width: 98%; margin: 0 auto; padding: 0 20px;
+}
+.header__brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.header__brand img { width: 80px; object-fit: cover;}
+
+.header__nav { display: flex; align-items: center; gap: 80px; margin: 0 auto; justify-content: center; }
+.header__link {cursor: pointer; color: var(--black-color); text-decoration: none; font-weight: 700; letter-spacing: -0.2px;}
+.header__link:hover, .header__link.is-active { color: var(--main-color); }
+
+.header__right { display: flex; align-items: center; gap: 18px; }
+
+/* 모바일 메뉴바 */
+.header__hamburger { display: none; background: transparent; border: 0; padding: 8px; cursor: pointer; }
+.header__hamburger svg { width: 24px; height: 24px; }
+.header__hamburger:hover svg{stroke :var(--main-color)}
+
+.Drawer__panel {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 260px; background: var(--white-color); box-shadow: 0 6px 24px rgba(0,0,0,.15);
+    transform: translateX(-100%); transition: transform .25s ease;
+    padding: 20px 18px; overflow-y: auto;
+    z-index: 99;
+}
+.Drawer__panel.is-open { transform: translateX(0); }
+
+.Drawer__section { margin-top: 30px; }
+.Drawer__item {
+    display: block; padding: 16px 6px; font-size: var(--font-subtitle-lg); font-weight: 700; color: var(--black-color); text-decoration: none;
+    text-align: center;
+}
+.Drawer__item.is-active, .Drawer__item:hover { color: var(--main-color); }
+
+/* 모바일 */
+@media (max-width: 768px) {
+    .header__inner { height: 56px; }
+    .header__brand {width: 100%; justify-content: center;}
+    .header__nav { display: none; }
+    .header__right {display: none;}
+    .header__hamburger { display: inline-flex; }
+}
+
+/* 본문 스크롤 잠금용 */
+.body--lock { overflow: hidden; }
