@@ -1,0 +1,51 @@
+/* 베이스 */
+.select { position: relative; display: inline-block; }
+
+/* 네이티브 select */
+.select select {
+    padding: 0 10px;
+    height: 34px;
+    background: var(--white-color);
+    color: var(--black-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: var(--font-small);
+    line-height: 1;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+/* 포커스: 메인 컬러 라인 + 은은한 링 */
+.select select:focus,
+.select select:focus-visible {
+    outline: none;
+    border-color: var(--main-color);
+}
+
+/* ▼ 아이콘 */
+.select__icon {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-color);
+    pointer-events: none;
+}
+
+/* ===== Input/select/Button을 한 줄로 붙이는 경우 ===== */
+.input-group { display: flex; align-items: center; }
+.input-group > * { border-radius: 0; }
+
+.input-group .select select {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group input {
+    height: 42px;                 /* 같은 높이로 맞춤 */
+    border-left: 0;
+    border-right: 0;
+}
+
+.input-group .btn {
+    height: 42px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}

@@ -1,0 +1,9 @@
+.footer{
+    width: 100vw;
+    padding: 15px;
+    position: sticky; bottom: 0; z-index: 50;
+    background: var(--bg-color);
+    color: var(--gray-color);
+    text-align: center;
+    font-size: var(--font-caption);
+}
