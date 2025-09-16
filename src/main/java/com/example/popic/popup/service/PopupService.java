@@ -12,9 +12,14 @@ import org.springframework.stereotype.Service;
 public class PopupService {
     private final PopupRepository popupRepository;
 
-    public PopupDTO findById(Long popupId) {
-        PopupStore popup = popupRepository.findById(popupId).orElse(null);
+    public PopupStore findById(Long id) {
+        return popupRepository.findById(id).orElse(null);
+    }
 
-        return new PopupDTO(popup);
+    public PopupDTO findByIdWithImages(Long id) {
+        PopupStore popupStore = popupRepository.findByIdWithImages(id).orElse(null);
+
+        System.out.println(popupStore);
+        return new PopupDTO(popupStore);
     }
 }

@@ -24,8 +24,10 @@ async function apiRequest(endpoint, options = {}) {
         //     return;
         // }
 
+
         // JSON 변환
         const data = await response.json().catch(() => null);
+
 
         if (!response.ok) {
             throw new Error(data?.message || `API 요청 실패: ${response.status}`);
