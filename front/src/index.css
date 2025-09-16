@@ -40,8 +40,8 @@ li {
 }
 
 :root {
-    --main-color: #FF5148;         /* 메인 컬러 */
-    --main-hover-color: #E0443C;   /* 버튼 호버/클릭 컬러 */
+    --main-color: #FF5148;
+    --main-hover-color: #E0443C;
     --black-color: #333333;
     --white-color: #ffffff;
     --gray-color: #B0B0B0;
@@ -52,10 +52,10 @@ li {
     --bg-color: #F5F5F7;
 
     /* Font Sizes */
-    --font-title-xl-d: 32px;
-    --font-title-lg-d: 22px;
-    --font-subtitle-xl-d: 20px;
-    --font-subtitle-lg-d: 18px;
+    --font-title-xl: 32px;
+    --font-title-lg: 22px;
+    --font-subtitle-xl: 20px;
+    --font-subtitle-lg: 18px;
 
     --font-body: 18px;
     --font-size-base: 16px;
@@ -63,12 +63,11 @@ li {
     --font-caption: 12px;
     --font-button: 16px;
 
-    --font-title-xl-m: 28px;
-    --font-title-lg-m: 22px;
-    --font-subtitle-xl-m: 18px;
-    --font-subtitle-lg-m: 16px;
+    /*--font-title-xl-m: 28px;*/
+    /*--font-title-lg-m: 22px;*/
+    /*--font-subtitle-xl-m: 18px;*/
+    /*--font-subtitle-lg-m: 16px;*/
 }
-
 
 .inner {
     width: 100%;
@@ -77,27 +76,15 @@ li {
     padding: 16px;
 }
 
-/*버튼 스타일*/
-button {
-    background-color: var(--main-color);
-    color: var(--white-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: var(--font-button);
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+.footer{
+    width: 100vw;
+    padding: 15px;
+    position: sticky; bottom: 0; z-index: 50;
+    background: var(--bg-color);
+    color: var(--gray-color);
+    text-align: center;
+    font-size: var(--font-caption);
 }
-
-button:hover {
-    background-color: var(--main-hover-color);
-}
-
-button:active {
-    transform: scale(0.97);
-}
-
 
 /* 모바일 : max-width: 600px */
 @media (max-width: 600px) {

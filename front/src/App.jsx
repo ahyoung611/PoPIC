@@ -17,7 +17,11 @@ function App() {
     function UserHeaderLayout() {
         return (
             <>
-                <UserHeader></UserHeader>
+                <UserHeader>
+                    <Route path="/" element={<Main/>} />
+                    <Route path="/popups" element={<Main/>} />
+                    <Route path="/community" element={<Main/>} />
+                </UserHeader>
                 <Outlet></Outlet>
             </>
         );
@@ -26,7 +30,13 @@ function App() {
     function VendorHeaderLayout() {
         return (
             <>
-                <VendorHeader></VendorHeader>
+                <VendorHeader>
+                    <Route path="/vendor" element={<VendorMain/>}/>
+                    <Route path="/vendor/popups" element={<VendorMain/>}/>
+                    <Route path="/vendor/popups/edit" element={<VendorMain/>}/>
+                    <Route path="/vendor/reservations" element={<VendorMain/>}/>
+                    <Route path="/vendor/onsite" element={<VendorMain/>}/>
+                </VendorHeader>
                 <Outlet></Outlet>
             </>
         )
@@ -35,7 +45,9 @@ function App() {
     function AdminHeaderLayout() {
         return (
             <>
-                <AdminHeader></AdminHeader>
+                <AdminHeader>
+                    <Route path="/" element={<AdminMain/>}/>
+                </AdminHeader>
                 <Outlet></Outlet>
             </>
         )

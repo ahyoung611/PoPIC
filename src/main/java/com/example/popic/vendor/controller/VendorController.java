@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/vendor")
-public class OperatorController {
+public class VendorController {
 
     @GetMapping({"/popups", "/popups/**"})
-    public String operatorPopups() {
+    public String vendorPopups() {
         return "forward:/index.html";
     }
 }
