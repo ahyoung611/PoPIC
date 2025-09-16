@@ -10,6 +10,7 @@ import AdminMain from "./pages/admin/AdminMain.jsx";
 import PopupDetail from "./pages/PopupDetail.jsx";
 import BoardList from "./pages/user/BoardList.jsx";
 import Join from "./pages/Join.jsx";
+import BoardEditor from "./pages/user/BoardEditor.jsx";
 
 
 function App() {
@@ -71,6 +72,8 @@ function App() {
                     <Route path={"/"} element={<Main/>}></Route>
                     <Route path={"/popupStore/detail"} element={<PopupDetail/>}></Route>
                     <Route path={"/join"} element={<Join/>}></Route>
+                    <Route path={"/board"} element={<BoardList/>}></Route>
+                    <Route path={"/board/new"} element={<BoardEditor/>}></Route>
                 </Route>
 
                 {/*벤더 유저 Layout */}
@@ -81,11 +84,6 @@ function App() {
                 {/*어드민 Layout */}
                 <Route element={<AdminHeaderLayout/>}>
                     <Route path="/admin" element={<AdminMain/>}></Route>
-                </Route>
-
-                {/*소통게시판*/}
-                <Route element={<UserHeaderLayout/>}>
-                    <Route path="/board" element={<BoardList/>}></Route>
                 </Route>
 
             </Route>

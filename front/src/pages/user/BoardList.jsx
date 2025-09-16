@@ -1,5 +1,6 @@
 import BoardEditor from "./BoardEditor.jsx";
 import {useNavigate} from "react-router-dom";
+import Button from "../../components/commons/Button.jsx";
 
 const BoardList = ()=>{
     const nav = useNavigate();
@@ -7,11 +8,7 @@ const BoardList = ()=>{
     return(
         <div>
             리스트
-            <button onClick={()=>{
-                nav("/board/new");
-            }}>
-                글 작성
-            </button>
+            <Button onClick={ ()=>{ nav("/board/new")}  }>글 작성</Button>
         </div>
     )
 }

@@ -1,0 +1,112 @@
+/* 전체 센터 + 카드 */
+.be-wrap {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: #ffffff;
+}
+
+.be-card {
+    width: 540px;
+    max-width: calc(100vw - 40px);
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 24px 24px 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+.be-title {
+    text-align: center;
+    margin: 6px 0 18px;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* 폼 공통 */
+.be-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+}
+
+.be-label {
+    font-size: 12px;
+    color: #666;
+    margin-top: 6px;
+}
+
+.be-input,
+.be-textarea {
+    width: 100%;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+}
+
+.be-input:focus,
+.be-textarea:focus {
+    border-color: #ff5a4f;
+}
+
+.be-textarea {
+    resize: vertical;
+}
+
+/* 파일 업로드 */
+.be-upload { display: grid; row-gap: 8px; }
+
+.be-file-row { position: relative; width: 100%; }
+.be-file-input { display: none; }
+.be-file-btn {
+    display: inline-block;
+    width: 100%;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* 업로드된 파일 리스트 (간결한 라인) */
+.be-file-list { list-style: none; padding: 0; margin: 0; display: grid; row-gap: 6px; }
+.be-file-item {
+    display: flex; align-items: center; justify-content: space-between;
+    border: 1px solid #f0f0f0; border-radius: 6px; padding: 8px 10px;
+}
+.be-file-name {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 75%;
+    font-size: 13px; color: #444;
+}
+.be-chip-remove {
+    border: none; border-radius: 6px; padding: 6px 10px;
+    background: #f3f3f3; color: #666; font-size: 12px; cursor: pointer;
+}
+.be-chip-remove:hover { filter: brightness(0.98); }
+
+/* 하단 버튼 */
+.be-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.be-btn {
+    height: 38px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.be-btn-primary { background: #ff5a4f; color: #fff; }
+.be-btn-primary:hover { filter: brightness(0.98); }
+
+.be-btn-ghost { background: #f3f3f3; color: #666; }
+.be-btn-ghost:hover { filter: brightness(0.98); }
