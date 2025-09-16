@@ -6,7 +6,7 @@ const PopupStoreDetail = ()=>{
 
     return(
         <div className={"popupStore-detail"}>
-            <PopupStoreImage images={}></PopupStoreImage>
+            <PopupStoreImage></PopupStoreImage>
             <PopupStoreInfo></PopupStoreInfo>
             <PopupDetailTab></PopupDetailTab>
         </div>

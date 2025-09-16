@@ -7,6 +7,10 @@ import VendorHeader from "./components/commons/VendorHeader.jsx";
 import AdminHeader from "./components/commons/AdminHeader.jsx";
 import VendorMain from "./pages/vendor/VendorMain.jsx";
 import AdminMain from "./pages/admin/AdminMain.jsx";
+import CommunityEditor from "./pages/user/CommunityEditor.jsx";
+import PopupStoreDetail from "./pages/PopupStoreDetail.jsx";
+import CommunityDetail from "./pages/user/CommunityDetail.jsx";
+import CommunityList from "./pages/user/CommunityList.jsx";
 
 
 function App() {
@@ -29,7 +33,7 @@ function App() {
         )
     }
 
-    function  AdminHeaderLayout(){
+    function AdminHeaderLayout(){
         return(
             <>
                 <AdminHeader></AdminHeader>
@@ -54,7 +58,7 @@ function App() {
                 {/*일반 유저 Layout */}
                 <Route element={<UserHeaderLayout/>}>
                     <Route path={"/"} element={<Main/>}></Route>
-                    <Route path={"/popupStore/detail"} element={}></Route>
+                    <Route path="/popupStore/detail" element={<PopupStoreDetail/>}></Route>
                 </Route>
 
                 {/*벤더 유저 Layout */}
@@ -69,7 +73,7 @@ function App() {
 
                 {/*소통게시판*/}
                 <Route element={<UserHeaderLayout/>}>
-                    <Route path="/board" element={<Board/>}></Route>
+                    <Route path="/community" element={<CommunityList/>}></Route>
                 </Route>
 
             </Route>
