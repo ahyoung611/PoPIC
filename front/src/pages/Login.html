@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PoPic 로그인</title>
+    <style>
+        /* 레이아웃 */
+        html,
+        body {
+            height: 100%;
+        }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR,
+            Arial, sans-serif;
+            background: #f5f6f7;
+            color: #222;
+        }
+        main {
+            min-height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+        article {
+            width: 100%;
+            max-width: 480px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            padding: 28px;
+        }
+
+        /* 헤더 */
+        header {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        header h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+            letter-spacing: 0.5px;
+        }
+        header h1 em {
+            color: #ff4d48;
+            font-style: normal;
+        }
+        header p {
+            margin: 0;
+            font-size: 13px;
+            color: #777;
+        }
+
+        /* 탭 */
+        nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 22px 0;
+        }
+        nav button {
+            padding: 14px 12px;
+            border-radius: 12px;
+            border: 1.5px solid #ffe1e0;
+            background: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        nav button:first-child {
+            background: #fff5f5;
+            color: #ff4d48;
+            border-color: #ffb6b3;
+        }
+        nav button:hover {
+            transform: translateY(-1px);
+        }
+
+        /* 폼 */
+        form {
+            display: grid;
+            gap: 12px;
+        }
+        fieldset {
+            border: 0;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 12px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 44px 14px 44px;
+            border-radius: 10px;
+            border: 1.5px solid #e6e6e6;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fff no-repeat 14px center/18px;
+        }
+        input:focus {
+            border-color: #ff8a86;
+            box-shadow: 0 0 0 4px #ffdbd9;
+        }
+
+        /* 아이디/비번 아이콘 (data-URI SVG) */
+        input[type="text"] {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>");
+        }
+        input[type="password"] {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='11' width='18' height='10' rx='2'/><path d='M7 11V7a5 5 0 0 1 10 0v4'/></svg>");
+        }
+
+        /* 비번 보기 아이콘 */
+        form div {
+            position: relative;
+        }
+        form div button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            padding: 6px;
+        }
+        form div button svg {
+            width: 22px;
+            height: 22px;
+            stroke: #999;
+        }
+
+        /* 체크박스 + 라벨 */
+        aside {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 2px;
+        }
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            padding: 0;
+            background: none;
+        }
+
+        /* 로그인 버튼 */
+        form > button {
+            margin-top: 6px;
+            padding: 14px 12px;
+            border: 0;
+            border-radius: 10px;
+            background: #ff4d48;
+            color: #fff;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        form > button:hover {
+            filter: brightness(0.97);
+            transform: translateY(-1px);
+        }
+
+        /* 링크 줄 */
+        section {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 13px;
+            color: #777;
+        }
+        section a {
+            color: #666;
+            text-decoration: none;
+        }
+        section a:hover {
+            text-decoration: underline;
+        }
+        section span {
+            margin: 0 10px;
+            color: #ddd;
+        }
+
+        /* 소셜 로그인 */
+        footer {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 18px;
+        }
+        footer button {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 0;
+            display: grid;
+            place-items: center;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+        footer button:nth-of-type(1) {
+            background: #fee500;
+        } /* Kakao */
+        footer button:nth-of-type(2) {
+            background: #03c75a;
+            color: #fff;
+        } /* Naver */
+        footer button:nth-of-type(3) {
+            background: #fff;
+            border: 1px solid #e6e6e6;
+        } /* Google */
+    </style>
+</head>
+<body>
+<main>
+    <article>
+        <header>
+            <h1>PoPiC</h1>
+            <p>로그인</p>
+        </header>
+
+        <nav>
+            <button type="button">일반회원</button>
+            <button type="button">팝업 운영자</button>
+        </nav>
+
+        <form action="" method="post">
+            <fieldset>
+                <label for="uid">아이디</label>
+                <input
+                        id="uid"
+                        type="text"
+                        placeholder="아이디"
+                        autocomplete="username"
+                />
+                <label for="upw">비밀번호</label>
+                <div>
+                    <input
+                            id="upw"
+                            type="password"
+                            placeholder="비밀번호"
+                            autocomplete="current-password"
+                    />
+                    <button
+                            type="button"
+                            aria-label="비밀번호 표시/숨기기"
+                            onclick="
+              const p=document.getElementById('upw');
+              p.type = p.type==='password' ? 'text' : 'password';
+            "
+                    >
+                    </button>
+                </div>
+            </fieldset>
+
+            <aside>
+                <input id="keep" type="checkbox" />
+                <label for="keep">로그인 상태 유지</label>
+            </aside>
+
+            <button type="submit">로그인</button>
+        </form>
+
+        <section>
+            <a href="#">아이디찾기</a><span>|</span> <a href="#">비밀번호찾기</a
+        ><span>|</span>
+            <a href="#">회원가입</a>
+        </section>
+
+        <footer>
+            <button type="button" title="카카오">K</button>
+            <button type="button" title="네이버">N</button>
+            <button type="button" title="구글">G</button>
+        </footer>
+    </article>
+</main>
+</body>
+</html>
