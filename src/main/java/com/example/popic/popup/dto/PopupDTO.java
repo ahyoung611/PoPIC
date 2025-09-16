@@ -1,6 +1,7 @@
 package com.example.popic.popup.dto;
 
 import com.example.popic.entity.entities.*;
+import com.example.popic.image.ImageDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -19,17 +21,17 @@ public class PopupDTO {
     private Long store_id;
     private String store_name;
     private String description;
-    private Vendor vendor; // 운영자
-    private List<Category> categories = new ArrayList<>();
+    private Long vendor; // 운영자
+    private List<Long> categories = new ArrayList<>();
     private LocalDate start_date;
     private LocalDate end_date;
-    private List<PopupStoreSchedule> schedules;
+    private List<Long> schedules;
     private Address address; // 주소 FK
     private String address_detail; // 상세 주소
     private Double latitude;  // KakaoMap 좌표
     private Double longitude;
     private BigDecimal price;
-    private List<Image> images = new ArrayList<>();
+    private List<ImageDTO> images = new ArrayList<>();
     private LocalDateTime join_date;
     private LocalDateTime update_date;
     private LocalDateTime delete_date;
@@ -39,17 +41,13 @@ public class PopupDTO {
         this.store_id = entity.getStore_id();
         this.store_name = entity.getStore_name();
         this.description = entity.getDescription();
-        this.vendor = entity.getVendor();
-        this.categories = entity.getCategories();
         this.start_date = entity.getStart_date();
         this.end_date = entity.getEnd_date();
-        this.schedules = entity.getSchedules();
-        this.address = entity.getAddress();
         this.address_detail = entity.getAddress_detail();
         this.latitude = entity.getLatitude();
         this.longitude = entity.getLongitude();
         this.price = entity.getPrice();
-        this.images = entity.getImages();
+        this.images = entity.getImages().stream().map(image -> new ImageDTO(image.getImage_id(),image.getSaved_name())).collect(Collectors.toList());
         this.join_date = entity.getJoin_date();
         this.update_date = entity.getUpdate_date();
         this.delete_date = entity.getDelete_date();

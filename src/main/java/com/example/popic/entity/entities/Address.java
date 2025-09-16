@@ -18,4 +18,9 @@ public class Address {
 
     @Column(nullable = false, length = 50)
     private String district; // 구, 군
+
+    public Address(String city, String district) {
+        this.city = city;
+        this.district = district;
+    }
 }

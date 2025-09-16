@@ -1,4 +1,5 @@
-const PopupDetailTab = ()=>{
+const PopupDetailTab = (popup)=>{
+
     return(
         <>
         </>
