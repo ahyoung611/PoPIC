@@ -21,7 +21,7 @@
 .btn.btn--primary.is-red:hover { background-color: var(--main-hover-color) !important; }
 
 /* outline : 등록 | 체크인 안함 | 체크인 */
-.btn.btn--outline.is-gray { background: transparent; color: var(--gray-color); border-color: var(--bg-color); }
+.btn.btn--outline.is-gray { background: transparent; color: var(--gray-color); border-color: var(--border-color); }
 .btn.btn--outline.is-gray:hover{ border-color: var(--main-color); color: var(--main-color); }
 .btn.btn--outline:hover { transform: none; }
 
@@ -35,6 +35,6 @@
 .btn.btn--filter:not(.is-selected):hover {  border-color: var(--main-color); color: var(--main-color);}
 
 /* label : 승인대기 | 승인완료 | 승인거부 */
-.btn.btn--label.is-red {background-color: var(--main-hover-color); color: var(--white-color); }
-.btn.btn--label.is-blue { background: var(--blue-color); color: var(--white-color); }
-.btn.btn--label.is-gray {  background: var(--bg-color); color: var(--gray-color); }
+.btn.btn--label.is-red {background-color: var(--main-hover-color); color: var(--white-color); border-color: var(--main-hover-color); }
+.btn.btn--label.is-blue { background: var(--blue-color); color: var(--white-color); border-color: var(--blue-color); }
+.btn.btn--label.is-gray {  background: var(--bg-color); color: var(--gray-color); border-color: var(--bg-color); }
