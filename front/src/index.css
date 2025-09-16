@@ -52,10 +52,8 @@ li {
     --bg-color: #F5F5F7;
 
     /* Font Sizes */
-    --font-title-xl: 32px;
-    --font-title-lg: 22px;
-    --font-subtitle-xl: 20px;
-    --font-subtitle-lg: 18px;
+    --font-title: 22px;
+    --font-subtitle: 18px;
 
     --font-body: 18px;
     --font-size-base: 16px;

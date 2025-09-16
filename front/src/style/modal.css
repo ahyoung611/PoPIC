@@ -1,0 +1,54 @@
+.modalMask{
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.50);
+    z-index: 1000;
+}
+
+.modalPanel{
+    width: min(500px, 92vw);
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.06);
+    border: 1px solid var(--border-color);
+    position: relative;
+    animation: modal-pop .14s ease-out;
+}
+
+@keyframes modal-pop{
+    from { transform: scale(.98); opacity: .88; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+.modalTitle{
+    font-size: var( --font-title); font-weight: 800;
+    letter-spacing: -0.01em;
+    text-align: center; color: var(--black-color);
+    margin-bottom: 30px;
+}
+
+.modalActions{
+    display: flex; justify-content: center; gap: 12px;
+}
+
+.modalBtn{
+    height: 40px; min-width: 80px;
+    border-radius: 5px;
+    font-size: var(--font-small); font-weight: 700;
+    transition: background .2s ease, color .2s ease, transform .08s ease, border-color .2s ease;
+}
+.modalBtn:active{ transform: scale(.98); }
+
+/* 취소 */
+.modalBtn--cancel{
+    background: var(--bg-color);
+    color: var(--gray-color);
+    border: 1px solid var(--border-color) !important;
+}
+.modalBtn--cancel:hover{
+    background: #F7F8F9 !important;
+    color: #6B7280 !important;
+
+}
+
