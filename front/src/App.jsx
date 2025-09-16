@@ -9,6 +9,7 @@ import VendorMain from "./pages/vendor/VendorMain.jsx";
 import AdminMain from "./pages/admin/AdminMain.jsx";
 import PopupDetail from "./pages/PopupDetail.jsx";
 import CommunityList from "./pages/user/CommunityList.jsx";
+import Join from "./pages/Join.jsx";
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
                 <Route element={<UserHeaderLayout/>}>
                     <Route path={"/"} element={<Main/>}></Route>
                     <Route path={"/popupStore/detail"} element={<PopupDetail/>}></Route>
+                    <Route path={"/join"} element={<Join/>}></Route>
                 </Route>
 
                 {/*벤더 유저 Layout */}
