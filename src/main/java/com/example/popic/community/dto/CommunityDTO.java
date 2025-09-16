@@ -1,5 +1,6 @@
 package com.example.popic.community.dto;
 
+import com.example.popic.entity.entities.Board;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,24 +29,24 @@ public class CommunityDTO {
     private List<CommunityImageDTO> files; // 첨부파일
     private List<CommunityCommentDTO> comments; // 댓글 리스트
 
-    public static CommunityDTO fromEntity(com.example.popic.entity.entities.Community community) {
+    public static CommunityDTO fromEntity(Board board) {
         return CommunityDTO.builder()
-                .boardId(community.getBoard_id())
-                .title(community.getTitle())
-                .content(community.getContent())
-                .viewCount(community.getView_count())
-                .createdAt(community.getCreated_at())
-                .updatedAt(community.getUpdated_at())
-                .deletedAt(community.getDeleted_at())
-                .status(community.getStatus())
-                .writerName(community.getUser().getName())
+                .boardId(board.getBoard_id())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .viewCount(board.getView_count())
+                .createdAt(board.getCreated_at())
+                .updatedAt(board.getUpdated_at())
+                .deletedAt(board.getDeleted_at())
+                .status(board.getStatus())
+                .writerName(board.getUser().getName())
                 .files(
-                        community.getFiles().stream()
+                        board.getFiles().stream()
                                 .map(CommunityImageDTO::fromEntity)
                                 .collect(Collectors.toList())
                 )
                 .comments(
-                        community.getComments().stream()
+                        board.getComments().stream()
                                 .map(CommunityCommentDTO::fromEntity)
                                 .collect(Collectors.toList())
                 )

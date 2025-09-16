@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Community {
+public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,9 +47,9 @@ public class Community {
     private int status = 1; // 1: 정상 게시글, -1: 삭제 게시글, 0: 블라인드 게시글
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommunityImage> files = new ArrayList<>(); // 첨부파일 리스트
+    private List<BoardImage> files = new ArrayList<>(); // 첨부파일 리스트
 
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommunityComment> comments = new ArrayList<>(); // 댓글 리스트
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BoardComment> comments = new ArrayList<>(); // 댓글 리스트
 
 }

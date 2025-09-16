@@ -1,5 +1,6 @@
 package com.example.popic.community.dto;
 
+import com.example.popic.entity.entities.BoardImage;
 import lombok.*;
 
 @Getter
@@ -13,7 +14,7 @@ public class CommunityImageDTO {
     private String originalName;
     private String savedName;
 
-    public static CommunityImageDTO fromEntity(com.example.popic.entity.entities.CommunityImage image) {
+    public static CommunityImageDTO fromEntity(BoardImage image) {
         return CommunityImageDTO.builder()
                 .imageId(image.getImage_id())
                 .originalName(image.getOriginal_name())
