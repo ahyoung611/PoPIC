@@ -1,0 +1,23 @@
+.search-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    width: 90%;
+}
+
+.search-header input {
+    flex: 1;
+    max-width: 90%;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: var(--font-small);
+}
+
+.search-header input:focus,
+.search-header input:focus-visible {
+    outline: none;
+    border-color: var(--main-color);
+}
