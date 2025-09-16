@@ -61,38 +61,21 @@ li {
     --font-size-base: 16px;
     --font-small: 14px;
     --font-caption: 12px;
-    --font-button: 16px;
+    --font-button: 14px;
+}
 
-    /*--font-title-xl-m: 28px;*/
-    /*--font-title-lg-m: 22px;*/
-    /*--font-subtitle-xl-m: 18px;*/
-    /*--font-subtitle-lg-m: 16px;*/
+.container{
+    width: 100%;
+    height: auto;
 }
 
 .inner {
-    width: 100%;
-    max-width: 100%;
     margin: 0 auto;
     padding: 16px;
 }
 
-.footer{
-    width: 100vw;
-    padding: 15px;
-    position: sticky; bottom: 0; z-index: 50;
-    background: var(--bg-color);
-    color: var(--gray-color);
-    text-align: center;
-    font-size: var(--font-caption);
-}
-
-/* 모바일 : max-width: 600px */
+/* 모바일 : 600px */
 @media (max-width: 600px) {
-    #root {
-        box-shadow: none;
-        min-height: auto;
-    }
-
     .inner {
         max-width: 100%;
         padding: 16px;
@@ -109,13 +92,8 @@ li {
 
 /*  PC : 1025px 이상 */
 @media (min-width: 1025px) {
-    #root {
-        width: 60%;
-        min-width: 600px;
-    }
-
     .inner {
-        max-width: 750px;
+        max-width: 900px;
         padding: 20px;
     }
 }
