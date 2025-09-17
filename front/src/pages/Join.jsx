@@ -1,11 +1,14 @@
 import { useState } from "react";
 import "../style/join.css";
+import eye from "../../public/eye.png"
+import nonEye from "../../public/nonEye.png"
+import logo from "../../public/popic-logo.png"
 import apiRequest from "../utils/apiRequest.js" // ← 헬퍼 경로 맞게 수정
 
 const Join = () => {
     const [role, setRole] = useState("USER");
     const [showPw, setShowPw] = useState(false);
-    const [msg, setMsg] = useState("");
+    // const [msg, setMsg] = useState("");
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({
         // USER
@@ -20,14 +23,19 @@ const Join = () => {
         brn: "",
     });
 
+    const togglePassword = (e) => {
+        setShowPw((prevState) => !prevState);
+    }
+
     const onChange = (e) => {
         const { name, value } = e.target;
         setForm((f) => ({ ...f, [name]: value }));
     };
 
     const onSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault(   );
         setLoading(true);
+
         try {
             const endpoint = role === "USER" ? "/user/join" : "/vendor/join";
 
@@ -65,7 +73,7 @@ const Join = () => {
                 brn: "",
             });
         } catch (err) {
-            setMsg(err?.message || "에러");
+            // setMsg(err?.message || "에러");
         } finally {
             setLoading(false);
         }
@@ -75,7 +83,7 @@ const Join = () => {
         <main className="join">
             <section className="join-card">
                 <header className="join-header">
-                    <img className="join-logo" src="#" alt="PoPiC" />
+                    <img className="join-logo" src={logo} alt="PoPiC" />
                 </header>
 
                 <form className="join-form" onSubmit={onSubmit}>
@@ -98,7 +106,9 @@ const Join = () => {
                             className="join-input"
                             type={showPw ? "text" : "password"}
                             name="password"
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$"
                             placeholder="비밀번호"
+                            title="비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다."
                             value={form.password}
                             onChange={onChange}
                             required
@@ -108,10 +118,13 @@ const Join = () => {
                             type="button"
                             className="join-icon-btn"
                             aria-label="비밀번호 표시"
-                            onClick={() => setShowPw((v) => !v)}
+                            onClick={togglePassword}
                             title="비밀번호 표시"
                         >
-                            👁
+                            <img
+                                src={showPw ? eye : nonEye}
+                                alt={showPw ? "비밀번호 보임" : "비밀번호 숨김"}
+                            />
                         </button>
                     </div>
 
@@ -120,7 +133,9 @@ const Join = () => {
                         <input
                             className="join-input"
                             name="phone_number"
-                            placeholder="전화번호"
+                            pattern="^(01[0-9]-?\d{4}-?\d{4})$"
+                            placeholder="핸드폰번호"
+                            title="휴대폰(예: 010-1234-5678 또는 01012345678) 형식으로 입력하세요"
                             value={form.phone_number}
                             onChange={onChange}
                         />
@@ -178,7 +193,10 @@ const Join = () => {
                                 <input
                                     className="join-input"
                                     name="brn"
+                                    maxLength="12"
+                                    pattern="^\d{3}-\d{2}-\d{5}$"
                                     placeholder="사업자 등록번호"
+                                    title="사업자등록번호 형식에 맞게 입력하세요 (예: 123-45-67890) 형식으로 입력하세요"
                                     value={form.brn}
                                     onChange={onChange}
                                     required
