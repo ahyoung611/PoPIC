@@ -10,13 +10,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +62,18 @@ public class BoardController {
         return ResponseEntity.ok(uploaded);
     }
 
+    @GetMapping("/file/{savedName}")
+    public ResponseEntity<byte[]> serveFile(@PathVariable String savedName) {
+        try {
+            BoardFileService.FilePayload fp = boardFileService.load(savedName);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(fp.contentType()))
+                    .body(fp.bytes());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping(value = "/deleteFile", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteFile(@RequestBody Map<String, String> body) throws IOException {
         String fileName = body.get("fileName");
@@ -79,7 +95,7 @@ public class BoardController {
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "tc") String scope // tc=제목+내용 | title | content
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "created_at"));
         Page<Board> result = boardService.search(keyword, pageable, scope);
         return result.map(BoardDTO::fromEntity);
     }

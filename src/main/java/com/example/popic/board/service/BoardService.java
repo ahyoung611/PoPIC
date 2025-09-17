@@ -1,12 +1,12 @@
 package com.example.popic.board.service;
 
 import com.example.popic.board.dto.BoardDTO;
+import com.example.popic.board.repository.BoardImageRepository;
 import com.example.popic.board.repository.BoardRepository;
 import com.example.popic.entity.entities.Board;
 import com.example.popic.entity.entities.BoardImage;
 import com.example.popic.entity.entities.User;
 import com.example.popic.user.repository.UserRepository;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +22,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final EntityManager em;
+    private final BoardImageRepository boardImageRepository;
 
     @Transactional
     public BoardDTO save(BoardDTO dto) {
@@ -111,5 +111,15 @@ public class BoardService {
     }
 
     public void delete(Long id) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다. id=" + id));
+
+        if (board.getFiles() != null && !board.getFiles().isEmpty()) {
+            for (BoardImage img : board.getFiles()) {
+                boardImageRepository.delete(img);
+            }
+        }
+
+        boardRepository.delete(board);
     }
 }

@@ -1,4 +1,3 @@
-// src/components/board/BoardListItem.jsx
 export default function BoardListItem({ item, onClick }) {
     const { boardId, title, writerName, createdAt, viewCount, content } = item;
     const dateText = createdAt

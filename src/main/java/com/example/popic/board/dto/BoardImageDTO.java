@@ -1,10 +1,12 @@
 package com.example.popic.board.dto;
 
+import com.example.popic.entity.entities.Board;
 import com.example.popic.entity.entities.BoardImage;
 import lombok.*;
 
-@Getter
-@Setter
+import java.util.Optional;
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,5 +22,11 @@ public class BoardImageDTO {
                 .originalName(image.getOriginal_name())
                 .savedName(image.getSaved_name())
                 .build();
+    }
+
+    public BoardImageDTO(Optional<BoardImage> image) {
+        this.imageId = image.get().getImage_id();
+        this.originalName = image.get().getOriginal_name();
+        this.savedName = image.get().getSaved_name();
     }
 }
