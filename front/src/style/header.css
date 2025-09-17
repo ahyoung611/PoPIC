@@ -6,7 +6,7 @@
     width: 100vw;
 }
 .header__inner {
-    height: 64px; display: flex; align-items: center; gap: 16px;
+    height: 60px; display: flex; align-items: center; gap: 16px;
     max-width: 98%; margin: 0 auto; padding: 0 20px;
 }
 .header__brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
