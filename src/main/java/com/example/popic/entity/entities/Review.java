@@ -28,11 +28,12 @@ public class Review {
     @JoinColumn(name = "store_id", nullable = false)
     private PopupStore store;
 
+    @Column(nullable = false)
+    private String title;
+
     @Column(nullable = false, length = 1000)
     private String content;
 
-    @Column(nullable = false)
-    private Integer rating; // 별점 (1~5)
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
