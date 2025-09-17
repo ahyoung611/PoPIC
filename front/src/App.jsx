@@ -67,6 +67,9 @@ function App() {
         <Routes>
             <Route element={<FooterLayout/>}>
 
+                {/* 회원가입(header 필요없음) */}
+                <Route path={"/join"} element={<Join/>}></Route>
+
                 {/*일반 유저 Layout */}
                 <Route element={<UserHeaderLayout/>}>
                     <Route path={"/"} element={<Main/>}></Route>
@@ -76,9 +79,12 @@ function App() {
                     <Route path={"/board/new"} element={<BoardEditor/>}></Route>
                 </Route>
 
+
                 {/*벤더 유저 Layout */}
                 <Route element={<VendorHeaderLayout/>}>
-                    <Route path="/vendor/popups" element={<VendorMain/>}></Route>
+                    <Route path="/vendor/popups" element={<VendorMain/>}>
+
+                    </Route>
                 </Route>
 
                 {/*어드민 Layout */}
