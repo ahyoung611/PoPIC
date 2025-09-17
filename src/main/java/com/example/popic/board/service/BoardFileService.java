@@ -18,12 +18,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BoardFileService {
 
-    @Value("${app.upload-dir:uploads}") // 기본값 uploads
-    private String uploadDir;
+    @Value("${uploadPath}") // 기본값 uploads
+    private String uploadPath;
 
     public String store(MultipartFile file) {
         try {
-            Files.createDirectories(Path.of(uploadDir));
+            Files.createDirectories(Path.of(uploadPath));
 
             String original = Optional.ofNullable(file.getOriginalFilename()).orElse("file");
             String ext = "";
@@ -33,7 +33,7 @@ public class BoardFileService {
             String savedName = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
                     .format(LocalDateTime.now()) + "_" + UUID.randomUUID() + ext;
 
-            Path target = Path.of(uploadDir, savedName);
+            Path target = Path.of(uploadPath, savedName);
             file.transferTo(target);
 
             return savedName;
@@ -43,7 +43,7 @@ public class BoardFileService {
     }
 
     public void delete(String savedName) throws IOException {
-        Path target = Path.of(uploadDir, savedName);
+        Path target = Path.of(uploadPath, savedName);
         Files.deleteIfExists(target);
     }
 }
