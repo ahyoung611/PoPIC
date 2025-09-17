@@ -49,9 +49,7 @@ const Join = () => {
                         brn: form.brn,
                     };
 
-            const data = await apiRequest(endpoint, { method:'POST', body })
-            if (!data.result) { alert(data.message); return; }
-            alert('회원가입 성공');
+            const data = await apiRequest(endpoint, { method: "POST", body });
 
             // 폼 리셋
             setForm({
