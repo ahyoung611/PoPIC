@@ -1,18 +1,17 @@
-html, body, #root, .be-wrap {
-    height: 100vh;
-    overflow: hidden;
-}
-
 .be-wrap {
-    height: calc(100vh - 60px);
+    position: relative;
+    height: calc(100vh - 105px);
     display: grid;
     place-items: center;
     background: var(--white-color);
 }
 
 .be-card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 540px;
-    max-width: calc(100vw - 40px);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 24px 24px 18px;
