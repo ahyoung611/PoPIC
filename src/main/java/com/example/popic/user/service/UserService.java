@@ -12,15 +12,17 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AccountUserVendorService accountUserVendorService;
 
     public Long joinUser(User user) {
-//        if (userRepository.existsByLogin_id(user.getLogin_id())) {
-//            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
-//        }
+        accountUserVendorService.assertLoginIdAvailable(user.getLogin_id());
+        accountUserVendorService.assertUserEmailAvailable(user.getEmail());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPoint(0);
         user.setRole(ROLE.USER);
         user.setStatus(1);
+
         return userRepository.save(user).getUser_id();
     }
 }

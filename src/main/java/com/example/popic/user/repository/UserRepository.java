@@ -4,9 +4,16 @@ package com.example.popic.user.repository;
 import com.example.popic.entity.entities.PopupStore;
 import com.example.popic.entity.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 public interface UserRepository extends JpaRepository<User, Long> {
-//    boolean existsByLogin_id(String login_id);
+    // id 중복여부 boolean 으로 반환 (vendor
+    @Query("select (count(u) > 0) from User u where u.login_id = :loginId")
+    boolean existsLoginId(@Param("loginId") String loginId);
+
+    @Query("select (count(u) > 0) from User u where u.email = :email")
+    boolean existsEmail(@Param("email") String email);
 
 }

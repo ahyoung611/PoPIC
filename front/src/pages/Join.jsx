@@ -27,7 +27,6 @@ const Join = () => {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        setMsg("");
         setLoading(true);
         try {
             const endpoint = role === "USER" ? "/user/join" : "/vendor/join";
@@ -50,7 +49,9 @@ const Join = () => {
                         brn: form.brn,
                     };
 
-            const data = await apiRequest(endpoint, { method: "POST", body });
+            const data = await apiRequest(endpoint, { method:'POST', body })
+            if (!data.result) { alert(data.message); return; }
+            alert('회원가입 성공');
 
             // 폼 리셋
             setForm({
