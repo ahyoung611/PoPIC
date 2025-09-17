@@ -9,7 +9,7 @@ export default function FileUpload({
                                        multiple = true,
                                        endpoint = `${API}/board/upload`,
                                        deleteEndpoint = `${API}/board/deleteFile`,
-                                       headers = undefined,          // multipart일 때 Content-Type 넣지 말 것
+                                       headers = undefined,
                                        maxSizeMB = 10,
                                        onUploadingChange,
                                        renderItem,
