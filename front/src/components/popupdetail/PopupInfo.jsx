@@ -1,7 +1,6 @@
 import Button from "../commons/Button.jsx";
 
 const PopupInfo = (props)=>{
-    console.log(props);
     const popup = props.popup;
     return(
         <div className="popupInfo">

@@ -15,7 +15,10 @@ const PopupImage = ({images})=>{
     return(
         <div className="photo-slider">
             <button onClick={prevImage} className="arrow left">{'<'}</button>
-            <img className={"popup-image"} src={"http://localhost:8080/images/"+images[currentIndex].saved_name} alt={`slide ${currentIndex}`} />
+            <img className={"popup-image"}
+                src={`http://localhost:8080/images/${images[currentIndex]}`}
+                alt={`slide ${currentIndex}`}
+            />
             <button onClick={nextImage} className="arrow right">{'>'}</button>
         </div>
     )
