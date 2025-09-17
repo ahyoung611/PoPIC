@@ -1,8 +1,11 @@
 package com.example.popic.popup.service;
 
 import com.example.popic.entity.entities.PopupStore;
+import com.example.popic.entity.entities.ReviewReply;
 import com.example.popic.popup.dto.PopupDTO;
+import com.example.popic.popup.dto.PopupReviewDTO;
 import com.example.popic.popup.dto.PopupScheduleDTO;
+import com.example.popic.popup.dto.ReviewReplyDTO;
 import com.example.popic.popup.repository.PopupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,5 +33,19 @@ public class PopupService {
        return popupRepository.getScheduleByStoreId(id).stream()
                .map(PopupScheduleDTO::new)
                .toList();
+    }
+
+    public List<PopupReviewDTO> getReviewByIdAndKeyword(Long id, String keyword) {
+        System.out.println("keyword: " + keyword);
+        return popupRepository.getReviewByStoreIdAndKeyword(id, keyword).stream()
+                .map(PopupReviewDTO::new)
+                .toList();
+    }
+
+    public List<ReviewReplyDTO> getReviewReply(Long id) {
+        List<ReviewReply> reviewReplies = popupRepository.getReviewReply(id);
+        return  reviewReplies.stream()
+                .map(ReviewReplyDTO::new)
+                .toList();
     }
 }

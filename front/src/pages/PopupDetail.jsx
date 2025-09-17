@@ -10,7 +10,7 @@ import PopupTabInfo from "../components/popupdetail/PopupTabInfo.jsx";
 const PopupDetail = ()=>{
     const [popupDetail, setPopupDetail] = useState(null);
     const [activeTab, setActiveTab] = useState("예약"); // 기본 탭
-    const tabs = ["예약","팝업 정보","리뷰","문의"]
+    const [tabs, setTabs] = useState(["예약","팝업 정보","리뷰","문의"]);
 
     useEffect(()=>{
         const fetchPopupDetail = async () => {
@@ -18,6 +18,10 @@ const PopupDetail = ()=>{
                 credentials: "include",
             });
             setPopupDetail(response);
+            if(new Date(response.end_date) < new Date().setHours(0,0,0,0)){
+                setActiveTab("팝업 정보");
+                setTabs(["팝업 정보", "리뷰", "문의"]);
+            }
         }
         fetchPopupDetail();
     },[])

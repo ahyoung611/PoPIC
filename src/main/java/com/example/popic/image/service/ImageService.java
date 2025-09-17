@@ -12,6 +12,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ImageService {
     private  final ImageRepository imageRepository;
+
     public ImageDTO findById(Long imageId) {
         Optional<Image> image = imageRepository.findById(imageId);
 

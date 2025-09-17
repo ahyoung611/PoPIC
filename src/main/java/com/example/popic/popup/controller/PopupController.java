@@ -1,7 +1,9 @@
 package com.example.popic.popup.controller;
 
 import com.example.popic.popup.dto.PopupDTO;
+import com.example.popic.popup.dto.PopupReviewDTO;
 import com.example.popic.popup.dto.PopupScheduleDTO;
+import com.example.popic.popup.dto.ReviewReplyDTO;
 import com.example.popic.popup.service.PopupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,4 +31,21 @@ public class PopupController {
         List<PopupScheduleDTO> scheduleList = popupService.getScheduleById(id);
         return ResponseEntity.ok(scheduleList);
     }
+
+    @GetMapping("/popupReview")
+    private ResponseEntity<List<PopupReviewDTO>> getReview(@RequestParam(name = "popupId") Long id,
+                                                           @RequestParam(name = "keyword", defaultValue = "")String keyword){
+        List<PopupReviewDTO> reviewList = popupService.getReviewByIdAndKeyword(id, keyword);
+
+        System.out.println("size: " + reviewList.size());
+        return ResponseEntity.ok(reviewList);
+    }
+
+    @GetMapping("/popupReviewReply")
+    private ResponseEntity<List<ReviewReplyDTO>> getReviewReply(@RequestParam(name = "popupId") Long id){
+        List<ReviewReplyDTO> reviewReplies = popupService.getReviewReply(id);
+
+        return ResponseEntity.ok(reviewReplies);
+    }
+
 }
