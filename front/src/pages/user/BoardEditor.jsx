@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useState} from "react";
 import "../../style/BoardEditor.css";
 import FileUpload from "../../components/board/FileUpload.jsx";
 
@@ -8,6 +8,7 @@ export default function BoardEditor() {
     const [attachments, setAttachments] = useState([]);
     const [submitting, setSubmitting] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const API = "http://localhost:8080";
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -16,10 +17,18 @@ export default function BoardEditor() {
 
         setSubmitting(true);
         try {
-            const res = await fetch("http://localhost:8080/board/new", {
+            const res = await fetch(`${API}/board/new`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title, content, attachments }),
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    title,
+                    content,
+                    files: (attachments ?? []).map(a =>
+                        typeof a === "string"
+                            ? {originalName: a, savedName: a}
+                            : a
+                    ),
+                }),
             });
             if (!res.ok) throw new Error("작성 실패");
             window.location.href = "/board";

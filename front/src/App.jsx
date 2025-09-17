@@ -11,6 +11,7 @@ import PopupDetail from "./pages/PopupDetail.jsx";
 import BoardList from "./pages/user/BoardList.jsx";
 import Join from "./pages/Join.jsx";
 import BoardEditor from "./pages/user/BoardEditor.jsx";
+import BoardDetail from "./pages/user/BoardDetail.jsx";
 
 
 function App() {
@@ -77,6 +78,7 @@ function App() {
                     <Route path={"/join"} element={<Join/>}></Route>
                     <Route path={"/board"} element={<BoardList/>}></Route>
                     <Route path={"/board/new"} element={<BoardEditor/>}></Route>
+                    <Route path={"/board/{id}"} element={<BoardDetail/>}></Route>
                 </Route>
 
 
