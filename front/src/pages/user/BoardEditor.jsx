@@ -1,43 +1,43 @@
-import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import FileUpload from "../../components/board/FileUpload.jsx";
 import "../../style/board.css";
+import BoardComment from "../../components/board/BoardComment.jsx";
 
-const API =
-    import.meta?.env?.VITE_API_BASE_URL ||
-    `http://${window.location.hostname}:8080`;
+const host = window.location.hostname || "localhost";
+const API = import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`;
+
+// 숫자면 그 값, 아니면 null
+const toNumericId = (v) => (/^\d+$/.test(String(v)) ? Number(v) : null);
 
 export default function BoardPage() {
-    const { id } = useParams();
-    const { pathname } = useLocation();
+    const {id} = useParams();
+    const {pathname} = useLocation();
     const nav = useNavigate();
 
-    const mode = useMemo(() => {
-        if (!id) return "create";
-        return pathname.endsWith("/edit") ? "edit" : "view";
-    }, [id, pathname]);
-
+    const numericId = toNumericId(id);              // 1, 2, ... 또는 null
+    const isCreate = pathname.endsWith("/new");
+    const isEdit = pathname.endsWith("/edit");
+    const mode = isCreate ? "create" : isEdit ? "edit" : "view";
     const readOnly = mode === "view";
 
-    // 폼 상태
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [attachments, setAttachments] = useState([]); // {originalName,savedName}[]
+    const [attachments, setAttachments] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-    const [meta, setMeta] = useState(null); // 작성자, 날짜, 조회수 등
+    const [meta, setMeta] = useState(null);
 
-    // 상세/수정일 때 데이터 로드
+    // 상세/수정일 때만 로드(= 숫자 id가 있을 때만)
     useEffect(() => {
-        if (!id) return;
-        let abort = false;
+        if (!numericId) return;
 
+        let abort = false;
         (async () => {
             try {
-                const res = await fetch(`${API}/board/${id}`);
+                const res = await fetch(`${API}/board/${numericId}`);
                 if (!res.ok) throw new Error("게시글 불러오기 실패");
                 const dto = await res.json();
-
                 if (abort) return;
 
                 setTitle(dto.title ?? "");
@@ -59,9 +59,8 @@ export default function BoardPage() {
         return () => {
             abort = true;
         };
-    }, [id, nav]);
+    }, [numericId, nav]);
 
-    // 저장/수정 제출
     const onSubmit = async (e) => {
         e.preventDefault();
         if (readOnly) return;
@@ -74,26 +73,21 @@ export default function BoardPage() {
                 title,
                 content,
                 files: (attachments ?? []).map((a) =>
-                    typeof a === "string" ? { originalName: a, savedName: a } : a
+                    typeof a === "string" ? {originalName: a, savedName: a} : a
                 ),
             };
 
-            const url =
-                mode === "create" ? `${API}/board/new` : `${API}/board/${id}`;
-            const method = mode === "create" ? "POST" : "PUT";
+            const url = isCreate ? `${API}/board/new` : `${API}/board/${numericId}`;
+            const method = isCreate ? "POST" : "PUT";
 
             const res = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload),
             });
-            if (!res.ok) throw new Error(mode === "create" ? "작성 실패" : "수정 실패");
+            if (!res.ok) throw new Error(isCreate ? "작성 실패" : "수정 실패");
 
-            if (mode === "create") {
-                nav("/board");
-            } else {
-                nav(`/board/${id}`);
-            }
+            nav(isCreate ? "/board" : `/board/${numericId}`);
         } catch (e) {
             console.error(e);
             alert(e.message || "처리 중 오류");
@@ -102,7 +96,7 @@ export default function BoardPage() {
         }
     };
 
-    const goEdit = () => nav(`/board/${id}/edit`);
+    const goEdit = () => numericId && nav(`/board/${numericId}/edit`);
     const goList = () => nav("/board");
 
     return (
@@ -112,8 +106,8 @@ export default function BoardPage() {
                     {mode === "create" ? "게시글 등록" : mode === "edit" ? "게시글 수정" : "게시글 상세"}
                 </h2>
 
-                {meta && (
-                    <div className="be-meta" aria-hidden={mode === "create"}>
+                {meta && mode !== "create" && (
+                    <div className="be-meta">
                         <span>{meta.writerName}</span>
                         <span>작성: {meta.createdAt?.slice(0, 10)}</span>
                         {meta.updatedAt && <span>수정: {meta.updatedAt?.slice(0, 10)}</span>}
@@ -123,13 +117,8 @@ export default function BoardPage() {
 
                 <form onSubmit={onSubmit} className="be-form">
                     <label className="be-label" htmlFor="title">제목</label>
-                    <input
-                        id="title"
-                        className="be-input"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        readOnly={readOnly}
-                    />
+                    <input id="title" className="be-input" value={title}
+                           onChange={(e) => setTitle(e.target.value)} readOnly={readOnly}/>
 
                     <label className="be-label">이미지</label>
                     {readOnly ? (
@@ -141,60 +130,70 @@ export default function BoardPage() {
                                     {attachments.map((f, i) => (
                                         <img
                                             key={i}
-                                            src={`/files/${f.savedName ?? f}`} // 프로젝트 경로 맞게 조정
+                                            src={`${API}/board/file/${f.savedName}`}
                                             alt={f.originalName ?? "image"}
+                                            style={{ maxWidth: "200px" }}
                                         />
+
                                     ))}
                                 </div>
                             )}
                         </div>
                     ) : (
-                        <FileUpload
-                            value={attachments}
-                            onChange={setAttachments}
-                            accept="image/*"
-                            multiple
-                            onUploadingChange={setUploading}
-                        />
+                        <FileUpload value={attachments} onChange={setAttachments}
+                                    accept="image/*" multiple
+                                    onUploadingChange={setUploading}/>
                     )}
 
                     <label className="be-label" htmlFor="content">내용</label>
-                    <textarea
-                        id="content"
-                        className="be-textarea"
-                        rows={12}
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        readOnly={readOnly}
-                    />
+                    <textarea id="content" className="be-textarea" rows={12}
+                              value={content} onChange={(e) => setContent(e.target.value)}
+                              readOnly={readOnly}/>
 
                     <div className="be-actions">
                         {mode === "view" ? (
                             <>
-                                <button type="button" className="be-btn be-btn-primary" onClick={goEdit}>
-                                    수정
+                                <button type="button" className="be-btn be-btn-primary" onClick={goEdit}>수정</button>
+                                <button type="button" className="be-btn be-btn-ghost" onClick={goList}>목록</button>
+                                <button type="button" className="be-btn be-btn-danger"
+                                        onClick={async () => {
+                                            if (window.confirm("정말 삭제하시겠습니까?")) {
+                                                try {
+                                                    await fetch(`${API}/board/${numericId}`, { method: "DELETE" });
+                                                    alert("삭제되었습니다.");
+                                                    nav("/board");
+                                                } catch (e) {
+                                                    console.error(e);
+                                                    alert("삭제 실패");
+                                                }
+                                            }
+                                        }}>
+                                    삭제
                                 </button>
-                                <button type="button" className="be-btn be-btn-ghost" onClick={goList}>
-                                    목록
+                            </>
+                        ) : mode === "edit" ? (
+                            <>
+                                <button type="submit" className="be-btn be-btn-primary"
+                                        disabled={submitting || uploading}>
+                                    {submitting ? "수정 중..." : "수정하기"}
                                 </button>
+                                <button type="button" className="be-btn be-btn-ghost" onClick={goList}>취소</button>
                             </>
                         ) : (
                             <>
-                                <button
-                                    type="submit"
-                                    className="be-btn be-btn-primary"
-                                    disabled={submitting || uploading}
-                                >
-                                    {mode === "create" ? (submitting ? "작성 중..." : "등록") : (submitting ? "수정 중..." : "수정")}
+                                <button type="submit" className="be-btn be-btn-primary"
+                                        disabled={submitting || uploading}>
+                                    {submitting ? "작성 중..." : "등록"}
                                 </button>
-                                <button type="button" className="be-btn be-btn-ghost" onClick={goList}>
-                                    취소
-                                </button>
+                                <button type="button" className="be-btn be-btn-ghost" onClick={goList}>취소</button>
                             </>
                         )}
                     </div>
                 </form>
             </div>
+            {mode !== "create" && numericId && (
+                <BoardComment boardId={numericId}/>
+            )}
         </div>
     );
 }

@@ -4,9 +4,8 @@ import BoardListItem from "../../components/board/BoardListItem.jsx";
 import Select from "../../components/commons/Select.jsx";
 import "../../style/board.css"; // ← 페이지 전용 CSS
 
-const API =
-    import.meta?.env?.VITE_API_BASE_URL ||
-    `http://${window.location.hostname}:8080`;
+const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
+const API  = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
 export default function BoardListView() {
     const [boards, setBoards] = useState([]);
@@ -83,7 +82,7 @@ export default function BoardListView() {
                             className="board__search"
                             value={kwInput}
                             onChange={(e) => setKwInput(e.target.value)}
-                            placeholder="상품 검색"
+                            placeholder="검색할 내용을 입력해주세요."
                         />
                         <button type="submit" className="btn btn--ghost">검색</button>
                         <button

@@ -1,5 +1,7 @@
 package com.example.popic.image.controller;
 
+import com.example.popic.board.dto.BoardImageDTO;
+import com.example.popic.board.service.BoardFileService;
 import com.example.popic.image.dto.ImageDTO;
 import com.example.popic.image.dto.ReviewImageDTO;
 import com.example.popic.image.service.ImageService;
@@ -19,10 +21,11 @@ import java.nio.file.Path;
 public class ImageController {
     private final ImageService imageService;
     private final ReviewImageService reviewImageService;
+    private final BoardFileService boardFileService;
 
     @GetMapping
     public ResponseEntity<byte[]> getImage(@RequestParam(name = "id") Long imageId,
-                                           @RequestParam(name = "type")String type) {
+                                           @RequestParam(name = "type") String type) {
         System.out.println("type: " + type);
         System.out.println("id: " + imageId);
 
@@ -34,6 +37,9 @@ public class ImageController {
             case "review":
                 ReviewImageDTO reviewImage = reviewImageService.findById(imageId);
                 return getImageFile(type, reviewImage.getSaved_name());
+            case "upload":
+                BoardImageDTO boardImageDTO = boardFileService.findById(imageId);
+                return getImageFile(type, boardImageDTO.getSavedName());
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
         }
@@ -42,7 +48,7 @@ public class ImageController {
 
     public ResponseEntity<byte[]> getImageFile(String type, String savedName) {
         // 실제 저장된 파일 읽기
-        Path imagePath = Path.of("C:/"+ type + "/", savedName); // 실제 저장된 위치
+        Path imagePath = Path.of("C:/" + type + "/", savedName); // 실제 저장된 위치
         try {
             byte[] imageBytes = Files.readAllBytes(imagePath);
 
