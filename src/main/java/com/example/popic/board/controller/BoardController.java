@@ -4,7 +4,12 @@ import com.example.popic.board.dto.BoardDTO;
 import com.example.popic.board.dto.BoardImageDTO;
 import com.example.popic.board.service.BoardFileService;
 import com.example.popic.board.service.BoardService;
+import com.example.popic.entity.entities.Board;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,14 +72,34 @@ public class BoardController {
         return ResponseEntity.created(URI.create("/board/" + saved.getBoardId())).body(saved);
     }
 
-
     @GetMapping
-    public ResponseEntity<List<BoardDTO>> boards() {
-        return ResponseEntity.ok(boardService.boards());
+    public Page<BoardDTO> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "tc") String scope // tc=제목+내용 | title | content
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Board> result = boardService.search(keyword, pageable, scope);
+        return result.map(BoardDTO::fromEntity);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BoardDTO> findByBoardId(@PathVariable Long id) {
         return ResponseEntity.ok(boardService.findByBoardId(id));
     }
+
+    @PutMapping(value = "/{id:\\d+}", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BoardDTO> update(@PathVariable Long id, @RequestBody BoardDTO dto) {
+        BoardDTO updated = boardService.update(id, dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id:\\d+}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        boardService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

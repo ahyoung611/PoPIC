@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import "../../style/BoardEditor.css";
+import "../../style/board.css";
 const API = "http://localhost:8080";
 
 export default function FileUpload({

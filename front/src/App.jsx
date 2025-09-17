@@ -78,7 +78,8 @@ function App() {
                     <Route path={"/join"} element={<Join/>}></Route>
                     <Route path={"/board"} element={<BoardList/>}></Route>
                     <Route path={"/board/new"} element={<BoardEditor/>}></Route>
-                    <Route path={"/board/{id}"} element={<BoardDetail/>}></Route>
+                    <Route path={"/board/:id"} element={<BoardEditor/>}></Route>
+                    <Route path={"/board/:id/edit"} element={<BoardEditor/>}></Route>
                 </Route>
 
 

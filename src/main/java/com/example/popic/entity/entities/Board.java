@@ -19,7 +19,7 @@ public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id")
-    private Long board_id; // PK
+    private Long boardId; // PK
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
