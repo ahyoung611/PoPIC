@@ -1,31 +1,16 @@
 /* 폰트 */
-@font-face {
-    font-family: 'Pretendard';
-    font-weight: 400;
-    font-style: normal;
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
-}
-
-@font-face {
-    font-family: 'Pretendard';
-    font-weight: 500;
-    font-style: normal;
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/Pretendard-Medium.woff') format('woff');
-}
-
-@font-face {
-    font-family: 'Pretendard';
-    font-weight: 700;
-    font-style: normal;
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
-}
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Pretendard', sans-serif;
     margin: 0;
     background-color: var(--white-color);
     overflow-x: hidden;
     overflow-y: auto;
+    user-select: none; /* 대부분 브라우저 */
+    -webkit-user-select: none; /* 사파리 */
+    -moz-user-select: none; /* 파이어폭스 */
+    -ms-user-select: none; /* IE/Edge */
 }
 
 * {
@@ -60,6 +45,10 @@ li {
     --font-small: 14px;
     --font-caption: 12px;
     --font-button: 14px;
+
+    /* shadow  */
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+
 }
 
 .container{

@@ -1,66 +1,56 @@
-import React, { useEffect, useState } from "react";
-import SearchHeader from "../../components/commons/SearchHeader";
+import React, { useState } from "react";
+import SearchHeader from "../../components/commons/SearchHeader"; // 검색 + 등록 버튼
 import Pagination from "../../components/commons/Pagination";
-import Select from "../../components/commons/Select.jsx";
-import Button from "../../components/commons/Button.jsx";
-import ConfirmModal from "../../components/commons/ConfirmModal.jsx";
+import InquiryModal from "../../components/commons/InquiryModal.jsx";     // 페이지네이션
 
 export default function VendorMain() {
-    const [searchValue, setSearchValue] = useState("");
-    const [sort, setSort] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = 5;
+    // 상태 관리
+    const [searchValue, setSearchValue] = useState(""); // 검색어
+    const [currentPage, setCurrentPage] = useState(1);  // 현재 페이지
+    const totalPages = 5;                               // 총 페이지 수
 
+    // 검색 실행
     const handleSearch = () => {
         console.log("검색 실행:", { searchValue, sort });
+        // TODO: API 호출 or 리스트 필터링
     };
 
+    // 등록 버튼 클릭 시
     const handleRegister = () => {
         console.log("등록 버튼 클릭");
+        // TODO: 등록 페이지 이동 (ex: navigate("/vendor/popups/edit"))
     };
 
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchValue, sort]);
-
+    // 문의하기 모달
     const [open, setOpen] = useState(false);
-    const [title, setTitle] = useState("반려하시겠습니까?");
+    const [subject, setSubject] = useState("") // 제목 상태 관리
+    const [content, setContent] = useState("") // 내용 상태 관리
 
-    const handleReject = () => {
-        // TODO: 반려 처리(API 등)
+    const handleSubmit= ()=>{
+        console.log("문의 전송:" ,{subject,content});
         setOpen(false);
-    };
+    }
 
     return (
         <div className="container">
             <div className="inner">
-                <Button variant="outline" className="rounded-xl" onClick={() => setOpen(true)}>
-                    반려
-                </Button>
 
-                <ConfirmModal
+                <button onClick={() => setOpen(true)}>문의하기 열기</button>
+
+                <InquiryModal
                     open={open}
-                    title="확인하시겠습니까?" // 타이틀 변경
-                    okText="네"
-                    cancelText="아니오"
-                    danger
-                    onConfirm={handleReject}
-                    onCancel={() => setOpen(false)}
+                    title="문의하기"
+                    subject={subject}
+                    onSubjectChange={setSubject}
+                    content={content}
+                    onContentChange={setContent}
+                    onSubmit={handleSubmit}
+                    onClose={() => setOpen(false)}
+                    submitText="문의 완료"
+                    cancelText="취소"
                 />
 
-                {/* 정렬 셀렉트 */}
-                <Select
-                    value={sort}
-                    onChange={setSort}
-                    options={[
-                        { label: "선택", value: "" },
-                        { label: "승인", value: "approved" },
-                        { label: "반려", value: "rejected" },
-                    ]}
-                    aria-label="정렬"
-                />
-
-                {/* 검색 + 등록 */}
+                {/* 검색 + 등록 (공통 컴포넌트) */}
                 <SearchHeader
                     searchValue={searchValue}
                     onSearchChange={setSearchValue}
@@ -68,7 +58,7 @@ export default function VendorMain() {
                     onRegisterClick={handleRegister}
                 />
 
-                {/* 목록 */}
+                {/* 리스트 영역 */}
                 <div className="vendor-list">
                     <div className="vendor-item">리스트 아이템 예시</div>
                 </div>

@@ -8,9 +8,9 @@
 .modalPanel{
     width: min(500px, 92vw);
     background: #fff;
-    border-radius: 14px;
+    border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 24px 64px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.06);
+    box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
     position: relative;
     animation: modal-pop .14s ease-out;
@@ -20,6 +20,64 @@
     from { transform: scale(.98); opacity: .88; }
     to   { transform: scale(1);   opacity: 1; }
 }
+
+.modalPanel input[type=text],
+.modalPanel textarea{
+    width: 100%;
+    padding:10px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 10px;
+    transition: border 0.2s ease;
+}
+
+.modalPanel input:focus,
+.modalPanel textarea:focus{
+    border: 1px solid var(--main-color) !important;
+    outline: none !important;
+}
+
+/* 비공개 체크박스 */
+.privateCheck {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.privateCheck input[type="checkbox"] {
+    display: none;
+}
+
+.privateCheck label {
+    position: relative;
+    padding-left: 25px;
+    cursor: pointer;
+    font-size: var(--font-caption);
+    color: var(--gray-color);
+}
+
+.privateCheck label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-image: url("/privateCheck-g.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.privateCheck input[type="checkbox"]:checked + label::before {
+    background-image: url("/privateCheck-p.png");
+}
+
+.privateCheck input[type="checkbox"]:checked + label{
+    color: var(--black-color);
+}
+
 
 .modalTitle{
     font-size: var( --font-title); font-weight: 800;
@@ -40,15 +98,4 @@
 }
 .modalBtn:active{ transform: scale(.98); }
 
-/* 취소 */
-.modalBtn--cancel{
-    background: var(--bg-color);
-    color: var(--gray-color);
-    border: 1px solid var(--border-color) !important;
-}
-.modalBtn--cancel:hover{
-    background: #F7F8F9 !important;
-    color: #6B7280 !important;
-
-}
 
