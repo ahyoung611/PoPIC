@@ -16,13 +16,6 @@ public class VendorController {
     private final VendorService vendorService;
     private final VendorRepository vendorRepository;
 
-
-    @GetMapping({"/popups", "/popups/**"})
-    public String vendorPopups() {
-        return "forward:/index.html";
-    }
-
-
     @PostMapping("/join")
     public ResponseEntity<ApiRes> join(@RequestBody Vendor vendor) {
         try {

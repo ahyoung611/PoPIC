@@ -71,6 +71,13 @@ public class PopupStore {
 
     private LocalDateTime delete_date;
 
-    private int status = 2; //2: 승인 대기, 1: 운영 시작 전 (승인 완료), 2: 운영 중, -1: 운영 종료, 0: 정지
+    private int status = 2; //2: 승인 대기, 1: 승인 완료(운영중), 3: 승인 반려, -1: 운영 종료, 0: 정지
+
+    // 팝업 운영자 상태 관리 - young
+    public static final int STATUS_SUSPENDED = 0;   // 정지
+    public static final int STATUS_APPROVED  = 1;   // 승인 완료(운영중)
+    public static final int STATUS_PENDING   = 2;   // 승인 대기
+    public static final int STATUS_REJECTED  = 3;   // 승인 반려
+    public static final int STATUS_ENDED     = -1;  // 운영 종료
 
 }
