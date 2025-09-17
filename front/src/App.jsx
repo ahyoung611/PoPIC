@@ -84,7 +84,7 @@ function App() {
 
                 {/*벤더 유저 Layout */}
                 <Route element={<VendorHeaderLayout/>}>
-                    <Route path="/vendor/popups" element={<VendorMain/>}>
+                    <Route path="/vendorPopups" element={<VendorMain/>}>
 
                     </Route>
                 </Route>
