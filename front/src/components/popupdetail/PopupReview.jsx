@@ -39,12 +39,17 @@ const PopupReview = (props)=>{
         fetchSearchReview();
     }
 
+    const writeReview = ()=>{
+        console.log("리뷰 작성하기");
+    }
+
     return (
         <div className={"popupReview-container"}>
             <div className={"review-search"}>
                 <span>총 {review.length}개의 리뷰가 등록되었습니다.</span>
                 <input type="text" placeholder="리뷰 검색" ref={keywordRef} />
-                <Button onClick={reviewSearchHandler}>검색</Button>
+                <Button onClick={reviewSearchHandler}>검색</Button><br/>
+                <Button onClick={writeReview}>리뷰 작성하기</Button>
 
                 {review.map((item) => {
                     const replies = reviewReply.filter(
