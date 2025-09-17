@@ -154,3 +154,108 @@
     color: var(--gray-color);
 }
 .be-btn-ghost:hover { filter: brightness(0.98); }
+
+/* BoardList */
+.board__title {
+    text-align: center;
+    font-size: calc(var(--font-title) + 6px);
+    font-weight: 800;
+    margin: 8px 0 20px;
+    color: var(--black-color);
+    height: 15%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.list__box {
+    height: 80%;
+}
+
+.board__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.board__scope {
+    width: 72px;
+}
+
+.board__search {
+    flex: 1;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    outline: none;
+    background: #fff;
+    font-size: var(--font-size-base);
+}
+
+.btn {
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: var(--font-button);
+}
+.btn--ghost { background: #f7f7f7; }
+.btn--primary {
+    background: var(--main-color);
+    color: #fff;
+    border-color: var(--main-color);
+}
+.btn--primary:hover { background: var(--main-hover-color); border-color: var(--main-hover-color); }
+
+.board-list {
+    display: grid;
+    gap: 10px;
+    padding: 0;
+}
+
+.board-card {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: #fff;
+    padding: 14px 16px;
+    box-shadow: none;
+}
+.board-card__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.board-card__main { flex: 1; min-width: 0; }
+.board-card__title { font-weight: 700; margin-bottom: 4px; color: var(--black-color); }
+.board-card__meta  { font-size: 12px; color: #666; margin-bottom: 8px; }
+.board-card__desc  {
+    font-size: 13px; color: #333;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.board-card__more {
+    border: none; background: transparent; color: #666;
+    cursor: pointer; white-space: nowrap;
+}
+
+.board-empty {
+    padding: 24px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: #fff;
+    text-align: center;
+}
+
+.pagination {
+    display: flex; justify-content: center; gap: 6px; margin-top: 18px;
+}
+.pagination__btn {
+    width: 28px; height: 28px; border-radius: 6px;
+    border: 1px solid var(--border-color); background: #fff; cursor: pointer;
+}
+.pagination__btn[aria-current="page"],
+.pagination__btn.is-active {
+    background: var(--main-color); color: #fff; border-color: var(--main-color);
+}

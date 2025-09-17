@@ -56,9 +56,15 @@ li {
     height: auto;
 }
 
+.container100{
+    width: 100%;
+    height: calc(100vh - 60px - 44px);
+}
+
 .inner {
     margin: 0 auto;
     padding: 16px;
+    height: 100%;
 }
 
 /* 모바일 : 600px */

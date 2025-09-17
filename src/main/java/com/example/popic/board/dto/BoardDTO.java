@@ -25,13 +25,13 @@ public class BoardDTO {
     private LocalDateTime deletedAt;
     private int status;
 
-    private String writerName; // User.username
+    private String writerName; // User.name
     private List<BoardImageDTO> files; // 첨부파일
     private List<BoardCommentDTO> comments; // 댓글 리스트
 
     public static BoardDTO fromEntity(Board board) {
         return BoardDTO.builder()
-                .boardId(board.getBoard_id())
+                .boardId(board.getBoardId())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .viewCount(board.getView_count())

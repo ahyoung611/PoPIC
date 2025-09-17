@@ -6,7 +6,10 @@ import com.example.popic.entity.entities.Board;
 import com.example.popic.entity.entities.BoardImage;
 import com.example.popic.entity.entities.User;
 import com.example.popic.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final EntityManager em;
 
     @Transactional
     public BoardDTO save(BoardDTO dto) {
@@ -53,6 +57,20 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
+    public Page<Board> search(String keyword, Pageable pageable, String scope) {
+        boolean empty = (keyword == null || keyword.isBlank());
+        if (empty) return boardRepository.listAll(pageable);
+
+        String k = keyword.trim();
+        String s = (scope == null ? "tc" : scope.toLowerCase());
+        return switch (s) {
+            case "title", "t" -> boardRepository.searchByTitle(k, pageable);
+            case "content", "c" -> boardRepository.searchByContent(k, pageable);
+            default -> boardRepository.searchByTitleOrContent(k, pageable);
+        };
+    }
+
+    @Transactional(readOnly = true)
     public List<BoardDTO> boards() {
         return boardRepository.findAll()
                 .stream()
@@ -65,5 +83,33 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Board not found: " + boardId));
         return BoardDTO.fromEntity(board);
+    }
+
+    @Transactional
+    public BoardDTO update(Long id, BoardDTO dto) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found: " + id));
+
+        board.setTitle(dto.getTitle());
+        board.setContent(dto.getContent());
+        board.setUpdated_at(LocalDateTime.now());
+
+        board.getFiles().clear();
+        if (dto.getFiles() != null) {
+            List<BoardImage> images = dto.getFiles().stream()
+                    .map(f -> {
+                        BoardImage img = new BoardImage();
+                        img.setOriginal_name(f.getOriginalName());
+                        img.setSaved_name(f.getSavedName());
+                        img.setBoard(board);
+                        return img;
+                    })
+                    .toList();
+            board.getFiles().addAll(images);
+        }
+        return BoardDTO.fromEntity(board);
+    }
+
+    public void delete(Long id) {
     }
 }
