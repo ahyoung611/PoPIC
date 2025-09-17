@@ -48,7 +48,7 @@
 
 .be-input:focus,
 .be-textarea:focus {
-    border-color: #ff5a4f;
+    border-color: var(--main-color);
 }
 
 .be-textarea {
