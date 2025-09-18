@@ -1,0 +1,130 @@
+/* 리스트 컨테이너 */
+.vendor-list{
+    display:flex;
+    flex-direction:column;
+    gap:40px;
+    margin-top:16px;
+}
+
+/* 행(카드 느낌 제거, 구분선만) */
+.popup-card{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:28px;
+    padding:28px 0;
+    border:none;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+    border-bottom:1px solid var(--border-color); /* 행 구분선 */
+}
+
+/* 썸네일 */
+.popup-thumb{
+    width:150px;
+    height: 150px;
+    flex:0 0 210px;
+    aspect-ratio: 3 / 4;    /* 세로형 비율 */
+    border-radius:12px;
+    overflow:hidden;
+    background:#f5f6f8;
+}
+.popup-thumb img{
+    width:100%; height:100%; object-fit:cover; display:block;
+}
+
+/*.thumb-placeholder{*/
+/*    width:100%; height:100%;*/
+/*    background: repeating-linear-gradient(45deg,#f6f6f7,#f6f6f7 10px,#efeff1 10px,#efeff1 20px);*/
+/*}*/
+
+/* 본문 */
+.popup-body{
+    flex:1 1 auto;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+/* 제목 + (상태 배지는 우측 절대배치) */
+.popup-head{ display:flex; align-items:center; gap:10px; }
+.popup-title{
+    flex:1 1 auto;
+    margin:0;
+    color:var(--black-color);
+    font-weight:800;
+    font-size:28px;                 /* 큼직하게 */
+    line-height:1.2;
+    overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+}
+
+/* 날짜/카테고리 */
+.popup-meta{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.popup-meta .date{
+    color:#4B5563;                  /* 진한 회색 */
+    font-weight:700;
+    font-size:18px;
+}
+
+/* 카테고리 칩(흰 배경 + 테두리) */
+.chips{ display:inline-flex; gap:8px; flex-wrap:wrap; }
+.chip{
+    padding:8px 12px;
+    border:1px solid #E5E7EB;
+    background:#fff;
+    color:#374151;
+    border-radius:999px;
+    font-size:var(--font-small);
+    font-weight:600;
+}
+
+/* 우측 상단 상태배지 */
+.status-badge{
+    position:absolute;
+    top:16px; right:0;
+    font-size:12px;
+    font-weight:800;
+    padding:8px 12px;
+    border-radius:999px;
+    line-height:1; white-space:nowrap;
+}
+.status--approved { background:#E7F0FF; color:#2B6FF3; }
+.status--pending  { background:#F3F4F6; color:#6B7280; }
+.status--rejected { background:#FFECEC; color:#D63B3B; }
+.status--suspended{ background:#FAF1D6; color:#9A6B00; }
+.status--ended    { background:#F1F1F1; color:#9CA3AF; }
+
+/* 우측 하단 액션(고스트 버튼 사용) */
+.popup-actions{
+    position:absolute;
+    right:0; bottom:22px;
+    display:flex; align-items:center; gap:22px;
+}
+.popup-actions .btn.btn--ghost{
+    padding:0;                         /* 링크처럼 보이게 */
+    font-weight:800;
+    font-size:16px;
+    color:#6B7280;
+}
+.popup-actions .btn.btn--ghost:hover{ color:#111; }
+/* 고스트 버튼에 화살표 자동 부착 */
+.popup-actions .btn.btn--ghost::after{
+    content:" \2192";
+    display:inline-block;
+    transform: translateX(2px);
+}
+
+/* 반응형 */
+@media (max-width: 768px){
+    .popup-card{ gap:16px; padding:20px 0; }
+    .popup-thumb{ width:120px; flex-basis:120px; border-radius:10px; }
+    .popup-title{ font-size:20px; }
+    .popup-meta .date{ font-size:16px; }
+    .status-badge{ position:static; align-self:flex-start; margin-top:6px; }
+    .popup-actions{
+        position:static; margin-top:8px; gap:16px;
+        align-self:flex-end;
+    }
+}

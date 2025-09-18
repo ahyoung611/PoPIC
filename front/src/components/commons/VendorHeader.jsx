@@ -27,8 +27,8 @@ export default function VendorHeader({ onLogout }) {
                     </div>
 
                     <nav className="header__nav">
-                        <NavLink to="/vendor" end className={linkClass}>홈</NavLink>
-                        <NavLink to="/vendor/popups/edit" className={linkClass}>팝업 등록</NavLink>
+                        <NavLink to="/vendorPopups" end className={linkClass}>홈</NavLink>
+                        <NavLink to="/vendorPopups/new" className={linkClass}>팝업 등록</NavLink>
                         <NavLink to="/vendor/reservations" className={linkClass}>예약 관리</NavLink>
                         <NavLink to="/vendor/onsite" className={linkClass}>현장 관리</NavLink>
                     </nav>
@@ -46,8 +46,8 @@ export default function VendorHeader({ onLogout }) {
                 <button aria-label="닫기" onClick={close}
                         style={{ background: "transparent", border: 0, fontSize: 22, marginBottom: 8, cursor: "pointer", color:"black" }}>✕</button>
                 <div className="Drawer__section">
-                    <NavLink to="/vendor" end className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>홈</NavLink>
-                    <NavLink to="/vendor/popups/edit" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>팝업 등록</NavLink>
+                    <NavLink to="/vendorPopups" end className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>홈</NavLink>
+                    <NavLink to="/vendorPopups/new" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>팝업 등록</NavLink>
                     <NavLink to="/vendor/reservations" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>예약 관리</NavLink>
                     <NavLink to="/vendor/onsite" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>현장 관리</NavLink>
                     <a className="Drawer__item" onClick={() => { close(); onLogout?.(); }}>로그아웃</a>
