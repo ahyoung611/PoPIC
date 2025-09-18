@@ -1,4 +1,3 @@
-// BoardRepository.java
 package com.example.popic.board.repository;
 
 import com.example.popic.entity.entities.Board;
@@ -9,7 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    @Query("select b from Board b")
+
+
+    @Query("select b from Board b order by b.created_at desc")
     Page<Board> listAll(Pageable pageable);
 
     @Query(value = """

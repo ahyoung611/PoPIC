@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "../style/join.css";
 import eye from "../../public/eye.png"
 import nonEye from "../../public/nonEye.png"
 import logo from "../../public/popic-logo.png"
 import apiRequest from "../utils/apiRequest.js" // ← 헬퍼 경로 맞게 수정
+import $ from "jquery"
 
 const Join = () => {
     const [role, setRole] = useState("USER");
     const [showPw, setShowPw] = useState(false);
-    // const [msg, setMsg] = useState("");
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({
         // USER
@@ -23,6 +23,60 @@ const Join = () => {
         brn: "",
     });
 
+    const [brnVerified, setBrnVerified] = useState(false);
+    const brnRef = useRef(null); // 인풋 DOM 참조
+
+    const businessNumberCheck = () => {
+        const input = brnRef.current;                // 인풋 DOM
+        const clean = (form.brn || "").replace(/-/g, "");
+
+        if (clean.length !== 10) {
+            input.setCustomValidity("사업자등록번호 10자리를 입력해주세요.");
+            input.reportValidity(); // 브라우저 기본 에러 UI 표시
+            return;
+        }
+
+        const url = "https://api.odcloud.kr/api/nts-businessman/v1/status"
+            + "?serviceKey=u%2FoWK2f4UUhnQFKqgTJe96B2%2FNKnFcWOyEX01AFuPBGp8mH1%2B14dEoJJQCU5flSkJ%2Ba7YDazsdLnCR3sgnYwZQ%3D%3D";
+
+        $.ajax({
+            url,
+            type: "POST",
+            data: JSON.stringify({ b_no: [clean] }),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (result) {
+                const item = result?.data?.[0];
+                console.log("ODcloud item:", item);
+
+                if (!item) {
+                    input.setCustomValidity("인증 결과를 확인할 수 없습니다.");
+                    input.reportValidity();
+                    return;
+                }
+                // 국세청 등록된 사업자
+                const ok =
+                    typeof item?.tax_type === "string" &&
+                    (item.tax_type.includes("부가가치세") || item.tax_type === "부가가치세");
+
+                if (ok) {
+                    // 성공이면 setCustomValidity("")로 에러 해제!
+                    input.setCustomValidity("");
+                    setBrnVerified(true);
+                } else {
+                    input.setCustomValidity("등록되지 않은 사업자 번호입니다.");
+                    input.reportValidity();
+                }
+            },
+            error: function () {
+                input.setCustomValidity("인증 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                input.reportValidity();
+            },
+        });
+    };
+
+
+    /* 비밀번호 보이기/숨기기 토글 전환 */
     const togglePassword = (e) => {
         setShowPw((prevState) => !prevState);
     }
@@ -32,6 +86,7 @@ const Join = () => {
         setForm((f) => ({ ...f, [name]: value }));
     };
 
+    /* 진입 role 확인 */
     const onSubmit = async (e) => {
         e.preventDefault(   );
         setLoading(true);
@@ -73,7 +128,8 @@ const Join = () => {
                 brn: "",
             });
         } catch (err) {
-            // setMsg(err?.message || "에러");
+            console.error(err); // 에러 확인용
+            alert("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
         } finally {
             setLoading(false);
         }
@@ -106,7 +162,7 @@ const Join = () => {
                             className="join-input"
                             type={showPw ? "text" : "password"}
                             name="password"
-                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$"
+                            pattern="^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$"
                             placeholder="비밀번호"
                             title="비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다."
                             value={form.password}
@@ -133,7 +189,7 @@ const Join = () => {
                         <input
                             className="join-input"
                             name="phone_number"
-                            pattern="^(01[0-9]-?\d{4}-?\d{4})$"
+                            pattern="^(01[0-9]-?\\d{4}-?\\d{4})$"
                             placeholder="핸드폰번호"
                             title="휴대폰(예: 010-1234-5678 또는 01012345678) 형식으로 입력하세요"
                             value={form.phone_number}
@@ -192,17 +248,23 @@ const Join = () => {
                             <div className="join-field join-field--inline">
                                 <input
                                     className="join-input"
+                                    ref={brnRef}
                                     name="brn"
                                     maxLength="12"
-                                    pattern="^\d{3}-\d{2}-\d{5}$"
+                                    pattern="^\\d{3}-?\\d{2}-?\\d{5}$"
                                     placeholder="사업자 등록번호"
-                                    title="사업자등록번호 형식에 맞게 입력하세요 (예: 123-45-67890) 형식으로 입력하세요"
+                                    title="사업자등록번호 형식에 맞게 입력하세요 (예: 123-45-67890 또는 1234567890) 형식으로 입력하세요"
                                     value={form.brn}
                                     onChange={onChange}
                                     required
                                 />
-                                <button type="button" className="join-inline-btn">
-                                    등록
+                                <button
+                                    type="button"
+                                    className="join-inline-btn"
+                                    onClick={businessNumberCheck}
+                                    disabled={brnVerified || !form.brn}
+                                >
+                                    {brnVerified ? "인증 완료" : "인증"}
                                 </button>
                             </div>
                         </>

@@ -16,7 +16,7 @@ const PopupImage = ({images})=>{
         <div className="photo-slider">
             <button onClick={prevImage} className="arrow left">{'<'}</button>
             <img className={"popup-image"}
-                src={`http://localhost:8080/images/${images[currentIndex]}`}
+                src={`http://localhost:8080/images?type=popup&id=${images[currentIndex]}`}
                 alt={`slide ${currentIndex}`}
             />
             <button onClick={nextImage} className="arrow right">{'>'}</button>
