@@ -88,7 +88,7 @@ function App() {
                 <Route element={<VendorHeaderLayout/>}>
                     <Route path="/vendorPopups" element={<VendorMain/>}></Route>
                     <Route path="/vendorPopups/new" element={<VendorPopupForm/>}></Route>
-                    {/*<Route path="/vendorPopups/:id/edit" element={<VendorPopupEdit/>}></Route>*/}
+                    <Route path="/vendorPopups/:id/edit" element={<VendorPopupForm/>}></Route>
                 </Route>
 
                 {/*어드민 Layout */}

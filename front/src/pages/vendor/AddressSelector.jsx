@@ -16,7 +16,7 @@ export default function AddressSelector({
                                             value,
                                             onChange,
                                             showCoords = false,
-                                            geocodeInline = true
+                                            geocodeInline = true,
                                         }) {
     const [cities, setCities] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -27,48 +27,70 @@ export default function AddressSelector({
     const [lat, setLat] = useState(value?.latitude ?? null);
     const [lng, setLng] = useState(value?.longitude ?? null);
 
-    // 확인 버튼을 누른 뒤 좌표가 세팅되면 그때만 alert 띄우기 위한 플래그
+    // value가 바뀌면 내부 state도 동기화
+    useEffect(() => {
+        setCity(value?.city || "");
+        setDistrict(value?.district || "");
+        setDetail(value?.detail || "");
+        setLat(value?.latitude ?? null);
+        setLng(value?.longitude ?? null);
+    }, [value?.city, value?.district, value?.detail, value?.latitude, value?.longitude]);
+
     const geocodeRequestedRef = useRef(false);
 
+    // 도시 목록
     useEffect(() => {
         (async () => {
             try {
-                const data = await getJson(`${API_BASE}/addresses/cities`);
-                const list = Array.isArray(data) ? data : (data?.cities || []);
-                setCities(list || []);
-                if (!city && list?.length) setCity(list[0]);
+                const list = await getJson(`${API_BASE}/addresses/cities`);
+                setCities(Array.isArray(list) ? list : []);
+                // 수정화면 값 덮어쓰는 문제 방지
             } catch (e) {
-                setCities([]);
                 console.error(e);
+                setCities([]);
             }
         })();
     }, []);
 
+    // 구 목록
     useEffect(() => {
-        if (!city) return;
+        if (!city) { setDistricts([]); return; }
         (async () => {
             try {
-                const data = await getJson(`${API_BASE}/addresses?city=${encodeURIComponent(city)}`);
-                const list = Array.isArray(data) ? data : (data?.districts || []);
-                setDistricts(list || []);
-                if (!list?.includes(district)) setDistrict(list?.[0] || "");
+                const list = await getJson(`${API_BASE}/addresses?city=${encodeURIComponent(city)}`);
+                const arr = Array.isArray(list) ? list : [];
+                setDistricts(arr);
+                // 현재 district가 목록에 없으면 비워둠 (사용자가 다시 선택)
+                if (district && !arr.includes(district)) setDistrict("");
             } catch (e) {
-                setDistricts([]);
                 console.error(e);
+                setDistricts([]);
             }
         })();
     }, [city]);
 
+    // 부모 onChange는 값이 진짜 바뀐 경우에만 호출
     const onChangeRef = useRef(onChange);
     useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
 
+    const lastPayloadRef = useRef(null);
     useEffect(() => {
-        const addressString = [city, district].filter(Boolean).join(" ");
-        const payload = { city, district, detail, latitude: lat, longitude: lng, addressString };
-        onChangeRef.current?.(payload);
+        const payload = {
+            city,
+            district,
+            detail,
+            latitude: lat,
+            longitude: lng,
+            addressString: [city, district].filter(Boolean).join(" "),
+        };
+        const same = JSON.stringify(lastPayloadRef.current) === JSON.stringify(payload);
+        if (!same) {
+            lastPayloadRef.current = payload;
+            onChangeRef.current?.(payload);
+        }
     }, [city, district, detail, lat, lng]);
 
-    // 좌표 세팅이 끝난 직후 1회만 알림
+    // 지오코딩 완료 후 1회만 알림
     useEffect(() => {
         if (geocodeRequestedRef.current && lat != null && lng != null) {
             geocodeRequestedRef.current = false;
@@ -82,7 +104,7 @@ export default function AddressSelector({
         if (!city || !district || !detail.trim()) return alert("시/구/상세주소를 모두 입력하세요.");
 
         try {
-            geocodeRequestedRef.current = true; // ← 확인 버튼 누름 표시
+            geocodeRequestedRef.current = true;
             await loadKakaoMaps(kakaoAppKey);
             const { kakao } = window;
             new kakao.maps.services.Geocoder().addressSearch(full, (results, status) => {
@@ -90,13 +112,12 @@ export default function AddressSelector({
                     const { x, y } = results[0];
                     setLat(parseFloat(y));
                     setLng(parseFloat(x));
-                    // 알림은 위 useEffect에서 한 번만 발생
                 } else {
-                    geocodeRequestedRef.current = false; // 실패 시 플래그 해제
+                    geocodeRequestedRef.current = false;
                     alert("좌표를 찾지 못했습니다. 주소를 확인하세요.");
                 }
             });
-        } catch (e) {
+        } catch {
             geocodeRequestedRef.current = false;
             alert("카카오 지도 스크립트 로드 실패");
         }
@@ -106,10 +127,14 @@ export default function AddressSelector({
         <div className="vp-addr">
             <div className="vp-grid-2">
                 <select className="vp-select" value={city} onChange={(e) => setCity(e.target.value)}>
-                    {(Array.isArray(cities) ? cities : []).map((c) => <option key={c} value={c}>{c}</option>)}
+                    {(Array.isArray(cities) ? cities : []).map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                    ))}
                 </select>
                 <select className="vp-select" value={district} onChange={(e) => setDistrict(e.target.value)}>
-                    {(Array.isArray(districts) ? districts : []).map((d) => <option key={d} value={d}>{d}</option>)}
+                    {(Array.isArray(districts) ? districts : []).map((d) => (
+                        <option key={d} value={d}>{d}</option>
+                    ))}
                 </select>
             </div>
 
@@ -127,9 +152,7 @@ export default function AddressSelector({
                 )}
             </div>
 
-            {showCoords && (
-                <div className="vp-meta">좌표: {lat ?? "-"}, {lng ?? "-"}</div>
-            )}
+            {showCoords && <div className="vp-meta">좌표: {lat ?? "-"}, {lng ?? "-"}</div>}
         </div>
     );
 }
