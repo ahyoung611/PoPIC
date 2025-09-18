@@ -1,10 +1,3 @@
-/* 리스트 컨테이너 */
-.vendor-list{
-    display:flex;
-    flex-direction:column;
-}
-
-/* 행(카드 느낌 제거, 구분선만) */
 .popup-card{
     position:relative;
     display:flex;
@@ -15,12 +8,12 @@
     border-radius:0;
     background:transparent;
     box-shadow:none;
-    border-bottom:1px solid var(--border-color); /* 행 구분선 */
+    border-bottom:1px solid var(--border-color);
 }
 
 .popup-thumb{
     width:150px;
-    height: 150px;
+    height: 180px;
     overflow:hidden;
     background: var(--bg-color);
 }
@@ -41,17 +34,28 @@
     flex:1 1 auto;
     margin:0;
     color:var(--black-color);
-    font-weight:800;
+    font-weight:600;
     font-size: var(--font-title);
     line-height:1.2;
     overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
 }
 
-.popup-meta{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.popup-meta{ display:flex; gap:10px; flex-direction: column }
 .popup-meta .date{
-    color:var(--gray-color);
+    color:var(--black-color);
+    font-weight:400;
+    font-size:var(--font-small);
+}
+
+.chips{ display:inline-flex; gap:8px; flex-wrap:wrap; margin-top: 10px;}
+.chip{
+    padding:5px 10px;
+    border:1px solid var(--border-color);
+    background:var(--white-color);
+    color:var(--black-color);
+    border-radius:999px;
+    font-size:var(--font-caption);
     font-weight:500;
-    font-size:var(--font-size-base);
 }
 
 .status-badge{
@@ -60,6 +64,7 @@
     font-size:12px;
     font-weight:800;
     padding:8px 12px;
+    border-radius:999px;
     line-height:1; white-space:nowrap;
 }
 .status--approved { background:#E7F0FF; color:#2B6FF3; }
@@ -71,16 +76,16 @@
 .popup-actions{
     position:absolute;
     right:0; bottom:22px;
-    display:flex; align-items:center; gap:22px;
+    display:flex; align-items:center;
 }
 .popup-actions .btn.btn--ghost{
     padding:0;
     font-weight:500;
-    font-size:16px;
-    color:#6B7280;
+    font-size:var(--font-caption);
+    color:var(--black-color);
+    width: 70px;
 }
-.popup-actions .btn.btn--ghost:hover{ color:#111; }
-/* 고스트 버튼에 화살표 자동 부착 */
+
 .popup-actions .btn.btn--ghost::after{
     content:" \2192";
     display:inline-block;
