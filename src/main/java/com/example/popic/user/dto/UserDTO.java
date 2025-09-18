@@ -37,4 +37,5 @@ public class UserDTO {
         this.phone_number = user.getPhone_number();
         this.user_id = user.getUser_id();
     }
+
 }

@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import "../style/join.css";
 import eye from "../../public/eye.png"
 import nonEye from "../../public/nonEye.png"
@@ -7,7 +8,10 @@ import apiRequest from "../utils/apiRequest.js" // ← 헬퍼 경로 맞게 수�
 import $ from "jquery"
 
 const Join = () => {
-    const [role, setRole] = useState("USER");
+    const [params] = useSearchParams();
+    const init = params.get("role") === "VENDOR" ? "VENDOR" : "USER";
+    const [role, setRole] = useState(init);
+    // const [role, setRole] = useState("USER");
     const [showPw, setShowPw] = useState(false);
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({
@@ -26,13 +30,23 @@ const Join = () => {
     const [brnVerified, setBrnVerified] = useState(false);
     const brnRef = useRef(null); // 인풋 DOM 참조
 
+
+    // 비밀번호 패턴
+    const PASSWORD_PATTERN = String.raw`^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+=-])[A-Za-z\d!@#$%^&*()_+=-]{8,}$`;
+    // 핸드폰 패턴
+    const PHONE_PATTERN = String.raw`^(?:01[0-9]-?\d{3,4}-?\d{4}|01[0-9]\d{7,8})$`;
+    // 사업자등록번호 패턴
+    const BRN_PATTERN = String.raw`^\d{3}-?\d{2}-?\d{5}$`;
+
+    0
     const businessNumberCheck = () => {
         const input = brnRef.current;                // 인풋 DOM
-        const clean = (form.brn || "").replace(/-/g, "");
+        // const clean = (form.brn || "").replace(/-/g, "");
+        const clean = (form.brn || "").replace(/\D/g, "");
 
         if (clean.length !== 10) {
             input.setCustomValidity("사업자등록번호 10자리를 입력해주세요.");
-            input.reportValidity(); // 브라우저 기본 에러 UI 표시
+            input.reportValidity();
             return;
         }
 
@@ -47,7 +61,6 @@ const Join = () => {
             contentType: "application/json",
             success: function (result) {
                 const item = result?.data?.[0];
-                console.log("ODcloud item:", item);
 
                 if (!item) {
                     input.setCustomValidity("인증 결과를 확인할 수 없습니다.");
@@ -60,7 +73,6 @@ const Join = () => {
                     (item.tax_type.includes("부가가치세") || item.tax_type === "부가가치세");
 
                 if (ok) {
-                    // 성공이면 setCustomValidity("")로 에러 해제!
                     input.setCustomValidity("");
                     setBrnVerified(true);
                 } else {
@@ -81,10 +93,22 @@ const Join = () => {
         setShowPw((prevState) => !prevState);
     }
 
+    // const onChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setForm((f) => ({ ...f, [name]: value }));
+    // };
+
+    /* 비밀번호 공백 제거 */
     const onChange = (e) => {
         const { name, value } = e.target;
-        setForm((f) => ({ ...f, [name]: value }));
+        setForm((f) => ({
+            ...f,
+            [name]: name === "password" ? value.replace(/\s/g, "") : value,
+        }));
     };
+
+
+
 
     /* 진입 role 확인 */
     const onSubmit = async (e) => {
@@ -162,7 +186,7 @@ const Join = () => {
                             className="join-input"
                             type={showPw ? "text" : "password"}
                             name="password"
-                            pattern="^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$"
+                            pattern={PASSWORD_PATTERN}
                             placeholder="비밀번호"
                             title="비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다."
                             value={form.password}
@@ -189,7 +213,7 @@ const Join = () => {
                         <input
                             className="join-input"
                             name="phone_number"
-                            pattern="^(01[0-9]-?\\d{4}-?\\d{4})$"
+                            pattern={PHONE_PATTERN}
                             placeholder="핸드폰번호"
                             title="휴대폰(예: 010-1234-5678 또는 01012345678) 형식으로 입력하세요"
                             value={form.phone_number}
@@ -251,7 +275,7 @@ const Join = () => {
                                     ref={brnRef}
                                     name="brn"
                                     maxLength="12"
-                                    pattern="^\\d{3}-?\\d{2}-?\\d{5}$"
+                                    pattern={BRN_PATTERN}
                                     placeholder="사업자 등록번호"
                                     title="사업자등록번호 형식에 맞게 입력하세요 (예: 123-45-67890 또는 1234567890) 형식으로 입력하세요"
                                     value={form.brn}
@@ -276,31 +300,32 @@ const Join = () => {
 
                 </form>
 
+                {/* login → join 으로 role 전송*/}
                 {/* 역할 토글 */}
-                <footer className="join-footer">
-                    <div className="join-role">
-                        <label className={`join-role-chip ${role === "USER" ? "is-active" : ""}`}>
-                            <input
-                                type="radio"
-                                name="role"
-                                value="USER"
-                                checked={role === "USER"}
-                                onChange={(e) => setRole(e.target.value)}
-                            />
-                            일반 사용자
-                        </label>
-                        <label className={`join-role-chip ${role === "VENDOR" ? "is-active" : ""}`}>
-                            <input
-                                type="radio"
-                                name="role"
-                                value="VENDOR"
-                                checked={role === "VENDOR"}
-                                onChange={(e) => setRole(e.target.value)}
-                            />
-                            벤더
-                        </label>
-                    </div>
-                </footer>
+                {/*<footer className="join-footer">*/}
+                {/*    <div className="join-role">*/}
+                {/*        <label className={`join-role-chip ${role === "USER" ? "is-active" : ""}`}>*/}
+                {/*            <input*/}
+                {/*                type="radio"*/}
+                {/*                name="role"*/}
+                {/*                value="USER"*/}
+                {/*                checked={role === "USER"}*/}
+                {/*                onChange={(e) => setRole(e.target.value)}*/}
+                {/*            />*/}
+                {/*            일반 사용자*/}
+                {/*        </label>*/}
+                {/*        <label className={`join-role-chip ${role === "VENDOR" ? "is-active" : ""}`}>*/}
+                {/*            <input*/}
+                {/*                type="radio"*/}
+                {/*                name="role"*/}
+                {/*                value="VENDOR"*/}
+                {/*                checked={role === "VENDOR"}*/}
+                {/*                onChange={(e) => setRole(e.target.value)}*/}
+                {/*            />*/}
+                {/*            벤더*/}
+                {/*        </label>*/}
+                {/*    </div>*/}
+                {/*</footer>*/}
             </section>
         </main>
     );

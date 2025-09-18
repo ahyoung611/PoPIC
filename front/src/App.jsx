@@ -11,6 +11,7 @@ import PopupDetail from "./pages/PopupDetail.jsx";
 import BoardList from "./pages/user/BoardList.jsx";
 import Join from "./pages/Join.jsx";
 import BoardEditor from "./pages/user/BoardEditor.jsx";
+import Login from "./pages/Login.jsx";
 import VendorPopupForm from "./pages/vendor/VendorPopupForm.jsx";
 
 
@@ -69,8 +70,9 @@ function App() {
         <Routes>
             <Route element={<FooterLayout/>}>
 
-                {/* 회원가입(header 필요없음) */}
+                {/* 회원가입 & 로그인(header 필요없음) */}
                 <Route path={"/join"} element={<Join/>}></Route>
+                <Route path={"/login"} element={<Login/>}></Route>
 
                 {/*일반 유저 Layout */}
                 <Route element={<UserHeaderLayout/>}>
