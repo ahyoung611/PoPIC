@@ -5,9 +5,19 @@ import AddressSelector from "./AddressSelector.jsx"; // 좌표 확인 알림 포
 import "../../style/vendorPopup.css";
 import Button from "../../components/commons/Button.jsx";
 
-const KAKAO_APP_KEY = import.meta.env.VITE_KAKAO_APP_KEY;
+console.log("VendorPopupForm mounted", {
+    KAKAO_JS_API_KEY: import.meta.env.VITE_KAKAO_JS_API_KEY
+});
+
+const KAKAO_JS_API_KEY = import.meta.env.VITE_KAKAO_JS_API_KEY;
 const CATEGORY_API = "/api/vendorPopups/categories";
-const DAYS = ["월", "화", "수", "목", "금", "토", "일"];
+const DAY_TO_ENUM = {
+    "월":"MONDAY","화":"TUESDAY","수":"WEDNESDAY",
+    "목":"THURSDAY","금":"FRIDAY","토":"SATURDAY","일":"SUNDAY"
+};
+
+// 렌더링용
+const DAYS = Object.entries(DAY_TO_ENUM).map(([label, value]) => ({ label, value }));
 
 export default function VendorPopupForm() {
     const navigate = useNavigate();
@@ -39,9 +49,8 @@ export default function VendorPopupForm() {
     const [categorySelect, setCategorySelect] = useState(0);
     const [openDays, setOpenDays] = useState(new Set());
     const [startTime, setStartTime] = useState("10:00");
-    const [endTime, setEndTime] = useState("07:00");
+    const [endTime, setEndTime] = useState("19:00");
     const [capacityPerHour, setCapacityPerHour] = useState("");
-
     const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
     // 카테고리 로딩
@@ -91,6 +100,11 @@ export default function VendorPopupForm() {
 
     // 컴포넌트 내부에서 직접 저장 + 이동
     const postPopup = async ({ dto, files }) => {
+        // 유효성 간단 체크
+        if (openDays.size === 0) { alert("운영 요일을 선택해 주세요."); return; }
+        if (!startTime || !endTime || startTime >= endTime) { alert("운영 시간을 확인하세요."); return; }
+        if (!capacityPerHour || Number(capacityPerHour) <= 0) { alert("시간당 인원을 입력해 주세요."); return; }
+
         const clean = {
             ...dto,
             start_date: dto.start_date || null,
@@ -98,6 +112,13 @@ export default function VendorPopupForm() {
             price: dto.price === "" ? null : Number(dto.price),
             latitude: dto.latitude ?? null,
             longitude: dto.longitude ?? null,
+
+            // 등록용 스케줄 생성 정보
+            open_days: Array.from(openDays), // ["MONDAY",...]
+            open_start_time: startTime,                        // "10:00"
+            open_end_time: endTime,                            // "19:00"
+            slot_minutes: 60,                                  // 한 슬롯 60분
+            capacity_per_hour: Number(capacityPerHour),
         };
 
         const fd = new FormData();
@@ -110,32 +131,38 @@ export default function VendorPopupForm() {
             alert(`등록 실패: ${json.message || res.status}`);
             return;
         }
-        // 성공 → 목록으로
         navigate("/vendorPopups");
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
         if (!form.store_name.trim()) return alert("팝업명을 입력해 주세요.");
         if (!form.start_date || !form.end_date) return alert("운영 기간을 입력해 주세요.");
         if (!form.address) return alert("시/구를 선택해 주세요.");
         if (!form.address_detail.trim()) return alert("상세 주소를 입력해 주세요.");
         if (form.latitude == null || form.longitude == null) return alert("좌표를 먼저 받아 주세요.");
-        // 가격 숫자 유효성(비어있으면 통과)
         if (form.price !== "" && Number.isNaN(Number(form.price))) {
             return alert("가격은 숫자만 입력해 주세요.");
         }
+        if (openDays.size === 0) return alert("운영 요일을 선택해 주세요.");
+        if (!startTime || !endTime || startTime >= endTime) return alert("운영 시간을 확인하세요.");
+        if (!capacityPerHour || Number(capacityPerHour) <= 0) return alert("시간당 인원을 입력해 주세요.");
 
         const dto = {
             ...form,
             categories: categorySelect === 0 ? [] : [categorySelect],
-            // TODO(확실하지 않음): schedules/openDays/startTime/endTime/capacityPerHour 매핑은 서버 규칙 확정 후 연결
+
+            // 여기서만 스케줄 관련 필드 생성
+            open_days: Array.from(openDays),              // ["MONDAY", "TUESDAY", ...]
+            open_start_time: startTime,                     // "10:00"
+            open_end_time: endTime,                         // "19:00"
+            capacity_per_hour: Number(capacityPerHour),     // 숫자화
+            slot_minutes: 60,                               // 필요하면 상태로 빼서 조절
         };
 
-        // 내부 postPopup 호출
         postPopup({ dto, files: imageFiles });
     };
-
     return (
         <div className="container">
             <div className="inner">
@@ -224,7 +251,7 @@ export default function VendorPopupForm() {
                     <div className="vp-field">
                         <label className="vp-label">장소</label>
                         <AddressSelector
-                            kakaoAppKey={KAKAO_APP_KEY}
+                            kakaoAppKey={KAKAO_JS_API_KEY}
                             value={{
                                 city: "",
                                 district: "",
@@ -244,13 +271,20 @@ export default function VendorPopupForm() {
                         <div className="vp-days">
                             {DAYS.map((d) => (
                                 <Button
-                                    key={d}
+                                    key={d.value}
                                     variant="filter"
                                     color="red"
-                                    selected={openDays.has(d)}
-                                    onClick={(e) => { e.preventDefault(); toggleDay(d); }}
+                                    selected={openDays.has(d.value)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setOpenDays(prev => {
+                                            const s = new Set(prev);
+                                            s.has(d.value) ? s.delete(d.value) : s.add(d.value);
+                                            return s;
+                                        });
+                                    }}
                                 >
-                                    {d}
+                                    {d.label}
                                 </Button>
                             ))}
                         </div>

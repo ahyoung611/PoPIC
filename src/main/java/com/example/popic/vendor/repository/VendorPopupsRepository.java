@@ -1,9 +1,6 @@
 package com.example.popic.vendor.repository;
 
-import com.example.popic.entity.entities.Address;
-import com.example.popic.entity.entities.Image;
-import com.example.popic.entity.entities.PopupStore;
-import com.example.popic.entity.entities.Vendor;
+import com.example.popic.entity.entities.*;
 import com.example.popic.vendor.service.VendorPopupsService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -30,20 +27,20 @@ public class VendorPopupsRepository {
         ).getResultList();
     }
 
+    // 도시 목록
     public List<String> findDistinctCities() {
-        @SuppressWarnings("unchecked")
-        List<String> rows = em.createNativeQuery(
-                "SELECT DISTINCT city FROM address ORDER BY city"
+        return em.createQuery(
+                "select distinct a.city from Address a order by a.city", String.class
         ).getResultList();
-        return rows;
     }
 
+    // 특정 도시의 구 목록
     public List<String> findDistrictsByCity(String city) {
-        @SuppressWarnings("unchecked")
-        List<String> rows = em.createNativeQuery(
-                "SELECT DISTINCT district FROM address WHERE city = :city ORDER BY district"
-        ).setParameter("city", city).getResultList();
-        return rows;
+        return em.createQuery(
+                        "select distinct a.district from Address a " +
+                                "where a.city = :city order by a.district", String.class
+                ).setParameter("city", city)
+                .getResultList();
     }
 
     public List<VendorPopupsService.CatRow> findAllCategories() {
@@ -62,6 +59,21 @@ public class VendorPopupsRepository {
                 .setParameter("city", city)
                 .setParameter("district", district)
                 .getResultStream().findFirst();
+    }
+
+    public void saveSchedules(List<PopupStoreSchedule> schedules) {
+        for (PopupStoreSchedule s : schedules) em.persist(s);
+    }
+
+    public void saveSlots(List<PopupStoreSlot> slots) {
+        for (PopupStoreSlot slot : slots) em.persist(slot);
+    }
+
+    public List<Category> findCategoriesByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return List.of();
+        return em.createQuery("select c from Category c where c.category_id in :ids", Category.class)
+                .setParameter("ids", ids)
+                .getResultList();
     }
 
     public void saveStore(PopupStore store) { em.persist(store); }
