@@ -2,13 +2,11 @@ package com.example.popic.user.dto;
 
 import com.example.popic.entity.entities.ROLE;
 import com.example.popic.entity.entities.User;
-import com.example.popic.entity.entities.UserProfile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+
 
 import java.time.LocalDateTime;
 
