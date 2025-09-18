@@ -36,6 +36,7 @@ public class PopupDTO {
     private LocalDateTime delete_date;
     private int status = 2; //2: 승인 대기, 1: 운영 시작 전 (승인 완료), 2: 운영 중, -1: 운영 종료, 0: 정지
 
+
     public PopupDTO(PopupStore entity) {
         this.store_id = entity.getStore_id();
         this.store_name = entity.getStore_name();
