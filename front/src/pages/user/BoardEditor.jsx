@@ -109,11 +109,14 @@ export default function BoardPage() {
                 {meta && mode !== "create" && (
                     <div className="be-meta">
                         <span>{meta.writerName}</span>
-                        <span>작성: {meta.createdAt?.slice(0, 10)}</span>
-                        {meta.updatedAt && <span>수정: {meta.updatedAt?.slice(0, 10)}</span>}
-                        <span>조회 {meta.viewCount}</span>
+                        <span className="be-right">
+      <span>작성: {meta.createdAt?.slice(0, 10)}</span>
+                            {meta.updatedAt && <span>수정: {meta.updatedAt.slice(0, 10)}</span>}
+                            <span>조회 {meta.viewCount}</span>
+    </span>
                     </div>
                 )}
+
 
                 <form onSubmit={onSubmit} className="be-form">
                     <label className="be-label" htmlFor="title">제목</label>
@@ -126,23 +129,34 @@ export default function BoardPage() {
                             {(attachments ?? []).length === 0 ? (
                                 <div className="be-empty">첨부 이미지가 없습니다.</div>
                             ) : (
-                                <div className="be-thumbs">
-                                    {attachments.map((f, i) => (
-                                        <img
-                                            key={i}
-                                            src={`${API}/board/file/${f.savedName}`}
-                                            alt={f.originalName ?? "image"}
-                                            style={{ maxWidth: "200px" }}
-                                        />
-
-                                    ))}
-                                </div>
+                                <>
+                                    <img
+                                        className="be-mainimg"
+                                        src={`${API}/board/file/${attachments[0].savedName}`}
+                                        alt={attachments[0].originalName ?? "image"}
+                                    />
+                                    {attachments.length > 1 && (
+                                        <div className="be-thumbs">
+                                            {attachments.slice(1).map((f, i) => (
+                                                <img
+                                                    key={i}
+                                                    src={`${API}/board/file/${f.savedName}`}
+                                                    alt={f.originalName ?? `image-${i+2}`}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
                     ) : (
-                        <FileUpload value={attachments} onChange={setAttachments}
-                                    accept="image/*" multiple
-                                    onUploadingChange={setUploading}/>
+                        <FileUpload
+                            value={attachments}
+                            onChange={setAttachments}
+                            accept="image/*"
+                            multiple
+                            onUploadingChange={setUploading}
+                        />
                     )}
 
                     <label className="be-label" htmlFor="content">내용</label>
@@ -159,7 +173,7 @@ export default function BoardPage() {
                                         onClick={async () => {
                                             if (window.confirm("정말 삭제하시겠습니까?")) {
                                                 try {
-                                                    await fetch(`${API}/board/${numericId}`, { method: "DELETE" });
+                                                    await fetch(`${API}/board/${numericId}`, {method: "DELETE"});
                                                     alert("삭제되었습니다.");
                                                     nav("/board");
                                                 } catch (e) {
@@ -192,7 +206,9 @@ export default function BoardPage() {
                 </form>
             </div>
             {mode !== "create" && numericId && (
-                <BoardComment boardId={numericId}/>
+                <div className="be-card" style={{marginTop: 16, position: 'relative', zIndex: 2}}>
+                    <BoardComment boardId={numericId}/>
+                </div>
             )}
         </div>
     );

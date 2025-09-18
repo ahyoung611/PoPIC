@@ -3,7 +3,7 @@ import {useEffect, useState, useRef} from "react";
 const host = window.location.hostname || "localhost";
 const API = import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`;
 
-export default function CommentsSection({boardId}) {
+function BoardComment({boardId}) {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [posting, setPosting] = useState(false);
@@ -37,37 +37,17 @@ export default function CommentsSection({boardId}) {
 
         setPosting(true);
         try {
-            // 낙관적 추가
-            const tempId = `temp-${Date.now()}`;
-            const optimistic = {
-                id: tempId,
-                authorName: "user1", // 서버에서 넣어주는 값(로그인 연동 시 제거)
-                content,
-                createdAt: new Date().toISOString(),
-                _optimistic: true,
-            };
-            setItems((prev) => [optimistic, ...prev]);
-            setValue("");
-
             const res = await fetch(`${API}/board/${boardId}/comments`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({content}),
+                body: JSON.stringify({ content }),
             });
-
             if (!res.ok) throw new Error("등록 실패");
-            const saved = await res.json(); // {id, authorName, content, createdAt}
-            // temp 치환
-            setItems((prev) =>
-                prev.map((it) => (it.id === tempId ? saved : it))
-            );
-            inputRef.current?.focus();
+            setValue("");
+            await fetchComments();
         } catch (e) {
             console.error(e);
             alert(e.message || "댓글 등록 실패");
-            // 낙관적 롤백
-            setItems((prev) => prev.filter((it) => !it._optimistic));
-            setValue(content);
         } finally {
             setPosting(false);
         }
@@ -76,12 +56,13 @@ export default function CommentsSection({boardId}) {
     const onDelete = async (commentId) => {
         if (!window.confirm("이 댓글을 삭제할까요?")) return;
         const backup = items;
-        setItems((prev) => prev.filter((c) => c.id !== commentId));
+        setItems((prev) => prev.filter((c) => c.commentId !== commentId));
         try {
             const res = await fetch(`${API}/board/${boardId}/comments/${commentId}`, {
                 method: "DELETE",
             });
             if (!res.ok) throw new Error("삭제 실패");
+            fetchComments();
         } catch (e) {
             console.error(e);
             alert("삭제에 실패했습니다.");
@@ -117,19 +98,18 @@ export default function CommentsSection({boardId}) {
             ) : (
                 <ul className="be-comment-list">
                     {items.map((c) => (
-                        <li key={c.id} className="be-comment-item">
+                        <li key={c.commentId} className="be-comment-item">
                             <div className="be-comment-meta">
-                                <span className="be-comment-author">{c.authorName}</span>
+                                <span className="be-comment-author">{c.writerName}</span>
                                 <span className="be-comment-date">
                   {String(c.createdAt ?? "").slice(0, 10)}
                 </span>
                             </div>
                             <div className="be-comment-content">{c.content}</div>
-                            {/* 본인 댓글일 때만 삭제 노출하도록 실제 로그인 연동 시 조건 처리 */}
                             <button
                                 type="button"
                                 className="be-btn be-btn-ghost be-comment-delete"
-                                onClick={() => onDelete(c.id)}
+                                onClick={() => onDelete(c.commentId)}
                                 title="삭제"
                             >
                                 삭제
@@ -141,3 +121,5 @@ export default function CommentsSection({boardId}) {
         </div>
     );
 }
+
+export default BoardComment;
