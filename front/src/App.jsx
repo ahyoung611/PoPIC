@@ -12,6 +12,7 @@ import BoardList from "./pages/user/BoardList.jsx";
 import Join from "./pages/Join.jsx";
 import BoardEditor from "./pages/user/BoardEditor.jsx";
 import BoardDetail from "./pages/user/BoardDetail.jsx";
+import VendorPopupForm from "./pages/vendor/VendorPopupForm.jsx";
 
 
 function App() {
@@ -33,8 +34,8 @@ function App() {
         return (
             <>
                 <VendorHeader>
-                    <Route path="/vendor" element={<VendorMain/>}/>
-                    <Route path="/vendor/popups" element={<VendorMain/>}/>
+                    <Route path="/vendorPopups" element={<VendorMain/>}/>
+                    <Route path="/vendorPopups/new" element={<VendorMain/>}/>
                     <Route path="/vendor/popups/edit" element={<VendorMain/>}/>
                     <Route path="/vendor/reservations" element={<VendorMain/>}/>
                     <Route path="/vendor/onsite" element={<VendorMain/>}/>
@@ -85,9 +86,9 @@ function App() {
 
                 {/*벤더 유저 Layout */}
                 <Route element={<VendorHeaderLayout/>}>
-                    <Route path="/vendorPopups" element={<VendorMain/>}>
-
-                    </Route>
+                    <Route path="/vendorPopups" element={<VendorMain/>}></Route>
+                    <Route path="/vendorPopups/new" element={<VendorPopupForm/>}></Route>
+                    {/*<Route path="/vendorPopups/:id/edit" element={<VendorPopupEdit/>}></Route>*/}
                 </Route>
 
                 {/*어드민 Layout */}
