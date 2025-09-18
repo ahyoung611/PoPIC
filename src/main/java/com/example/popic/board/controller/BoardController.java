@@ -92,6 +92,7 @@ public class BoardController {
 
     @GetMapping(value = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BoardDTO> findByBoardId(@PathVariable Long id) {
+        boardService.increaseView(id);
         return ResponseEntity.ok(boardService.findByBoardId(id));
     }
 

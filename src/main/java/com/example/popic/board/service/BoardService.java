@@ -122,4 +122,9 @@ public class BoardService {
 
         boardRepository.delete(board);
     }
+
+    @Transactional
+    public void increaseView(Long boardId) {
+        boardRepository.increaseView(boardId);
+    }
 }
