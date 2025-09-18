@@ -1,0 +1,143 @@
+.vp-card {
+    background: var(--white-color);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 36px 28px;
+}
+
+.vp-title {
+    font-size: 32px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 28px;
+    color: var(--black-color);
+}
+
+.vp-field { margin-bottom: 22px; }
+
+.vp-label {
+    display: block;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--black-color);
+    margin-bottom: 12px;
+}
+.vp-label.required::after {
+    content: " *";
+    color: var(--main-color);
+}
+
+.vp-input,
+.vp-select {
+    width: 100%;
+    height: 54px;
+    padding: 0 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    background: #fff;
+}
+.vp-input:focus,
+.vp-select:focus,
+.vp-textarea:focus {
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 3px rgba(255, 81, 72, 0.12);
+}
+
+.vp-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 16px;
+    resize: vertical;
+    min-height: 220px;
+    outline: none;
+    background: #fff;
+}
+
+.vp-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.vp-days {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.vp-time-row {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 16px;
+    align-items: center;
+}
+.vp-tilde {
+    display: inline-block;
+    text-align: center;
+    font-weight: 700;
+    color: var(--black-color);
+}
+
+.vp-meta {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.vp-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+/* 파일박스 */
+.vp-filebox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #8e8e8e;
+}
+.vp-filebox input[type="file"] {
+    display: none;
+}
+.vp-file-list {
+    margin-top: 8px;
+    padding-left: 12px;
+    color: #666;
+    font-size: 14px;
+}
+.vp-file-list li {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 주소 상세 + 좌표받기 링크 */
+.vp-addr .vp-addr-detail {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+.vp-link {
+    height: 54px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: #fff;
+    cursor: pointer;
+    font-weight: 700;
+}
+.vp-link:hover { background: var(--bg-color); }
+
+/* 반응형 */
+@media (max-width: 600px) {
+    .vp-grid-2 { grid-template-columns: 1fr; }
+    .vp-time-row { grid-template-columns: 1fr 30px 1fr; }
+}

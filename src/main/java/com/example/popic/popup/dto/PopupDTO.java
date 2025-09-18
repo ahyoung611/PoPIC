@@ -36,6 +36,13 @@ public class PopupDTO {
     private LocalDateTime delete_date;
     private int status = 2; //2: 승인 대기, 1: 운영 시작 전 (승인 완료), 2: 운영 중, -1: 운영 종료, 0: 정지
 
+    // young
+    private List<String> open_days;        // ["MONDAY","WEDNESDAY", ...]  (엔티티 enum 이름과 동일)
+    private String open_start_time;        // "10:00"
+    private String open_end_time;          // "19:00"
+    private Integer slot_minutes = 60;     // 슬롯 분단위(기본 60분)
+    private Integer capacity_per_hour;     // 시간당 정원
+
     public PopupDTO(PopupStore entity) {
         this.store_id = entity.getStore_id();
         this.store_name = entity.getStore_name();

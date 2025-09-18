@@ -10,26 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-record PostCreateRequest(String title, String content) {
-}
-
-record PostResponse(Long id, String title, String content) {
-}
 
 @RestController
 @RequestMapping("/board")
@@ -102,6 +92,7 @@ public class BoardController {
 
     @GetMapping(value = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BoardDTO> findByBoardId(@PathVariable Long id) {
+        boardService.increaseView(id);
         return ResponseEntity.ok(boardService.findByBoardId(id));
     }
 

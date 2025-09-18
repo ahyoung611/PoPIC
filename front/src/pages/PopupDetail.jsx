@@ -6,11 +6,17 @@ import '../style/popupDetail.css';
 import PopupReservation from "../components/popupdetail/PopupReservation.jsx";
 import PopupReview from "../components/popupdetail/PopupReview.jsx";
 import PopupTabInfo from "../components/popupdetail/PopupTabInfo.jsx";
+import PopupInquiry from "../components/popupdetail/PopupInquiry.jsx";
+import Button from "../components/commons/Button.jsx";
+import QrCode from "../components/qr/QrCode.jsx";
 
 const PopupDetail = ()=>{
     const [popupDetail, setPopupDetail] = useState(null);
     const [activeTab, setActiveTab] = useState("예약"); // 기본 탭
     const [tabs, setTabs] = useState(["예약","팝업 정보","리뷰","문의"]);
+
+    // qr 테스트
+    const [showQr, setShowQr] = useState(false);
 
     useEffect(()=>{
         const fetchPopupDetail = async () => {
@@ -35,11 +41,11 @@ const PopupDetail = ()=>{
 
                     <div className={"menu-tab"}>
                         {tabs.map((tab)=>(
-                            <button
+                            <Button
                                 key={tab}
                                 className={activeTab === tab ? "tab active" : "tab"}
                                 onClick={() => setActiveTab(tab)}
-                            >{tab}</button>
+                            >{tab}</Button>
                         ))}
                     </div>
 
@@ -57,6 +63,14 @@ const PopupDetail = ()=>{
 
                     {activeTab === "문의" && (
                         <PopupInquiry popup={popupDetail}></PopupInquiry>
+                    )}
+                    <button
+                        onClick={()=>{setShowQr(true)}}
+                    >
+                        QR 코드 생성
+                    </button>
+                    {showQr ? (<QrCode/>) : (
+                        <></>
                     )}
 
                 </>

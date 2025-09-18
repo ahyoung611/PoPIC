@@ -1,8 +1,8 @@
-// src/pages/board/BoardListView.jsx
 import {useEffect, useState} from "react";
 import BoardListItem from "../../components/board/BoardListItem.jsx";
 import Select from "../../components/commons/Select.jsx";
-import "../../style/board.css"; // ← 페이지 전용 CSS
+import "../../style/board.css";
+import "../../style/button.css"
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const API  = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;

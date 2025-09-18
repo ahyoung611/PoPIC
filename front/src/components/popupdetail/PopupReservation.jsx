@@ -1,10 +1,12 @@
 import {useState} from "react";
+import ConfirmModal from "../commons/ConfirmModal.jsx";
+
 
 const PopupReservation = (props)=>{
     const [reservationNumber, setReservationNumber] = useState(1);
 
     function reservationSubmit(){
-        console.log("reservationSubmit");
+        console.log(reservationNumber);
     }
 
     return (

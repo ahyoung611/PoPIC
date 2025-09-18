@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Review {
 
     @Id
@@ -33,7 +34,6 @@ public class Review {
 
     @Column(nullable = false, length = 1000)
     private String content;
-
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
