@@ -1,7 +1,9 @@
 package com.example.popic.user.controller;
 
 import com.example.popic.entity.entities.User;
+import com.example.popic.user.dto.UserDTO;
 import com.example.popic.user.repository.UserRepository;
+import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.user.service.UserService;
 import com.example.popic.vendor.service.VendorService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
-    private final UserRepository userRepository;
+    private final AccountUserVendorService accountUserVendorService;
 
     @PostMapping("/join")
     public ResponseEntity<ApiRes> join(@RequestBody User user) {
@@ -34,9 +36,39 @@ public class UserController {
 
     }
 
-    public record ApiRes(boolean result, String message, Long id) {
-        public static ApiRes ok(Long id){ return new ApiRes(true, "가입 성공", id); }
-        public static ApiRes fail(String m){ return new ApiRes(false, m, null); }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiRes> login(@RequestBody User req) { // 요청은 엔티티(User)
+        try {
+            if (req.getLogin_id() == null || req.getPassword() == null) {
+                return ResponseEntity.ok(ApiRes.fail("요청 형식이 올바르지 않습니다."));
+            }
+
+            User u = accountUserVendorService.authenticateUser(req.getLogin_id(), req.getPassword());
+
+            UserDTO dto = new UserDTO(u);
+            dto.setRole(u.getRole());
+            dto.setStatus(u.getStatus());
+            if (u.getUser_profile() != null) {
+                dto.setUser_profile(u.getUser_profile().getProfile_id());
+            }
+            dto.setPassword(null);
+
+            // ★ 토큰 즉석 발급 (별도 서비스 없이)
+            String token = "U-" + u.getUser_id() + "-" + java.util.UUID.randomUUID();
+
+            return ResponseEntity.ok(ApiRes.okLogin("로그인 성공", token, dto));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.ok(ApiRes.fail(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.ok(ApiRes.fail("로그인 처리 중 오류가 발생했습니다."));
+        }
+    }
+
+    public record ApiRes(boolean result, String message, Long id, String token, Object user) {
+        public static ApiRes ok(Long id){ return new ApiRes(true, "가입 성공", id, null, null); }
+        public static ApiRes okLogin(String m, String token, Object user){ return new ApiRes(true, m, null, token, user); }
+        public static ApiRes fail(String m){ return new ApiRes(false, m, null, null, null); }
     }
 
 }

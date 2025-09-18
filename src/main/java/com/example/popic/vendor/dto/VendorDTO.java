@@ -40,4 +40,5 @@ public class VendorDTO {
         this.brn = vendor.getBrn();
         this.join_date = vendor.getJoin_date();
     }
+
 }
