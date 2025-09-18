@@ -116,7 +116,7 @@ export default function AddressSelector({
             <div className="vp-addr-detail">
                 <input
                     className="vp-input"
-                    placeholder=""
+                    placeholder="상세주소를 입력해주세요."
                     value={detail}
                     onChange={(e) => setDetail(e.target.value)}
                 />
