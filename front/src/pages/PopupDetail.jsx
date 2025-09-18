@@ -6,6 +6,7 @@ import '../style/popupDetail.css';
 import PopupReservation from "../components/popupdetail/PopupReservation.jsx";
 import PopupReview from "../components/popupdetail/PopupReview.jsx";
 import PopupTabInfo from "../components/popupdetail/PopupTabInfo.jsx";
+import PopupInquiry from "../components/popupdetail/PopupInquiry.jsx";
 
 const PopupDetail = ()=>{
     const [popupDetail, setPopupDetail] = useState(null);
