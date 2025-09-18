@@ -19,7 +19,6 @@
     color: var(--black-color);
 }
 
-/* 상단 메타: 좌측 작성자 / 우측 날짜·조회 */
 .be-meta{
     display:flex; align-items:center; justify-content:space-between;
     gap: 12px; flex-wrap: wrap;
@@ -217,3 +216,21 @@
 .pagination__btn.is-active {
     background: var(--main-color); color: #fff; border-color: var(--main-color);
 }
+
+.be-link{
+    border:none; background:transparent; color:var(--gray-color); font-size:var(--font-small);
+    cursor:pointer; padding:0 6px 0 0;
+}
+.be-link:hover{ color: var(--black-color); }
+.be-link.danger{ color: var(--main-color); }
+
+.be-comment-list{ list-style:none; margin:0; padding:0; }
+.be-comment-item{ padding:14px 0; border-bottom:1px solid var(--border-color); }
+.be-comment-meta{ display:flex; gap:8px; align-items:center; color:var(--gray-color); font-size:var(--font-small); margin-bottom:6px; }
+.be-comment-content{ font-size:var(--font-size-base); margin-bottom:8px; }
+.be-comment-ops{ display:flex; gap:12px; margin-bottom:8px; }
+
+.be-reply-form{ border:1px solid var(--border-color); border-radius:12px; padding:12px; background: #fafafa; }
+.be-reply-actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+
+.be-comment-children{ margin-left:16px; padding-left:12px; border-left:2px solid #f0f0f0; }
