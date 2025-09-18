@@ -1,35 +1,35 @@
 import {useEffect, useRef, useState} from "react";
 import apiRequest from "../../utils/apiRequest.js";
 import Button from "../commons/Button.jsx";
+import ReviewModal from "./ReviewModal.jsx";
 
 const PopupReview = (props)=>{
     const [review, setReview] = useState([]);
     const [reviewReply, setReviewReply] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const keywordRef = useRef("");
     const [idx, setIdx] = useState(0);
 
-    useEffect(()=>{
-        const fetchReview = async () => {
-            const response = await apiRequest(`/popupStore/popupReview?popupId=` + props.popup.store_id , {
-                credentials: "include",
-            });
-            setReview(response);
-        }
+    const fetchReview = async () => {
+        const response = await apiRequest(`/popupStore/popupReview?popupId=` + props.popup.store_id , {
+            credentials: "include",
+        });
+        setReview(response);
+    }
 
+    useEffect(()=>{
+        fetchReview();
         const fetchReviewReply = async () => {
             const response = await apiRequest(`/popupStore/popupReviewReply?popupId=${props.popup.store_id}`, {
                 credentials: "include",
             });
             setReviewReply(response);
-            console.log(response);
         }
-        fetchReview();
         fetchReviewReply();
     },[])
 
     const reviewSearchHandler = ()=>{
         const keyword = keywordRef.current.value;
-
         const fetchSearchReview = async () => {
             const response = await apiRequest(`/popupStore/popupReview?popupId=` + props.popup.store_id + "&keyword=" + keyword , {
                 credentials: "include",
@@ -39,12 +39,22 @@ const PopupReview = (props)=>{
         fetchSearchReview();
     }
 
+
+
     return (
         <div className={"popupReview-container"}>
             <div className={"review-search"}>
                 <span>총 {review.length}개의 리뷰가 등록되었습니다.</span>
                 <input type="text" placeholder="리뷰 검색" ref={keywordRef} />
-                <Button onClick={reviewSearchHandler}>검색</Button>
+                <Button onClick={reviewSearchHandler}>검색</Button><br/>
+                <Button onClick={()=>{setIsModalOpen(true)}}>리뷰 작성하기</Button>
+
+                <ReviewModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    popupId={props.popup.store_id}
+                    onSubmitSuccess={fetchReview}
+                />
 
                 {review.map((item) => {
                     const replies = reviewReply.filter(
@@ -60,7 +70,7 @@ const PopupReview = (props)=>{
                             />
                             <h2 className="review-title">{item.title}</h2>
                             <p>{item.user.name}</p>
-                            <p>{item.create_date}</p>
+                            <p>{new Date(item.createdAt).toLocaleString()}</p>
                             <p>{item.content}</p>
 
                             {replies.length > 0 && (
