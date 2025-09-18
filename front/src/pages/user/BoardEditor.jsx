@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import FileUpload from "../../components/board/FileUpload.jsx";
 import "../../style/board.css";
@@ -10,12 +10,12 @@ const API = import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`
 // 숫자면 그 값, 아니면 null
 const toNumericId = (v) => (/^\d+$/.test(String(v)) ? Number(v) : null);
 
-export default function BoardPage() {
+export default function BoardEditor() {
     const {id} = useParams();
     const {pathname} = useLocation();
     const nav = useNavigate();
 
-    const numericId = toNumericId(id);              // 1, 2, ... 또는 null
+    const numericId = toNumericId(id);
     const isCreate = pathname.endsWith("/new");
     const isEdit = pathname.endsWith("/edit");
     const mode = isCreate ? "create" : isEdit ? "edit" : "view";
@@ -27,8 +27,9 @@ export default function BoardPage() {
     const [uploading, setUploading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [meta, setMeta] = useState(null);
+    const hasCountedRef = useRef(false);
 
-    // 상세/수정일 때만 로드(= 숫자 id가 있을 때만)
+    // 상세/수정일 때만 로드
     useEffect(() => {
         if (!numericId) return;
 
@@ -60,6 +61,23 @@ export default function BoardPage() {
             abort = true;
         };
     }, [numericId, nav]);
+
+    useEffect(() => {
+        if (mode !== "view" || !numericId) return;
+        if (hasCountedRef.current) return;
+        const key = `viewed-board-${numericId}`;
+        if (sessionStorage.getItem(key)) return;
+        sessionStorage.setItem(key, "1");
+        hasCountedRef.current = true;
+        (async () => {
+            try {
+                const res = await fetch(`${API}/board/${numericId}/views`, {method: "POST"});
+                if (!res.ok) return;
+                setMeta((prev) => prev ? {...prev, viewCount: (prev.viewCount ?? 0) + 1} : prev);
+            } catch (_) {
+            }
+        })();
+    }, [mode, numericId]);
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -110,10 +128,10 @@ export default function BoardPage() {
                     <div className="be-meta">
                         <span>{meta.writerName}</span>
                         <span className="be-right">
-      <span>작성: {meta.createdAt?.slice(0, 10)}</span>
+                            <span>작성: {meta.createdAt?.slice(0, 10)}</span>
                             {meta.updatedAt && <span>수정: {meta.updatedAt.slice(0, 10)}</span>}
                             <span>조회 {meta.viewCount}</span>
-    </span>
+                        </span>
                     </div>
                 )}
 
@@ -141,7 +159,7 @@ export default function BoardPage() {
                                                 <img
                                                     key={i}
                                                     src={`${API}/board/file/${f.savedName}`}
-                                                    alt={f.originalName ?? `image-${i+2}`}
+                                                    alt={f.originalName ?? `image-${i + 2}`}
                                                 />
                                             ))}
                                         </div>
@@ -205,7 +223,7 @@ export default function BoardPage() {
                     </div>
                 </form>
             </div>
-            {mode !== "create" && numericId && (
+            {mode === "view" && numericId && (
                 <div className="be-card" style={{marginTop: 16, position: 'relative', zIndex: 2}}>
                     <BoardComment boardId={numericId}/>
                 </div>

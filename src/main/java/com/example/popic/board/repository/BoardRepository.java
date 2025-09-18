@@ -41,4 +41,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
            or lower(b.content) like lower(concat('%', :kw, '%'))
         """)
     Page<Board> searchByTitleOrContent(@Param("kw") String keyword, Pageable pageable);
+
+    @Modifying
+    @Query("update Board b set b.view_count = coalesce(b.view_count, 0) + 1 where b.boardId = :id")
+    int increaseView(@Param("id") Long id);
 }

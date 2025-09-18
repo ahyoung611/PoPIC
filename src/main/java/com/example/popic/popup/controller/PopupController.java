@@ -1,16 +1,16 @@
 package com.example.popic.popup.controller;
 
-import com.example.popic.popup.dto.PopupDTO;
-import com.example.popic.popup.dto.PopupReviewDTO;
-import com.example.popic.popup.dto.PopupScheduleDTO;
-import com.example.popic.popup.dto.ReviewReplyDTO;
+import com.example.popic.entity.entities.Review;
+import com.example.popic.file.FileSave;
+import com.example.popic.image.dto.ReviewImageDTO;
+import com.example.popic.image.service.ReviewImageService;
+import com.example.popic.popup.dto.*;
+import com.example.popic.popup.service.PopupReviewService;
 import com.example.popic.popup.service.PopupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,6 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PopupController {
     private final PopupService popupService;
+    private final PopupReviewService popupReviewService;
+    private final ReviewImageService reviewImageService;
 
     @GetMapping("/popupDetail")
     private ResponseEntity<PopupDTO> popupDetail(@RequestParam(name="id") Long id){
@@ -39,6 +41,24 @@ public class PopupController {
 
         System.out.println("size: " + reviewList.size());
         return ResponseEntity.ok(reviewList);
+    }
+
+    @PostMapping("/popupReview")
+    private ResponseEntity<PopupReviewDTO> saveReview(@ModelAttribute PopupReviewDTO popupReviewDTO,
+                                                      @RequestParam(name = "file", required = false) MultipartFile file,
+                                                      @RequestParam(name = "type") String type){
+        String savedFileName = FileSave.FileSave(type,file);
+        Review review = popupReviewService.saveReview(popupReviewDTO);
+
+        ReviewImageDTO reviewImageDTO = new ReviewImageDTO();
+        reviewImageDTO.setReview(popupReviewDTO.getReview_id());
+        reviewImageDTO.setSaved_name(savedFileName);
+        reviewImageDTO.setOriginal_name(file.getOriginalFilename());
+        reviewImageDTO.setReview(review.getReview_id());
+
+        reviewImageService.saveReviewImage(reviewImageDTO);
+
+        return ResponseEntity.ok(new PopupReviewDTO());
     }
 
     @GetMapping("/popupReviewReply")

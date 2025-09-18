@@ -1,16 +1,18 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 async function apiRequest(endpoint, options = {}) {
+    const isFormData = options.body instanceof FormData;
     // const token = localStorage.getItem("accessToken");
 
     const config = {
         method: options.method || "GET",
         headers: {
-            "Content-Type": "application/json",
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
             // ...(token && { Authorization: `Bearer ${token}` }),
             ...options.headers,
         },
-        ...(options.body && { body: JSON.stringify(options.body) }),
+        ...(options.body && !isFormData && { body: JSON.stringify(options.body) }),
+        ...(options.body && isFormData && { body: options.body }),
     };
 
     try {
@@ -23,7 +25,6 @@ async function apiRequest(endpoint, options = {}) {
         //     window.location.href = "/login";
         //     return;
         // }
-
 
         // JSON 변환
         const data = await response.json().catch(() => null);

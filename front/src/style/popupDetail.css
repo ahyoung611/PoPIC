@@ -10,3 +10,40 @@
 .popup-tab-info .copyLocation{
     cursor: pointer;
 }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+.modal-overlay .modal {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.modal-overlay .modal-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.modal-overlay input, textarea {
+    width: 100%;
+    margin: 5px 0;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+.modal-overlay textarea {
+    min-height: 100px;
+    resize: vertical;
+}

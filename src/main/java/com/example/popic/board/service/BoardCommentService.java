@@ -1,11 +1,11 @@
 package com.example.popic.board.service;
 
 import com.example.popic.board.dto.BoardCommentDTO;
+import com.example.popic.board.repository.BoardCommentRepository;
+import com.example.popic.board.repository.BoardRepository;
 import com.example.popic.entity.entities.Board;
 import com.example.popic.entity.entities.BoardComment;
 import com.example.popic.entity.entities.User;
-import com.example.popic.board.repository.BoardCommentRepository;
-import com.example.popic.board.repository.BoardRepository;
 import com.example.popic.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class BoardCommentService {
     private final UserRepository userRepository;
 
     public List<BoardCommentDTO> getComments(Long boardId) {
-        return boardCommentRepository.findTopLevelByBoardId(boardId)
+        return boardCommentRepository.findAllByBoardIdFlat(boardId)
                 .stream().map(BoardCommentDTO::fromEntity).toList();
     }
 
@@ -38,6 +38,15 @@ public class BoardCommentService {
         if (parentId != null) {
             parent = boardCommentRepository.findById(parentId)
                     .orElseThrow(() -> new IllegalArgumentException("상위 댓글이 존재하지 않습니다."));
+
+            // 대댓글 금지: 부모가 이미 자식이면 막기
+            if (parent.getParent() != null) {
+                throw new IllegalArgumentException("대댓글은 허용되지 않습니다.");
+            }
+            // 다른 게시글 댓글에 붙이는 것 방지
+            if (!parent.getBoard().getBoardId().equals(boardId)) {
+                throw new IllegalArgumentException("다른 게시글의 댓글에는 답글을 달 수 없습니다.");
+            }
         }
 
         BoardComment comment = new BoardComment();
