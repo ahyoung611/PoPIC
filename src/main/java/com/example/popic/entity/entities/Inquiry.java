@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Inquiry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

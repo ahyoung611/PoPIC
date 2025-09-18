@@ -5,9 +5,11 @@ import com.example.popic.file.FileSave;
 import com.example.popic.image.dto.ReviewImageDTO;
 import com.example.popic.image.service.ReviewImageService;
 import com.example.popic.popup.dto.*;
+import com.example.popic.popup.service.InquiryService;
 import com.example.popic.popup.service.PopupReviewService;
 import com.example.popic.popup.service.PopupService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +23,7 @@ public class PopupController {
     private final PopupService popupService;
     private final PopupReviewService popupReviewService;
     private final ReviewImageService reviewImageService;
+    private final InquiryService inquiryService;
 
     @GetMapping("/popupDetail")
     private ResponseEntity<PopupDTO> popupDetail(@RequestParam(name="id") Long id){
@@ -66,6 +69,21 @@ public class PopupController {
         List<ReviewReplyDTO> reviewReplies = popupService.getReviewReply(id);
 
         return ResponseEntity.ok(reviewReplies);
+    }
+
+    @GetMapping("/inquiry")
+    public ResponseEntity<List<InquiryDTO>> getInquiry(@RequestParam(name = "popupId")Long popupId){
+        List<InquiryDTO> inquiryDTOList = inquiryService.findAllByPopupId(popupId);
+
+        return ResponseEntity.ok(inquiryDTOList);
+    }
+
+    @PostMapping("/inquiry")
+    public String createInquiry(@RequestBody InquiryDTO inquiryRequestDTO) {
+
+        inquiryService.save(inquiryRequestDTO);
+
+        return "문의가 등록되었습니다.";
     }
 
 }
