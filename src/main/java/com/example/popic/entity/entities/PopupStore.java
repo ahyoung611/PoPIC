@@ -58,7 +58,7 @@ public class PopupStore {
     private Double latitude;  // KakaoMap 좌표
     private Double longitude;
 
-    private BigDecimal price;
+    private BigDecimal price = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "popupStore", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
