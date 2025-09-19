@@ -99,7 +99,7 @@ export default function VendorMain() {
     };
     const handleRegister = () => navigate("/vendorPopups/new");
     const handleEdit = (id) => navigate(`/vendorPopups/${id}/edit`);
-    const handleView = (id) => navigate(`/vendorPopups/${id}`);
+    const handleView = (id) => navigate(`/popupStore/detail/${id}`);
 
     return (
         <div className="container">
