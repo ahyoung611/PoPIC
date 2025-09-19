@@ -1,3 +1,7 @@
+.vendor-list{
+    flex: 1;
+}
+
 .popup-card{
     position:relative;
     display:flex;
@@ -18,7 +22,7 @@
     background: var(--bg-color);
 }
 .popup-thumb img{
-    width:100%; height:100%; object-fit:cover; display:block;
+    width: 100%; height:100%; object-fit:cover; display:block;
 }
 
 .popup-body{
