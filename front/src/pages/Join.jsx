@@ -100,6 +100,18 @@ const Join = () => {
     /* 비밀번호 제외 input 태그 */
     const onChange = (e) => {
         const { name, value } = e.target;
+        // if (name !== "password") {
+        //     setForm((f) => ({ ...f, [name]: value }));
+        // }
+        // ★ BRN이 바뀌면 인증상태 초기화 + 에러 메시지 세팅
+        if (name === "brn") {
+            setBrnVerified(false);
+            // DOM 있을 때만 메시지 넣기
+            if (brnRef.current) {
+                brnRef.current.setCustomValidity("사업자등록번호 인증을 먼저 완료해주세요.");
+            }
+        }
+
         if (name !== "password") {
             setForm((f) => ({ ...f, [name]: value }));
         }
@@ -108,13 +120,21 @@ const Join = () => {
     /* 진입 role 확인 */
     const onSubmit = async (e) => {
         e.preventDefault();
-        console.log("▶ onSubmit 실행됨");
+
+        // ★ VENDOR인데 인증이 안 되었으면 즉시 차단
+        if (role === "VENDOR" && !brnVerified) {
+            console.log("▶ VENDOR 미인증 상태 - 제출 차단");
+            if (brnRef.current) {
+                brnRef.current.setCustomValidity("사업자등록번호 인증을 먼저 완료해주세요.");
+                brnRef.current.reportValidity();
+            }
+            return; // ★ 여기서 API 호출 막음
+        }
+
         // 폼 DOM 자체의 검증 상태 확인
         const formEl = e.target;
-        console.log("▶ form validity check:", formEl.checkValidity()); // true/false 출력
         if (!formEl.reportValidity()) {
-            console.log("▶ 브라우저 네이티브 검증 실패 - API 요청 안보냄");
-            return; // ★ invalid이면 여기서 중단
+            return;
         }
 
         setLoading(true);
@@ -122,7 +142,6 @@ const Join = () => {
         try {
             const endpoint = role === "USER" ? "/user/join" : "/vendor/join";
 
-            console.log("▶ 요청 endpoint:", endpoint);
             const body =
                 role === "USER"
                     ? {
@@ -140,10 +159,8 @@ const Join = () => {
                         phone_number: form.phone_number,
                         brn: form.brn,
                     };
-            console.log("▶ 요청 body:", body);
 
             const data = await apiRequest(endpoint, { method:'POST', body })
-            console.log("▶ 서버 응답:", data);
             if (!data.result) { alert(data.message); return; }
             alert('회원가입 성공');
             navigate("/login");
@@ -159,8 +176,8 @@ const Join = () => {
                 manager_name: "",
                 brn: "",
             });
+            setBrnVerified(false);
         } catch (err) {
-            console.error(err); // 에러 확인용
             alert("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
         } finally {
             setLoading(false);
