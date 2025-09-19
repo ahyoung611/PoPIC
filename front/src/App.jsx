@@ -16,6 +16,10 @@ import VendorPopupForm from "./pages/vendor/VendorPopupForm.jsx";
 import NaverCallback from "./pages/user/NaverCallback.jsx";
 import UserMyPage from "./pages/user/UserMyPage.jsx";
 import VendorMyPage from "./pages/vendor/VendorMyPage.jsx";
+import CheckoutPage from "./pages/Checkout.jsx";
+import SuccessPage from "./pages/Success.jsx";
+import FailPage from "./pages/Fail.jsx";
+
 
 function App() {
 
@@ -85,6 +89,9 @@ function App() {
                     <Route path={"/board/:id"} element={<BoardEditor/>}></Route>
                     <Route path={"/board/:id/edit"} element={<BoardEditor/>}></Route>
                     <Route path={"/userMyPage"} element={<UserMyPage/>}></Route>
+                    <Route path={"/checkout"} element={<CheckoutPage/>}></Route>
+                    <Route path={"/success"} element={<SuccessPage />} />
+                    <Route path={"/fail"} element={<FailPage />} />
                 </Route>
 
 
