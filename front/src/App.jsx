@@ -13,6 +13,7 @@ import Join from "./pages/Join.jsx";
 import BoardEditor from "./pages/user/BoardEditor.jsx";
 import Login from "./pages/Login.jsx";
 import VendorPopupForm from "./pages/vendor/VendorPopupForm.jsx";
+import NaverCallback from "./pages/user/NaverCallback.jsx";
 
 
 
@@ -90,7 +91,7 @@ function App() {
                 <Route element={<VendorHeaderLayout/>}>
                     <Route path="/vendorPopups" element={<VendorMain/>}></Route>
                     <Route path="/vendorPopups/new" element={<VendorPopupForm/>}></Route>
-                    <Route path="/vendorPopups/:id/edit" element={<VendorPopupForm/>}></Route>
+                    <Route path="/vendorPopups/edit/:id" element={<VendorPopupForm/>}></Route>
                 </Route>
 
                 {/*어드민 Layout */}
@@ -99,6 +100,7 @@ function App() {
                 </Route>
 
             </Route>
+            <Route path={"/naver/callback"} element={<NaverCallback/>}></Route>
         </Routes>
     )
 }

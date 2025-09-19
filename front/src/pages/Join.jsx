@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import "../style/join.css";
 import eye from "../../public/eye.png"
 import nonEye from "../../public/nonEye.png"
@@ -11,7 +11,7 @@ const Join = () => {
     const [params] = useSearchParams();
     const init = params.get("role") === "VENDOR" ? "VENDOR" : "USER";
     const [role, setRole] = useState(init);
-    // const [role, setRole] = useState("USER");
+    const navigate = useNavigate();
     const [showPw, setShowPw] = useState(false);
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({
@@ -31,14 +31,18 @@ const Join = () => {
     const brnRef = useRef(null); // 인풋 DOM 참조
 
 
-    // 비밀번호 패턴
-    const PASSWORD_PATTERN = String.raw`^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+=-])[A-Za-z\d!@#$%^&*()_+=-]{8,}$`;
     // 핸드폰 패턴
     const PHONE_PATTERN = String.raw`^(?:01[0-9]-?\d{3,4}-?\d{4}|01[0-9]\d{7,8})$`;
     // 사업자등록번호 패턴
     const BRN_PATTERN = String.raw`^\d{3}-?\d{2}-?\d{5}$`;
 
-    0
+    // 비밀번호 onChange 핸들러 기도메타타타ㅏ타타타ㅏ
+    const handlePasswordChange = (e) => {
+        const value = e.target.value;
+        setForm((f) => ({ ...f, password: value }));
+
+    };
+
     const businessNumberCheck = () => {
         const input = brnRef.current;                // 인풋 DOM
         // const clean = (form.brn || "").replace(/-/g, "");
@@ -93,26 +97,46 @@ const Join = () => {
         setShowPw((prevState) => !prevState);
     }
 
-    // const onChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setForm((f) => ({ ...f, [name]: value }));
-    // };
-
-    /* 비밀번호 공백 제거 */
+    /* 비밀번호 제외 input 태그 */
     const onChange = (e) => {
         const { name, value } = e.target;
-        setForm((f) => ({
-            ...f,
-            [name]: name === "password" ? value.replace(/\s/g, "") : value,
-        }));
+        // if (name !== "password") {
+        //     setForm((f) => ({ ...f, [name]: value }));
+        // }
+        // ★ BRN이 바뀌면 인증상태 초기화 + 에러 메시지 세팅
+        if (name === "brn") {
+            setBrnVerified(false);
+            // DOM 있을 때만 메시지 넣기
+            if (brnRef.current) {
+                brnRef.current.setCustomValidity("사업자등록번호 인증을 먼저 완료해주세요.");
+            }
+        }
+
+        if (name !== "password") {
+            setForm((f) => ({ ...f, [name]: value }));
+        }
     };
-
-
-
 
     /* 진입 role 확인 */
     const onSubmit = async (e) => {
-        e.preventDefault(   );
+        e.preventDefault();
+
+        // ★ VENDOR인데 인증이 안 되었으면 즉시 차단
+        if (role === "VENDOR" && !brnVerified) {
+            console.log("▶ VENDOR 미인증 상태 - 제출 차단");
+            if (brnRef.current) {
+                brnRef.current.setCustomValidity("사업자등록번호 인증을 먼저 완료해주세요.");
+                brnRef.current.reportValidity();
+            }
+            return; // ★ 여기서 API 호출 막음
+        }
+
+        // 폼 DOM 자체의 검증 상태 확인
+        const formEl = e.target;
+        if (!formEl.reportValidity()) {
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -139,6 +163,7 @@ const Join = () => {
             const data = await apiRequest(endpoint, { method:'POST', body })
             if (!data.result) { alert(data.message); return; }
             alert('회원가입 성공');
+            navigate("/login");
 
             // 폼 리셋
             setForm({
@@ -151,8 +176,8 @@ const Join = () => {
                 manager_name: "",
                 brn: "",
             });
+            setBrnVerified(false);
         } catch (err) {
-            console.error(err); // 에러 확인용
             alert("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
         } finally {
             setLoading(false);
@@ -186,13 +211,13 @@ const Join = () => {
                             className="join-input"
                             type={showPw ? "text" : "password"}
                             name="password"
-                            pattern={PASSWORD_PATTERN}
+                            pattern="(?=.{8,})(?=.*[A-Za-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).*"
                             placeholder="비밀번호"
                             title="비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다."
                             value={form.password}
-                            onChange={onChange}
+                            onChange={handlePasswordChange}
                             required
-                            minLength={8}
+                            // minLength={8}
                         />
                         <button
                             type="button"
@@ -299,33 +324,6 @@ const Join = () => {
                     </button>
 
                 </form>
-
-                {/* login → join 으로 role 전송*/}
-                {/* 역할 토글 */}
-                {/*<footer className="join-footer">*/}
-                {/*    <div className="join-role">*/}
-                {/*        <label className={`join-role-chip ${role === "USER" ? "is-active" : ""}`}>*/}
-                {/*            <input*/}
-                {/*                type="radio"*/}
-                {/*                name="role"*/}
-                {/*                value="USER"*/}
-                {/*                checked={role === "USER"}*/}
-                {/*                onChange={(e) => setRole(e.target.value)}*/}
-                {/*            />*/}
-                {/*            일반 사용자*/}
-                {/*        </label>*/}
-                {/*        <label className={`join-role-chip ${role === "VENDOR" ? "is-active" : ""}`}>*/}
-                {/*            <input*/}
-                {/*                type="radio"*/}
-                {/*                name="role"*/}
-                {/*                value="VENDOR"*/}
-                {/*                checked={role === "VENDOR"}*/}
-                {/*                onChange={(e) => setRole(e.target.value)}*/}
-                {/*            />*/}
-                {/*            벤더*/}
-                {/*        </label>*/}
-                {/*    </div>*/}
-                {/*</footer>*/}
             </section>
         </main>
     );

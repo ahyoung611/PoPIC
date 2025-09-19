@@ -46,35 +46,36 @@ const PopupDetail = () => {
         setModalOpen(true); // 모달 열기
     };
 
-    return (
-        <div className={"popupStore-detail inner"}>
-            {popupDetail ? (
-                <>
-                    <PopupImage images={popupDetail.images}></PopupImage>
-                    <PopupInfo popup={popupDetail}></PopupInfo>
+    return(
+        <div className={"container"}>
+            <div className={"popupStore-detail inner"}>
+                {popupDetail ? (
+                    <>
+                        <PopupImage images={popupDetail.images}></PopupImage>
+                        <PopupInfo popup={popupDetail}></PopupInfo>
 
-                    <div className={"menu-tab"}>
-                        {tabs.map((tab) => (
-                            <Button
-                                key={tab}
-                                className={activeTab === tab ? "tab active" : "tab"}
-                                onClick={() => setActiveTab(tab)}
-                            >{tab}</Button>
-                        ))}
-                    </div>
+                        <div className={"menu-tab"}>
+                            {tabs.map((tab)=>(
+                                <Button
+                                    key={tab}
+                                    className={activeTab === tab ? "tab active" : "tab"}
+                                    onClick={() => setActiveTab(tab)}
+                                >{tab}</Button>
+                            ))}
+                        </div>
 
-                    {activeTab === "예약" && (
-                        <PopupReservation popup={popupDetail} onOpenModal={openModal}></PopupReservation>
-                    )}
+                        {activeTab === "예약" && (
+                            <PopupReservation popup={popupDetail} onOpenModal={openModal}></PopupReservation>
+                        )}
 
-                    {activeTab === "팝업 정보" && (
-                        <PopupTabInfo popup={popupDetail}></PopupTabInfo>
-                    )}
 
-                    {activeTab === "리뷰" && (
-                        <PopupReview popup={popupDetail}></PopupReview>
-                    )}
+                        {activeTab === "팝업 정보" && (
+                            <PopupTabInfo popup={popupDetail}></PopupTabInfo>
+                        )}
 
+                        {activeTab === "리뷰" && (
+                            <PopupReview popup={popupDetail}></PopupReview>
+                        )}
                     {activeTab === "문의" && (
                         <PopupInquiry popup={popupDetail}></PopupInquiry>
                     )}
@@ -96,6 +97,7 @@ const PopupDetail = () => {
                     />
                 </>
             ) : (<p>loading...</p>)}
+
         </div>
     )
 }
