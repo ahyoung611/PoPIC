@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +22,8 @@ public class PopupDTO {
     private String store_name;
     private String description;
     private Long vendor; // 운영자
-    private List<Long> categories = new ArrayList<>();
+    private List<Long> categories = new ArrayList<>(); // 전송용
+    private List<String> category_names = new ArrayList<>(); // young 화면 표시용
     private LocalDate start_date;
     private LocalDate end_date;
     private List<Long> schedules;
@@ -36,6 +38,13 @@ public class PopupDTO {
     private LocalDateTime delete_date;
     private int status = 2; //2: 승인 대기, 1: 운영 시작 전 (승인 완료), 2: 운영 중, -1: 운영 종료, 0: 정지
 
+    // young
+    private String thumb; // 팝업운영자 팝업 카드에서 쓸 이미지
+    private List<String> open_days;        // ["MONDAY","WEDNESDAY", ...]  (엔티티 enum 이름과 동일)
+    private String open_start_time;        // "10:00"
+    private String open_end_time;          // "19:00"
+    private Integer slot_minutes = 60;     // 슬롯 분단위(기본 60분)
+    private Integer capacity_per_hour;     // 시간당 정원
 
     public PopupDTO(PopupStore entity) {
         this.store_id = entity.getStore_id();
@@ -44,7 +53,10 @@ public class PopupDTO {
         this.description = entity.getDescription();
         this.start_date = entity.getStart_date();
         this.end_date = entity.getEnd_date();
-        this.schedules = entity.getSchedules().stream().map(PopupStoreSchedule::getSchedule_id).collect(Collectors.toList());
+        this.schedules = entity.getSchedules() == null ? List.of()
+                : entity.getSchedules().stream()
+                .map(PopupStoreSchedule::getSchedule_id)
+                .collect(Collectors.toList());
         this.address = entity.getAddress().getCity().concat(" ").concat(entity.getAddress().getDistrict());
         this.address_detail = entity.getAddress_detail();
         this.latitude = entity.getLatitude();
@@ -58,5 +70,62 @@ public class PopupDTO {
         this.update_date = entity.getUpdate_date();
         this.delete_date = entity.getDelete_date();
         this.status = entity.getStatus();
+
+        // young 카테고리 이름, 카테고리 아이디
+        this.categories = entity.getCategories()
+                .stream()
+                .map(Category::getCategory_id)
+                .collect(Collectors.toList());
+
+        this.category_names = entity.getCategories()
+                .stream()
+                .map(Category::getName)
+                .collect(Collectors.toList());
+
+        this.images_detail = entity.getImages().stream()
+                .map(i -> new ImageDetail(i.getImage_id(), i.getSaved_name()))
+                .collect(java.util.stream.Collectors.toList());
+
+        // young 첫 번째 이미지가 있으면 URL로 생성
+        if (!entity.getImages().isEmpty()) {
+            Image firstImage = entity.getImages().get(0);
+            this.thumb = "/api/vendorPopups/images/" + entity.getStore_id() + "/" + firstImage.getSaved_name();
+        } else {
+            this.thumb = null; // 없으면 null
+        }
+
+        // young 스케줄 요일/운영시간
+        if (entity.getSchedules() != null && !entity.getSchedules().isEmpty()) {
+            this.open_days = entity.getSchedules().stream()
+                    .map(s -> s.getDayOfWeek().name())
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            var minStart = entity.getSchedules().stream()
+                    .map(PopupStoreSchedule::getStart_time)
+                    .filter(java.util.Objects::nonNull)
+                    .min(java.time.LocalTime::compareTo).orElse(null);
+            var maxEnd = entity.getSchedules().stream()
+                    .map(PopupStoreSchedule::getEnd_time)
+                    .filter(java.util.Objects::nonNull)
+                    .max(java.time.LocalTime::compareTo).orElse(null);
+
+            if (minStart != null) this.open_start_time = minStart.toString().substring(0, 5);
+            if (maxEnd   != null) this.open_end_time   = maxEnd.toString().substring(0, 5);
+        }
     }
+
+    @lombok.Data
+    @lombok.NoArgsConstructor
+    @lombok.AllArgsConstructor
+    public static class ImageDetail {
+        private Long image_id;     // 삭제/식별용
+        private String saved_name; // URL 생성용
+    }
+
+    // young 팝업운영자 스토어 썸네일/삭제 상세목록
+    private List<ImageDetail> images_detail = new java.util.ArrayList<>();
+
 }
+
+

@@ -27,9 +27,9 @@ export default function PopupCard({
                                       title,
                                       startDate,
                                       endDate,
-                                      categories = [],
+                                      category_names = [],
                                       status = 2,
-                                      thumb,                // 썸네일 URL(없으면 placeholder)
+                                      thumb,
                                       onEdit,
                                       onView,
                                   }) {
@@ -52,16 +52,18 @@ export default function PopupCard({
                 </div>
 
                 <div className="popup-meta">
-          <span className="date">
+          <p className="date">
             {startDate} - {endDate}
-          </span>
-                    {categories?.length > 0 && (
-                        <div className="chips">
-                            {categories.map((c, i) => (
-                                <span className="chip" key={i}>{c}</span>
-                            ))}
-                        </div>
-                    )}
+          </p>
+            <div>
+                {category_names?.length > 0 && (
+                    <div className="chips">
+                        {category_names.map((c, i) => (
+                            <span className="chip" key={i}>{c}</span>
+                        ))}
+                    </div>
+                )}
+            </div>
                 </div>
 
                 <div className="popup-actions">

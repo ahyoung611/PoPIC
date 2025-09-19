@@ -14,10 +14,8 @@ public interface VendorRepository extends JpaRepository<Vendor, Long>  {
 
     @Query("select (count(v) > 0) from Vendor v where v.brn = :brn")
     boolean existsBrn(@Param("brn") String brn);
-
+  
     // JPQL로 login_id 매핑
     @Query("select v from Vendor v where v.login_id = :loginId")
     Optional<Vendor> findByLoginId(@Param("loginId") String loginId);
-
-
 }

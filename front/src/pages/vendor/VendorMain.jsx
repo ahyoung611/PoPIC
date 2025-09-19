@@ -1,4 +1,3 @@
-// src/pages/vendor/VendorMain.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchHeader from "../../components/commons/SearchHeader";
@@ -19,10 +18,13 @@ const fmt = (d) => {
 export default function VendorMain() {
     const navigate = useNavigate();
 
-    // 검색/페이지
+    // 검색
     const [searchValue, setSearchValue] = useState("");
+    const [appliedSearch, setAppliedSearch] = useState("");
+
+    // 페이징
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 10;
+    const pageSize = 5;
 
     // 데이터
     const [catMap, setCatMap] = useState(new Map());
@@ -72,7 +74,7 @@ export default function VendorMain() {
 
     // 검색 필터링
     const filtered = useMemo(() => {
-        if (!searchValue.trim()) return rows;
+        if (!appliedSearch.trim()) return rows;
         const kw = searchValue.trim().toLowerCase();
         return rows.filter((r) =>
             [r.title, ...(r.categories || [])]
@@ -81,7 +83,7 @@ export default function VendorMain() {
                 .toLowerCase()
                 .includes(kw)
         );
-    }, [rows, searchValue]);
+    }, [rows, appliedSearch]);
 
     // 페이징
     const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -93,10 +95,11 @@ export default function VendorMain() {
     // 액션
     const handleSearch = () => {
         setCurrentPage(1);
+        setAppliedSearch(searchValue);
     };
     const handleRegister = () => navigate("/vendorPopups/new");
     const handleEdit = (id) => navigate(`/vendorPopups/${id}/edit`);
-    const handleView = (id) => navigate(`/vendorPopups/${id}`);
+    const handleView = (id) => navigate(`/popupStore/detail/${id}`);
 
     return (
         <div className="container">
@@ -120,7 +123,7 @@ export default function VendorMain() {
                                 title={p.title}
                                 startDate={p.startDate}
                                 endDate={p.endDate}
-                                categories={p.categories}
+                                category_names={p.categories}
                                 status={p.status}
                                 thumb={p.thumb}
                                 onEdit={handleEdit}

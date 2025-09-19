@@ -12,7 +12,9 @@ export default function InquiryModal({
                                          onSubmit,        // 제출 버튼 클릭 시 실행
                                          onClose,         // 취소 버튼 클릭 시 실행
                                          submitText = "문의 완료", // 확인 버튼 텍스트
-                                         cancelText = "취소"      // 취소 버튼 텍스트
+                                         cancelText = "취소",      // 취소 버튼 텍스트
+                                         privateChecked,
+                                         onPrivateChange
                                      }) {
     if (!open) return null;
 
@@ -48,7 +50,10 @@ export default function InquiryModal({
 
                 {/* 비공개 체크 */}
                 <div className="privateCheck">
-                    <input type="checkbox" id="private" />
+                    <input type="checkbox" id="private"
+                           checked={privateChecked}
+                           onChange={(e) => onPrivateChange(e.target.checked)}
+                    />
                     <label htmlFor="private">
                         비공개
                     </label>

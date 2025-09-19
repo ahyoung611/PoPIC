@@ -11,6 +11,7 @@ import PopupDetail from "./pages/PopupDetail.jsx";
 import BoardList from "./pages/user/BoardList.jsx";
 import Join from "./pages/Join.jsx";
 import BoardEditor from "./pages/user/BoardEditor.jsx";
+import Login from "./pages/Login.jsx";
 import VendorPopupForm from "./pages/vendor/VendorPopupForm.jsx";
 
 
@@ -69,13 +70,14 @@ function App() {
         <Routes>
             <Route element={<FooterLayout/>}>
 
-                {/* 회원가입(header 필요없음) */}
+                {/* 회원가입 & 로그인(header 필요없음) */}
                 <Route path={"/join"} element={<Join/>}></Route>
+                <Route path={"/login"} element={<Login/>}></Route>
 
                 {/*일반 유저 Layout */}
                 <Route element={<UserHeaderLayout/>}>
                     <Route path={"/"} element={<Main/>}></Route>
-                    <Route path={"/popupStore/detail"} element={<PopupDetail/>}></Route>
+                    <Route path={"/popupStore/detail/:id"} element={<PopupDetail/>}></Route>
                     <Route path={"/join"} element={<Join/>}></Route>
                     <Route path={"/board"} element={<BoardList/>}></Route>
                     <Route path={"/board/new"} element={<BoardEditor/>}></Route>
@@ -88,7 +90,7 @@ function App() {
                 <Route element={<VendorHeaderLayout/>}>
                     <Route path="/vendorPopups" element={<VendorMain/>}></Route>
                     <Route path="/vendorPopups/new" element={<VendorPopupForm/>}></Route>
-                    {/*<Route path="/vendorPopups/:id/edit" element={<VendorPopupEdit/>}></Route>*/}
+                    <Route path="/vendorPopups/:id/edit" element={<VendorPopupForm/>}></Route>
                 </Route>
 
                 {/*어드민 Layout */}
