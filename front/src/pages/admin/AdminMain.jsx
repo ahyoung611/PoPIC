@@ -1,16 +1,25 @@
 import {useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 const AdminMain = () => {
-    const [adminPage, setAdminPage] = useState("");
+    const nav = useNavigate();
 
     return (
         <div className={"container"}>
             <div className={"inner admin-main"}>
-                <div className={"popup-manage"}>
 
+                <div className={"popup-manage"} onClick={() => {nav("/admin/popupManage")}}>
+                    <p>팝업 승인 | 반려</p>
                 </div>
-                <div className={"vendor-manage"}></div>
-                <div className={"user-mange"}></div>
+
+                <div className={"vendor-manage"} onClick={() => {nav("/admin/vendorManage")}}>
+                    <p>팝업 운영자 관리</p>
+                </div>
+
+                <div className={"user-mange"} onClick={() => {nav("/admin/userManage")}}>
+                    <p>회원 관리</p>
+                </div>
+
             </div>
         </div>
     )

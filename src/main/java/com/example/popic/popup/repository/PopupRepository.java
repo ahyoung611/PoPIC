@@ -27,4 +27,7 @@ public interface PopupRepository extends JpaRepository<PopupStore, Long> {
 
     @Query("SELECT rp FROM ReviewReply rp WHERE rp.review.store.store_id = :id")
     List<ReviewReply> getReviewReply(Long id);
+
+    @Query("SELECT p FROM PopupStore p WHERE p.status = 2")
+    List<PopupStore> findPendingPopup();
 }

@@ -1,8 +1,8 @@
-const AdminOperators = () => {
+const AdminVendor = () => {
     return (
         <>
             <div>AdminMembers 페이지</div>
         </>
     )
 }
-export default AdminOperators;
+export default AdminVendor;
