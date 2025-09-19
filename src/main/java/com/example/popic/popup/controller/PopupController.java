@@ -9,7 +9,6 @@ import com.example.popic.popup.service.InquiryService;
 import com.example.popic.popup.service.PopupReviewService;
 import com.example.popic.popup.service.PopupService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,7 +49,7 @@ public class PopupController {
     private ResponseEntity<PopupReviewDTO> saveReview(@ModelAttribute PopupReviewDTO popupReviewDTO,
                                                       @RequestParam(name = "file", required = false) MultipartFile file,
                                                       @RequestParam(name = "type") String type){
-        String savedFileName = FileSave.FileSave(type,file);
+        String savedFileName = FileSave.fileSave(type,file);
         Review review = popupReviewService.saveReview(popupReviewDTO);
 
         ReviewImageDTO reviewImageDTO = new ReviewImageDTO();

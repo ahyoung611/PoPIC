@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/images")
@@ -47,8 +48,18 @@ public class ImageController {
     }
 
     public ResponseEntity<byte[]> getImageFile(String type, String savedName) {
-        // 실제 저장된 파일 읽기
-        Path imagePath = Path.of("C:/" + type + "/", savedName); // 실제 저장된 위치
+        String os = System.getProperty("os.name").toLowerCase();
+        String home = System.getProperty("user.home");
+        Path imagePath;
+
+        if(os.contains("win")){
+            imagePath = Path.of("C:/" + type + "/", savedName);
+        }else{
+            imagePath = Path.of(home,"popic-uploads", type, savedName);
+        }
+
+
+
         try {
             byte[] imageBytes = Files.readAllBytes(imagePath);
 
