@@ -1,20 +1,29 @@
 import {useState} from "react";
-import ConfirmModal from "../commons/ConfirmModal.jsx";
-
 
 const PopupReservation = (props)=>{
     const [reservationNumber, setReservationNumber] = useState(1);
+    const [reservationDate, setReservationDate] = useState("");
+    const [reservationTime, setReservationTime] = useState("");
 
     function reservationSubmit(){
-        console.log(reservationNumber);
+        // 예약 버튼을 클릭했을 때 모달에 정보를 전달
+        const reservationData = {
+            name: props.popup?.name,
+            date: reservationDate,
+            time: reservationTime,
+            price: props.popup?.price,
+            numberOfPeople: reservationNumber,
+        };
+        console.log("예약 데이터:", reservationData);
+        props.onOpenModal(reservationData); // 모달 열기 및 예약 데이터 전달
     }
 
     return (
         <div className="popupReservation">
             {/* 예약 관련 내용 */}
             <div className={"reservation-date-input"}>
-                <input type={"date"} name={"reservationDate"}/>
-                <input type={"time"} name={"reservationTime"}/>
+                <input type={"date"} name={"reservationDate"} onChange={(e) => setReservationDate(e.target.value)}/>
+                <input type={"time"} name={"reservationTime"} onChange={(e) => setReservationTime(e.target.value)}/>
             </div>
 
             <div className={"reservation-number-input"}>

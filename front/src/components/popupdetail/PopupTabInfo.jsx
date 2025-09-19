@@ -66,11 +66,11 @@ const PopupTabInfo = (props)=>{
             });
     }
 
+
     // 요일 + 시간 조합을 Set으로 중복 제거
     const uniqueSchedule = Array.from(
         new Set(popupSchedule.map(item => `${item.dayOfWeek}: ${item.start_time} ~ ${item.end_time}`))
     );
-
 
     return(
         <div className={"popup-tab-info"}>
