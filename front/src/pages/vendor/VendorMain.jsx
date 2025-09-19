@@ -19,6 +19,7 @@ const fmt = (d) => {
 export default function VendorMain() {
     const navigate = useNavigate();
 
+
     // 검색
     const [searchValue, setSearchValue] = useState("");
     const [appliedSearch, setAppliedSearch] = useState("");
@@ -59,7 +60,9 @@ export default function VendorMain() {
                         .filter(Boolean),
                     status: d.status,
                     thumb: d.thumb || null,
+                    imageId: d.images_detail[0].image_id,
                 }));
+                console.log(data);
                 setRows(mapped);
             } catch (e) {
                 console.error("목록 로드 실패:", e);
@@ -122,6 +125,7 @@ export default function VendorMain() {
                                 category_names={p.categories}
                                 status={p.status}
                                 thumb={p.thumb}
+                                imageId={p.imageId}
                                 onEdit={handleEdit}
                                 onView={handleView}
                             />
