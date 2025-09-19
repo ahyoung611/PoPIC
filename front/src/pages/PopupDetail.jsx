@@ -68,7 +68,6 @@ const PopupDetail = () => {
                             <PopupReservation popup={popupDetail} onOpenModal={openModal}></PopupReservation>
                         )}
 
-
                         {activeTab === "팝업 정보" && (
                             <PopupTabInfo popup={popupDetail}></PopupTabInfo>
                         )}
