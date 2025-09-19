@@ -260,7 +260,7 @@ public class VendorPopupsService {
         PopupStore store = repository.findStoreById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("popup not found: " + storeId));
         List<Image> images = new ArrayList<>();
-        Path folder = Paths.get(uploadPath, "popups", String.valueOf(storeId));
+        Path folder = Paths.get(uploadPath, "popup");
         try { Files.createDirectories(folder); } catch (Exception e) {
             throw new RuntimeException("업로드 폴더 생성 실패: " + folder, e);
         }
