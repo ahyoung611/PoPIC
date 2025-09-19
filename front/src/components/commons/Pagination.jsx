@@ -12,7 +12,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     };
 
     return (
-        <nav className="pagination" role="navigation" aria-label="페이지네이션">
+        <div>
+           <nav className="pagination" role="navigation" aria-label="페이지네이션">
             {/* 이전 */}
             <Button
                 variant="outline"
@@ -54,6 +55,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                 &rsaquo;
             </Button>
         </nav>
+        </div>
     );
 };
 

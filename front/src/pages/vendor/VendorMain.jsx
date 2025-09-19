@@ -4,6 +4,7 @@ import SearchHeader from "../../components/commons/SearchHeader";
 import Pagination from "../../components/commons/Pagination";
 import "../../style/vendorList.css";
 import PopupCard from "../../components/vendorPopups/PopupCard.jsx";
+import apiRequest from "../../utils/apiRequest.js";
 
 const LIST_API = "/api/vendorPopups";                // GET: PopupDTO[]
 const CATEGORY_API = "/api/vendorPopups/categories"; // GET: [{id,name}]
@@ -34,9 +35,7 @@ export default function VendorMain() {
     useEffect(() => {
         (async () => {
             try {
-                const r = await fetch(CATEGORY_API);
-                if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const list = await r.json(); // [{id,name}]
+                const list = await apiRequest(CATEGORY_API);
                 setCatMap(new Map(list.map((c) => [c.id, c.name])));
             } catch (e) {
                 console.error("카테고리 로드 실패:", e);
@@ -49,10 +48,7 @@ export default function VendorMain() {
     useEffect(() => {
         (async () => {
             try {
-                const r = await fetch(LIST_API);
-                if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const data = await r.json(); // PopupDTO[]
-                // PopupDTO -> 카드 표시용 데이터로 가공
+                const data = await apiRequest(LIST_API);
                 const mapped = (data || []).map((d) => ({
                     id: d.store_id,
                     title: d.store_name,
@@ -62,7 +58,7 @@ export default function VendorMain() {
                         .map((cid) => catMap.get(cid))
                         .filter(Boolean),
                     status: d.status,
-                    thumb: d.thumb || null, // 서버가 주면 쓰고, 없으면 placeholder
+                    thumb: d.thumb || null,
                 }));
                 setRows(mapped);
             } catch (e) {
@@ -98,7 +94,7 @@ export default function VendorMain() {
         setAppliedSearch(searchValue);
     };
     const handleRegister = () => navigate("/vendorPopups/new");
-    const handleEdit = (id) => navigate(`/vendorPopups/${id}/edit`);
+    const handleEdit = (id) => navigate(`/vendorPopups/edit/${id}`);
     const handleView = (id) => navigate(`/popupStore/detail/${id}`);
 
     return (
