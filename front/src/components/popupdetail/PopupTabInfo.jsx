@@ -2,15 +2,16 @@ import {useEffect, useState} from "react";
 import apiRequest from "../../utils/apiRequest.js";
 
 const PopupTabInfo = (props)=>{
-    console.log(props);
     const [popupSchedule, setPopupSchedule] = useState([]);
 
     useEffect(()=>{
+
         const fetchPopupDetail = async () => {
             const response = await apiRequest(`/popupStore/popupSchedule?popupId=`+ props.popup.store_id, {
                 credentials: "include",
             });
             setPopupSchedule(response);
+            console.log(response);
         }
         fetchPopupDetail();
 
@@ -21,10 +22,22 @@ const PopupTabInfo = (props)=>{
             const container = document.getElementById("map");
             if (!container) return;
             const options = {
-                center: new window.kakao.maps.LatLng(33.450701, 126.570667),
+                center: new window.kakao.maps.LatLng(props.popup.latitude, props.popup.longitude),
                 level: 3
             };
-            new window.kakao.maps.Map(container, options);
+            const map = new window.kakao.maps.Map(container, options);
+            const markerPosition  = new kakao.maps.LatLng(props.popup.latitude, props.popup.longitude);
+
+            const marker = new kakao.maps.Marker({
+                position: markerPosition,
+                clickable: true
+            });
+
+            marker.setMap(map);
+
+            kakao.maps.event.addListener(marker, 'click', function() {
+                copyLocation();
+            });
         };
 
         if (window.kakao && window.kakao.maps) {
@@ -40,7 +53,7 @@ const PopupTabInfo = (props)=>{
                 window.kakao.maps.load(initKakaoMap);
             };
         }
-    },[])
+    },[props.popup])
 
     function copyLocation(){
         const textToCopy = props.popup.address + " " + props.popup.address_detail;
@@ -53,13 +66,19 @@ const PopupTabInfo = (props)=>{
             });
     }
 
+    // 요일 + 시간 조합을 Set으로 중복 제거
+    const uniqueSchedule = Array.from(
+        new Set(popupSchedule.map(item => `${item.dayOfWeek}: ${item.start_time} ~ ${item.end_time}`))
+    );
 
 
     return(
         <div className={"popup-tab-info"}>
             <div className={"open-time"}>
                 <h3>운영시간</h3>
-                <p>월~일 : 11:00 ~ 21:00</p>
+                {uniqueSchedule.map((item,index)=>(
+                    <p key={index}>{item}</p>
+                ))}
             </div>
             <div className={"popup-description"}>
                 <h3>팝업스토어 소개</h3>

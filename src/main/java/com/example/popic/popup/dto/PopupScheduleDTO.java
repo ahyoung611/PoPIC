@@ -16,7 +16,7 @@ import java.time.LocalTime;
 public class PopupScheduleDTO {
     private Long schedule_id;
     private PopupStore popupStore;
-    private DayOfWeek dayOfWeek; // Enum으로 저장
+    private String dayOfWeek; // Enum으로 저장
     private LocalDate date;
     private LocalTime start_time;
     private LocalTime end_time;
@@ -24,7 +24,7 @@ public class PopupScheduleDTO {
     // Entity → DTO 변환 생성자
     public PopupScheduleDTO(PopupStoreSchedule schedule) {
         this.schedule_id = schedule.getSchedule_id();
-        this.dayOfWeek = schedule.getDayOfWeek() != null ? schedule.getDayOfWeek() : null;
+        this.dayOfWeek = schedule.getDayOfWeek().getKor();
         this.date = schedule.getDate();
         this.start_time = schedule.getStart_time();
         this.end_time = schedule.getEnd_time();
