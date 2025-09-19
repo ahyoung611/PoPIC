@@ -27,8 +27,6 @@ public class ImageController {
     @GetMapping
     public ResponseEntity<byte[]> getImage(@RequestParam(name = "id") Long imageId,
                                            @RequestParam(name = "type") String type) {
-        System.out.println("type: " + type);
-        System.out.println("id: " + imageId);
 
         // imageId로 이미지 정보 조회
         switch (type) {
