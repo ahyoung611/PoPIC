@@ -54,6 +54,7 @@ public class ImageController {
             imagePath = Path.of("C:/" + type + "/", savedName);
         }else{
             imagePath = Path.of(home,"popic-uploads", type, savedName);
+            System.out.println(imagePath.toString());
         }
 
 

@@ -73,10 +73,10 @@ public class VendorPopupsApiController {
     public ResponseEntity<List<Long>> addImages(
             @PathVariable Long storeId,
             @RequestParam("files") List<MultipartFile> files) {
+        System.out.println("???");
         List<Long> ids = service.addImagesToStore(storeId, files);
         return ResponseEntity.ok(ids);
     }
-
 
     @GetMapping(value = "/images/{imageId}", produces = MediaType.ALL_VALUE)
     public ResponseEntity<byte[]> serveImageById(@PathVariable Long imageId) {

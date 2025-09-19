@@ -273,7 +273,7 @@ public class VendorPopupsService {
                 .orElseThrow(() -> new IllegalArgumentException("popup not found: " + storeId));
         List<Image> images = new ArrayList<>();
         Path folder = Paths.get(uploadPath, "popup");
-        System.out.println("여기서 저장됨?");
+
         try { Files.createDirectories(folder); } catch (Exception e) {
             throw new RuntimeException("업로드 폴더 생성 실패: " + folder, e);
         }

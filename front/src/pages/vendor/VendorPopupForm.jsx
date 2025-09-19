@@ -135,7 +135,6 @@ export default function VendorPopupForm() {
         });
     }, [isEdit, id, navigate]);
 
-
     const [imagePreviews, setImagePreviews] = useState([]); // [{key,name,url,fileIndex}]
 
     useEffect(() => {
