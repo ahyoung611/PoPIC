@@ -46,7 +46,7 @@ const PopupDetail = () => {
         setModalOpen(true); // 모달 열기
     };
 
-    return(
+    return (
         <div className={"container"}>
             <div className={"popupStore-detail inner"}>
                 {popupDetail ? (
@@ -55,7 +55,7 @@ const PopupDetail = () => {
                         <PopupInfo popup={popupDetail}></PopupInfo>
 
                         <div className={"menu-tab"}>
-                            {tabs.map((tab)=>(
+                            {tabs.map((tab) => (
                                 <Button
                                     key={tab}
                                     className={activeTab === tab ? "tab active" : "tab"}
@@ -76,30 +76,31 @@ const PopupDetail = () => {
                         {activeTab === "리뷰" && (
                             <PopupReview popup={popupDetail}></PopupReview>
                         )}
-                    {activeTab === "문의" && (
-                        <PopupInquiry popup={popupDetail}></PopupInquiry>
-                    )}
-                    <button
-                        onClick={() => {
-                            setShowQr(true)
-                        }}
-                    >
-                        QR 코드 생성
-                    </button>
-                    {showQr ? (<QrCode/>) : (
-                        <></>
-                    )}
-                    {/* 모달 컴포넌트 추가 */}
-                    <PopupReservationModal
-                        isOpen={modalOpen}
-                        onClose={() => setModalOpen(false)} // 모달 닫기
-                        reservationData={reservationData} // 예약 정보 전달
-                    />
-                </>
-            ) : (<p>loading...</p>)}
+                        {activeTab === "문의" && (
+                            <PopupInquiry popup={popupDetail}></PopupInquiry>
+                        )}
+                        <button
+                            onClick={() => {
+                                setShowQr(true)
+                            }}
+                        >
+                            QR 코드 생성
+                        </button>
+                        {showQr ? (<QrCode/>) : (
+                            <></>
+                        )}
+                        {/* 모달 컴포넌트 추가 */}
+                        <PopupReservationModal
+                            isOpen={modalOpen}
+                            onClose={() => setModalOpen(false)} // 모달 닫기
+                            reservationData={reservationData} // 예약 정보 전달
+                        />
+                    </>
+                ) : (<p>loading...</p>)}
 
+            </div>
         </div>
     )
 }
 
-export default PopupDetail
+export default PopupDetail;
