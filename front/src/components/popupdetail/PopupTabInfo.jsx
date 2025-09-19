@@ -53,8 +53,6 @@ const PopupTabInfo = (props)=>{
             });
     }
 
-
-
     return(
         <div className={"popup-tab-info"}>
             <div className={"open-time"}>
