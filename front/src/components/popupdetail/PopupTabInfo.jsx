@@ -21,10 +21,22 @@ const PopupTabInfo = (props)=>{
             const container = document.getElementById("map");
             if (!container) return;
             const options = {
-                center: new window.kakao.maps.LatLng(33.450701, 126.570667),
+                center: new window.kakao.maps.LatLng(props.popup.latitude, props.popup.longitude),
                 level: 3
             };
-            new window.kakao.maps.Map(container, options);
+            const map = new window.kakao.maps.Map(container, options);
+            const markerPosition  = new kakao.maps.LatLng(props.popup.latitude, props.popup.longitude);
+
+            const marker = new kakao.maps.Marker({
+                position: markerPosition,
+                clickable: true
+            });
+
+            marker.setMap(map);
+
+            kakao.maps.event.addListener(marker, 'click', function() {
+                copyLocation();
+            });
         };
 
         if (window.kakao && window.kakao.maps) {
@@ -40,7 +52,7 @@ const PopupTabInfo = (props)=>{
                 window.kakao.maps.load(initKakaoMap);
             };
         }
-    },[])
+    },[props.popup])
 
     function copyLocation(){
         const textToCopy = props.popup.address + " " + props.popup.address_detail;

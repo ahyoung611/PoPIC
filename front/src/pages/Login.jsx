@@ -66,6 +66,21 @@ const Login = () => {
         }
     };
 
+    // 네이버 로그인
+    const naverLogin = () => {
+        const NAVER_CLIENT_ID = import.meta.env.VITE_NAVER_CLIENT_ID;
+        const NAVER_REDIRECT_URI = import.meta.env.VITE_NAVER_REDIRECT_URI;
+
+        const handleNaverLogin = () => {
+            const state = crypto.randomUUID(); // CSRF 방지용 state
+            localStorage.setItem("naver_oauth_state", state);
+
+            const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${NAVER_REDIRECT_URI}&state=${state}`;
+            window.location.href = naverAuthUrl;
+        };
+
+    }
+
     const goJoinHref = `/join?role=${role}`;
 
     return (
@@ -172,7 +187,8 @@ const Login = () => {
                         <button type="button" className="login-social-btn" title="카카오 로그인">
                             <img src={kakao} alt="kakao" />
                         </button>
-                        <button type="button" className="login-social-btn" title="네이버 로그인">
+                        <button type="button" className="login-social-btn" title="네이버 로그인"
+                        onClick={naverLogin}>
                             <img src={naver} alt="naver" />
                         </button>
                         <button type="button" className="login-social-btn" title="구글 로그인">
