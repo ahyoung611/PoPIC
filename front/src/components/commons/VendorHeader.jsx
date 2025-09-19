@@ -35,7 +35,7 @@ export default function VendorHeader({ onLogout }) {
 
                     <div className="header__right">
                         <a className="header__link" onClick={onLogout}>로그아웃</a>
-                        <NavLink to="/vendor/mypage" className={linkClass}>마이페이지</NavLink>
+                        <NavLink to="/vendorMypage" className={linkClass}>마이페이지</NavLink>
                     </div>
                 </div>
             </header>
@@ -51,7 +51,7 @@ export default function VendorHeader({ onLogout }) {
                     <NavLink to="/vendor/reservations" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>예약 관리</NavLink>
                     <NavLink to="/vendor/onsite" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>현장 관리</NavLink>
                     <a className="Drawer__item" onClick={() => { close(); onLogout?.(); }}>로그아웃</a>
-                    <NavLink to="/vendor/mypage" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>마이페이지</NavLink>
+                    <NavLink to="/vendorMypage" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>마이페이지</NavLink>
                 </div>
             </aside>
         </>

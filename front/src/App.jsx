@@ -18,11 +18,11 @@ import UserMyPage from "./pages/user/UserMyPage.jsx";
 import AdminPopup from "./pages/admin/AdminPopup.jsx";
 import AdminVendor from "./pages/admin/AdminVendor.jsx";
 import AdminUser from "./pages/admin/AdminUser.jsx";
+import VendorMyPage from "./pages/vendor/VendorMyPage.jsx";
+import CheckoutPage from "./pages/Checkout.jsx";
+import SuccessPage from "./pages/Success.jsx";
+import FailPage from "./pages/Fail.jsx";
 
-
-function UserMypage() {
-    return null;
-}
 
 function App() {
 
@@ -92,6 +92,9 @@ function App() {
                     <Route path={"/board/:id"} element={<BoardEditor/>}></Route>
                     <Route path={"/board/:id/edit"} element={<BoardEditor/>}></Route>
                     <Route path={"/userMyPage"} element={<UserMyPage/>}></Route>
+                    <Route path={"/checkout"} element={<CheckoutPage/>}></Route>
+                    <Route path={"/success"} element={<SuccessPage />} />
+                    <Route path={"/fail"} element={<FailPage />} />
                 </Route>
 
 
@@ -100,6 +103,7 @@ function App() {
                     <Route path="/vendorPopups" element={<VendorMain/>}></Route>
                     <Route path="/vendorPopups/new" element={<VendorPopupForm/>}></Route>
                     <Route path="/vendorPopups/edit/:id" element={<VendorPopupForm/>}></Route>
+                    <Route path={"/vendorMyPage"} element={<VendorMyPage/>}></Route>
                 </Route>
 
                 {/*어드민 Layout */}
