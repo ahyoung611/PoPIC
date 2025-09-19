@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Duration;
 import java.util.HashMap;
@@ -29,7 +28,7 @@ public class QrCodeController {
         String token = UUID.randomUUID().toString();
         String dummyReservationData = "userId:1234,popupId:5678"; // 실제 데이터
 
-        redisTemplate.opsForValue().set(token, dummyReservationData, Duration.ofMinutes(5));
+        redisTemplate.opsForValue().set(token, dummyReservationData, Duration.ofMinutes(1));
 
         // 2. QR 코드 URL
         String qrData = "http://10.5.4.14:8080/scan-qr?token=" + token;
@@ -49,13 +48,11 @@ public class QrCodeController {
 
     @GetMapping("/scan-qr")
     public Map<String, Object> scanQr(@RequestParam("token") String token) {
-        System.out.println("들어옴??");
         Map<String, Object> response = new HashMap<>();
 
         // 1. Redis에서 토큰 조회
         String reservationData = redisTemplate.opsForValue().get(token);
 
-        System.out.println("---------");
         System.out.println("reservation: " + reservationData);
 
         if (reservationData == null) {
