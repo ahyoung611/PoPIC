@@ -1,4 +1,3 @@
-/* ===== Board Layout (index 변수 재사용) ===== */
 .be-wrap{
     max-width: 900px;     /* PC 구간에서 .inner와 동일 폭 */
     margin: 32px auto 96px;
@@ -150,22 +149,6 @@
     background: #fff;
     font-size: var(--font-size-base);
 }
-
-.btn {
-    height: 36px;
-    padding: 0 14px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    cursor: pointer;
-    font-size: var(--font-button);
-}
-.btn--ghost { background: #f7f7f7; }
-.btn--primary {
-    background: var(--main-color);
-    color: #fff;
-    border-color: var(--main-color);
-}
-.btn--primary:hover { background: var(--main-hover-color); border-color: var(--main-hover-color); }
 
 .board-list {
     display: grid;
