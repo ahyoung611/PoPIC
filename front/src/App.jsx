@@ -77,7 +77,7 @@ function App() {
                 {/*일반 유저 Layout */}
                 <Route element={<UserHeaderLayout/>}>
                     <Route path={"/"} element={<Main/>}></Route>
-                    <Route path={"/popupStore/detail"} element={<PopupDetail/>}></Route>
+                    <Route path={"/popupStore/detail/:id"} element={<PopupDetail/>}></Route>
                     <Route path={"/join"} element={<Join/>}></Route>
                     <Route path={"/board"} element={<BoardList/>}></Route>
                     <Route path={"/board/new"} element={<BoardEditor/>}></Route>
@@ -90,7 +90,7 @@ function App() {
                 <Route element={<VendorHeaderLayout/>}>
                     <Route path="/vendorPopups" element={<VendorMain/>}></Route>
                     <Route path="/vendorPopups/new" element={<VendorPopupForm/>}></Route>
-                    <Route path="/vendorPopups/:id/edit" element={<VendorPopupForm/>}></Route>
+                    <Route path="/vendorPopups/edit/:id" element={<VendorPopupForm/>}></Route>
                 </Route>
 
                 {/*어드민 Layout */}
