@@ -32,12 +32,13 @@ export default function PopupCard({
                                       thumb,
                                       onEdit,
                                       onView,
+                                      imageId
                                   }) {
     return (
         <div className="popup-card">
             <div className="popup-thumb">
                 {thumb ? (
-                    <img src={thumb} alt={title} />
+                    <img src={`http://localhost:8080/images?type=popup&id=${imageId}`} alt={title} />
                 ) : (
                     <div className="thumb-placeholder" aria-label="이미지 없음" />
                 )}

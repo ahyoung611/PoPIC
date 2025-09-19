@@ -3,14 +3,21 @@ package com.example.popic.file;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 public class FileSave {
 
     public static String fileSave(String type, MultipartFile file){
+        String os = System.getProperty("os.name").toLowerCase();
+        String home = System.getProperty("user.home");
+        String uploadDir;
         try{
-            String uploadDir = "C:/" + type;
+            if(os.contains("win")){
+                uploadDir = "C:/" + type;
+            }else{
+                uploadDir = home + File.separator + type;
+            }
+
             File directory = new File(uploadDir);
 
             if (!directory.exists()) {
@@ -34,7 +41,5 @@ public class FileSave {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
-
 }

@@ -4,6 +4,9 @@ import com.example.popic.entity.entities.Address;
 import com.example.popic.entity.entities.Image;
 import com.example.popic.entity.entities.PopupStore;
 import com.example.popic.entity.entities.Vendor;
+import com.example.popic.file.FileSave;
+import com.example.popic.image.dto.ImageDTO;
+import com.example.popic.image.repository.ImageRepository;
 import com.example.popic.popup.dto.PopupDTO;
 import com.example.popic.vendor.controller.VendorPopupsApiController;
 import com.example.popic.vendor.repository.VendorPopupsRepository;
@@ -31,7 +34,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class VendorPopupsService {
-
+    private final ImageRepository imageRepository;
     private final VendorPopupsRepository repository;
     private final VendorRepository vendorRepository;
 
@@ -111,7 +114,16 @@ public class VendorPopupsService {
         buildSchedulesAndSlots(store, dto);
 
         // 파일 저장
-        saveImages(store, files);
+        for(MultipartFile file : files){
+            System.out.println("파일저장 시작");
+            String savedName = FileSave.fileSave("popup", file);
+            Image image = Image.builder()
+                    .original_name(file.getOriginalFilename())
+                    .saved_name(savedName)
+                    .popupStore(store)
+                    .build();
+            imageRepository.save(image);
+        }
 
         return store.getStore_id();
     }
@@ -261,8 +273,7 @@ public class VendorPopupsService {
                 .orElseThrow(() -> new IllegalArgumentException("popup not found: " + storeId));
         List<Image> images = new ArrayList<>();
         Path folder = Paths.get(uploadPath, "popup");
-        System.out.println("여기아님?");
-        System.out.println("uploadPath: "+uploadPath);
+
         try { Files.createDirectories(folder); } catch (Exception e) {
             throw new RuntimeException("업로드 폴더 생성 실패: " + folder, e);
         }
