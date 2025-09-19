@@ -1,6 +1,6 @@
 import Button from "../commons/Button.jsx";
 import ConfirmModal from "../commons/ConfirmModal.jsx";
-import { useState } from "react";
+import {useState} from "react";
 
 const PopupInfo = (props) => {
     const popup = props.popup;
@@ -36,6 +36,13 @@ const PopupInfo = (props) => {
             <ConfirmModal
                 open={walkInModalOpen}
                 title="현장 대기하시겠습니까?"
+                description={
+                    <div className={"walkInModalDescription"}>
+                        3팀 전에 호출됩니다 <br/>
+                        순서가 호출되면 즉시 입장해 주세요.<br/>
+                        호출 후 10분이 지나면 자동으로 취소됩니다
+                    </div>
+                }
                 okText="대기하기"
                 cancelText="취소"
                 closeOnOutside={true}
