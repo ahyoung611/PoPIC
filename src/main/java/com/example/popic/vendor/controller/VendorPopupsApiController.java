@@ -22,7 +22,6 @@ public class VendorPopupsApiController {
         return service.listPopups();
     }
 
-
     // 카카오 주소
     @GetMapping("/addresses/cities")
     public List<String> cities() { return service.getCities(); }
