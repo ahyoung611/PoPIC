@@ -14,8 +14,12 @@ import BoardEditor from "./pages/user/BoardEditor.jsx";
 import Login from "./pages/Login.jsx";
 import VendorPopupForm from "./pages/vendor/VendorPopupForm.jsx";
 import NaverCallback from "./pages/user/NaverCallback.jsx";
+import UserMyPage from "./pages/user/UserMyPage.jsx";
 
 
+function UserMypage() {
+    return null;
+}
 
 function App() {
 
@@ -84,6 +88,7 @@ function App() {
                     <Route path={"/board/new"} element={<BoardEditor/>}></Route>
                     <Route path={"/board/:id"} element={<BoardEditor/>}></Route>
                     <Route path={"/board/:id/edit"} element={<BoardEditor/>}></Route>
+                    <Route path={"/userMyPage"} element={<UserMyPage/>}></Route>
                 </Route>
 
 
