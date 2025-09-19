@@ -1,17 +1,28 @@
-import React from 'react';
+import React from "react";
 
-export default function QuickActions({ onClickMyPopic, onClickMyReview, onClickMyPosts }) {
-    const Item = ({ label, onClick }) => (
-        <div className="action" onClick={onClick} role="button" tabIndex={0}>
-            <div>{label}</div>
-        </div>
-    );
-
+export default function QuickActions() {
     return (
         <div className="card actions">
-            <Item label="나의 팝픽" onClick={onClickMyPopic}/>
-            <Item label="나의 리뷰" onClick={onClickMyReview}/>
-            <Item label="나의 글" onClick={onClickMyPosts}/>
+            <a className="action" href="/me/popic">
+                <div className="icon">
+                    <img src="/popic-icon.png" alt="나의 팝픽" />
+                </div>
+                <div className="label">나의 팝픽</div>
+            </a>
+
+            <a className="action" href="/me/reviews">
+                <div className="icon">
+                    <img src="/review-icon.png" alt="나의 리뷰" />
+                </div>
+                <div className="label">나의 리뷰</div>
+            </a>
+
+            <a className="action" href="/me/posts">
+                <div className="icon" >
+                    <img src="/post-icon.png" alt="나의 글" />
+                </div>
+                <div className="label">나의 글</div>
+            </a>
         </div>
     );
 }
