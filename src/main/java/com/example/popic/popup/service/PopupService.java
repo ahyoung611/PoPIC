@@ -25,7 +25,6 @@ public class PopupService {
     public PopupDTO findByIdWithImages(Long id) {
         PopupStore popupStore = popupRepository.findByIdWithImages(id).orElse(null);
 
-        System.out.println(popupStore);
         return new PopupDTO(popupStore);
     }
 

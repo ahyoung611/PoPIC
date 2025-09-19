@@ -1,14 +1,14 @@
 package com.example.popic.file;
 
-import com.example.popic.entity.entities.ReviewImage;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 public class FileSave {
 
-    public static String FileSave(String type, MultipartFile file){
+    public static String fileSave(String type, MultipartFile file){
         try{
             String uploadDir = "C:/" + type;
             File directory = new File(uploadDir);
@@ -36,4 +36,5 @@ public class FileSave {
         }
 
     }
+
 }
