@@ -38,7 +38,7 @@ export default function UserHeader({ isLoggedIn = false }) {
                     {/* 우측 */}
                     <div className="header__right">
                         {isLoggedIn
-                            ? <NavLink to="/mypage" className={linkClass}>마이페이지</NavLink>
+                            ? <NavLink to="/userMyPage" className={linkClass}>마이페이지</NavLink>
                             : <NavLink to="/login" className={linkClass}>로그인</NavLink>}
                     </div>
                 </div>
@@ -56,7 +56,7 @@ export default function UserHeader({ isLoggedIn = false }) {
                     <NavLink to="/popups" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>팝업 예약</NavLink>
                     <NavLink to="/board" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>게시판</NavLink>
                     {isLoggedIn
-                        ? <NavLink to="/mypage" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>마이페이지</NavLink>
+                        ? <NavLink to="/userMyPage" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>마이페이지</NavLink>
                         : <NavLink to="/login" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>로그인/회원가입</NavLink>}
                 </div>
             </aside>

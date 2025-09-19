@@ -15,11 +15,7 @@ import Login from "./pages/Login.jsx";
 import VendorPopupForm from "./pages/vendor/VendorPopupForm.jsx";
 import NaverCallback from "./pages/user/NaverCallback.jsx";
 import UserMyPage from "./pages/user/UserMyPage.jsx";
-
-
-function UserMypage() {
-    return null;
-}
+import VendorMyPage from "./pages/vendor/VendorMyPage.jsx";
 
 function App() {
 
@@ -97,6 +93,7 @@ function App() {
                     <Route path="/vendorPopups" element={<VendorMain/>}></Route>
                     <Route path="/vendorPopups/new" element={<VendorPopupForm/>}></Route>
                     <Route path="/vendorPopups/edit/:id" element={<VendorPopupForm/>}></Route>
+                    <Route path={"/vendorMyPage"} element={<VendorMyPage/>}></Route>
                 </Route>
 
                 {/*어드민 Layout */}
