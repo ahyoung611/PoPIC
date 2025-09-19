@@ -1,9 +1,19 @@
 import "../../style/modal.css";
-
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const PopupReservationModal = ({ isOpen, onClose, reservationData }) => {
+const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
     if (!isOpen) return null; // 모달이 열리지 않으면 아무것도 반환하지 않음
+    const navigate = useNavigate();
+
+    const goCheckout = () => {
+        // 예약 데이터를 쿼리스트링으로 넘김
+        navigate(
+            `/checkout?price=${reservationData.price}&name=${encodeURIComponent(
+                reservationData.name
+            )}&date=${reservationData.date}&time=${reservationData.time}&people=${reservationData.numberOfPeople}`
+        );
+    };
 
     return (
         <div className="modalMask reservationModal" onClick={onClose}>
@@ -19,7 +29,7 @@ const PopupReservationModal = ({ isOpen, onClose, reservationData }) => {
                 </div>
 
                 <div className="modalActions">
-                    <button className="modalBtn btnPay">결제</button>
+                    <button className="modalBtn btnPay" onClick={goCheckout}>결제</button>
                     <button className="modalBtn btnGhost" onClick={onClose}>취소</button>
                 </div>
             </div>
