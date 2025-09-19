@@ -68,8 +68,12 @@ const Login = () => {
 
     // 네이버 로그인
     const naverLogin = () => {
+        console.log("naver login");
         const NAVER_CLIENT_ID = import.meta.env.VITE_NAVER_CLIENT_ID;
         const NAVER_REDIRECT_URI = import.meta.env.VITE_NAVER_REDIRECT_URI;
+
+        console.log("NAVER_CLIENT_ID: ", NAVER_CLIENT_ID);
+        console.log("NAVER_REDIRECT_URI: ", NAVER_REDIRECT_URI);
 
         const handleNaverLogin = () => {
             const state = crypto.randomUUID(); // CSRF 방지용 state
@@ -78,7 +82,7 @@ const Login = () => {
             const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${NAVER_REDIRECT_URI}&state=${state}`;
             window.location.href = naverAuthUrl;
         };
-
+        handleNaverLogin();
     }
 
     const goJoinHref = `/join?role=${role}`;

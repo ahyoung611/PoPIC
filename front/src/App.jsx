@@ -13,6 +13,7 @@ import Join from "./pages/Join.jsx";
 import BoardEditor from "./pages/user/BoardEditor.jsx";
 import Login from "./pages/Login.jsx";
 import VendorPopupForm from "./pages/vendor/VendorPopupForm.jsx";
+import NaverCallback from "./pages/user/NaverCallback.jsx";
 
 
 
@@ -99,6 +100,7 @@ function App() {
                 </Route>
 
             </Route>
+            <Route path={"/naver/callback"} element={<NaverCallback/>}></Route>
         </Routes>
     )
 }
