@@ -14,9 +14,18 @@ import java.util.stream.Collectors;
 public class AdminService {
     private final PopupRepository popupRepository;
 
-    public List<PopupDTO> findPendingPopup(){
-        return popupRepository.findPendingPopup().stream()
-                .map(PopupDTO::new)
-                .collect(Collectors.toList());
+    public List<PopupDTO> getPopupStatus(String sort){
+        return switch (sort) {
+            case "approved" -> popupRepository.findApprovedPopup().stream()
+                    .map(PopupDTO::new).collect(Collectors.toList());
+            case "rejected" -> popupRepository.findRejectedPopup().stream()
+                    .map(PopupDTO::new).collect(Collectors.toList());
+            default -> popupRepository.findPendingPopup().stream()
+                    .map(PopupDTO::new).collect(Collectors.toList());
+        };
+    }
+
+    public void updatePopupStatus(Long popupId, int statusCode) {
+        popupRepository.updatePopupStatus(popupId, statusCode);
     }
 }

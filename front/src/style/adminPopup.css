@@ -1,0 +1,12 @@
+.admin-popup .popupDetailModal{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.admin-popup .popupDetailModal img{
+    width: 200px;
+    height: 200px;
+}
