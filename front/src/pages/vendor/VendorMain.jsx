@@ -1,16 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SearchHeader from "../../components/commons/SearchHeader";
 import Pagination from "../../components/commons/Pagination";
 import "../../style/vendorList.css";
 import PopupCard from "../../components/vendorPopups/PopupCard.jsx";
 import apiRequest from "../../utils/apiRequest.js";
 
-const LIST_API = "/api/vendorPopups";                // GET: PopupDTO[]
-const CATEGORY_API = "/api/vendorPopups/categories"; // GET: [{id,name}]
-
+// 날짜 포맷터(YYYY-MM-DD → YY.MM.DD)
 const fmt = (d) => {
-    // LocalDate 형태('2025-09-09')를 '25.09.09'로
     if (!d) return "";
     const [y, m, day] = String(d).split("-");
     return `${y.slice(2)}.${m}.${day}`;
@@ -18,21 +15,25 @@ const fmt = (d) => {
 
 export default function VendorMain() {
     const navigate = useNavigate();
+    const { vendorId } = useParams();
 
+    // 벤더 스코프 API 엔드포인트
+    const LIST_API = `/api/vendors/${vendorId}/popups`;
+    const CATEGORY_API = `/api/vendors/${vendorId}/popups/categories`;
 
-    // 검색
+    // 검색 상태
     const [searchValue, setSearchValue] = useState("");
     const [appliedSearch, setAppliedSearch] = useState("");
 
-    // 페이징
+    // 페이징 상태
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;
 
-    // 데이터
+    // 데이터 상태(카테고리맵/카드 rows)
     const [catMap, setCatMap] = useState(new Map());
-    const [rows, setRows] = useState([]); // 가공된 카드 데이터
+    const [rows, setRows] = useState([]);
 
-    // 카테고리 맵 로드
+    // 카테고리 로드
     useEffect(() => {
         (async () => {
             try {
@@ -43,33 +44,37 @@ export default function VendorMain() {
                 setCatMap(new Map());
             }
         })();
-    }, []);
+    }, [CATEGORY_API]);
 
     // 팝업 리스트 로드
     useEffect(() => {
         (async () => {
             try {
                 const data = await apiRequest(LIST_API);
-                const mapped = (data || []).map((d) => ({
-                    id: d.store_id,
-                    title: d.store_name,
-                    startDate: fmt(d.start_date),
-                    endDate: fmt(d.end_date),
-                    categories: (d.categories || [])
-                        .map((cid) => catMap.get(cid))
-                        .filter(Boolean),
-                    status: d.status,
-                    thumb: d.thumb || null,
-                    imageId: d.images_detail[0].image_id,
-                }));
-                console.log(data);
+                const mapped = (data || []).map((d) => {
+                    const status = d.status;
+                    const canEdit = status === 2 || status === 3;
+                    return {
+                        id: d.store_id,
+                        title: d.store_name,
+                        startDate: fmt(d.start_date),
+                        endDate: fmt(d.end_date),
+                        categories: (d.categories || [])
+                            .map((cid) => catMap.get(cid))
+                            .filter(Boolean),
+                        status,
+                        thumb: d.thumb || null,
+                        imageId: d.images_detail?.[0]?.image_id,
+                        canEdit,
+                    };
+                });
                 setRows(mapped);
             } catch (e) {
                 console.error("목록 로드 실패:", e);
                 setRows([]);
             }
         })();
-    }, [catMap]); // 카테고리 맵 로딩 이후에 매핑
+    }, [LIST_API, catMap]);
 
     // 검색 필터링
     const filtered = useMemo(() => {
@@ -82,35 +87,34 @@ export default function VendorMain() {
                 .toLowerCase()
                 .includes(kw)
         );
-    }, [rows, appliedSearch]);
+    }, [rows, appliedSearch, searchValue]);
 
-    // 페이징
+    // 페이징 계산
     const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
     const paged = useMemo(() => {
         const start = (currentPage - 1) * pageSize;
         return filtered.slice(start, start + pageSize);
     }, [filtered, currentPage]);
 
-    // 액션
+    // 버튼 핸들러(검색/등록/수정/상세)
     const handleSearch = () => {
         setCurrentPage(1);
         setAppliedSearch(searchValue);
     };
-    const handleRegister = () => navigate("/vendorPopups/new");
-    const handleEdit = (id) => navigate(`/vendorPopups/edit/${id}`);
-    const handleView = (id) => navigate(`/popupStore/detail/${id}`);
+    const handleRegister = () => navigate(`/vendor/${vendorId}/popups/new`);
+    const handleEdit = (popupId) =>
+        navigate(`/vendor/${vendorId}/popups/edit/${popupId}`);
+    const handleView = (popupId) => navigate(`/popupStore/detail/${popupId}`);
 
     return (
         <div className="container">
             <div className="inner">
-
                 <SearchHeader
                     searchValue={searchValue}
                     onSearchChange={setSearchValue}
                     onSearchClick={handleSearch}
                     onRegisterClick={handleRegister}
                 />
-
                 <div className="vendor-list">
                     {paged.length === 0 ? (
                         <div className="empty">표시할 팝업이 없습니다.</div>
@@ -128,11 +132,11 @@ export default function VendorMain() {
                                 imageId={p.imageId}
                                 onEdit={handleEdit}
                                 onView={handleView}
+                                canEdit={p.canEdit}
                             />
                         ))
                     )}
                 </div>
-
                 <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
