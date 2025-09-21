@@ -28,6 +28,10 @@ public class UserDTO {
     private ROLE role = ROLE.USER;  // USER, VENDOR, ADMIN
     private int status = 1; // 1: 정상, 0: 정지, -1: 탈퇴
 
+    // young 프로필
+    private String profileOriginalName;
+    private String profileSavedName;
+
     public UserDTO(User user) {
         this.email = user.getEmail();
         this.join_date = user.getJoin_date();
@@ -36,6 +40,12 @@ public class UserDTO {
         this.point = user.getPoint();
         this.phone_number = user.getPhone_number();
         this.user_id = user.getUser_id();
+
+        // young 프로필
+        if(user.getUser_profile() != null){
+            this.profileOriginalName = user.getUser_profile().getOriginal_name();
+            this.profileSavedName = user.getUser_profile().getSaved_name();
+        }
     }
 
 }
