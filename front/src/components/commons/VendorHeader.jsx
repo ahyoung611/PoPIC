@@ -27,15 +27,15 @@ export default function VendorHeader({ onLogout }) {
                     </div>
 
                     <nav className="header__nav">
-                        <NavLink to="/vendorPopups" end className={linkClass}>홈</NavLink>
-                        <NavLink to="/vendorPopups/new" className={linkClass}>팝업 등록</NavLink>
+                        <NavLink to="/vendor/:vendorId/popups" end className={linkClass}>홈</NavLink>
+                        <NavLink to="/vendor/:vendorId/popups/new" className={linkClass}>팝업 등록</NavLink>
                         <NavLink to="/vendor/reservations" className={linkClass}>예약 관리</NavLink>
                         <NavLink to="/vendor/onsite" className={linkClass}>현장 관리</NavLink>
                     </nav>
 
                     <div className="header__right">
                         <a className="header__link" onClick={onLogout}>로그아웃</a>
-                        <NavLink to="/vendorMypage" className={linkClass}>마이페이지</NavLink>
+                        <NavLink to="/vendor/myPage/:vendorId" className={linkClass}>마이페이지</NavLink>
                     </div>
                 </div>
             </header>

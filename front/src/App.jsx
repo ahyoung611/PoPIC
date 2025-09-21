@@ -19,6 +19,7 @@ import VendorMyPage from "./pages/vendor/VendorMyPage.jsx";
 import CheckoutPage from "./pages/Checkout.jsx";
 import SuccessPage from "./pages/Success.jsx";
 import FailPage from "./pages/Fail.jsx";
+import UserProfile from "./pages/user/UserProfile.jsx";
 
 
 function App() {
@@ -88,19 +89,19 @@ function App() {
                     <Route path={"/board/new"} element={<BoardEditor/>}></Route>
                     <Route path={"/board/:id"} element={<BoardEditor/>}></Route>
                     <Route path={"/board/:id/edit"} element={<BoardEditor/>}></Route>
-                    <Route path={"/userMyPage"} element={<UserMyPage/>}></Route>
+                    <Route path={"/userMyPage/:userId"} element={<UserMyPage/>} />
+                    <Route path={"/userMyPage/profile/:userId"} element={<UserProfile />} />
                     <Route path={"/checkout"} element={<CheckoutPage/>}></Route>
                     <Route path={"/success"} element={<SuccessPage />} />
                     <Route path={"/fail"} element={<FailPage />} />
                 </Route>
 
-
                 {/*벤더 유저 Layout */}
                 <Route element={<VendorHeaderLayout/>}>
-                    <Route path="/vendorPopups" element={<VendorMain/>}></Route>
-                    <Route path="/vendorPopups/new" element={<VendorPopupForm/>}></Route>
-                    <Route path="/vendorPopups/edit/:id" element={<VendorPopupForm/>}></Route>
-                    <Route path={"/vendorMyPage"} element={<VendorMyPage/>}></Route>
+                    <Route path="/vendor/:vendorId/popups" element={<VendorMain/>} />
+                    <Route path="/vendor/:vendorId/popups/new" element={<VendorPopupForm/>} />
+                    <Route path="/vendor/:vendorId/popups/edit/:popupId" element={<VendorPopupForm/>} />
+                    <Route path="/vendor/myPage/:vendorId" element={<VendorMyPage/>} />
                 </Route>
 
                 {/*어드민 Layout */}

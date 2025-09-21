@@ -1,0 +1,41 @@
+.profile-card {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    padding: 20px 20px 24px;
+}
+
+.profile-card__head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+}
+
+.profile-card__title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.profile-card__sub {
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.profile-card__form {
+    padding-top: 4px;
+}
+
+.status-badge-slot {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}

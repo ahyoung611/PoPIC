@@ -1,48 +1,36 @@
-import React, {useState, useCallback, useEffect} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import React, { useState, useCallback, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import AddressSelector from "./AddressSelector.jsx";
 import "../../style/vendorPopup.css";
 import Button from "../../components/commons/Button.jsx";
 
+// 상수/헬퍼
 const KAKAO_JS_API_KEY = import.meta.env.VITE_KAKAO_JS_API_KEY;
-const CATEGORY_API = "/api/vendorPopups/categories";
-const DAY_TO_ENUM = {
-    "월": "MONDAY",
-    "화": "TUESDAY",
-    "수": "WEDNESDAY",
-    "목": "THURSDAY",
-    "금": "FRIDAY",
-    "토": "SATURDAY",
-    "일": "SUNDAY"
+const DAY_TO_ENUM = { "월":"MONDAY","화":"TUESDAY","수":"WEDNESDAY","목":"THURSDAY","금":"FRIDAY","토":"SATURDAY","일":"SUNDAY" };
+const DAYS = Object.entries(DAY_TO_ENUM).map(([label, value]) => ({ label, value }));
+const toYYYYMMDD = (d) => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
 };
-const DAYS = Object.entries(DAY_TO_ENUM).map(([label, value]) => ({label, value}));
 
 export default function VendorPopupForm() {
-    async function fetchJson(url, opts) {
-        const res = await fetch(url, opts);
-        if (!res.ok) {
-            const text = await res.text().catch(() => "");
-            throw new Error(`HTTP ${res.status} ${text?.slice(0, 200)}`);
-        }
-        const ct = res.headers.get("content-type") || "";
-        if (!ct.includes("application/json")) {
-            const text = await res.text().catch(() => "");
-            throw new Error(`JSON 아님 (${ct}) ${text?.slice(0, 200)}`);
-        }
-        return res.json();
-    }
-
-    const params = useParams();
-    const id = params.id ?? params.popupId ?? params.vendorPopupId ?? null;
-    const isEdit = id != null;
+    // 라우트/네비게이션
+    const { vendorId, popupId } = useParams();     // /vendor/:vendorId/popups[/edit/:popupId]
+    const isEdit = !!popupId;
     const navigate = useNavigate();
 
+    // API 엔드포인트 (벤더 스코프)
+    const CATEGORY_API = `/api/vendors/${vendorId}/popups/categories`;
+
+    // 폼 상태
     const [form, setForm] = useState({
         store_id: null,
         store_name: "",
         description: "",
         vendor: null,
-        categories: [],      // ← id 배열
+        categories: [],      // 카테고리 id 배열
         start_date: "",
         end_date: "",
         schedules: [],
@@ -58,85 +46,81 @@ export default function VendorPopupForm() {
         status: 2,
     });
 
-    // UI 전용
-    const [imageFiles, setImageFiles] = useState([]);              // 새로 추가할 파일들
-    const [existingImages, setExistingImages] = useState([]);      // [{id, savedName, url}]
-    const [categories, setCategories] = useState([{id: 0, label: "전체"}]);
+    // UI 전용 상태
+    const [imageFiles, setImageFiles] = useState([]);          // 새로 추가할 파일
+    const [existingImages, setExistingImages] = useState([]);  // [{id, savedName, url}]
+    const [categories, setCategories] = useState([{ id: 0, label: "전체" }]);
     const [categorySelect, setCategorySelect] = useState(0);
     const [openDays, setOpenDays] = useState(new Set());
     const [startTime, setStartTime] = useState("10:00");
     const [endTime, setEndTime] = useState("19:00");
     const [capacityPerHour, setCapacityPerHour] = useState("");
-
-    const update = (k, v) => setForm((p) => ({...p, [k]: v}));
-
-    const toYYYYMMDD = (d) => {
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-        return `${yyyy}-${mm}-${dd}`;
-    };
+    const [imagePreviews, setImagePreviews] = useState([]);    // [{key,name,url,fileIndex}]
     const todayStr = toYYYYMMDD(new Date());
 
-    // 카테고리 로딩
+    // 공용 setForm 헬퍼
+    const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+
+    // 카테고리 로드
     useEffect(() => {
         let alive = true;
         (async () => {
             try {
-                const list = await fetchJson(CATEGORY_API);
+                const res = await fetch(CATEGORY_API);
+                const list = await res.json();
                 if (!alive) return;
-                setCategories([{id: 0, label: "전체"}, ...list.map(c => ({id: c.id, label: c.name}))]);
+                setCategories([{ id: 0, label: "전체" }, ...list.map(c => ({ id: c.id, label: c.name }))]);
             } catch (e) {
                 console.error("카테고리 로드 실패:", e);
             }
         })();
-        return () => {
-            alive = false;
-        };
-    }, []);
+        return () => { alive = false; };
+    }, [CATEGORY_API]);
 
-    // 수정 모드면 기존 데이터 불러오기
+    // 수정 모드 – 서버 DTO를 폼에 반영
     useEffect(() => {
         if (!isEdit) return;
+
         (async () => {
-            const dto = await fetchJson(`/api/vendorPopups/${id}`);
+            const res = await fetch(`/api/vendors/${vendorId}/popups/${popupId}`);
+            if (!res.ok) throw new Error("popup load failed");
+            const dto = await res.json();
 
-            // 기본 폼 병합
-            setForm(p => ({...p, ...dto}));
+            // 기본 폼 채우기
+            setForm(prev => ({
+                ...prev,
+                ...dto,
+                price: dto.price ?? "",          // 숫자 -> 입력칸 문자열
+                vendor: dto.vendor ?? null,
+            }));
 
-            // 카테고리 배열
-            if (Array.isArray(dto.categories) && dto.categories.length) {
-                setCategorySelect(dto.categories[0]);
-            }
+            // 카테고리(단일 선택 UI라면 첫 번째만)
+            setCategorySelect(Array.isArray(dto.categories) && dto.categories.length ? dto.categories[0] : 0);
 
-            // 요일/시간/인원
-            if (Array.isArray(dto.open_days) && dto.open_days.length) {
-                setOpenDays(new Set(dto.open_days)); // ["MONDAY", ...]
-            }
+            // 요일/시간/정원
+            setOpenDays(new Set(dto.open_days || []));
             if (dto.open_start_time) setStartTime(dto.open_start_time);
-            if (dto.open_end_time) setEndTime(dto.open_end_time);
+            if (dto.open_end_time)   setEndTime(dto.open_end_time);
             if (dto.capacity_per_hour != null) setCapacityPerHour(String(dto.capacity_per_hour));
 
             // 기존 이미지
             const storeId = dto.store_id;
-            const imgs = (dto.images_detail || []).map((img, index) => ({
-                id: img.image_id ?? `img-${index}`,
-                savedName: img.saved_name,
-                url: (img.saved_name && storeId)
-                    ? `/api/vendorPopups/images/${storeId}/${img.saved_name}`
-                    : "",
-            })).filter(x => !!x.url);
+            const imgs = (dto.images_detail || [])
+                .map((img, i) => ({
+                    id: img.image_id ?? `img-${i}`,
+                    savedName: img.saved_name,
+                    url: `/api/vendors/${vendorId}/popups/images/${storeId}/${img.saved_name}`,
+                }))
+                .filter(x => !!x.url);
             setExistingImages(imgs);
-
         })().catch(err => {
             console.error(err);
             alert("데이터를 불러오지 못했습니다.");
-            navigate("/vendorPopups", {replace: true});
+            navigate(`/vendor/${vendorId}/popups`, { replace: true });
         });
-    }, [isEdit, id, navigate]);
+    }, [isEdit, vendorId, popupId, navigate]);
 
-    const [imagePreviews, setImagePreviews] = useState([]); // [{key,name,url,fileIndex}]
-
+    // 새 이미지 프리뷰 관리
     useEffect(() => {
         const next = imageFiles.map((f, idx) => ({
             key: `new-${f.name}-${f.lastModified}-${idx}`,
@@ -148,20 +132,17 @@ export default function VendorPopupForm() {
         return () => next.forEach(p => URL.revokeObjectURL(p.url));
     }, [imageFiles]);
 
-    // 주소 변경만 반영
+    // 주소 변경 핸들러
     const handleAddrChange = useCallback((v = {}) => {
         setForm((prev) => {
             const addr = v.addressString || "";
             const detail = v.detail || "";
-
             const noChange =
                 prev.address === addr &&
                 prev.address_detail === detail &&
                 (v.latitude == null || prev.latitude === v.latitude) &&
                 (v.longitude == null || prev.longitude === v.longitude);
-
             if (noChange) return prev;
-
             return {
                 ...prev,
                 address: addr,
@@ -172,26 +153,26 @@ export default function VendorPopupForm() {
         });
     }, []);
 
+    // 파일 선택/삭제
     const handleFiles = (e) => {
         const files = Array.from(e.target.files || []);
         setImageFiles(prev => [...prev, ...files]);  // 누적 선택
         e.target.value = "";
     };
-
     const removeExistingImage = async (imageId) => {
         if (!confirm("이미지를 삭제할까요?")) return;
-        const res = await fetch(`/api/vendorPopups/images/${imageId}`, {method: "DELETE"});
+        const res = await fetch(`/api/vendors/${vendorId}/popups/images/${imageId}`, { method: "DELETE" });
         if (!res.ok && res.status !== 204) return alert("삭제 실패");
         setExistingImages(list => list.filter(x => x.id !== imageId));
     };
 
-    // 공통 유효성
+    // 폼 유효성 검사
     const validate = () => {
         if (!form.store_name.trim()) return "팝업명을 입력해 주세요.";
         if (!form.start_date || !form.end_date) return "운영 기간을 입력해 주세요.";
         if (!form.address) return "시/구를 선택해 주세요.";
         if (!form.address_detail.trim()) return "상세 주소를 입력해 주세요.";
-        if (form.latitude == null || form.longitude == null) return "좌표를 먼저 받아 주세요.";
+        if (form.latitude == null || form.longitude == null) return "주소를 먼저 적어주세요.";
         if (form.price !== "" && Number.isNaN(Number(form.price))) return "가격은 숫자만 입력해 주세요.";
         if (openDays.size === 0) return "운영 요일을 선택해 주세요.";
         if (!startTime || !endTime || startTime >= endTime) return "운영 시간을 확인하세요.";
@@ -199,6 +180,7 @@ export default function VendorPopupForm() {
         return null;
     };
 
+    // 제출(등록/수정)
     const handleSubmit = async (e) => {
         e.preventDefault();
         const err = validate();
@@ -207,7 +189,7 @@ export default function VendorPopupForm() {
         const dto = {
             ...form,
             categories: categorySelect === 0 ? [] : [categorySelect],
-            open_days: Array.from(openDays),            // ["MONDAY",...]
+            open_days: Array.from(openDays),
             open_start_time: startTime,
             open_end_time: endTime,
             capacity_per_hour: Number(capacityPerHour),
@@ -217,52 +199,52 @@ export default function VendorPopupForm() {
 
         try {
             if (!isEdit) {
-                // 신규 등록: 멀티파트
                 const fd = new FormData();
-                fd.append("dto", new Blob([JSON.stringify(dto)], {type: "application/json"}));
+                fd.append("dto", new Blob([JSON.stringify(dto)], { type: "application/json" }));
                 imageFiles.forEach(f => fd.append("files", f));
-                const res = await fetch("/api/vendorPopups", {method: "POST", body: fd});
-                const json = await res.json().catch(() => ({result: false, message: "JSON 파싱 실패"}));
+                const res = await fetch(`/api/vendors/${vendorId}/popups`, { method: "POST", body: fd });
+                const json = await res.json().catch(() => ({ result: false, message: "JSON 파싱 실패" }));
                 if (!res.ok || !json.result) return alert(json.message || "등록 실패");
             } else {
-                // 메타데이터 수정
-                const res = await fetch(`/api/vendorPopups/${id}`, {
+                const res = await fetch(`/api/vendors/${vendorId}/popups/${popupId}`, {
                     method: "PUT",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify(dto)
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dto),
                 });
-                const json = await res.json().catch(() => ({result: false, message: "JSON 파싱 실패"}));
+                const json = await res.json().catch(() => ({ result: false, message: "JSON 파싱 실패" }));
                 if (!res.ok || !json.result) return alert(json.message || "수정 실패");
 
-                // 새 이미지 추가 업로드
                 if (imageFiles.length > 0) {
                     const fd = new FormData();
                     imageFiles.forEach(f => fd.append("files", f));
-                    const up = await fetch(`/api/vendorPopups/${id}/images`, {method: "POST", body: fd});
+                    const up = await fetch(`/api/vendors/${vendorId}/popups/${popupId}/images`, { method: "POST", body: fd });
                     if (!up.ok) return alert("이미지 업로드 실패");
                 }
             }
-            navigate("/vendorPopups");
+            navigate(`/vendor/${vendorId}/popups`);
         } catch (e) {
             console.error(e);
             alert(isEdit ? "수정 중 오류" : "등록 중 오류");
         }
     };
 
+    // 팝업 삭제
     const handleDeletePopup = async () => {
         if (!confirm("이 팝업을 삭제할까요? 삭제 후 복구할 수 없습니다.")) return;
-        const res = await fetch(`/api/vendorPopups/${id}`, {method: "DELETE"});
+        const res = await fetch(`/api/vendors/${vendorId}/popups/${popupId}`, { method: "DELETE" });
         if (res.status !== 204) {
             const msg = await res.text().catch(() => "");
             return alert(msg || "삭제 실패");
         }
-        navigate("/vendorPopups");
+        navigate(`/vendor/${vendorId}/popups`);
     };
 
+    // 파생 값
     const pageTitle = isEdit ? "팝업 수정" : "팝업 등록";
     const city = form.address?.split(" ")[0] ?? "";
     const district = form.address?.split(" ")[1] ?? "";
 
+    // 렌더
     return (
         <div className="container">
             <div className="inner">
@@ -272,9 +254,13 @@ export default function VendorPopupForm() {
                     {/* 팝업명 */}
                     <div className="vp-field">
                         <label className="vp-label required">팝업명</label>
-                        <input className="vp-input" value={form.store_name}
-                               onChange={(e) => update("store_name", e.target.value)} placeholder="예) 마포 시즌 팝업"
-                               required/>
+                        <input
+                            className="vp-input"
+                            value={form.store_name}
+                            onChange={(e) => update("store_name", e.target.value)}
+                            placeholder="예) 마포 시즌 팝업"
+                            required
+                        />
                     </div>
 
                     {/* 이미지 추가 */}
@@ -282,13 +268,13 @@ export default function VendorPopupForm() {
                         <label className="vp-label">이미지 추가</label>
 
                         <label className="vp-input vp-filebox">
-                            <input type="file" multiple accept="image/*" onChange={handleFiles}/>
+                            <input type="file" multiple accept="image/*" onChange={handleFiles} />
                             {imageFiles.length === 0 ? "파일을 선택하세요" : `${imageFiles.length}개 선택됨`}
                         </label>
 
                         {(existingImages.length > 0 || imageFiles.length > 0) && (
                             <ul className="vp-file-list">
-                                {/* 기존 이미지: 파일명만 표시 */}
+                                {/* 기존 이미지 목록 */}
                                 {existingImages.map((img) => {
                                     const deletable = typeof img.id === "number";
                                     return (
@@ -307,16 +293,14 @@ export default function VendorPopupForm() {
                                     );
                                 })}
 
-                                {/* 새로 선택한 이미지: 파일명만 표시 */}
+                                {/* 새로 선택한 이미지 목록 */}
                                 {imageFiles.map((f, i) => (
                                     <li key={`new-${i}`} className="vp-file-item">
                                         <span className="vp-file-name">{f.name}</span>
                                         <button
                                             type="button"
                                             className="file-delete"
-                                            onClick={() =>
-                                                setImageFiles((prev) => prev.filter((_, idx) => idx !== i))
-                                            }
+                                            onClick={() => setImageFiles((prev) => prev.filter((_, idx) => idx !== i))}
                                         >
                                             &times;
                                         </button>
@@ -329,9 +313,16 @@ export default function VendorPopupForm() {
                     {/* 카테고리 */}
                     <div className="vp-field">
                         <label className="vp-label">카테고리</label>
-                        <select className="vp-select" value={categorySelect}
-                                onChange={(e) => setCategorySelect(Number(e.target.value))}>
-                            {categories.map((c) => (<option key={c.id} value={c.id}>{c.label}</option>))}
+                        <select
+                            className="vp-select"
+                            value={categorySelect}
+                            onChange={(e) => setCategorySelect(Number(e.target.value))}
+                        >
+                            {categories.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                    {c.label}
+                                </option>
+                            ))}
                         </select>
                     </div>
 
@@ -344,7 +335,7 @@ export default function VendorPopupForm() {
                                 className="vp-input"
                                 value={form.start_date ?? ""}
                                 onChange={(e) => update("start_date", e.target.value)}
-                                min={todayStr}                    // 오늘 이전 선택 불가
+                                min={todayStr}
                                 required
                             />
                         </div>
@@ -355,7 +346,7 @@ export default function VendorPopupForm() {
                                 className="vp-input"
                                 value={form.end_date ?? ""}
                                 onChange={(e) => update("end_date", e.target.value)}
-                                min={form.start_date || todayStr} // 시작일 이전 선택 불가
+                                min={form.start_date || todayStr}
                                 required
                             />
                         </div>
@@ -364,8 +355,13 @@ export default function VendorPopupForm() {
                     {/* 시간당 인원 수 */}
                     <div className="vp-field">
                         <label className="vp-label">시간당 인원 수</label>
-                        <input className="vp-input" inputMode="numeric" value={capacityPerHour}
-                               onChange={(e) => setCapacityPerHour(e.target.value)} placeholder="예) 20"/>
+                        <input
+                            className="vp-input"
+                            inputMode="numeric"
+                            value={capacityPerHour}
+                            onChange={(e) => setCapacityPerHour(e.target.value)}
+                            placeholder="예) 20"
+                        />
                     </div>
 
                     {/* 장소 */}
@@ -373,6 +369,7 @@ export default function VendorPopupForm() {
                         <label className="vp-label">장소</label>
                         <AddressSelector
                             kakaoAppKey={KAKAO_JS_API_KEY}
+                            basePath={`/api/vendors/${vendorId}/popups`}
                             value={{
                                 city,
                                 district,
@@ -411,29 +408,37 @@ export default function VendorPopupForm() {
                         </div>
 
                         <div className="vp-time-row">
-                            <input type="time" className="vp-input" value={startTime}
-                                   onChange={(e) => setStartTime(e.target.value)}/>
+                            <input type="time" className="vp-input" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
                             <span className="vp-tilde">~</span>
-                            <input type="time" className="vp-input" value={endTime}
-                                   onChange={(e) => setEndTime(e.target.value)}/>
+                            <input type="time" className="vp-input" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
                         </div>
                     </div>
 
                     {/* 가격 */}
                     <div className="vp-field">
                         <label className="vp-label">가격(원)</label>
-                        <input className="vp-input" inputMode="decimal" placeholder="예) 10000" value={form.price ?? ""}
-                               onChange={(e) => update("price", e.target.value.replace(/[^\d.]/g, ""))}/>
+                        <input
+                            className="vp-input"
+                            inputMode="decimal"
+                            placeholder="예) 10000"
+                            value={form.price ?? ""}
+                            onChange={(e) => update("price", e.target.value.replace(/[^\d.]/g, ""))}
+                        />
                     </div>
 
-                    {/* 소개 */}
+                    {/* 팝업 소개 */}
                     <div className="vp-field">
                         <label className="vp-label">팝업 소개</label>
-                        <textarea className="vp-textarea" rows={8} value={form.description ?? ""}
-                                  onChange={(e) => update("description", e.target.value)} placeholder="간단한 소개를 입력하세요"/>
+                        <textarea
+                            className="vp-textarea"
+                            rows={8}
+                            value={form.description ?? ""}
+                            onChange={(e) => update("description", e.target.value)}
+                            placeholder="간단한 소개를 입력하세요"
+                        />
                     </div>
 
-                    {/* 액션 */}
+                    {/* 버튼 */}
                     <div className="vp-actions">
                         <Button type="submit" variant="primary" color="red">
                             {isEdit ? "수정" : "등록"}
@@ -444,8 +449,12 @@ export default function VendorPopupForm() {
                                 <Button type="button" variant="outline" color="gray" onClick={handleDeletePopup}>
                                     삭제
                                 </Button>
-                                <Button type="button" variant="outline" color="gray"
-                                        onClick={() => navigate("/vendorPopups", {replace: true})}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    color="gray"
+                                    onClick={() => navigate(`/vendor/${vendorId}/popups`, { replace: true })}
+                                >
                                     팝업 목록
                                 </Button>
                             </>
@@ -457,7 +466,7 @@ export default function VendorPopupForm() {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    navigate("/vendorPopups", {replace: true});
+                                    navigate(`/vendor/${vendorId}/popups`, { replace: true });
                                 }}
                             >
                                 취소
