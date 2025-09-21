@@ -51,7 +51,7 @@ const PopupDetail = () => {
             <div className={"popupStore-detail inner"}>
                 {popupDetail ? (
                     <>
-                        <PopupImage images={popupDetail.images}></PopupImage>
+                        <PopupImage images={popupDetail.images || []}></PopupImage>
                         <PopupInfo popup={popupDetail}></PopupInfo>
 
                         <div className={"menu-tab"}>
