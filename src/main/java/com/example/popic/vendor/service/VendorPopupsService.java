@@ -66,10 +66,20 @@ public class VendorPopupsService {
         Address address = repository.findAddressByCityDistrict(city, district)
                 .orElseThrow(() -> new IllegalArgumentException("주소를 찾을 수 없습니다: " + dto.getAddress()));
 
-        // 소유자
-        Vendor vendor = vendorRepository.findById(vendorId)
-                .orElseThrow(() -> new IllegalArgumentException("vendor not found: " + vendorId));
 
+        // 소유자
+        // Vendor vendor = vendorRepository.findById(vendorId)
+        //        .orElseThrow(() -> new IllegalArgumentException("vendor not found: " + vendorId));
+
+        // 운영자
+        Vendor vendor;
+        if (dto.getVendor() == null) {
+            vendor = vendorRepository.findByLoginId(defaultVendorLoginId)
+                    .orElseThrow(() -> new IllegalStateException("기본 운영자(" + defaultVendorLoginId + ")가 없습니다."));
+        } else {
+            vendor = vendorRepository.findById(dto.getVendor().getVendor_id())
+                    .orElseThrow(() -> new IllegalArgumentException("vendor가 존재하지 않습니다. id=" + dto.getVendor()));
+        }
         // 엔티티 생성
         PopupStore store = new PopupStore();
         store.setStore_name(dto.getStore_name());

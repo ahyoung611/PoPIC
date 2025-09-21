@@ -15,6 +15,9 @@ import Login from "./pages/Login.jsx";
 import VendorPopupForm from "./pages/vendor/VendorPopupForm.jsx";
 import NaverCallback from "./pages/user/NaverCallback.jsx";
 import UserMyPage from "./pages/user/UserMyPage.jsx";
+import AdminPopup from "./pages/admin/AdminPopup.jsx";
+import AdminVendor from "./pages/admin/AdminVendor.jsx";
+import AdminUser from "./pages/admin/AdminUser.jsx";
 import VendorMyPage from "./pages/vendor/VendorMyPage.jsx";
 import CheckoutPage from "./pages/Checkout.jsx";
 import SuccessPage from "./pages/Success.jsx";
@@ -107,6 +110,9 @@ function App() {
                 {/*어드민 Layout */}
                 <Route element={<AdminHeaderLayout/>}>
                     <Route path="/admin" element={<AdminMain/>}></Route>
+                    <Route path="/admin/popupManage" element={<AdminPopup/>}></Route>
+                    <Route path="/admin/vendorManage" element={<AdminVendor/>}></Route>
+                    <Route path="/admin/userManage" element={<AdminUser/>}></Route>
                 </Route>
 
             </Route>

@@ -8,8 +8,10 @@ import com.example.popic.popup.dto.PopupScheduleDTO;
 import com.example.popic.popup.dto.ReviewReplyDTO;
 import com.example.popic.popup.repository.PopupRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -47,4 +49,5 @@ public class PopupService {
                 .map(ReviewReplyDTO::new)
                 .toList();
     }
+
 }
