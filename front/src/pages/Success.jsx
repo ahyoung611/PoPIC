@@ -6,12 +6,13 @@ export default function SuccessPage() {
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
-        // 쿼리 파라미터 값이 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
-        // 클라이언트에서 결제 금액을 조작하는 행위를 방지할 수 있습니다.
         const requestData = {
             orderId: searchParams.get("orderId"),
             amount: searchParams.get("amount"),
             paymentKey: searchParams.get("paymentKey"),
+            // userId: searchParams.get("userId"),
+            userId: 1, // 아직 없어서 1로 설정함 나중엔 위의 코드 풀면 됨
+
         };
 
         async function confirm() {
@@ -31,7 +32,23 @@ export default function SuccessPage() {
                 return;
             }
 
-            // 결제 성공 비즈니스 로직을 구현하세요.
+            if (response.ok) {
+                // 예약(결제) 데이터 서버에 저장 요청
+                await fetch("/reservations", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        orderId: requestData.orderId,
+                        amount: requestData.amount,
+                        paymentKey: requestData.paymentKey,
+                        // userId: currentUser.id, // 로그인 구현 후 주석 해제하기
+                    }),
+                });
+
+                navigate("/userMyPage");
+            }
         }
         confirm();
     }, []);
