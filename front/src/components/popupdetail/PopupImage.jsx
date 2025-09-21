@@ -1,7 +1,11 @@
 import { useState } from "react";
 
-const PopupImage = ({ images }) => {
+const PopupImage = ({ images = [] }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    if (!images || images.length === 0) {
+        return <div>이미지가 없습니다...</div>;
+    }
 
     const nextImage = () => {
         setCurrentIndex((prev) => (prev + 1) % images.length);
