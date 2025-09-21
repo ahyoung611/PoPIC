@@ -20,6 +20,7 @@ import privateCheckP from "../../public/privateCheck-p.png";
 import "../style/login.css";
 import "../style/button.css";
 
+
 const Login = () => {
     const navigate = useNavigate();
     const [params] = useSearchParams();

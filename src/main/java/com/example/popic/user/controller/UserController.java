@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.popic.security.JwtUtil;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final AccountUserVendorService accountUserVendorService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/join")
     public ResponseEntity<ApiRes> join(@RequestBody User user) {
@@ -54,15 +56,19 @@ public class UserController {
             }
             dto.setPassword(null);
 
-            // ★ 토큰 즉석 발급 (별도 서비스 없이)
-            String token = "U-" + u.getUser_id() + "-" + java.util.UUID.randomUUID();
-
+            // 문자열 토큰
+//            String token = "U-" + u.getUser_id() + "-" + java.util.UUID.randomUUID();
+            String token = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
             return ResponseEntity.ok(ApiRes.okLogin("로그인 성공", token, dto));
+
+
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.ok(ApiRes.fail(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.ok(ApiRes.fail("로그인 처리 중 오류가 발생했습니다."));
         }
+
+
     }
 
     public record ApiRes(boolean result, String message, Long id, String token, Object user) {
