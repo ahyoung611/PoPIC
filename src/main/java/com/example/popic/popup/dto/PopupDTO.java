@@ -1,6 +1,7 @@
 package com.example.popic.popup.dto;
 
 import com.example.popic.entity.entities.*;
+import com.example.popic.vendor.dto.VendorDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ public class PopupDTO {
     private Long store_id;
     private String store_name;
     private String description;
-    private Long vendor; // 운영자
+    private VendorDTO vendor; // 운영자
     private List<Long> categories = new ArrayList<>(); // 전송용
     private List<String> category_names = new ArrayList<>(); // young 화면 표시용
     private LocalDate start_date;
@@ -49,7 +50,7 @@ public class PopupDTO {
     public PopupDTO(PopupStore entity) {
         this.store_id = entity.getStore_id();
         this.store_name = entity.getStore_name();
-        this.vendor = entity.getVendor().getVendor_id();
+        this.vendor = new VendorDTO(entity.getVendor());
         this.description = entity.getDescription();
         this.start_date = entity.getStart_date();
         this.end_date = entity.getEnd_date();

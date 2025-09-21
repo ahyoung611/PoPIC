@@ -84,7 +84,7 @@ public class VendorPopupsService {
             vendor = vendorRepository.findByLoginId(defaultVendorLoginId)
                     .orElseThrow(() -> new IllegalStateException("기본 운영자(" + defaultVendorLoginId + ")가 없습니다."));
         } else {
-            vendor = vendorRepository.findById(dto.getVendor())
+            vendor = vendorRepository.findById(dto.getVendor().getVendor_id())
                     .orElseThrow(() -> new IllegalArgumentException("vendor가 존재하지 않습니다. id=" + dto.getVendor()));
         }
 
