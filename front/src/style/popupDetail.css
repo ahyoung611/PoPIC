@@ -61,7 +61,7 @@
 /* 팝업 상세 이미지 */
 .popupStore-detail .popup-image {
     width: 100%;
-    height: 500px;
+    height: 300px;
     object-fit: cover;
 }
 

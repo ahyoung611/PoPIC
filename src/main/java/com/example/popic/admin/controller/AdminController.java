@@ -18,8 +18,9 @@ public class AdminController {
     private  final AdminService adminService;
 
     @GetMapping("/popup")
-    public ResponseEntity<List<PopupDTO>> getPopupStatus(@RequestParam(name="sort", defaultValue = "")String sort){
-        List<PopupDTO> list = adminService.getPopupStatus(sort);
+    public ResponseEntity<List<PopupDTO>> getPopupStatus(@RequestParam(name="sort", defaultValue = "")String sort,
+                                                         @RequestParam(name="keyword", defaultValue = "")String keyword){
+        List<PopupDTO> list = adminService.getPopupStatus(sort, keyword);
         return ResponseEntity.ok(list);
     }
 

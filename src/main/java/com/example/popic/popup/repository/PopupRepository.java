@@ -29,17 +29,17 @@ public interface PopupRepository extends JpaRepository<PopupStore, Long> {
     @Query("SELECT rp FROM ReviewReply rp WHERE rp.review.store.store_id = :id")
     List<ReviewReply> getReviewReply(Long id);
 
-    @Query("SELECT p FROM PopupStore p WHERE p.status = 2")
-    List<PopupStore> findPendingPopup();
+    @Query("SELECT p FROM PopupStore p WHERE p.status = 2 AND p.store_name LIKE CONCAT('%', :keyword, '%')")
+    List<PopupStore> findPendingPopup(String keyword);
 
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query("UPDATE PopupStore p SET p.status = :statusCode WHERE p.store_id = :popupId")
     void updatePopupStatus(Long popupId, int statusCode);
 
-    @Query("SELECT p FROM PopupStore p WHERE p.status = 1")
-    List<PopupStore> findApprovedPopup();
+    @Query("SELECT p FROM PopupStore p WHERE p.status = 1 AND p.store_name LIKE CONCAT('%', :keyword, '%')")
+    List<PopupStore> findApprovedPopup(String keyword);
 
-    @Query("SELECT p FROM PopupStore p WHERE p.status = -1")
-    List<PopupStore> findRejectedPopup();
+    @Query("SELECT p FROM PopupStore p WHERE p.status = -1 AND p.store_name LIKE CONCAT('%', :keyword, '%')")
+    List<PopupStore> findRejectedPopup(String keyword);
 }

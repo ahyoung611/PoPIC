@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 public class AdminService {
     private final PopupRepository popupRepository;
 
-    public List<PopupDTO> getPopupStatus(String sort){
+    public List<PopupDTO> getPopupStatus(String sort, String keyword){
         return switch (sort) {
-            case "approved" -> popupRepository.findApprovedPopup().stream()
+            case "approved" -> popupRepository.findApprovedPopup(keyword).stream()
                     .map(PopupDTO::new).collect(Collectors.toList());
-            case "rejected" -> popupRepository.findRejectedPopup().stream()
+            case "rejected" -> popupRepository.findRejectedPopup(keyword).stream()
                     .map(PopupDTO::new).collect(Collectors.toList());
-            default -> popupRepository.findPendingPopup().stream()
+            default -> popupRepository.findPendingPopup(keyword).stream()
                     .map(PopupDTO::new).collect(Collectors.toList());
         };
     }

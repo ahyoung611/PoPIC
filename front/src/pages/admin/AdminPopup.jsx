@@ -4,17 +4,18 @@ import Button from "../../components/commons/Button.jsx";
 import apiRequest from "../../utils/apiRequest.js";
 import PopupDetailModal from "./PopupDetailModal.jsx";
 import '../../style/adminPopup.css';
+import ConfirmModal from "../../components/commons/ConfirmModal.jsx";
 
 const AdminPopup = () => {
     const [popupList, setPopupList] = useState([]);
     const [sort, setSort] = useState("");
-    const keyword = useRef("");
+    const [keyword, setKeyword] = useState("");
     const [modal, setModal] = useState(false);
     const [selected, setSelected] = useState(null);
 
 
     const fetchPopup = async () => {
-        const response = await apiRequest(`/admin/popup?sort=`+sort, {
+        const response = await apiRequest(`/admin/popup?sort=${sort}&keyword=${keyword}`, {
             credentials: "include",
         });
         setPopupList(response);
@@ -54,7 +55,6 @@ const AdminPopup = () => {
         setModal(true);
     }
 
-
     return (
         <div className={"container"}>
             <div className={"inner admin-popup"}>
@@ -69,8 +69,8 @@ const AdminPopup = () => {
                             { label: "반려", value: "rejected" },
                         ]}
                     />
-                    <input type={"text"} ref={keyword} placeholder={"승인대기 팝업 검색"}/>
-                    <Button>검색</Button>
+                    <input type={"text"} onChange={(e)=>{setKeyword(e.target.value)}} placeholder={"팝업명 검색"}/>
+                    <Button onClick={fetchPopup}>검색</Button>
                 </div>
                 <div className={"list-table"}>
                     <table>
