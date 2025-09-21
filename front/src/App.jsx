@@ -22,6 +22,9 @@ import VendorMyPage from "./pages/vendor/VendorMyPage.jsx";
 import CheckoutPage from "./pages/Checkout.jsx";
 import SuccessPage from "./pages/Success.jsx";
 import FailPage from "./pages/Fail.jsx";
+import OperatorReservations from "./pages/vendor/OperatorReservations.jsx";
+import OperatorOnsite from "./pages/vendor/OperatorOnsite.jsx";
+import MyPopic from "./pages/user/MyPopic.jsx";
 import UserProfile from "./pages/user/UserProfile.jsx";
 
 
@@ -97,10 +100,13 @@ function App() {
                     <Route path={"/checkout"} element={<CheckoutPage/>}></Route>
                     <Route path={"/success"} element={<SuccessPage />} />
                     <Route path={"/fail"} element={<FailPage />} />
+                    <Route path={"/me/popic"} element={<MyPopic />} />
                 </Route>
 
                 {/*벤더 유저 Layout */}
                 <Route element={<VendorHeaderLayout/>}>
+                    <Route path={"/vendor/reservations"} element={<OperatorReservations/>}></Route>
+                    <Route path={"/vendor/onsite"} element={<OperatorOnsite/>}></Route>
                     <Route path="/vendor/:vendorId/popups" element={<VendorMain/>} />
                     <Route path="/vendor/:vendorId/popups/new" element={<VendorPopupForm/>} />
                     <Route path="/vendor/:vendorId/popups/edit/:popupId" element={<VendorPopupForm/>} />
