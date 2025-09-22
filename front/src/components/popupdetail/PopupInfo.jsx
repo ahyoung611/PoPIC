@@ -4,7 +4,7 @@ import {useState} from "react";
 
 const PopupInfo = (props) => {
     const popup = props.popup;
-    console.log("popup: ", popup);
+    console.log(props);
     const [walkInModalOpen, setWalkInModalOpen] = useState(false);
 
     const walkInSubmit = () => {

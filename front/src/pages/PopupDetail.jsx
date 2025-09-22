@@ -31,6 +31,7 @@ const PopupDetail = () => {
             const response = await apiRequest(`/popupStore/popupDetail?id=` + id, {
                 credentials: "include",
             });
+            console.log(response);
             setPopupDetail(response);
             if (new Date(response.end_date) < new Date().setHours(0, 0, 0, 0)) {
                 setActiveTab("팝업 정보");
