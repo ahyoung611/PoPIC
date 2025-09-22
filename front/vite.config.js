@@ -5,6 +5,7 @@ export default defineConfig({
     plugins: [react()],
     server: {
         proxy: {
+            "/waiting":{ target: "http://localhost:8080", changeOrigin: true },
 
 
             "/api": {

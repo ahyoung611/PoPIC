@@ -98,7 +98,7 @@ function App() {
                         <Route path={"/board"} element={<BoardList/>}></Route>
                         <Route path={"/board/new"} element={<BoardEditor/>}></Route>
                         <Route path={"/board/:id"} element={<BoardEditor/>}></Route>
-                        <Route path={"/board/:id/edit"} element={<BoardEditor/>}></Route>
+                        <Route path={"/board/edit/:id"} element={<BoardEditor/>}></Route>
                         <Route path={"/userMyPage/:userId"} element={<UserMyPage/>} />
                         <Route path={"/userMyPage/profile/:userId"} element={<UserProfile />} />
                         <Route path={"/checkout"} element={<CheckoutPage/>}></Route>
