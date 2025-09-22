@@ -7,6 +7,7 @@ import com.example.popic.popup.dto.PopupReservationDTO;
 import com.example.popic.popup.repository.ReservationRepository;
 import com.example.popic.user.repository.UserRepository;
 import com.example.popic.user.service.AccountUserVendorService;
+import com.example.popic.vendor.dto.VendorDTO;
 import com.example.popic.vendor.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,5 +51,20 @@ public class VendorService {
         return reservationRepository.getReservationsByPopupIdAndSortNum(popupId, sortNum).stream()
                 .map(PopupReservationDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    public void updateVendor(Long id, VendorDTO dto) {
+        Vendor vendor = vendorRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 벤더가 없습니다."));
+
+        vendor.setVendor_name(dto.getVendor_name());
+        vendor.setManager_name(dto.getManager_name());
+        vendor.setPhone_number(dto.getPhone_number());
+        vendor.setBrn(dto.getBrn());
+        if(dto.getPassword() != null && !dto.getPassword().isEmpty()){
+            vendor.setPassword(dto.getPassword());
+        }
+
+        vendorRepository.save(vendor);
     }
 }
