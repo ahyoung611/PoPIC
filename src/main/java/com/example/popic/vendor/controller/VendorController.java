@@ -82,9 +82,10 @@ public class VendorController {
     }
 
     @GetMapping("/reservationList")
-    public ResponseEntity<List<PopupReservationDTO>> getReservationList(@RequestParam(name = "popupId")Long popupId) {
-        System.out.println("hi");
-        List<PopupReservationDTO> reservationList = vendorService.getReservationList(popupId);
+    public ResponseEntity<List<PopupReservationDTO>> getReservationList(@RequestParam(name = "popupId")Long popupId,
+                                                                        @RequestParam(name="sort", defaultValue = "")String sort) {
+
+        List<PopupReservationDTO> reservationList = vendorService.getReservationList(popupId, sort);
 
         return ResponseEntity.ok(reservationList);
     }

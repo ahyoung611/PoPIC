@@ -12,7 +12,7 @@ const ReservationManage = ()=>{
     const popupId = params.popupId;
 
     const fetchReservation = async ()=>{
-        const response = await apiRequest(`/vendor/reservationList?popupId=${popupId}`, {
+        const response = await apiRequest(`/vendor/reservationList?popupId=${popupId}&sort=${sort}`, {
             credentials: "include",
         });
         console.log(response);
@@ -21,7 +21,7 @@ const ReservationManage = ()=>{
 
     useEffect(()=>{
         fetchReservation();
-    },[])
+    },[sort])
 
     return(
         <div className={"container"}>
@@ -34,6 +34,7 @@ const ReservationManage = ()=>{
                         options={[
                             { label: "전체", value: "" },
                             { label: "예약", value: "reservation" },
+                            { label: "입장 완료", value: "complete" },
                             { label: "예약 취소", value: "cancel" },
                         ]}
                     />
@@ -50,7 +51,6 @@ const ReservationManage = ()=>{
                                 <th>인원</th>
                                 <th>예약 시간</th>
                                 <th>상태</th>
-                                <th>관리</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,13 +61,20 @@ const ReservationManage = ()=>{
                                 <td>{item.reservationCount}</td>
                                 <td>{item.slot.start_time}</td>
                                 <td>
-                                    {item.status === 0
-                                        ? "입장 완료"
-                                        : item.status === 1
-                                            ? "예약 완료"
-                                            : "예약 취소"}
+                                    <Button variant={"label"} color={
+                                        item.status === 0
+                                                ? "red"
+                                                : item.status === 1
+                                                    ? "blue"
+                                                    : "gray"
+                                    }>
+                                        {item.status === 0
+                                            ? "입장 완료"
+                                            : item.status === 1
+                                                ? "예약 완료"
+                                                : "예약 취소"}
+                                    </Button>
                                 </td>
-                                <td></td>
                             </tr>
                         ))}
                         </tbody>

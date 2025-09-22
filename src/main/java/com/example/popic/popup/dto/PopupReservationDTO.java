@@ -3,7 +3,6 @@ package com.example.popic.popup.dto;
 import com.example.popic.entity.entities.Reservation;
 import com.example.popic.user.dto.UserDTO;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
