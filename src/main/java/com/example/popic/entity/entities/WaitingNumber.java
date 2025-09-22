@@ -25,7 +25,7 @@ public class WaitingNumber {
     private PopupStoreSchedule  popupStoreSchedule;
 
     @Column(nullable = false)
-    private Integer queue_number = 1; // 순번 (1,2,3...)
+    private Integer queue_number; // 순번 (1,2,3...)
 
     @Column(nullable = false, length = 20)
     private int status =1; // 대기 상태 1: 대기, -1: 입장, 0: 취소

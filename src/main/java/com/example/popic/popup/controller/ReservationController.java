@@ -1,7 +1,7 @@
-package com.example.popic.reservation;
+package com.example.popic.popup.controller;
 
 import com.example.popic.popup.dto.PopupReservationDTO;
-import com.example.popic.reservation.ReservationService;
+import com.example.popic.popup.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
