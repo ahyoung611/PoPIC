@@ -80,7 +80,7 @@ export default function VendorMyPage() {
             await apiRequest(`/api/vendors/${vendorId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
+                body: payload,
             });
 
             // 이미지 삭제 처리
@@ -104,13 +104,6 @@ export default function VendorMyPage() {
                 console.log("사진 업로드 성공");
             }
 
-            // 서버 최신값 반영
-            const v = await apiRequest(`/api/vendors/${vendorId}`);
-            const photo = await apiRequest(`/api/vendors/${vendorId}/photo`).catch(() => null);
-            const merged = { ...v, avatarUrl: photo?.url ?? null };
-
-            setData(merged);
-            setForm(merged);
             setEdit(false);
             console.log("프로필이 수정되었습니다.");
         } catch (e) {

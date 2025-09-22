@@ -22,4 +22,8 @@ public class VendorProfile {
     @OneToOne
     @JoinColumn(name = "vendor_id")
     private Vendor vendor;
+
+    public Long getId() {  // profile_id 대신 getId() 사용 가능
+        return profile_id;
+    }
 }

@@ -56,8 +56,7 @@ export default function UserProfile() {
 
             await apiRequest(`/api/users/${userId}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
+                body: payload,
             });
 
             // 사진 삭제
