@@ -24,6 +24,7 @@ import SuccessPage from "./pages/Success.jsx";
 import FailPage from "./pages/Fail.jsx";
 import UserProfile from "./pages/user/UserProfile.jsx";
 import ReservationManage from "./pages/vendor/ReservationManage.jsx";
+import FieldWaiting from "./pages/vendor/FieldWaiting.jsx";
 
 
 function App() {
@@ -105,6 +106,7 @@ function App() {
                     <Route path="/vendor/:vendorId/popups" element={<VendorMain/>} />
                     <Route path="/vendor/:vendorId/popups/new" element={<VendorPopupForm/>} />
                     <Route path={"/vendor/reservationManage/:popupId"} element={<ReservationManage/>}></Route>
+                    <Route path={"/vendor/fieldWaiting/:popupId"} element={<FieldWaiting/>}></Route>
                     <Route path="/vendor/:vendorId/popups/edit/:popupId" element={<VendorPopupForm/>} />
                     <Route path="/vendor/myPage/:vendorId" element={<VendorMyPage/>} />
                 </Route>
