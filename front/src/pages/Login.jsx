@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link, useSearchParams } from "react-router-dom";
-import apiRequest from "../utils/apiRequest";
+import {useState} from "react";
+import {Link, useNavigate, useSearchParams} from "react-router-dom";
 
 import eye from "../../public/eye.png";
 import nonEye from "../../public/nonEye.png";
@@ -47,11 +46,12 @@ const Login = () => {
 
         try {
             setLoading(true);
-            const endpoint = role === "USER" ? "/user/login" : "/vendor/login";
+            const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "/vendor/login";
             const res = await fetch(endpoint, {
                 method: "POST",
                 headers:{"Content-Type": "application/json" },
-                body: JSON.stringify(form)
+                body: JSON.stringify(form),
+                credentials: "include",
             });
 
             const data = await res.json();
