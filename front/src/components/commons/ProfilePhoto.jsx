@@ -59,7 +59,7 @@ export default function ProfilePhoto({
             >
                 <img
                     className="profilePhoto-img"
-                    src={preview}
+                    src={preview || defaultUrl}
                     alt="profile"
                     onError={(e) => { e.currentTarget.src = defaultUrl; }}
                 />

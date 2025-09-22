@@ -2,10 +2,14 @@ package com.example.popic.image.controller;
 
 import com.example.popic.board.dto.BoardImageDTO;
 import com.example.popic.board.service.BoardFileService;
+import com.example.popic.entity.entities.UserProfile;
+import com.example.popic.entity.entities.VendorProfile;
 import com.example.popic.image.dto.ImageDTO;
 import com.example.popic.image.dto.ReviewImageDTO;
 import com.example.popic.image.service.ImageService;
 import com.example.popic.image.service.ReviewImageService;
+import com.example.popic.user.service.UserProfileService;
+import com.example.popic.vendor.service.VendorProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +27,8 @@ public class ImageController {
     private final ImageService imageService;
     private final ReviewImageService reviewImageService;
     private final BoardFileService boardFileService;
+    private final UserProfileService userProfileService;
+    private final VendorProfileService vendorProfileService;
 
     @GetMapping
     public ResponseEntity<byte[]> getImage(@RequestParam(name = "id") Long imageId,
@@ -33,12 +39,27 @@ public class ImageController {
             case "popup":
                 ImageDTO image = imageService.findById(imageId);
                 return getImageFile(type, image.getSaved_name());
+
             case "review":
                 ReviewImageDTO reviewImage = reviewImageService.findById(imageId);
                 return getImageFile(type, reviewImage.getSaved_name());
+
             case "upload":
                 BoardImageDTO boardImageDTO = boardFileService.findById(imageId);
                 return getImageFile(type, boardImageDTO.getSavedName());
+
+            case "userProfile":
+                UserProfile userProfile = userProfileService.getProfileById(imageId);
+                if (userProfile != null && userProfile.getSaved_name() != null) {
+                    return getImageFile("userProfile", userProfile.getSaved_name());
+                }
+
+            case "vendorProfile":
+                VendorProfile vendorProfile = vendorProfileService.getProfileById(imageId);
+                if (vendorProfile != null && vendorProfile.getSaved_name() != null) {
+                    return getImageFile("vendorProfile", vendorProfile.getSaved_name());
+                }
+
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
         }
@@ -53,11 +74,9 @@ public class ImageController {
         if(os.contains("win")){
             imagePath = Path.of("C:/" + type + "/", savedName);
         }else{
-            imagePath = Path.of(home,"popic-uploads", type, savedName);
+            imagePath = Path.of(home,type, savedName);
             System.out.println(imagePath.toString());
         }
-
-
 
         try {
             byte[] imageBytes = Files.readAllBytes(imagePath);

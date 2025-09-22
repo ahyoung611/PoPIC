@@ -37,9 +37,14 @@ export default function UserHeader({ isLoggedIn = false }) {
 
                     {/* 우측 */}
                     <div className="header__right">
-                        {isLoggedIn
-                            ? <NavLink to="/userMyPage" className={linkClass}>마이페이지</NavLink>
-                            : <NavLink to="/login" className={linkClass}>로그인</NavLink>}
+                        {isLoggedIn ? (
+                            <>
+                                <NavLink to="/userMyPage" className={linkClass}>마이페이지</NavLink>
+                                <button className="header__logout" onClick={onLogout}>로그아웃</button>
+                            </>
+                        ) : (
+                            <NavLink to="/login" className={linkClass}>로그인</NavLink>
+                        )}
                     </div>
                 </div>
             </header>
@@ -55,9 +60,14 @@ export default function UserHeader({ isLoggedIn = false }) {
                     <NavLink to="/" end className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>홈</NavLink>
                     <NavLink to="/popups" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>팝업 예약</NavLink>
                     <NavLink to="/board" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>게시판</NavLink>
-                    {isLoggedIn
-                        ? <NavLink to="/userMyPage" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>마이페이지</NavLink>
-                        : <NavLink to="/login" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>로그인/회원가입</NavLink>}
+                    {isLoggedIn ? (
+                        <>
+                            <NavLink to="/userMyPage" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>마이페이지</NavLink>
+                            <button className="Drawer__item" onClick={() => { onLogout(); close(); }}>로그아웃</button>
+                        </>
+                    ) : (
+                        <NavLink to="/login" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>로그인</NavLink>
+                    )}
                 </div>
             </aside>
         </>

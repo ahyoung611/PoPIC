@@ -23,4 +23,8 @@ public class UserProfile {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public Long getId() {
+        return profile_id;
+    }
+
 }

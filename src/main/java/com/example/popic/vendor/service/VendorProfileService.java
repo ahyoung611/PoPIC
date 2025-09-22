@@ -1,5 +1,6 @@
 package com.example.popic.vendor.service;
 
+import com.example.popic.entity.entities.UserProfile;
 import com.example.popic.entity.entities.Vendor;
 import com.example.popic.entity.entities.VendorProfile;
 import com.example.popic.file.FileSave;
@@ -48,7 +49,7 @@ public class VendorProfileService {
     // 프로필 사진 조회
     public String getProfilePhotoUrl(Long vendorId) {
         return vendorProfileRepository.findByVendorVendor_Id(vendorId)
-                .map(p -> "/images/profile/" + p.getSaved_name())
+                .map(p -> "/images?id=" + p.getProfile_id() + "&type=vendorProfile")
                 .orElse(null);
     }
 
@@ -60,7 +61,7 @@ public class VendorProfileService {
         Vendor vendor = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new IllegalArgumentException("Vendor not found: " + vendorId));
 
-        String savedName = FileSave.fileSave("profile", file);
+        String savedName = FileSave.fileSave("vendorProfile", file);
 
         VendorProfile profile = vendorProfileRepository.findByVendorVendor_Id(vendorId)
                 .orElseGet(() -> {
@@ -100,9 +101,15 @@ public class VendorProfileService {
         try {
             String os = System.getProperty("os.name").toLowerCase();
             String home = System.getProperty("user.home");
-            String base = os.contains("win") ? "C:/profile" : home + Path.of("profile");
-            Path path = Paths.get(base.toString(), savedName);
+            Path basePath = os.contains("win") ? Paths.get("C:", "VendorProfile") : Paths.get(home, "VendorProfile");
+            Path path = basePath.resolve(savedName);
             Files.deleteIfExists(path);
         } catch (Exception ignored) {}
+    }
+
+    // 프로필 사진 조회
+    public VendorProfile getProfileById(Long profileId) {
+        return vendorProfileRepository.findById(profileId)
+                .orElseThrow(() -> new IllegalArgumentException("VendorProfile not found: " + profileId));
     }
 }
