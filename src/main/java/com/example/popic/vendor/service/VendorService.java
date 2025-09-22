@@ -34,9 +34,21 @@ public class VendorService {
         return vendorRepository.save(vendor).getVendor_id();
     }
 
-    public List<PopupReservationDTO> getReservationList(Long popupId) {
-        return reservationRepository.getReservationsByPopupId(popupId).stream()
-                                    .map(PopupReservationDTO::new)
+    public List<PopupReservationDTO> getReservationList(Long popupId, String sort) {
+        int sortNum;
+        if(sort.contains("reservation")){
+            sortNum = 1;
+        }else if(sort.contains("complete")){
+            sortNum = 0;
+        }else if(sort.contains("cancel")){
+            sortNum = -1;
+        }else{
+            return reservationRepository.getReservationsByPopupId(popupId).stream()
+                    .map(PopupReservationDTO::new)
+                    .collect(Collectors.toList());
+        }
+        return reservationRepository.getReservationsByPopupIdAndSortNum(popupId, sortNum).stream()
+                .map(PopupReservationDTO::new)
                 .collect(Collectors.toList());
     }
 }
