@@ -1,6 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
-
 async function apiRequest(endpoint, options = {}, token) {
     const isFormData = options.body instanceof FormData;
 
@@ -14,6 +13,7 @@ async function apiRequest(endpoint, options = {}, token) {
         },
         ...(options.body && !isFormData && { body: JSON.stringify(options.body) }),
         ...(options.body && isFormData && { body: options.body }),
+        credentials: "include",
     };
 
     try {
@@ -21,10 +21,7 @@ async function apiRequest(endpoint, options = {}, token) {
 
         // // 401 에러 시 토큰 만료 처리
         if (response.status === 401) {
-            console.warn("토큰이 만료되었습니다. 다시 로그인하세요.");
-            localStorage.removeItem("accessToken");
-            window.location.href = "/login";
-            return;
+            return null;
         }
 
         // JSON 변환
