@@ -18,13 +18,13 @@ async function apiRequest(endpoint, options = {}) {
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-        // // 401 에러 시 토큰 만료 처리
-        // if (response.status === 401) {
-        //     console.warn("토큰이 만료되었습니다. 다시 로그인하세요.");
-        //     localStorage.removeItem("accessToken");
-        //     window.location.href = "/login";
-        //     return;
-        // }
+        // 401 에러 시 토큰 만료 처리
+        if (response.status === 401) {
+            console.warn("토큰이 만료되었습니다. 다시 로그인하세요.");
+            localStorage.removeItem("accessToken");
+            window.location.href = "/login";
+            return;
+        }
 
         // JSON 변환
         const data = await response.json().catch(() => null);
