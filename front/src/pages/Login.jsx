@@ -1,9 +1,6 @@
-// src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
-import { getAccessToken, setAccessToken } from "../utils/apiRequest";
 import apiRequest from "../utils/apiRequest";
-
 
 import eye from "../../public/eye.png";
 import nonEye from "../../public/nonEye.png";
@@ -21,9 +18,11 @@ import privateCheckP from "../../public/privateCheck-p.png";
 
 import "../style/login.css";
 import "../style/button.css";
+import {useAuth} from "../context/AuthContext.jsx";
 
 
 const Login = () => {
+    const {login} = useAuth();
     const navigate = useNavigate();
     const [params] = useSearchParams();
     const initialRole = params.get("role") === "VENDOR" ? "VENDOR" : "USER";
@@ -49,17 +48,23 @@ const Login = () => {
         try {
             setLoading(true);
             const endpoint = role === "USER" ? "/user/login" : "/vendor/login";
-            const data = await apiRequest(endpoint, { method: "POST", body: form });
+            const res = await fetch(endpoint, {
+                method: "POST",
+                headers:{"Content-Type": "application/json" },
+                body: JSON.stringify(form)
+            });
+
+            const data = await res.json();
 
             if (!data?.result) {
                 alert(data?.message || "로그인에 실패했습니다.");
                 return;
             }
+            console.log(data);
 
-            if (data.token) {
-                setAccessToken(data.token);
+            if (data.token && data.user) {
+                login(data.token, data.user); // context에 저장
             }
-            if (data.user) sessionStorage.setItem("me", JSON.stringify(data.user));
 
             navigate("/");
         } catch (err) {
