@@ -9,11 +9,14 @@ import PopupTabInfo from "../components/popupdetail/PopupTabInfo.jsx";
 import PopupInquiry from "../components/popupdetail/PopupInquiry.jsx";
 import Button from "../components/commons/Button.jsx";
 import QrCode from "../components/qr/QrCode.jsx";
+import {useAuth} from "../context/AuthContext.jsx"
 
 import {useParams} from "react-router-dom";
 import PopupReservationModal from "../components/popupdetail/PopupReservationModal.jsx";
 
 const PopupDetail = () => {
+    const auth = useAuth();
+    const token = auth.token;
     const [popupDetail, setPopupDetail] = useState(null);
     const [activeTab, setActiveTab] = useState("예약"); // 기본 탭
     const [tabs, setTabs] = useState(["예약", "팝업 정보", "리뷰", "문의"]);
@@ -30,7 +33,7 @@ const PopupDetail = () => {
         const fetchPopupDetail = async () => {
             const response = await apiRequest(`/popupStore/popupDetail?id=` + id, {
                 credentials: "include",
-            });
+            }, token);
             console.log(response);
             setPopupDetail(response);
             if (new Date(response.end_date) < new Date().setHours(0, 0, 0, 0)) {

@@ -43,6 +43,26 @@ public class JwtUtil {
                 .compact();
     }
 
+    /** ✅ 토큰 유효성 검증 */
+    public boolean validateToken(String token) {
+        try {
+            parse(token); // 성공하면 유효
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /** ✅ Claims 꺼내기 */
+    public Claims getClaims(String token) {
+        return parse(token).getBody();
+    }
+
+    /** ✅ userId(혹은 subject) 꺼내기 */
+    public String getSubject(String token) {
+        return getClaims(token).getSubject();
+    }
+
     public Jws<Claims> parse(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key())
