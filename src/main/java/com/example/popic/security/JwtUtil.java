@@ -13,18 +13,18 @@ import java.util.Date;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-    @Value("${jwt.secret}")     private String secret;
+    @Value("${jwt.secret}") private String secret;
     @Value("${jwt.access-exp}") private long accessExp;
     @Value("${jwt.refresh-exp}")private long refreshExp;
 
     private Key key() {
-        // secret은 최소 32바이트 이상 문자열 권장
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String createAccessToken(String subject, String role, Long id) {
         return Jwts.builder()
                 .setSubject(subject)
+                .claim("typ", "access")
                 .claim("role", role)
                 .claim("id", id)
                 .setIssuedAt(new Date())
@@ -36,6 +36,7 @@ public class JwtUtil {
     public String createRefreshToken(String subject) {
         return Jwts.builder()
                 .setSubject(subject)
+                .claim("typ", "refresh")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExp))
                 .signWith(key(), SignatureAlgorithm.HS256)

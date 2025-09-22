@@ -7,6 +7,7 @@ export default defineConfig({
         proxy: {
               "/user":   { target: "http://localhost:8080", changeOrigin: true },
               "/vendor": { target: "http://localhost:8080", changeOrigin: true },
+              "/auth":   { target: "http://localhost:8080", changeOrigin: true },
               "/uploads":{ target: "http://localhost:8080", changeOrigin: true },
 
             "/api": {
