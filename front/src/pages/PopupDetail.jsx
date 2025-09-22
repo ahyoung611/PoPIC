@@ -31,6 +31,7 @@ const PopupDetail = () => {
             const response = await apiRequest(`/popupStore/popupDetail?id=` + id, {
                 credentials: "include",
             });
+            console.log(response);
             setPopupDetail(response);
             if (new Date(response.end_date) < new Date().setHours(0, 0, 0, 0)) {
                 setActiveTab("팝업 정보");
@@ -51,7 +52,7 @@ const PopupDetail = () => {
             <div className={"popupStore-detail inner"}>
                 {popupDetail ? (
                     <>
-                        <PopupImage images={popupDetail.images}></PopupImage>
+                        <PopupImage images={popupDetail.images || []}></PopupImage>
                         <PopupInfo popup={popupDetail}></PopupInfo>
 
                         <div className={"menu-tab"}>

@@ -1,13 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { loadKakaoMaps } from "../../utils/kakaoLoader.js";
 
-const API_BASE = "/api/vendorPopups";
 
+// JSON GET 유틸(getJson) : fetch + content-type 검증 + JSON 파싱
 async function getJson(url, { signal } = {}) {
-    const res = await fetch(url, {
-        signal,
-        headers: { Accept: "application/json" },
-    });
+    const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
     if (!res.ok) throw new Error(`HTTP ${res.status} @ ${url}`);
     const ct = res.headers.get("content-type") || "";
     if (!ct.includes("application/json")) {
@@ -17,6 +14,7 @@ async function getJson(url, { signal } = {}) {
     return res.json();
 }
 
+// 주소 값 정규화(normalize) : 문자열 트림, 위경도 수치 변환(null 안전)
 function normalize(v) {
     return {
         city: typeof v?.city === "string" ? v.city.trim() : "",
@@ -32,6 +30,8 @@ function normalize(v) {
                 : Number.isFinite(Number(v.longitude)) ? Number(v.longitude) : null,
     };
 }
+
+// 얕은 동등 비교(shallowEqual) : city/district/detail/lat/lng 필드 기준 변경 여부 판단
 function shallowEqual(a, b) {
     return (
         a.city === b.city &&
@@ -42,26 +42,31 @@ function shallowEqual(a, b) {
     );
 }
 
+// 주소 선택기 컴포넌트(AddressSelector) : 시/구 로딩 + 상세주소 → 좌표 변환 + 부모 onChange 통지
 export default function AddressSelector({
                                             kakaoAppKey,
                                             value,
                                             onChange,
                                             showCoords = false,
                                             geocodeInline = true,
+                                            basePath = "/api/vendors/0/popups",
                                         }) {
+    // API 베이스 경로 상수(API_BASE) : /api/vendors/{vendorId}/popups
+    const API_BASE = basePath;
+
+    // 로컬 상태(cities/districts/입력필드/좌표)
     const [cities, setCities] = useState([]);
     const [districts, setDistricts] = useState([]);
-
     const [city, setCity] = useState(value?.city || "");
     const [district, setDistrict] = useState(value?.district || "");
     const [detail, setDetail] = useState(value?.detail || "");
     const [lat, setLat] = useState(value?.latitude ?? null);
     const [lng, setLng] = useState(value?.longitude ?? null);
 
-    // 간단 캐시 (중복요청 방지)
+    // 간단 캐시 레퍼런스(cacheRef) : cities 1회 로딩, districtsByCity 메모이즈
     const cacheRef = useRef({ cities: undefined, districtsByCity: new Map() });
 
-    // props.value → 내부 state 동기화 (동일값 가드)
+    // props.value → 내부 상태 동기화 이펙트 : 동일값은 무시하여 불필요 렌더 방지
     useEffect(() => {
         const nv = normalize(value);
         setCity((prev) => (prev === nv.city ? prev : nv.city));
@@ -71,9 +76,7 @@ export default function AddressSelector({
         setLng((prev) => (Object.is(prev, nv.longitude) ? prev : nv.longitude));
     }, [value]);
 
-    const geocodeRequestedRef = useRef(false);
-
-    // 도시 목록: Abort + 캐시
+    // 도시 목록 로딩 이펙트 : 캐시 사용 + AbortController로 경쟁 상태 방지
     useEffect(() => {
         if (cacheRef.current.cities) {
             setCities(cacheRef.current.cities);
@@ -93,9 +96,9 @@ export default function AddressSelector({
             }
         })();
         return () => ac.abort();
-    }, []);
+    }, [API_BASE]);
 
-    // 구 목록: city 변경 시 Abort + 캐시 + 동일값 가드
+    // 구 목록 로딩 이펙트 : city 변경 시 해당 구 목록 호출(캐시/Abort/정합성 유지)
     useEffect(() => {
         if (!city) {
             setDistricts([]);
@@ -106,25 +109,20 @@ export default function AddressSelector({
         const cached = cacheRef.current.districtsByCity.get(city);
         if (cached) {
             setDistricts(cached);
-            if (district && !cached.includes(district)) {
-                setDistrict((prev) => (prev === "" ? prev : ""));
-            }
+            if (district && !cached.includes(district)) setDistrict("");
             return;
         }
 
         const ac = new AbortController();
         (async () => {
             try {
-                const list = await getJson(
-                    `${API_BASE}/addresses?city=${encodeURIComponent(city)}`,
-                    { signal: ac.signal }
-                );
+                const list = await getJson(`${API_BASE}/addresses?city=${encodeURIComponent(city)}`, {
+                    signal: ac.signal,
+                });
                 const arr = Array.isArray(list) ? list : [];
                 cacheRef.current.districtsByCity.set(city, arr);
                 setDistricts(arr);
-                if (district && !arr.includes(district)) {
-                    setDistrict((prev) => (prev === "" ? prev : ""));
-                }
+                if (district && !arr.includes(district)) setDistrict("");
             } catch (e) {
                 if (e?.name === "AbortError") return;
                 console.error(`[districts:${city}] fetch 실패:`, e);
@@ -132,12 +130,13 @@ export default function AddressSelector({
             }
         })();
         return () => ac.abort();
-    }, [city]);
+    }, [API_BASE, city, district]);
 
-    // 부모 onChange는 값이 진짜 바뀐 경우에만 호출
+    // 부모 onChange 최신 참조 유지(onChangeRef)
     const onChangeRef = useRef(onChange);
     useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
 
+    // 부모 onChange 조건부 호출 이펙트 : 값이 실제로 바뀐 경우에만 통지(shallowEqual)
     const lastPayloadRef = useRef(null);
     useEffect(() => {
         const payload = {
@@ -147,60 +146,45 @@ export default function AddressSelector({
             latitude: lat,
             longitude: lng,
             addressString: [city, district].filter(Boolean).join(" "),
-            };
+        };
         const prev = lastPayloadRef.current;
         const sameAsLast = prev && shallowEqual(prev, payload);
         if (!sameAsLast) {
             lastPayloadRef.current = payload;
             onChangeRef.current?.(payload);
-            }
-        }, [city, district, detail, lat, lng]);
+        }
+    }, [city, district, detail, lat, lng]);
 
+    // lastPayload 초기화 이펙트(최초 동기화)
     useEffect(() => {
         lastPayloadRef.current = {
             ...normalize(value),
             addressString: [value?.city || "", value?.district || ""].filter(Boolean).join(" "),
-        }
+        };
     }, [value]);
 
+    // 카카오 지오코딩 핸들러(handleGeocode) : 상세주소로 좌표 조회 → lat/lng 갱신
     const handleGeocode = async () => {
         if (!kakaoAppKey) return alert("카카오 JS 키가 없습니다(.env 확인).");
         const full = [city, district, detail].filter(Boolean).join(" ");
         if (!city || !district || !detail.trim()) return alert("시/구/상세주소를 모두 입력하세요.");
 
         try {
-            geocodeRequestedRef.current = true;
             await loadKakaoMaps(kakaoAppKey);
             const { kakao } = window;
             new kakao.maps.services.Geocoder().addressSearch(full, (results, status) => {
                 if (status === kakao.maps.services.Status.OK && results[0]) {
-                    const { x, y, address_name } = results[0];
+                    const { x, y } = results[0];
                     const nextLat = parseFloat(y);
                     const nextLng = parseFloat(x);
-                    const prevLat = lat;
-                    const prevLng = lng;
-                    const same =
-                        prevLat != null &&
-                        prevLng != null &&
-                        Object.is(prevLat, nextLat) &&
-                        Object.is(prevLng, nextLng);
-
                     setLat(nextLat);
                     setLng(nextLng);
-
-                    geocodeRequestedRef.current = false;
-                    alert(
-                        same
-                            ? `주소 확인 완료`
-                            : `주소 변경 완료 `
-                    );
+                    alert("주소 확인 완료");
                 } else {
-                    geocodeRequestedRef.current = false;
                     alert("좌표를 찾지 못했습니다. 주소를 확인하세요.");
                 }
             });
         } catch {
-            geocodeRequestedRef.current = false;
             alert("카카오 지도 스크립트 로드 실패");
         }
     };
@@ -214,6 +198,7 @@ export default function AddressSelector({
                         <option key={c} value={c}>{c}</option>
                     ))}
                 </select>
+
                 <select className="vp-select" value={district} onChange={(e) => setDistrict(e.target.value)}>
                     <option value="" disabled>구를 선택하세요</option>
                     {(Array.isArray(districts) ? districts : []).map((d) => (

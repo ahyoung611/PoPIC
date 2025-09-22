@@ -3,6 +3,7 @@ package com.example.popic.vendor.dto;
 import com.example.popic.entity.entities.ROLE;
 import com.example.popic.entity.entities.Vendor;
 import com.example.popic.entity.entities.VendorProfile;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,8 +14,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+//@AllArgsConstructor
 public class VendorDTO {
     private Long vendor_id;  // PK
     private String login_id;
@@ -22,6 +23,8 @@ public class VendorDTO {
     private String vendor_name;
     private String manager_name;
     private String phone_number;
+
+    @JsonIgnore
     private VendorProfile profile;  // 프로필 FK
     private String brn;  // 사업자등록번호
     private LocalDateTime join_date;
@@ -30,6 +33,11 @@ public class VendorDTO {
     private ROLE role = ROLE.VENDOR;  // 기본값 VENDOR
     private int status = 2; //2: 승인대기, 1: 정상, 0: 정지, -1: 탈퇴, 3: 가입 반려
 
+    // young 프로필
+    private String profileOriginalName;
+    private String profileSavedName;
+
+    @JsonIgnore
     public VendorDTO(Vendor vendor){
         this.vendor_id = vendor.getVendor_id();
         this.login_id = vendor.getLogin_id();
@@ -39,6 +47,12 @@ public class VendorDTO {
         this.phone_number = vendor.getPhone_number();
         this.brn = vendor.getBrn();
         this.join_date = vendor.getJoin_date();
+
+        //  young 프로필
+        if(vendor.getProfile() != null){
+            this.profileOriginalName = vendor.getProfile().getOriginal_name();
+            this.profileSavedName = vendor.getProfile().getSaved_name();
+        }
     }
 
 }
