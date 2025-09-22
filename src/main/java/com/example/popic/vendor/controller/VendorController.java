@@ -12,6 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.popic.security.JwtUtil;
 
+// 토큰용 import
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import java.time.Duration;
+
 
 @RestController
 @RequestMapping("/vendor")
@@ -52,10 +57,19 @@ public class VendorController {
             dto.setPassword(null);
             dto.setProfile(null);
 
-            // 문자열 토큰
-//            String token = "V-" + v.getVendor_id() + "-" + java.util.UUID.randomUUID();
-            String token = jwtUtil.createAccessToken(v.getLogin_id(), String.valueOf(v.getRole()), v.getVendor_id());
-            return ResponseEntity.ok(ApiRes.okLogin("로그인 성공", token, dto));
+            String access  = jwtUtil.createAccessToken(v.getLogin_id(), String.valueOf(v.getRole()), v.getVendor_id());
+            String refresh = jwtUtil.createRefreshToken(v.getLogin_id());
+
+            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
+                    .httpOnly(true)
+                    .secure(false)
+                    .sameSite("Lax")
+                    .path("/")
+                    .maxAge(Duration.ofDays(14)).build();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                    .body(ApiRes.okLogin("로그인 성공", access, dto));
 
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.ok(ApiRes.fail(e.getMessage()));
