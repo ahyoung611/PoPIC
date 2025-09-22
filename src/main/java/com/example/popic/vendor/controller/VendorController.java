@@ -2,6 +2,7 @@ package com.example.popic.vendor.controller;
 
 
 import com.example.popic.entity.entities.Vendor;
+import com.example.popic.popup.dto.PopupReservationDTO;
 import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.vendor.dto.VendorDTO;
 import com.example.popic.vendor.repository.VendorRepository;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import java.time.Duration;
 
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/vendor")
@@ -76,6 +79,14 @@ public class VendorController {
         } catch (Exception e) {
             return ResponseEntity.ok(ApiRes.fail("로그인 처리 중 오류가 발생했습니다."));
         }
+    }
+
+    @GetMapping("/reservationList")
+    public ResponseEntity<List<PopupReservationDTO>> getReservationList(@RequestParam(name = "popupId")Long popupId) {
+        System.out.println("hi");
+        List<PopupReservationDTO> reservationList = vendorService.getReservationList(popupId);
+
+        return ResponseEntity.ok(reservationList);
     }
 
     public record ApiRes(boolean result, String message, Long id, String token, Object user) {

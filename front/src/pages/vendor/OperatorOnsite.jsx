@@ -1,7 +1,7 @@
 const OperatorOnsite = () => {
     return (
         <>
-            <div>UserManagement 페이지</div>
+            <div>OperatorOnsite 페이지</div>
         </>
     )
 }

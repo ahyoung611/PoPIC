@@ -42,7 +42,6 @@ public class ImageController {
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
         }
-
     }
 
     public ResponseEntity<byte[]> getImageFile(String type, String savedName) {
@@ -53,7 +52,7 @@ public class ImageController {
         if(os.contains("win")){
             imagePath = Path.of("C:/" + type + "/", savedName);
         }else{
-            imagePath = Path.of(home,"popic-uploads", type, savedName);
+            imagePath = Path.of(home,type, savedName);
             System.out.println(imagePath.toString());
         }
 

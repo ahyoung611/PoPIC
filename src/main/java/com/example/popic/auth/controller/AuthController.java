@@ -31,6 +31,7 @@ public class AuthController {
         System.out.println("code: " + code);
         System.out.println("state: " + state);
         // 1. 네이버 API로 Access Token 요청
+
         NaverUserInfo userInfo = naverLoginService.getUserInfo(code, state);
 
         /*

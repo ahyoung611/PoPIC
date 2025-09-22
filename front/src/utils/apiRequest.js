@@ -50,6 +50,7 @@ async function apiRequest(endpoint, options = {}) {
                 : undefined,
     };
 
+
     // 최초 요청
     let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
