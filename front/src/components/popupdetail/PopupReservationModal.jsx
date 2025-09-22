@@ -7,7 +7,6 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
     const navigate = useNavigate();
 
     const goCheckout = () => {
-        // 예약 데이터를 쿼리스트링으로 넘김
         navigate(
             `/checkout?price=${reservationData.price}&name=${encodeURIComponent(
                 reservationData.name

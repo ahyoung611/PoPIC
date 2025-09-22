@@ -1,4 +1,4 @@
-package com.example.popic.reservation;
+package com.example.popic.popup.service;
 
 import com.example.popic.entity.entities.Reservation;
 import com.example.popic.popup.dto.PopupReservationDTO;
