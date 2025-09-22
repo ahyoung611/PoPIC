@@ -68,18 +68,9 @@ public class VendorPopupsService {
 
 
         // 소유자
-        // Vendor vendor = vendorRepository.findById(vendorId)
-        //        .orElseThrow(() -> new IllegalArgumentException("vendor not found: " + vendorId));
+         Vendor vendor = vendorRepository.findById(vendorId)
+                .orElseThrow(() -> new IllegalArgumentException("vendor not found: " + vendorId));
 
-        // 운영자 - 오류남 수정할 것
-//        Vendor vendor;
-//        if (dto.getVendor() == null) {
-//            vendor = vendorRepository.findByLoginId(defaultVendorLoginId)
-//                    .orElseThrow(() -> new IllegalStateException("기본 운영자(" + defaultVendorLoginId + ")가 없습니다."));
-//        } else {
-//            vendor = vendorRepository.findById(dto.getVendor().getVendor_id())
-//                    .orElseThrow(() -> new IllegalArgumentException("vendor가 존재하지 않습니다. id=" + dto.getVendor()));
-//        }
 
         // 엔티티 생성
         PopupStore store = new PopupStore();
@@ -93,7 +84,7 @@ public class VendorPopupsService {
         store.setLongitude(dto.getLongitude());
         store.setPrice(dto.getPrice());
         store.setStatus(dto.getStatus()); // 기본 2(승인 대기)
-//        store.setVendor(vendor);
+        store.setVendor(vendor);
         store.setJoin_date(LocalDateTime.now());
 
         if (dto.getCategories() != null && !dto.getCategories().isEmpty()) {
