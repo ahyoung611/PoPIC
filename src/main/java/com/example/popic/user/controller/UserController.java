@@ -10,6 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.popic.security.JwtUtil;
+
+// 토큰용 import
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import java.time.Duration;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final AccountUserVendorService accountUserVendorService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/join")
     public ResponseEntity<ApiRes> join(@RequestBody User user) {
@@ -54,15 +62,32 @@ public class UserController {
             }
             dto.setPassword(null);
 
-            // ★ 토큰 즉석 발급 (별도 서비스 없이)
-            String token = "U-" + u.getUser_id() + "-" + java.util.UUID.randomUUID();
+            // 토큰 생성 (액세스, 리프레시 각 분리)
+            String access  = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
+            String refresh = jwtUtil.createRefreshToken(u.getLogin_id());
 
-            return ResponseEntity.ok(ApiRes.okLogin("로그인 성공", token, dto));
+            // 리프레시 토큰 - http only 쿠키
+            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
+                    .httpOnly(true)
+                    .secure(false)
+                    .sameSite("Lax")
+                    .path("/")
+                    .maxAge(Duration.ofDays(14))
+                    .build();
+
+            // 프론트로 응답
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                    .body(ApiRes.okLogin("로그인 성공", access, dto));
+
+
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.ok(ApiRes.fail(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.ok(ApiRes.fail("로그인 처리 중 오류가 발생했습니다."));
         }
+
+
     }
 
     public record ApiRes(boolean result, String message, Long id, String token, Object user) {

@@ -11,6 +11,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.popic.security.JwtUtil;
+
+// 토큰용 import
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import java.time.Duration;
+
 
 import java.util.List;
 
@@ -20,6 +27,7 @@ import java.util.List;
 public class VendorController {
     private final VendorService vendorService;
     private final AccountUserVendorService accountUserVendorService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/join")
     public ResponseEntity<ApiRes> join(@RequestBody Vendor vendor) {
@@ -42,20 +50,30 @@ public class VendorController {
                 return ResponseEntity.ok(ApiRes.fail("요청 형식이 올바르지 않습니다."));
             }
 
-            // ★ 인증은 서비스에서
+            // 인증은 서비스에서
             Vendor v = accountUserVendorService.authenticateVendor(req.getLogin_id(), req.getPassword());
 
-            // ★ 응답 DTO (기존 생성자 사용 + 보강 + 민감정보 차단)
+            // 응답 DTO (기존 생성자 사용 + 보강 + 민감정보 차단)
             VendorDTO dto = new VendorDTO(v);
             dto.setRole(v.getRole());
             dto.setStatus(v.getStatus());
             dto.setPassword(null);
             dto.setProfile(null);
 
-            // ★ 토큰 즉석 발급
-            String token = "V-" + v.getVendor_id() + "-" + java.util.UUID.randomUUID();
+            String access  = jwtUtil.createAccessToken(v.getLogin_id(), String.valueOf(v.getRole()), v.getVendor_id());
+            String refresh = jwtUtil.createRefreshToken(v.getLogin_id());
 
-            return ResponseEntity.ok(ApiRes.okLogin("로그인 성공", token, dto));
+            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
+                    .httpOnly(true)
+                    .secure(false)
+                    .sameSite("Lax")
+                    .path("/")
+                    .maxAge(Duration.ofDays(14)).build();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                    .body(ApiRes.okLogin("로그인 성공", access, dto));
+
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.ok(ApiRes.fail(e.getMessage()));
         } catch (Exception e) {

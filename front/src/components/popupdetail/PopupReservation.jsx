@@ -12,7 +12,7 @@ const PopupReservation = (props) => {
             date: reservationDate,
             time: reservationTime,
             price: props.popup?.price,
-            numberOfPeople: reservationNumber,
+            reservationCount: reservationNumber,
         };
         console.log("예약 데이터:", reservationData);
         if (reservationDate == "") {

@@ -1,7 +1,9 @@
 // src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { getAccessToken, setAccessToken } from "../utils/apiRequest";
 import apiRequest from "../utils/apiRequest";
+
 
 import eye from "../../public/eye.png";
 import nonEye from "../../public/nonEye.png";
@@ -19,6 +21,7 @@ import privateCheckP from "../../public/privateCheck-p.png";
 
 import "../style/login.css";
 import "../style/button.css";
+
 
 const Login = () => {
     const navigate = useNavigate();
@@ -53,9 +56,10 @@ const Login = () => {
                 return;
             }
 
-            const storage = keep ? localStorage : sessionStorage;
-            if (data.token) storage.setItem("token", data.token);
-            if (data.user) storage.setItem("me", JSON.stringify(data.user));
+            if (data.token) {
+                setAccessToken(data.token);
+            }
+            if (data.user) sessionStorage.setItem("me", JSON.stringify(data.user));
 
             navigate("/");
         } catch (err) {

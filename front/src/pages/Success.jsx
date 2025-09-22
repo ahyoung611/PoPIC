@@ -4,18 +4,22 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 export default function SuccessPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
+    const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
+    const peopleCount = Number(searchParams.get("people"));
 
     useEffect(() => {
-        // 쿼리 파라미터 값이 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
-        // 클라이언트에서 결제 금액을 조작하는 행위를 방지할 수 있습니다.
         const requestData = {
-            orderId: searchParams.get("orderId"),
-            amount: searchParams.get("amount"),
+            reservationId: null,                // 새 예약이므로 null
+            userId: 1,                          // 로그인 연동 후 수정
+            reservationCount: peopleCount,
+            status: 0,
+            depositAmount: Number(searchParams.get("amount"))*peopleCount,
             paymentKey: searchParams.get("paymentKey"),
         };
 
         async function confirm() {
-            const response = await fetch("/confirm", {
+            const response = await fetch(`${URL}/reservations/confirm`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -31,7 +35,23 @@ export default function SuccessPage() {
                 return;
             }
 
-            // 결제 성공 비즈니스 로직을 구현하세요.
+            if (response.ok) {
+                // 예약(결제) 데이터 서버에 저장 요청
+                await fetch(`${URL}/reservations`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        orderId: requestData.orderId,
+                        amount: requestData.amount,
+                        paymentKey: requestData.paymentKey,
+                        // userId: currentUser.id, // 로그인 구현 후 주석 해제하기
+                    }),
+                });
+
+                navigate("/userMyPage");
+            }
         }
         confirm();
     }, []);
