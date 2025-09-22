@@ -46,6 +46,7 @@ export default function SuccessPage() {
                         orderId: requestData.orderId,
                         amount: requestData.amount,
                         paymentKey: requestData.paymentKey,
+                        user: { user_id: 1 },
                         // userId: currentUser.id, // 로그인 구현 후 주석 해제하기
                     }),
                 });
