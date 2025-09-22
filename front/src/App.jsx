@@ -22,10 +22,11 @@ import VendorMyPage from "./pages/vendor/VendorMyPage.jsx";
 import CheckoutPage from "./pages/Checkout.jsx";
 import SuccessPage from "./pages/Success.jsx";
 import FailPage from "./pages/Fail.jsx";
-import UserProfile from "./pages/user/UserProfile.jsx";
 import OperatorReservations from "./pages/vendor/OperatorReservations.jsx";
 import OperatorOnsite from "./pages/vendor/OperatorOnsite.jsx";
 import MyPopic from "./pages/user/MyPopic.jsx";
+import UserProfile from "./pages/user/UserProfile.jsx";
+import ReservationManage from "./pages/vendor/ReservationManage.jsx";
 
 
 function App() {
@@ -105,12 +106,13 @@ function App() {
 
                 {/*벤더 유저 Layout */}
                 <Route element={<VendorHeaderLayout/>}>
-                    <Route path="/vendor/:vendorId/popups" element={<VendorMain/>} />
-                    <Route path="/vendor/:vendorId/popups/new" element={<VendorPopupForm/>} />
-                    <Route path="/vendor/:vendorId/popups/edit/:popupId" element={<VendorPopupForm/>} />
-                    <Route path="/vendor/myPage/:vendorId" element={<VendorMyPage/>} />
                     <Route path={"/vendor/reservations"} element={<OperatorReservations/>}></Route>
                     <Route path={"/vendor/onsite"} element={<OperatorOnsite/>}></Route>
+                    <Route path="/vendor/:vendorId/popups" element={<VendorMain/>} />
+                    <Route path="/vendor/:vendorId/popups/new" element={<VendorPopupForm/>} />
+                    <Route path={"/vendor/reservationManage/:popupId"} element={<ReservationManage/>}></Route>
+                    <Route path="/vendor/:vendorId/popups/edit/:popupId" element={<VendorPopupForm/>} />
+                    <Route path="/vendor/myPage/:vendorId" element={<VendorMyPage/>} />
                 </Route>
 
                 {/*어드민 Layout */}

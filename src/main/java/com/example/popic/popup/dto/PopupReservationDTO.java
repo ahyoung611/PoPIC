@@ -1,6 +1,7 @@
 package com.example.popic.popup.dto;
 
 import com.example.popic.entity.entities.Reservation;
+import com.example.popic.user.dto.UserDTO;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -13,9 +14,9 @@ import java.time.LocalDateTime;
 @Builder
 public class PopupReservationDTO {
     private Long reservationId;        // 예약번호 (PK)
-    private Long userId;               // 사용자 ID
-    private Long storeId;              // 팝업스토어 ID
-    private Long slotId;               // 슬롯 ID
+    private UserDTO user;               // 사용자 ID
+    private PopupDTO popup;              // 팝업스토어 ID
+    private SlotDTO slot;               // 슬롯 ID
 
     private int reservationCount;      // 예약자 수(최대 2명)
     private LocalDateTime createdAt;   // 예약 생성 시각
@@ -24,12 +25,25 @@ public class PopupReservationDTO {
     private String paymentKey;         // PG사 키
     private LocalDateTime canceledAt;  // 취소 시각
 
+    public PopupReservationDTO(Reservation reservation) {
+        this.reservationId = reservation.getReservation_id();
+        this.user = new UserDTO(reservation.getUser());
+        this.popup = new PopupDTO(reservation.getStore());
+        this.slot = new SlotDTO(reservation.getSlot());
+        this.reservationCount = reservation.getReservation_count();
+        this.createdAt = reservation.getCreated_at();
+        this.status = reservation.getStatus();
+        this.depositAmount = reservation.getDeposit_amount();
+        this.paymentKey = reservation.getPayment_key();
+        this.canceledAt = reservation.getCanceledAt();
+    }
+
     public static PopupReservationDTO from(Reservation e) {
         return PopupReservationDTO.builder()
                 .reservationId(e.getReservation_id())
-                .userId(e.getUser() != null ? e.getUser().getUser_id() : null)
-                .storeId(e.getStore() != null ? e.getStore().getStore_id() : null)
-                .slotId(e.getSlot() != null ? e.getSlot().getSlot_id() : null)
+                .user(e.getUser() != null ? new UserDTO(e.getUser()): null)
+                .popup(e.getStore() != null ?  new PopupDTO(e.getStore()): null)
+                .slot(e.getSlot() != null ? new SlotDTO(e.getSlot()) : null)
                 .reservationCount(e.getReservation_count())
                 .createdAt(e.getCreated_at())
                 .status(e.getStatus())

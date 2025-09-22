@@ -11,7 +11,7 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
         navigate(
             `/checkout?price=${reservationData.price}&name=${encodeURIComponent(
                 reservationData.name
-            )}&date=${reservationData.date}&time=${reservationData.time}&people=${reservationData.numberOfPeople}`
+            )}&date=${reservationData.date}&time=${reservationData.time}&people=${reservationData.reservationCount}`
         );
     };
 
@@ -24,8 +24,8 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
                     <p><strong>팝업 이름 </strong> {reservationData.name}</p>
                     <p><strong>예약 날짜 </strong> {reservationData.date}</p>
                     <p><strong>예약 시간 </strong> {reservationData.time}</p>
-                    <p><strong>인원 </strong> {reservationData.numberOfPeople}명</p>
-                    <p><strong>금액 </strong> <span className="price">{reservationData.price}</span></p>
+                    <p><strong>인원 </strong> {reservationData.reservationCount}명</p>
+                    <p><strong>금액 </strong> <span className="price">{reservationData.price*reservationData.reservationCount}</span></p>
                 </div>
 
                 <div className="modalActions">

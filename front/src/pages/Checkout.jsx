@@ -7,9 +7,10 @@ const customerKey = generateRandomString();
 
 export default function CheckoutPage() {
     const [searchParams] = useSearchParams();
+    const people = Number(searchParams.get("people"));
     const [amount, setAmount] = useState({
         currency: "KRW",
-        value: Number(searchParams.get("price") || 0),
+        value: Number(searchParams.get("price") * people || 0),
     });
     const [ready, setReady] = useState(false);
     const [widgets, setWidgets] = useState(null);
@@ -62,7 +63,7 @@ export default function CheckoutPage() {
                         await widgets.requestPayment({
                             orderId: generateRandomString(),
                             orderName: `${searchParams.get("name")} 예약`,
-                            successUrl: window.location.origin + "/success",
+                            successUrl: window.location.origin + `/success?people=${searchParams.get("people")}`,
                             failUrl: window.location.origin + "/fail",
                             customerName: "고객명(추후연결)",
                             customerEmail: "customer@example.com",

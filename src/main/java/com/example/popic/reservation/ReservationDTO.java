@@ -17,12 +17,11 @@ public class ReservationDTO {
     private Long userId;
     private Long storeId;
     private Long slotId;
-
     private int reservationCount;
     private int status;
     private BigDecimal depositAmount;
     private String paymentKey;
-
     private LocalDateTime createdAt;
     private LocalDateTime canceledAt;
 }
+

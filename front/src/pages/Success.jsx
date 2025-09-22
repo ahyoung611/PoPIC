@@ -4,19 +4,22 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 export default function SuccessPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
+    const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
+    const peopleCount = Number(searchParams.get("people"));
 
     useEffect(() => {
         const requestData = {
-            orderId: searchParams.get("orderId"),
-            amount: searchParams.get("amount"),
+            reservationId: null,                // 새 예약이므로 null
+            userId: 1,                          // 로그인 연동 후 수정
+            reservationCount: peopleCount,
+            status: 0,
+            depositAmount: Number(searchParams.get("amount"))*peopleCount,
             paymentKey: searchParams.get("paymentKey"),
-            // userId: searchParams.get("userId"),
-            userId: 1, // 아직 없어서 1로 설정함 나중엔 위의 코드 풀면 됨
-
         };
 
         async function confirm() {
-            const response = await fetch("/confirm", {
+            const response = await fetch(`${URL}/reservations/confirm`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -34,7 +37,7 @@ export default function SuccessPage() {
 
             if (response.ok) {
                 // 예약(결제) 데이터 서버에 저장 요청
-                await fetch("/reservations", {
+                await fetch(`${URL}/reservations`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
