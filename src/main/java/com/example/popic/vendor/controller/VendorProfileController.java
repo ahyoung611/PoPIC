@@ -1,10 +1,15 @@
 package com.example.popic.vendor.controller;
 
+import com.example.popic.entity.entities.VendorProfile;
 import com.example.popic.vendor.dto.VendorDTO;
 import com.example.popic.vendor.service.VendorProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import java.util.Map;
 
@@ -18,20 +23,68 @@ public class VendorProfileController {
     // 벤더 프로필 조회
     @GetMapping
     public VendorDTO get(@PathVariable Long vendorId) {
-        return service.getProfile(vendorId);
+        VendorDTO dto = service.getProfile(vendorId);
+        
+        VendorProfile profile = service.getProfileByVendorId(vendorId);
+        dto.setAvatarExists(profile != null && profile.getSaved_name() != null);
+
+        return dto;
     }
 
     // 벤더 프로필 수정
     @PutMapping
-    public VendorDTO update(@PathVariable Long vendorId, @RequestBody VendorDTO dto) {
+    public VendorDTO update(@PathVariable Long vendorId, @RequestBody Map<String, Object> payload) {
+        VendorDTO dto = new VendorDTO();
+        dto.setVendor_name((String) payload.get("vendor_name"));
+        dto.setManager_name((String) payload.get("manager_name"));
+        dto.setPhone_number((String) payload.get("phone_number"));
+        dto.setBrn((String) payload.get("brn"));
+        dto.setPassword((String) payload.get("password"));
+
         return service.updateProfile(vendorId, dto);
     }
 
-    // 벤더 프로필 사진 조회
     @GetMapping("/photo")
-    public Map<String, String> getPhoto(@PathVariable Long vendorId) {
-        String url = service.getProfilePhotoUrl(vendorId); // 사진 없으면 null
-        return Map.of("url", url != null ? url : "");
+    public ResponseEntity<byte[]> getPhoto(@PathVariable Long vendorId) {
+        VendorProfile profile = service.getProfileByVendorId(vendorId);
+        if (profile == null || profile.getSaved_name() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String savedName = profile.getSaved_name();
+        String os = System.getProperty("os.name").toLowerCase();
+        String home = System.getProperty("user.home");
+        Path imagePath = os.contains("win")
+                ? Path.of("C:/vendorProfile/", savedName)
+                : Path.of(home, "vendorProfile", savedName);
+
+        try {
+            byte[] imageBytes = Files.readAllBytes(imagePath);
+            String contentType = Files.probeContentType(imagePath);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
+                    .body(imageBytes);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    // 벤더 프로필 사진 조회
+//    @GetMapping("/photo")
+//    public Map<String, String> getPhoto(@PathVariable Long vendorId) {
+//        String url = service.getProfilePhotoUrl(vendorId); // 사진 없으면 null
+//        return Map.of("url", url != null ? url : "");
+//    }
+
+    @GetMapping("/photo-url")
+    public ResponseEntity<Map<String, String>> getPhotoUrl(@PathVariable Long vendorId) {
+        String url = service.getProfilePhotoUrl(vendorId); // 아래에서 구현
+        if (url != null) {
+            return ResponseEntity.ok(Map.of("url", url));
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // 벤더 프로필 사진 업로드/교체

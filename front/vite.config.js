@@ -6,8 +6,6 @@ export default defineConfig({
     server: {
         proxy: {
             "/waiting":{ target: "http://localhost:8080", changeOrigin: true },
-
-
             "/api": {
                 target: "http://localhost:8080", // 스프링 포트
                 changeOrigin: true,

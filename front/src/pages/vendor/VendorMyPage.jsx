@@ -7,13 +7,22 @@ import apiRequest from "../../utils/apiRequest.js";
 import "../../style/profileCard.css";
 import "../../style/profilePhoto.css";
 
+
 // 운영 상태 관리
+const VENDOR_STATUS = {
+    APPROVED: 1,
+    PENDING: 2,
+    REJECTED: 3,
+    SUSPENDED: 0,
+    CLOSED: -1,
+};
+
 const STATUS_BADGE = {
-    1: { text: "승인 완료", color: "blue" },
-    2: { text: "승인 대기", color: "gray" },
-    3: { text: "승인 반려", color: "red" },
-    0: { text: "정지", color: "red" },
-    [-1]: { text: "운영 종료", color: "gray" },
+    [VENDOR_STATUS.APPROVED]: { text: "승인 완료", color: "blue" },
+    [VENDOR_STATUS.PENDING]:  { text: "승인 대기", color: "gray" },
+    [VENDOR_STATUS.REJECTED]: { text: "승인 반려", color: "red" },
+    [VENDOR_STATUS.SUSPENDED]:{ text: "정지",     color: "gray" },
+    [VENDOR_STATUS.CLOSED]:   { text: "운영 종료", color: "gray" },
 };
 
 export default function VendorMyPage() {
@@ -30,8 +39,23 @@ export default function VendorMyPage() {
         (async () => {
             try {
                 const v = await apiRequest(`/api/vendors/${vendorId}`);
-                const photo = await apiRequest(`/api/vendors/${vendorId}/photo`).catch(() => null);
-                const merged = { ...v, avatarUrl: photo?.url ?? null };
+
+                let avatarUrl = null;
+                // 사진이 존재할 때만 요청을 보냄
+                if (v.avatarExists) {
+                    const photoResponse = await fetch(`/api/vendors/${vendorId}/photo`);
+                    if (photoResponse.ok) {
+                        const blob = await photoResponse.blob();
+                        avatarUrl = URL.createObjectURL(blob);
+                    }
+                }
+
+                const merged = {
+                    ...v,
+                    status: v?.status != null ? Number(v.status) : null,
+                    avatarUrl: avatarUrl,
+                };
+
                 setData(merged);
                 setForm(merged);
             } catch (e) {
@@ -55,8 +79,16 @@ export default function VendorMyPage() {
     }), [edit]);
 
     const badgeMeta = STATUS_BADGE[data?.status] ?? { text: "상태 미정", color: "gray" };
+
     const badge = (
-        <Button variant="label" color={badgeMeta.color} disabled style={{ cursor: "default" }}>
+        <Button
+            variant="label"
+            color={badgeMeta.color}
+            disabled
+            style={{ cursor: "default" }}
+            aria-label={`운영 상태: ${badgeMeta.text}`}
+            title={`운영 상태: ${badgeMeta.text}`}
+        >
             {badgeMeta.text}
         </Button>
     );
@@ -72,36 +104,26 @@ export default function VendorMyPage() {
                 brn: form.brn,
                 phone_number: form.phone_number,
                 vendor_name: form.vendor_name,
-                password: form.password,
+                password: form.password || undefined,
             };
 
-            console.log("저장 요청 payload:", payload);
-
+            // console.log("저장 요청 payload:", payload);
             await apiRequest(`/api/vendors/${vendorId}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
                 body: payload,
             });
 
-            // 이미지 삭제 처리
+            // 사진 삭제
             if (form.avatarRemoved) {
-                console.log("🗑 프로필 사진 삭제 요청");
                 await apiRequest(`/api/vendors/${vendorId}/photo`, { method: "DELETE" });
             }
 
-            // 이미지 새로 선택 시 업로드
+            // 사진 업로드
             if (form.avatarFile) {
-                console.log("프로필 사진 업로드 요청:", form.avatarFile);
-
                 const fd = new FormData();
                 fd.append("file", form.avatarFile);
-
                 const res = await fetch(`/api/vendors/${vendorId}/photo`, { method: "POST", body: fd });
-                if (!res.ok) {
-                    throw new Error(`사진 업로드 실패: ${res.status}`);
-                }
-
-                console.log("사진 업로드 성공");
+                if (!res.ok) throw new Error(`사진 업로드 실패: ${res.status}`);
             }
 
             setEdit(false);
@@ -114,9 +136,15 @@ export default function VendorMyPage() {
     // 취소 핸들러
     const handleCancel = async () => {
         try {
-            const v = await apiRequest(`/api/vendors/${vendorId}`);
-            const photo = await apiRequest(`/api/vendors/${vendorId}/photo`).catch(() => null);
-            const merged = { ...v, avatarUrl: photo?.url ?? null };
+            const vendor = await apiRequest(`/api/vendors/${vendorId}`);
+            // 사진이 존재 - 요청
+            if (vendor.avatarExists) {
+                const photoResponse = await fetch(`/api/vendors/${vendorId}/photo`);
+                const blob = await photoResponse.blob();
+                vendor.avatarUrl = URL.createObjectURL(blob);
+            }
+
+            const merged = { ...vendor, avatarUrl: vendor.avatarUrl ?? null };
             setData(merged);
             setForm(merged);
         } finally {
@@ -160,6 +188,7 @@ export default function VendorMyPage() {
                                 password_mask: edit ? form.password || "" : form.password ? "*".repeat(form.password.length) : ""
                             }}
                             onChange={(changed) => setForm(p => ({ ...p, ...changed }))}
+                            edit={edit}
                             renderActions={() => (
                                 <div style={{ display: "flex", gap: 8 }}>
                                     {!edit ? (

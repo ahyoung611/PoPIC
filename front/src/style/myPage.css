@@ -1,7 +1,12 @@
 .userMyPage {
-    max-width: 960px;
+    width: 100%;
+    max-width: 760px;
     margin: 0 auto;
-    padding: 0 16px;
+    background: var(--white-color);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    padding: 35px;
+    border: 1px solid var(--border-color);
 }
 
 .userMyPage .card {
@@ -16,12 +21,12 @@
     margin-top: 10px;
 }
 
-.profile {
+.userMyPage .profile {
     text-align: center;
     padding: 32px 0;
 }
 
-.profile .avatar {
+.userMyPage .profile .avatar {
     width: 96px;
     height: 96px;
     border-radius: 50%;
@@ -36,13 +41,13 @@
     border: 1px solid var(--border-color);
 }
 
-.profile .userName {
+.userMyPage .profile .userName {
     font-size: var(--font-title);
     font-weight: 600;
     color: var(--black-color);
 }
 
-.profile .edit-btn {
+.userMyPage .profile .edit-btn {
     margin-top: 12px;
     padding: 10px 16px;
     border-radius: 999px;
@@ -52,18 +57,17 @@
     font-size: var(--font-button);
     cursor: pointer;
 }
-.profile .edit-btn:hover { background: var(--bg-color); }
 
-.actions {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    padding: 20px;
+.userMyPage .profile .edit-btn:hover { background: var(--bg-color); }
+
+.userMyPage .actions {
+    display: flex;
     align-items: center;
     margin-top: 12px;
 }
 
-.action {
+.userMyPage .action {
+    width: 33.33%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -72,25 +76,30 @@
     user-select: none;
 }
 
-.action .icon {
+.userMyPage .action:nth-child(2){
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+}
+
+.userMyPage .action .icon {
     width: 50px;
     height: 50px;
     border-radius: 10px;
     overflow: hidden;
 }
 
-.action .icon img{
+.userMyPage .action .icon img{
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.action .label {
+.userMyPage .action .label {
     font-size: var(--font-subtitle);
     color: var(--black-color);
 }
 
-.section-title {
+.userMyPage .section-title {
     font-size: var(--font-subtitle);
     font-weight: 700;
     color: var(--black-color);
@@ -100,30 +109,20 @@
     justify-content: space-between;
 }
 
-.section-title .sort {
+.userMyPage .section-title .sort {
     display: inline-flex;
     align-items: center;
     gap: 8px;
 }
 
-.select {
-    height: 36px;
-    padding: 0 10px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    background: var(--white-color);
-    color: var(--black-color);
-    font-size: var(--font-size-base);
-}
-
-/* ===== Favorite List ===== */
-.favorite-list {
+.userMyPage .favorite-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-height: 300px;
 }
 
-.favorite-item {
+.userMyPage .favorite-item {
     display: grid;
     grid-template-columns: 120px 1fr auto;
     gap: 16px;
@@ -132,7 +131,7 @@
     padding-bottom: 16px;
 }
 
-.favorite-item .thumb {
+.userMyPage .favorite-item .thumb {
     width: 120px;
     height: 90px;
     border-radius: 8px;
@@ -140,32 +139,32 @@
     background: #f3f4f6;
     border: 1px solid var(--border-color);
 }
-.favorite-item .thumb img {
+.userMyPage .favorite-item .thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.favorite-item .title {
+.userMyPage .favorite-item .title {
     font-weight: 700;
     font-size: 16px;
     color: var(--black-color);
     margin-bottom: 4px;
 }
 
-.favorite-item .period {
+.userMyPage .favorite-item .period {
     color: var(--darkgray-color);
     font-size: var(--font-small);
 }
 
-.favorite-item .meta {
+.userMyPage .favorite-item .meta {
     display: flex;
     gap: 8px;
     align-items: center;
     margin-top: 6px;
 }
 
-.badge {
+.userMyPage .badge {
     border: 1px solid var(--border-color);
     border-radius: 999px;
     padding: 4px 10px;
@@ -174,34 +173,34 @@
     background: var(--bg-color);
 }
 
-.favorite-item .right {
+.userMyPage .favorite-item .right {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 8px;
 }
 
-.link {
+.userMyPage .link {
     color: var(--darkgray-color);
     text-decoration: none;
     font-size: var(--font-small);
     padding: 6px 8px;
     border-radius: 8px;
 }
-.link:hover { background: var(--bg-color); }
+.userMyPage .link:hover { background: var(--bg-color); }
 
-.heart {
+.userMyPage .heart {
     font-size: 20px;
     cursor: pointer;
     border: none;
     background: transparent;
     line-height: 1;
 }
-.heart.is-liked { color: var(--main-color); }
-.heart:not(.is-liked) { color: #e5e7eb; }
-.heart:hover { transform: scale(1.02); }
+.userMyPage .heart.is-liked { color: var(--main-color); }
+.userMyPage .heart:not(.is-liked) { color: #e5e7eb; }
+.userMyPage .heart:hover { transform: scale(1.02); }
 
-.skeleton {
+.userMyPage .skeleton {
     background: linear-gradient(90deg, #f6f7f8, #eeeeee, #f6f7f8);
     background-size: 200% 100%;
     animation: sk 1.2s ease-in-out infinite;
@@ -231,17 +230,3 @@
     .favorite-item .thumb { width: 100%; height: 180px; }
     .favorite-item .right { align-items: flex-start; }
 }
-
-.btn--primary.is-main {
-    background: var(--main-color);
-    color: var(--white-color);
-    border-color: var(--main-color);
-}
-.btn--primary.is-main:hover { background: var(--main-hover-color); }
-
-.btn--ghost.link-like {
-    background: transparent;
-    border-color: transparent;
-    color: var(--darkgray-color);
-}
-.btn--ghost.link-like:hover { background: var(--bg-color); }

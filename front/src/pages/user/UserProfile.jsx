@@ -16,17 +16,32 @@ export default function UserProfile() {
     const [data, setData] = useState(null);
     const [form, setForm] = useState(null);
 
-    // 상태 관리
+    // 데이터 로드 (사용자 정보 + 프로필 사진)
     useEffect(() => {
         if (!userId) return;
         (async () => {
             try {
                 const user = await apiRequest(`/api/users/${userId}`);
-                const photo = await apiRequest(`/api/users/${userId}/photo`).catch(() => null);
-                setData({ ...user, avatarUrl: photo?.url ?? null });
-                setForm({ ...user, avatarUrl: photo?.url ?? null });
-            } catch {
-                alert("사용자 정보를 불러오지 못했습니다.");
+
+                let avatarUrl = null;
+                // 사진이 존재할 때만 요청
+                if (user.avatarExists) {
+                    const photoResponse = await fetch(`/api/users/${userId}/photo`);
+                    if (photoResponse.ok) {
+                        const blob = await photoResponse.blob();
+                        avatarUrl = URL.createObjectURL(blob);
+                    }
+                }
+
+                const merged = {
+                    ...user,
+                    avatarUrl: avatarUrl,
+                };
+
+                setData(merged);
+                setForm(merged);
+            } catch (e) {
+                console.error("사용자 정보를 불러오지 못했습니다.", e);
             } finally {
                 setLoading(false);
             }
@@ -38,20 +53,21 @@ export default function UserProfile() {
         fields: [
             { name: "name", label: "이름", readOnly: !edit, required: true },
             { name: "login_id", label: "아이디", readOnly: true },
-            { name: "password_mask", label: "비밀번호", type: "password", readOnly: !edit },
+            { name: "password", label: "비밀번호", type: "password", readOnly: !edit },
             { name: "phone_number", label: "전화번호", readOnly: !edit },
             { name: "email", label: "이메일", readOnly: !edit },
         ]
     }), [edit]);
 
-    // 저장/취소 처리
+    if (loading || !data || !form) return null;
+
+    // 저장 핸들러
     const handleSave = async () => {
         try {
             const payload = {
                 name: form.name,
                 phone_number: form.phone_number,
                 email: form.email,
-                password: form.password,
             };
 
             await apiRequest(`/api/users/${userId}`, {
@@ -72,32 +88,44 @@ export default function UserProfile() {
                 if (!res.ok) throw new Error(`사진 업로드 실패: ${res.status}`);
             }
 
-            // 최신값 반영
-            const user = await apiRequest(`/api/users/${userId}`);
-            const photo = await apiRequest(`/api/users/${userId}/photo`).catch(() => null);
-            const merged = { ...user, avatarUrl: photo?.url ?? null };
-
-            setData(merged);
-            setForm(merged);
             setEdit(false);
-            alert("프로필이 수정되었습니다.");
-        } catch {
-            alert("프로필 수정 실패");
+            console.log("프로필이 수정되었습니다.");
+        } catch (e) {
+            console.error("프로필 수정 실패", e);
         }
     };
 
+    // 취소 핸들러
     const handleCancel = async () => {
         try {
             const user = await apiRequest(`/api/users/${userId}`);
-            const photo = await apiRequest(`/api/users/${userId}/photo`).catch(() => null);
-            setData({ ...user, avatarUrl: photo?.url ?? null });
-            setForm({ ...user, avatarUrl: photo?.url ?? null });
+            if (user.avatarExists) {
+                const photoResponse = await fetch(`/api/users/${userId}/photo`);
+                const blob = await photoResponse.blob();
+                user.avatarUrl = URL.createObjectURL(blob);
+            }
+            const merged = { ...user, avatarUrl: user.avatarUrl ?? null };
+            setData(merged);
+            setForm(merged);
         } finally {
             setEdit(false);
         }
     };
 
-    if (loading || !data || !form) return null;
+    // 회원 탈퇴 핸들러
+    const handleWithdrawal = async () => {
+        const confirmWithdrawal = window.confirm("정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
+        if (confirmWithdrawal) {
+            try {
+                await apiRequest(`/api/users/${userId}`, { method: "DELETE" });
+                console.log("회원 탈퇴 완료");
+                navigate("/");
+            } catch (e) {
+                console.error("회원 탈퇴 실패", e);
+                alert("회원 탈퇴에 실패했습니다. 다시 시도해 주세요.");
+            }
+        }
+    };
 
     return (
         <div className="container">
@@ -132,33 +160,20 @@ export default function UserProfile() {
                                 password_mask: edit ? form.password || "" : form.password ? "*".repeat(form.password.length) : ""
                             }}
                             onChange={(changed) => setForm(p => ({ ...p, ...changed }))}
+                            edit={edit}
                             renderActions={() => (
                                 <div style={{ display: "flex", gap: 8 }}>
                                     {!edit ? (
-                                        <Button color="red" onClick={() => setEdit(true)}>수정</Button>
+                                        <>
+                                        <Button color="red" onClick={() => setEdit(true)}>수정하기</Button>
+                                            <Button variant="outline" color="black" onClick={handleWithdrawal}>탈퇴하기</Button>
+                                        </>
                                     ) : (
                                         <>
                                             <Button color="red" onClick={handleSave}>저장</Button>
                                             <Button variant="outline" color="gray" onClick={handleCancel}>취소</Button>
                                         </>
                                     )}
-                                    {/* 탈퇴 버튼 */}
-                                    <Button
-                                        variant="outline"
-                                        color="black"
-                                        onClick={async () => {
-                                            if (!confirm("정말 탈퇴하시겠습니까?")) return;
-                                            try {
-                                                await apiRequest(`/api/users/${userId}`, { method: "DELETE" });
-                                                alert("회원 탈퇴 완료");
-                                                navigate("/");
-                                            } catch {
-                                                alert("회원 탈퇴 실패");
-                                            }
-                                        }}
-                                    >
-                                        탈퇴하기
-                                    </Button>
                                 </div>
                             )}
                         />
