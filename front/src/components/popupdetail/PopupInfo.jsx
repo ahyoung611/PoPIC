@@ -17,16 +17,18 @@ const PopupInfo = (props) => {
             const response = await fetch(`/waiting/create?userId=1&storeId=${popup.store_id}`, {
                 method: "POST"
             });
-            if (!response.ok) {
-                throw new Error("대기 등록 실패");
-            }
+
             const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message || "대기 등록 실패");
+                return;
+            }
             console.log("대기 등록 성공:", data);
 
             alert(`대기번호 ${data.queueNumber}번으로 등록되었습니다.`);
         } catch (error) {
             console.error("Error:", error);
-            alert("대기 등록에 실패했습니다.");
         } finally {
             setWalkInModalOpen(false);
         }
