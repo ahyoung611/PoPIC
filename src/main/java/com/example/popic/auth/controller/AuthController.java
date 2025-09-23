@@ -12,6 +12,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 // 리프레시 토큰용
@@ -26,9 +30,6 @@ import io.jsonwebtoken.JwtException;
 public class AuthController {
     private final NaverLoginService naverLoginService;
     private final AuthService authService;
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
-    private final VendorRepository vendorRepository;
 
     @GetMapping("/naver/callback")
     public ResponseEntity<?> callback(@RequestParam String code, @RequestParam String state, HttpServletResponse response) {
@@ -69,6 +70,7 @@ public class AuthController {
             if (refreshToken == null) {
                 return ResponseEntity.status(401).body(new LoginResponse(false, "리프레시 토큰 없음"));
             }
+
 
             // 2. refreshToken 검증 및 새로운 accessToken 발급
             LoginResponse loginResponse = authService.refreshAccessToken(refreshToken);

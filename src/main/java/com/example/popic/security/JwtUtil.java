@@ -73,7 +73,7 @@ public class JwtUtil {
     // 토큰에서 사용자 정보 추출 후 Authentication 객체 생성
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(secret)
+                .setSigningKey(key())
                 .parseClaimsJws(token)
                 .getBody();
 

@@ -7,10 +7,11 @@ export function AuthProvider({ children }) {
     const [auth, setAuth] = useState({
         token: null,
         user: null,
+        loading: true,
     });
 
     const login = (token, user) => {
-        setAuth({ token, user });
+        setAuth(prev => ({ ...prev, token, user }));
     };
 
     const logout = () => {
@@ -29,8 +30,8 @@ export function AuthProvider({ children }) {
             try {
                 const data = await apiRequest("/auth/refresh", {
                     method: "POST",
-                }, getToken());
-                if (data?.result) {
+                });
+                if (data) {
                     setAuth({ token: data.accessToken, user: data.user, loading: false });
                 } else {
                     setAuth({ token: null, user: null, loading: false });
