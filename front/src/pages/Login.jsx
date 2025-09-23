@@ -1,9 +1,7 @@
-// src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
-import { getAccessToken, setAccessToken } from "../utils/apiRequest";
 import apiRequest from "../utils/apiRequest";
-
+import { API_BASE_URL } from "../utils/apiRequest";
 
 import eye from "../../public/eye.png";
 import nonEye from "../../public/nonEye.png";
@@ -21,9 +19,11 @@ import privateCheckP from "../../public/privateCheck-p.png";
 
 import "../style/login.css";
 import "../style/button.css";
+import {useAuth} from "../context/AuthContext.jsx";
 
 
 const Login = () => {
+    const {login} = useAuth();
     const navigate = useNavigate();
     const [params] = useSearchParams();
     const initialRole = params.get("role") === "VENDOR" ? "VENDOR" : "USER";
@@ -49,17 +49,23 @@ const Login = () => {
         try {
             setLoading(true);
             const endpoint = role === "USER" ? "/user/login" : "/vendor/login";
-            const data = await apiRequest(endpoint, { method: "POST", body: form });
+            const res = await fetch(endpoint, {
+                method: "POST",
+                headers:{"Content-Type": "application/json" },
+                body: JSON.stringify(form)
+            });
+
+            const data = await res.json();
 
             if (!data?.result) {
                 alert(data?.message || "로그인에 실패했습니다.");
                 return;
             }
+            console.log(data);
 
-            if (data.token) {
-                setAccessToken(data.token);
+            if (data.token && data.user) {
+                login(data.token, data.user); // context에 저장
             }
-            if (data.user) sessionStorage.setItem("me", JSON.stringify(data.user));
 
             navigate("/");
         } catch (err) {
@@ -88,6 +94,25 @@ const Login = () => {
         };
         handleNaverLogin();
     }
+
+    // 구글 로그인
+    const googleLogin = () => {
+        console.log("GOOGLE_CLIENT_ID", import.meta.env.VITE_GOOGLE_CLIENT_ID);
+        console.log("GOOGLE_REDIRECT_URI", import.meta.env.VITE_GOOGLE_REDIRECT_URI);
+
+        const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI; // 백엔드 콜백
+
+        const scope = encodeURIComponent("openid email profile");
+        const url =
+            `https://accounts.google.com/o/oauth2/v2/auth` +
+            `?client_id=${GOOGLE_CLIENT_ID}` +
+            `&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_URI)}` +
+            `&response_type=code` +
+            `&scope=${scope}` +
+            `&prompt=consent`;
+        window.location.href = url;
+    };
 
     const goJoinHref = `/join?role=${role}`;
 
@@ -199,7 +224,7 @@ const Login = () => {
                         onClick={naverLogin}>
                             <img src={naver} alt="naver" />
                         </button>
-                        <button type="button" className="login-social-btn" title="구글 로그인">
+                        <button type="button" className="login-social-btn" title="구글 로그인" onClick={googleLogin}>
                             <img src={google} alt="google" />
                         </button>
                     </div>

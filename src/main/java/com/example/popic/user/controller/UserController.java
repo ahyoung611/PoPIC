@@ -2,10 +2,8 @@ package com.example.popic.user.controller;
 
 import com.example.popic.entity.entities.User;
 import com.example.popic.user.dto.UserDTO;
-import com.example.popic.user.repository.UserRepository;
 import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.user.service.UserService;
-import com.example.popic.vendor.service.VendorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +41,6 @@ public class UserController {
         }
 
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<ApiRes> login(@RequestBody User req) { // 요청은 엔티티(User)

@@ -50,7 +50,7 @@ public class UserProfileService {
     // 프로필 사진 조회
     public String getProfilePhotoUrl(Long userId) {
         return userProfileRepository.findByUser_Id(userId)
-                .map(p -> "/images/profile/" + p.getSaved_name())
+                .map(p -> "/images?id=" + p.getId() + "&type=userProfile")
                 .orElse(null);
     }
 
@@ -62,7 +62,7 @@ public class UserProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
-        String savedName = FileSave.fileSave("profile", file);
+        String savedName = FileSave.fileSave("userProfile", file);
 
         UserProfile profile = userProfileRepository.findByUser_Id(userId)
                 .orElseGet(() -> {
@@ -102,9 +102,15 @@ public class UserProfileService {
         try {
             String os = System.getProperty("os.name").toLowerCase();
             String home = System.getProperty("user.home");
-            String base = os.contains("win") ? "C:/profile" : home + Path.of("profile");
-            Path path = Paths.get(base.toString(), savedName);
+            Path basePath = os.contains("win") ? Paths.get("C:", "userProfile") : Paths.get(home, "userProfile");
+            Path path = basePath.resolve(savedName);
             Files.deleteIfExists(path);
         } catch (Exception ignored) {}
+    }
+
+    // 프로필 사진 조회
+    public UserProfile getProfileById(Long profileId) {
+        return userProfileRepository.findById(profileId)
+                .orElseThrow(() -> new IllegalArgumentException("UserProfile not found: " + profileId));
     }
 }
