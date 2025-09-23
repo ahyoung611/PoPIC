@@ -1,7 +1,10 @@
 package com.example.popic.vendor.controller;
 
 import com.example.popic.entity.entities.VendorProfile;
+import com.example.popic.user.dto.UserPasswordDto;
+import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.vendor.dto.VendorDTO;
+import com.example.popic.vendor.dto.VendorPasswordDto;
 import com.example.popic.vendor.service.VendorProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +22,7 @@ import java.util.Map;
 public class VendorProfileController {
 
     private final VendorProfileService service;
+    private final AccountUserVendorService accountUserVendorService;
     
     // 벤더 프로필 조회
     @GetMapping
@@ -70,14 +74,6 @@ public class VendorProfileController {
         }
     }
 
-
-    // 벤더 프로필 사진 조회
-//    @GetMapping("/photo")
-//    public Map<String, String> getPhoto(@PathVariable Long vendorId) {
-//        String url = service.getProfilePhotoUrl(vendorId); // 사진 없으면 null
-//        return Map.of("url", url != null ? url : "");
-//    }
-
     @GetMapping("/photo-url")
     public ResponseEntity<Map<String, String>> getPhotoUrl(@PathVariable Long vendorId) {
         String url = service.getProfilePhotoUrl(vendorId); // 아래에서 구현
@@ -97,5 +93,12 @@ public class VendorProfileController {
     @DeleteMapping("/photo")
     public VendorDTO deletePhoto(@PathVariable Long vendorId) {
         return service.deleteProfilePhoto(vendorId);
+    }
+
+    // 비밀번호 재설정
+    @PostMapping("/password")
+    public ResponseEntity<Void> changePassword(@PathVariable Long vendorId, @RequestBody VendorPasswordDto req) {
+        accountUserVendorService.changeVendorPassword(vendorId, req);
+        return ResponseEntity.noContent().build();
     }
 }

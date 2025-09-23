@@ -52,10 +52,6 @@ public class UserProfileService {
         if (dto.getEmail() != null)        user.setEmail(dto.getEmail());
         if (dto.getPhone_number() != null) user.setPhone_number(dto.getPhone_number());
 
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            user.setPassword(dto.getPassword());
-        }
-
         return new UserDTO(user);
     }
 

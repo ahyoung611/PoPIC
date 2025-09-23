@@ -1,6 +1,8 @@
 package com.example.popic.user.controller;
 
 import com.example.popic.user.dto.UserDTO;
+import com.example.popic.user.dto.UserPasswordDto;
+import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.user.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.List;
 public class UserProfileController {
 
     private final UserProfileService service;
+    private final AccountUserVendorService accountUserVendorService;
 
     // 프로필 조회
     @GetMapping
@@ -77,4 +80,15 @@ public class UserProfileController {
     public List<?> getFavorites(@PathVariable Long userId) {
         return List.of();
     }
+
+    // 비밀번호 재설정
+    @PostMapping("/password")
+    public ResponseEntity<Void> changePassword(@PathVariable Long userId, @RequestBody UserPasswordDto req) {
+        accountUserVendorService.changeUserPassword(userId, req);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
+
 }
