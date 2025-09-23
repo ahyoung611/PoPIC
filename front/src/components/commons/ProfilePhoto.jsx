@@ -58,7 +58,7 @@ export default function ProfilePhoto({
             <div className="profilePhoto-wrap" style={wrapStyle}>
                 <img
                     className="profilePhoto-img"
-                    src={preview}
+                    src={preview || defaultUrl}
                     alt="profile"
                     onError={(e) => { e.currentTarget.src = defaultUrl; }}
                 />

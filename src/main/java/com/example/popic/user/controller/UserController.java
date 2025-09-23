@@ -48,7 +48,6 @@ public class UserController {
 
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<ApiRes> login(@RequestBody User req, HttpServletResponse response) { // 요청은 엔티티(User)
         try {
