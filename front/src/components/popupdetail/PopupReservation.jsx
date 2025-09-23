@@ -1,11 +1,26 @@
 import {useState} from "react";
+import PopupReservationCalendar from "./PopupReservationCalendar.jsx";
 
 const PopupReservation = (props) => {
     const [reservationNumber, setReservationNumber] = useState(1);
     const [reservationDate, setReservationDate] = useState("");
     const [reservationTime, setReservationTime] = useState("");
 
+    const [selectedSlot, setSelectedSlot] = useState(null);
+    const handleCalendarChange = ({date, slot}) => {
+        setReservationDate(date || "");
+        const start = slot?.start_time ?? slot?.startTime ?? "";
+        setReservationTime(start);
+        setSelectedSlot(slot || null);
+    };
+
     function reservationSubmit() {
+        if (reservationDate == "") {
+            alert("예약 날짜를 선택해주세요.");
+        } else if (reservationTime == "") {
+            alert("예약 시간을 선택해주세요.");
+        }
+
         // 예약 버튼을 클릭했을 때 모달에 정보를 전달
         const reservationData = {
             name: props.popup.store_name,
@@ -13,23 +28,22 @@ const PopupReservation = (props) => {
             time: reservationTime,
             price: props.popup?.price,
             reservationCount: reservationNumber,
+            slot_id: selectedSlot?.slot_id ?? selectedSlot?.slotId,
+            slot_version: selectedSlot?.version,
         };
-        console.log("예약 데이터:", reservationData);
-        if (reservationDate == "") {
-            alert("예약 날짜를 선택해주세요.");
-        } else if (reservationTime == "") {
-            alert("예약 시간을 선택해주세요.");
-        } else {
-            props.onOpenModal(reservationData); // 모달 열기 및 예약 데이터 전달
-        }
+
+        props.onOpenModal(reservationData); // 모달 열기 및 예약 데이터 전달
     }
 
     return (
         <div className="popupReservation">
             {/* 예약 관련 내용 */}
             <div className={"reservation-date-input"}>
-                <input type={"date"} name={"reservationDate"} onChange={(e) => setReservationDate(e.target.value)}/>
-                <input type={"time"} name={"reservationTime"} onChange={(e) => setReservationTime(e.target.value)}/>
+                <PopupReservationCalendar
+                    popup={props.popup}
+                    value={{date: reservationDate || null, slot: selectedSlot}}
+                    onChange={handleCalendarChange}
+                />
             </div>
 
             <div className={"reservation-number-input"}>

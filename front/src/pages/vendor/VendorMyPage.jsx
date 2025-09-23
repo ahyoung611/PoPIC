@@ -4,6 +4,7 @@ import Button from "../../components/commons/Button.jsx";
 import ProfileForm from "../../components/commons/ProfileForm.jsx";
 import ProfilePhoto from "../../components/commons/ProfilePhoto.jsx";
 import apiRequest from "../../utils/apiRequest.js";
+import {useAuth} from "../../context/AuthContext.jsx"
 import "../../style/profileCard.css";
 import "../../style/profilePhoto.css";
 
@@ -29,6 +30,7 @@ const PasswordField = React.memo(function PasswordField({
                                                         }) {
     const [visible, setVisible] = React.useState(false);
     const inputRef = React.useRef(null);
+
 
     const toggle = () => {
         const el = inputRef.current;
@@ -85,6 +87,7 @@ export default function VendorMyPage() {
     const [edit, setEdit] = useState(false);
     const [data, setData] = useState(null);
     const [form, setForm] = useState(null);
+    const token = useAuth().getToken();
 
     // 비밀번호 변경 UI 상태(벤더 전용)
     const [pwOpen, setPwOpen] = useState(false);
@@ -92,27 +95,34 @@ export default function VendorMyPage() {
     const [pwErr, setPwErr] = useState("");
     const [pwLoading, setPwLoading] = useState(false);
 
+
     useEffect(() => {
         if (!edit) {
             setPwOpen(false);
             setPwErr("");
             setPwForm({ currentPassword: "", newPassword: "", confirmNewPassword: "" });
         }
-    }, [edit]);
+    }, [token,edit]);
 
     // 데이터 로드 (벤더 기본 정보 + 프로필 사진)
     useEffect(() => {
         if (!vendorId) return;
         (async () => {
             try {
-                const v = await apiRequest(`/api/vendors/${vendorId}`);
+                console.log("token",token);
 
+                const v = await apiRequest(`/api/vendors/${vendorId}`,{},token);
                 let avatarUrl = null;
-                if (v.avatarExists) {
-                    const photoResponse = await fetch(`/api/vendors/${vendorId}/photo`);
-                    if (photoResponse.ok) {
+
+                if (v && v.avatarExists) {
+                    const photoResponse = await apiRequest(`/api/vendors/${vendorId}/photo`, {}, token);
+
+                    // 응답 객체가 유효하고, ok 속성이 true인지 확인
+                    if (photoResponse && photoResponse.ok) {
                         const blob = await photoResponse.blob();
                         avatarUrl = URL.createObjectURL(blob);
+                    } else {
+                        console.error("프로필 사진을 불러오지 못했습니다. 응답 오류:", photoResponse);
                     }
                 }
 
@@ -130,7 +140,7 @@ export default function VendorMyPage() {
                 setLoading(false);
             }
         })();
-    }, [vendorId]);
+    }, [token, vendorId]);
 
     // 프로필 폼 스키마 : edit 상태에 따라 readOnly 제어
     const vendorSchema = useMemo(() => ({
@@ -141,7 +151,7 @@ export default function VendorMyPage() {
             { name: "phone_number", label: "전화번호", required: true, readOnly: !edit },
             { name: "vendor_name", label: "업체명",  required: true,readOnly: !edit },
         ]
-    }), [edit]);
+    }), [token,edit]);
 
     const badgeMeta = STATUS_BADGE[data?.status] ?? { text: "상태 미정", color: "gray" };
     const badge = (
@@ -169,21 +179,25 @@ export default function VendorMyPage() {
                 vendor_name: form.vendor_name,
             };
 
+
             await apiRequest(`/api/vendors/${vendorId}`, {
                 method: "PUT",
                 body: payload,
-            });
+            }, token);
+
 
             // 사진 삭제
             if (form.avatarRemoved) {
-                await apiRequest(`/api/vendors/${vendorId}/photo`, { method: "DELETE" });
+                await apiRequest(`/api/vendors/${vendorId}/photo`, { method: "DELETE" }, token);
             }
+
+
 
             // 사진 업로드
             if (form.avatarFile) {
                 const fd = new FormData();
                 fd.append("file", form.avatarFile);
-                const res = await fetch(`/api/vendors/${vendorId}/photo`, { method: "POST", body: fd });
+                const res = await apiRequest(`/api/vendors/${vendorId}/photo`, {method: "POST", body: fd }, token);
                 if (!res.ok) throw new Error(`사진 업로드 실패: ${res.status}`);
             }
 
@@ -197,9 +211,9 @@ export default function VendorMyPage() {
     // 취소 핸들러
     const handleCancel = async () => {
         try {
-            const vendor = await apiRequest(`/api/vendors/${vendorId}`);
+            const vendor = await apiRequest(`/api/vendors/${vendorId}`,{},token);
             if (vendor.avatarExists) {
-                const photoResponse = await fetch(`/api/vendors/${vendorId}/photo`);
+                const photoResponse = await apiRequest(`/api/vendors/${vendorId}/photo`,{},token);
                 const blob = await photoResponse.blob();
                 vendor.avatarUrl = URL.createObjectURL(blob);
             }
