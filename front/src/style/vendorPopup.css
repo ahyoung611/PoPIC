@@ -46,6 +46,12 @@
     border-color: var(--main-color);
 }
 
+.vp-input[readonly]:focus {
+    outline: none !important;
+    border-color: var(--border-color) !important;
+    box-shadow: none !important;
+}
+
 .vp-textarea {
     width: 100%;
     padding: 14px 16px;

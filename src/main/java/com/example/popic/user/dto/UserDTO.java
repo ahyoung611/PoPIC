@@ -31,6 +31,7 @@ public class UserDTO {
     // young 프로필
     private String profileOriginalName;
     private String profileSavedName;
+    private boolean avatarExists;
 
     public UserDTO(User user) {
         this.email = user.getEmail();
@@ -40,6 +41,7 @@ public class UserDTO {
         this.point = user.getPoint();
         this.phone_number = user.getPhone_number();
         this.user_id = user.getUser_id();
+        this.password = user.getPassword();
 
         // young 프로필
         if(user.getUser_profile() != null){

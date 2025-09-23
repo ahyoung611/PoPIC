@@ -48,8 +48,10 @@ public class VendorProfileService {
 
     // 프로필 사진 조회
     public String getProfilePhotoUrl(Long vendorId) {
+        // vendorId를 사용해 VendorProfile 엔티티를 찾습니다.
         return vendorProfileRepository.findByVendorVendor_Id(vendorId)
-                .map(p -> "/images?id=" + p.getProfile_id() + "&type=vendorProfile")
+                // VendorProfile의 getId()로 profile_id를 가져와 URL을 만듭니다.
+                .map(p -> "/images?id=" + p.getId() + "&type=vendorProfile")
                 .orElse(null);
     }
 
@@ -87,13 +89,14 @@ public class VendorProfileService {
                 .orElseThrow(() -> new IllegalArgumentException("Vendor not found: " + vendorId));
 
         vendorProfileRepository.findByVendorVendor_Id(vendorId).ifPresent(profile -> {
+            // 물리적 파일 삭제
             deletePhysical(profile.getSaved_name());
-            profile.setOriginal_name(null);
-            profile.setSaved_name(null);
-            vendorProfileRepository.save(profile);
+
+            // 데이터베이스에서 해당 엔티티 삭제
+            vendorProfileRepository.delete(profile);
         });
 
-        return new VendorDTO(vendor);  // 삭제 후 DTO 반환
+        return new VendorDTO(vendor);
     }
 
     // 물리 파일 삭제
@@ -108,8 +111,7 @@ public class VendorProfileService {
     }
 
     // 프로필 사진 조회
-    public VendorProfile getProfileById(Long profileId) {
-        return vendorProfileRepository.findById(profileId)
-                .orElseThrow(() -> new IllegalArgumentException("VendorProfile not found: " + profileId));
+    public VendorProfile getProfileByVendorId(Long vendorId) {
+        return vendorProfileRepository.findByVendorVendor_Id(vendorId).orElse(null);
     }
 }

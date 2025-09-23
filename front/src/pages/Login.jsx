@@ -1,10 +1,11 @@
-import {useState} from "react";
-import {Link, useNavigate, useSearchParams} from "react-router-dom";
 
+import { useState } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import apiRequest from "../utils/apiRequest";
+import { API_BASE_URL } from "../utils/apiRequest";
 import eye from "../../public/eye.png";
 import nonEye from "../../public/nonEye.png";
 import logo from "../../public/popic-logo.png";
-
 import kakao from "../../public/kakao.png";
 import naver from "../../public/naver.png";
 import google from "../../public/google.png";
@@ -14,7 +15,6 @@ import usernameIcon from "../../public/icon-username-inactive.png";
 import usernameIconActive from "../../public/icon-username-active.png";
 import privateCheckG from "../../public/privateCheck-g.png";
 import privateCheckP from "../../public/privateCheck-p.png";
-
 import "../style/login.css";
 import "../style/button.css";
 import {useAuth} from "../context/AuthContext.jsx";
@@ -46,12 +46,19 @@ const Login = () => {
 
         try {
             setLoading(true);
+
+//             const endpoint = role === "USER" ? "/user/login" : "/vendor/login";
+//             const res = await fetch(endpoint, {
+//                 method: "POST",
+//                 headers:{"Content-Type": "application/json" },
+//                 body: JSON.stringify(form)
             const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "/vendor/login";
             const res = await fetch(endpoint, {
                 method: "POST",
                 headers:{"Content-Type": "application/json" },
                 body: JSON.stringify(form),
                 credentials: "include",
+
             });
 
             const data = await res.json();
@@ -93,6 +100,25 @@ const Login = () => {
         };
         handleNaverLogin();
     }
+
+    // 구글 로그인
+    const googleLogin = () => {
+        console.log("GOOGLE_CLIENT_ID", import.meta.env.VITE_GOOGLE_CLIENT_ID);
+        console.log("GOOGLE_REDIRECT_URI", import.meta.env.VITE_GOOGLE_REDIRECT_URI);
+
+        const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI; // 백엔드 콜백
+
+        const scope = encodeURIComponent("openid email profile");
+        const url =
+            `https://accounts.google.com/o/oauth2/v2/auth` +
+            `?client_id=${GOOGLE_CLIENT_ID}` +
+            `&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_URI)}` +
+            `&response_type=code` +
+            `&scope=${scope}` +
+            `&prompt=consent`;
+        window.location.href = url;
+    };
 
     const goJoinHref = `/join?role=${role}`;
 
@@ -204,7 +230,7 @@ const Login = () => {
                         onClick={naverLogin}>
                             <img src={naver} alt="naver" />
                         </button>
-                        <button type="button" className="login-social-btn" title="구글 로그인">
+                        <button type="button" className="login-social-btn" title="구글 로그인" onClick={googleLogin}>
                             <img src={google} alt="google" />
                         </button>
                     </div>

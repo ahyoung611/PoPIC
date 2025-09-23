@@ -25,7 +25,6 @@ const PopupInfo = (props) => {
                 return;
             }
             console.log("대기 등록 성공:", data);
-
             alert(`대기번호 ${data.queueNumber}번으로 등록되었습니다.`);
         } catch (error) {
             console.error("Error:", error);

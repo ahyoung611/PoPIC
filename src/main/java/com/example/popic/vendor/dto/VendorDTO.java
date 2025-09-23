@@ -2,20 +2,14 @@ package com.example.popic.vendor.dto;
 
 import com.example.popic.entity.entities.ROLE;
 import com.example.popic.entity.entities.Vendor;
-import com.example.popic.entity.entities.VendorProfile;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-//@AllArgsConstructor
 public class VendorDTO {
     private Long vendor_id;  // PK
     private String login_id;
@@ -23,9 +17,7 @@ public class VendorDTO {
     private String vendor_name;
     private String manager_name;
     private String phone_number;
-
-    @JsonIgnore
-    private VendorProfile profile;  // 프로필 FK
+//    private VendorProfile profile;  // 프로필 FK
     private String brn;  // 사업자등록번호
     private LocalDateTime join_date;
     private LocalDateTime update_date;
@@ -36,8 +28,8 @@ public class VendorDTO {
     // young 프로필
     private String profileOriginalName;
     private String profileSavedName;
+    private boolean avatarExists;
 
-    @JsonIgnore
     public VendorDTO(Vendor vendor){
         this.vendor_id = vendor.getVendor_id();
         this.login_id = vendor.getLogin_id();
@@ -47,6 +39,7 @@ public class VendorDTO {
         this.phone_number = vendor.getPhone_number();
         this.brn = vendor.getBrn();
         this.join_date = vendor.getJoin_date();
+        this.status = vendor.getStatus();
 
         //  young 프로필
         if(vendor.getProfile() != null){
