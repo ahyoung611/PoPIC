@@ -10,6 +10,7 @@ import com.example.popic.vendor.service.VendorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.example.popic.security.JwtUtil;
 
@@ -20,6 +21,7 @@ import java.time.Duration;
 
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/vendor")
@@ -28,6 +30,8 @@ public class VendorController {
     private final VendorService vendorService;
     private final AccountUserVendorService accountUserVendorService;
     private final JwtUtil jwtUtil;
+    private final VendorRepository vendorRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/join")
     public ResponseEntity<ApiRes> join(@RequestBody Vendor vendor) {
@@ -58,7 +62,7 @@ public class VendorController {
             dto.setRole(v.getRole());
             dto.setStatus(v.getStatus());
             dto.setPassword(null);
-            dto.setProfile(null);
+//            dto.setProfile(null);
 
             String access  = jwtUtil.createAccessToken(v.getLogin_id(), String.valueOf(v.getRole()), v.getVendor_id());
             String refresh = jwtUtil.createRefreshToken(v.getLogin_id());
@@ -88,6 +92,28 @@ public class VendorController {
         List<PopupReservationDTO> reservationList = vendorService.getReservationList(popupId, sort);
 
         return ResponseEntity.ok(reservationList);
+    }
+
+    @PutMapping("/vendors/{id}")
+    public ResponseEntity<ApiRes> updateVendor(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        try {
+            Vendor vendor = vendorRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 벤더가 없습니다."));
+
+            if(payload.containsKey("vendor_name")) vendor.setVendor_name((String) payload.get("vendor_name"));
+            if(payload.containsKey("manager_name")) vendor.setManager_name((String) payload.get("manager_name"));
+            if(payload.containsKey("phone_number")) vendor.setPhone_number((String) payload.get("phone_number"));
+            if(payload.containsKey("brn")) vendor.setBrn((String) payload.get("brn"));
+            if(payload.containsKey("password")) {
+                String pw = (String) payload.get("password");
+                if(pw != null && !pw.isEmpty()) vendor.setPassword(passwordEncoder.encode(pw));
+            }
+
+            vendorRepository.save(vendor);
+            return ResponseEntity.ok(ApiRes.ok(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiRes.fail("수정 실패: " + e.getMessage()));
+        }
     }
 
     public record ApiRes(boolean result, String message, Long id, String token, Object user) {

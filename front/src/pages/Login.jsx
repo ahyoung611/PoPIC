@@ -1,12 +1,11 @@
+
 import { useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import apiRequest from "../utils/apiRequest";
 import { API_BASE_URL } from "../utils/apiRequest";
-
 import eye from "../../public/eye.png";
 import nonEye from "../../public/nonEye.png";
 import logo from "../../public/popic-logo.png";
-
 import kakao from "../../public/kakao.png";
 import naver from "../../public/naver.png";
 import google from "../../public/google.png";
@@ -16,7 +15,6 @@ import usernameIcon from "../../public/icon-username-inactive.png";
 import usernameIconActive from "../../public/icon-username-active.png";
 import privateCheckG from "../../public/privateCheck-g.png";
 import privateCheckP from "../../public/privateCheck-p.png";
-
 import "../style/login.css";
 import "../style/button.css";
 import {useAuth} from "../context/AuthContext.jsx";
@@ -48,11 +46,19 @@ const Login = () => {
 
         try {
             setLoading(true);
-            const endpoint = role === "USER" ? "/user/login" : "/vendor/login";
+
+//             const endpoint = role === "USER" ? "/user/login" : "/vendor/login";
+//             const res = await fetch(endpoint, {
+//                 method: "POST",
+//                 headers:{"Content-Type": "application/json" },
+//                 body: JSON.stringify(form)
+            const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "/vendor/login";
             const res = await fetch(endpoint, {
                 method: "POST",
                 headers:{"Content-Type": "application/json" },
-                body: JSON.stringify(form)
+                body: JSON.stringify(form),
+                credentials: "include",
+
             });
 
             const data = await res.json();

@@ -1,18 +1,24 @@
 package com.example.popic.user.controller;
 
 import com.example.popic.entity.entities.User;
+import com.example.popic.security.JwtUtil;
 import com.example.popic.user.dto.UserDTO;
 import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.user.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.example.popic.security.JwtUtil;
-
-// 토큰용 import
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 
@@ -43,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiRes> login(@RequestBody User req) { // 요청은 엔티티(User)
+    public ResponseEntity<ApiRes> login(@RequestBody User req, HttpServletResponse response) { // 요청은 엔티티(User)
         try {
             if (req.getLogin_id() == null || req.getPassword() == null) {
                 return ResponseEntity.ok(ApiRes.fail("요청 형식이 올바르지 않습니다."));
@@ -60,22 +66,18 @@ public class UserController {
             dto.setPassword(null);
 
             // 토큰 생성 (액세스, 리프레시 각 분리)
-            String access  = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
+            String access = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
             String refresh = jwtUtil.createRefreshToken(u.getLogin_id());
 
             // 리프레시 토큰 - http only 쿠키
-            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
-                    .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
-                    .path("/")
-                    .maxAge(Duration.ofDays(14))
-                    .build();
+            Cookie refreshCookie = new Cookie("refreshToken", refresh);
+            refreshCookie.setHttpOnly(true);
+            refreshCookie.setPath("/");
+            refreshCookie.setMaxAge((int) Duration.ofDays(14).getSeconds());
+            response.addCookie(refreshCookie);
 
             // 프론트로 응답
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                    .body(ApiRes.okLogin("로그인 성공", access, dto));
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshCookie.toString()).body(ApiRes.okLogin("로그인 성공", access, dto));
 
 
         } catch (IllegalArgumentException | IllegalStateException e) {
@@ -88,9 +90,17 @@ public class UserController {
     }
 
     public record ApiRes(boolean result, String message, Long id, String token, Object user) {
-        public static ApiRes ok(Long id){ return new ApiRes(true, "가입 성공", id, null, null); }
-        public static ApiRes okLogin(String m, String token, Object user){ return new ApiRes(true, m, null, token, user); }
-        public static ApiRes fail(String m){ return new ApiRes(false, m, null, null, null); }
+        public static ApiRes ok(Long id) {
+            return new ApiRes(true, "가입 성공", id, null, null);
+        }
+
+        public static ApiRes okLogin(String m, String token, Object user) {
+            return new ApiRes(true, m, null, token, user);
+        }
+
+        public static ApiRes fail(String m) {
+            return new ApiRes(false, m, null, null, null);
+        }
     }
 
 }

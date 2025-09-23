@@ -2,10 +2,11 @@
     width: 100%;
     max-width: 760px;
     margin: 0 auto;
-    background: #fff;
-    border-radius: 16px;
+    background: var(--white-color);
+    border-radius: 20px;
     box-shadow: 0 8px 24px rgba(0,0,0,.06);
     padding: 20px 20px 24px;
+    border: 1px solid var(--border-color);
 }
 
 .profile-card__head {
@@ -38,4 +39,31 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+}
+
+.vp-input-container {
+    position: relative;
+}
+
+.vp-input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.vp-password-toggle-img {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.vp-password-toggle-img.is-hidden {
+    display: none;
+}
+
+.vp-password-toggle-img.is-visible {
+    display: block;
 }

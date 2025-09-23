@@ -1,18 +1,28 @@
 package com.example.popic.auth.controller;
 
+
 import com.example.popic.auth.dto.GoogleUserInfo;
 import com.example.popic.auth.dto.NaverUserInfo;
 import com.example.popic.auth.service.GoogleLoginService;
+import com.example.popic.auth.dto.LoginResponse;
+import com.example.popic.auth.dto.NaverUserInfo;
+import com.example.popic.auth.service.AuthService;
 import com.example.popic.auth.service.NaverLoginService;
 import com.example.popic.entity.entities.User;
 import com.example.popic.user.repository.UserRepository;
 import com.example.popic.user.service.UserService;
 import com.example.popic.vendor.repository.VendorRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 // 리프레시 토큰용
@@ -117,39 +127,46 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@CookieValue(value = "refreshToken", required = false) String rt) {
-        if (rt == null) return ResponseEntity.status(401).body(Map.of("error","no_refresh"));
+    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
         try {
-            Claims c = jwtUtil.parse(rt).getBody();
-            if (!"refresh".equals(c.get("typ", String.class))) {
-                return ResponseEntity.status(401).body(Map.of("error","invalid_type"));
-            }
-            String loginId = c.getSubject();
-
-            // 1) 유저 먼저
-            var uOpt = userRepository.findByLoginId(loginId);
-            if (uOpt.isPresent()) {
-                var u = uOpt.get();
-                if (u.getStatus() == 0)  return ResponseEntity.status(401).body(Map.of("error","suspended"));
-                if (u.getStatus() == -1) return ResponseEntity.status(401).body(Map.of("error","deleted"));
-                String access = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
-                return ResponseEntity.ok(Map.of("result", true, "token", access));
+            // 1. 쿠키에서 refreshToken 꺼내기
+            String refreshToken = extractRefreshTokenFromCookies(request);
+            if (refreshToken == null) {
+                return ResponseEntity.status(401).body(new LoginResponse(false, "리프레시 토큰 없음"));
             }
 
-            // 2) 없으면 벤더
-            var vOpt = vendorRepository.findByLoginId(loginId);
-            if (vOpt.isPresent()) {
-                var v = vOpt.get();
-                if (v.getStatus() == 0)  return ResponseEntity.status(401).body(Map.of("error","suspended"));
-                if (v.getStatus() == -1) return ResponseEntity.status(401).body(Map.of("error","deleted"));
-                String access = jwtUtil.createAccessToken(v.getLogin_id(), String.valueOf(v.getRole()), v.getVendor_id());
-                return ResponseEntity.ok(Map.of("result", true, "token", access));
+
+            // 2. refreshToken 검증 및 새로운 accessToken 발급
+            LoginResponse loginResponse = authService.refreshAccessToken(refreshToken);
+
+            if (!loginResponse.isResult()) {
+                // refreshToken 만료 or 유효하지 않으면 쿠키 삭제
+                Cookie expiredCookie = new Cookie("refreshToken", null);
+                expiredCookie.setPath("/");
+                expiredCookie.setHttpOnly(true);
+                expiredCookie.setMaxAge(0);
+                response.addCookie(expiredCookie);
+
+                return ResponseEntity.status(401).body(loginResponse);
             }
 
-            return ResponseEntity.status(401).body(Map.of("error","unknown_subject"));
-        } catch (JwtException e) {
-            return ResponseEntity.status(401).body(Map.of("error","invalid_refresh"));
+            // 3. 성공 시 -> accessToken + user 정보 반환
+            return ResponseEntity.ok(loginResponse);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new LoginResponse(false, "서버 오류"));
         }
+    }
+
+    private String extractRefreshTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() == null) return null;
+
+        for (Cookie cookie : request.getCookies()) {
+            if ("refreshToken".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 
     @PostMapping("/logout")

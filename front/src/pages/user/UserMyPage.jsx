@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useParams, useNavigate} from "react-router-dom";
 
 import "../../style/myPage.css";
 import ProfileHeader from "../../components/mypage/ProfileHeader.jsx";
@@ -9,7 +9,7 @@ import apiRequest from "../../utils/apiRequest.js";
 
 export default function UserMyPage() {
     // 라우팅 & 네비게이션 훅
-    const { userId } = useParams();
+    const {userId} = useParams();
     const navigate = useNavigate();
     // 로컬 상태
     const [me, setMe] = useState(null);
@@ -30,9 +30,23 @@ export default function UserMyPage() {
         (async () => {
             try {
                 const user = await apiRequest(`/api/users/${userId}`);
+
+                let avatarUrl = "";
+                if (user.avatarExists) {
+                    try {
+                        const photoResponse = await fetch(`/api/users/${userId}/photo`);
+                        if (photoResponse.ok) {
+                            const blob = await photoResponse.blob();
+                            avatarUrl = URL.createObjectURL(blob);
+                        }
+                    } catch (error) {
+                        console.error("Failed to fetch profile photo:", error);
+                    }
+                }
+
                 setMe({
                     name: user.name,
-                    avatarUrl: user.avatarUrl ?? "",
+                    avatarUrl: avatarUrl,
                     email: user.email ?? "",
                     phone_number: user.phone_number ?? "",
                     login_id: user.login_id ?? "",
@@ -63,37 +77,42 @@ export default function UserMyPage() {
 
     // 좋아요 토글
     const handleToggleLike = async (popupId) => {
-        setFavs((prev) => prev.map((it) => (it.id === popupId ? { ...it, liked: !it.liked } : it)));
+        setFavs((prev) => prev.map((it) => (it.id === popupId ? {...it, liked: !it.liked} : it)));
         try {
-            await apiRequest(`/api/users/${userId}/favorites/${popupId}`, { method: "POST" });
+            await apiRequest(`/api/users/${userId}/favorites/${popupId}`, {method: "POST"});
         } catch {
-            setFavs((prev) => prev.map((it) => (it.id === popupId ? { ...it, liked: !it.liked } : it)));
-            alert("좋아요 변경에 실패했습니다.");
+            setFavs((prev) => prev.map((it) => (it.id === popupId ? {...it, liked: !it.liked} : it)));
+            console.error("좋아요 변경에 실패했습니다.");
         }
     };
 
     return (
-        <div className="container userMyPage">
-            <ProfileHeader
-                userId={userId}
-                name={me?.name ?? "사용자"}
-                avatarUrl={me?.avatarUrl}
-                onEdit={goProfileEdit}
-            />
+        <div className="container">
+            <div className={"inner"}>
+                <div className={"userMyPage"}>
+                    <ProfileHeader
+                        userId={userId}
+                        name={me?.name ?? "사용자"}
+                        avatarUrl={me?.avatarUrl}
+                        onEdit={goProfileEdit}
+                    />
 
-            <QuickActions
-                onClickMyPopic={() => navigate(`/userMyPage/${userId}`)}
-                onClickMyReview={() => alert("나의 리뷰")}
-                onClickMyPosts={() => alert("나의 글")}
-            />
+                    <QuickActions
+                        onClickMyPopic={() => navigate(`/userMyPage/${userId}`)}
+                        // alert()는 캔버스에서 작동하지 않으므로 대신 로그를 출력합니다.
+                        onClickMyReview={() => console.log("나의 리뷰")}
+                        onClickMyPosts={() => console.log("나의 글")}
+                    />
 
-            <BookMarkList
-                items={favs}
-                loading={loading}
-                onSortChange={setSort}
-                onToggleLike={handleToggleLike}
-                onOpenDetail={handleOpenDetail}
-            />
+                    <BookMarkList
+                        items={favs}
+                        loading={loading}
+                        onSortChange={setSort}
+                        onToggleLike={handleToggleLike}
+                        onOpenDetail={handleOpenDetail}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

@@ -21,8 +21,8 @@ public class WaitingNumber {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", nullable = false)
-    private PopupStoreSchedule  popupStoreSchedule;
+    @JoinColumn(name = "store_id", nullable = false)
+    private PopupStore store;
 
     @Column(nullable = false)
     private Integer queue_number; // 순번 (1,2,3...)
@@ -34,5 +34,4 @@ public class WaitingNumber {
     private LocalDateTime created_at; // 대기 신청 시각
 
     private LocalDateTime call_time; // 호출 시간
-
 }

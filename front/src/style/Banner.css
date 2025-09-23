@@ -1,0 +1,148 @@
+.banner-react {
+    width: 100%;
+}
+
+.banner-react .banner-wrap {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Swiper 영역 */
+.banner-react .BSwiper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.banner-react .BSwiper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.banner-react .BSwiper .swiper-slide {
+    width: 100%;
+    height: 100%;
+}
+
+.banner-react .slide-bg {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+/* 네비 버튼 */
+.banner-react .swiper-button-prev,
+.banner-react .swiper-button-next {
+    z-index: 99;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 40px;
+    background: none;
+    color: var(--white-color);
+    border: none;
+}
+
+.banner-react .swiper-button-prev {
+    left: 10px;
+}
+
+.banner-react .swiper-button-next {
+    right: 10px;
+}
+
+/* 하단 썸네일 바 */
+.banner-react .scrollbar {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    width: 100%;
+    position: absolute;
+    bottom: -165px;
+    z-index: 10;
+    transition: 0.5s;
+}
+
+.banner-react .banner-wrap:hover .scrollbar {
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.banner-react .page-wrap {
+    width: min(600px, 70%);
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0 12px;
+}
+
+.banner-react .page-wrap a {
+    position: relative;
+    display: inline-block;
+    width: 86px;
+    height: 160px;
+    border-top: 4px solid rgba(226, 120, 42, 0);
+}
+
+.banner-react .page-wrap a.on {
+    border-top: 4px solid var(--main-color);
+}
+
+.banner-react .page-wrap a.on span {
+    display: block;
+}
+
+.banner-react .page-wrap a.on::after {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.banner-react .page-wrap a::after {
+    content: "";
+    display: block;
+    width: 86px;
+    height: 120px;
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    left: 0;
+    top: 18px;
+}
+
+.banner-react .page-wrap img {
+    display: block;
+    width: 86px;
+    height: 120px;
+    margin-top: 18px;
+    object-fit: cover;
+}
+
+.banner-react .page-wrap span {
+    display: none;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    top: -25px;
+    left: 0;
+    font-size: var(--font-caption);
+    color: var(--white-color);
+}
+
+/* 반응형 옵션 */
+@media (max-width: 768px) {
+    /* 모바일에서 썸네일 바 숨기기 */
+    .banner-react .scrollbar { display: none !important; }
+}
+
+/* 모바일 정적 이미지 */
+.banner-react .banner-static-img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+}

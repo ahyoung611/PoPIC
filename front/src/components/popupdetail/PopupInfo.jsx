@@ -10,10 +10,11 @@ const PopupInfo = (props) => {
     const walkInSubmit = () => {
         setWalkInModalOpen(true);
     }
+    console.log("Popup object:", popup);
 
     const walkInConfirm = async () => {
         try {
-            const response = await fetch("/waiting/create?userId=1&scheduleId=" + popup.schedule_id, {
+            const response = await fetch(`/waiting/create?userId=1&storeId=${popup.store_id}`, {
                 method: "POST"
             });
             if (!response.ok) {
@@ -21,7 +22,7 @@ const PopupInfo = (props) => {
             }
             const data = await response.json();
             console.log("대기 등록 성공:", data);
-            alert(`대기번호 ${data.queue_number}번으로 등록되었습니다.`);
+            alert(`대기번호 ${data.queueNumber}번으로 등록되었습니다.`);
         } catch (error) {
             console.error("Error:", error);
             alert("대기 등록에 실패했습니다.");
@@ -48,10 +49,10 @@ const PopupInfo = (props) => {
                 open={walkInModalOpen}
                 title="현장 대기하시겠습니까?"
                 description={
-                    <div className={"walkInModalDescription"}>
+                    <span className={"walkInModalDescription"}>
                         순서가 호출되면 즉시 입장해 주세요.<br/>
                         호출 후 10분이 지나면 자동으로 취소됩니다
-                    </div>
+                    </span>
                 }
                 okText="대기하기"
                 cancelText="취소"
