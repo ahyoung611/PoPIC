@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
+import {useAuth} from "../../context/AuthContext.jsx"
 
 const QrCode = () => {
     const [qrUrl, setQrUrl] = useState(null);
     const [timeLeft, setTimeLeft] = useState(0); // 초 단위
     const [error, setError] = useState(null);
+    const auth = useAuth();
+    const token = auth.token;
 
     // QR 생성
     useEffect(() => {
         const generateQr = async () => {
             try {
                 const res = await fetch("http://localhost:8080/generate-qr", {
+                    headers: {
+                        authorization: `Bearer ${token}`,
+                    },
                     method: "GET",
                     credentials: "include",
                     cache: "no-store",

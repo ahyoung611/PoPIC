@@ -7,6 +7,8 @@ import com.google.zxing.common.BitMatrix;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +26,12 @@ public class QrCodeController {
 
     @GetMapping(value = "/generate-qr", produces = "image/png")
     public void generateQr(HttpServletResponse response) throws Exception {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        System.out.println(authentication);
+        System.out.println(userName);
+
         // 1. 임시 토큰 생성
         String token = UUID.randomUUID().toString();
         String dummyReservationData = "userId:1234,popupId:5678"; // 실제 데이터

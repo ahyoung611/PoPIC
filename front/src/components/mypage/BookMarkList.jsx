@@ -1,15 +1,19 @@
 import React from 'react';
 import FavoriteItem from './BookMarkItem.jsx';
+import Select from "../commons/Select.jsx";
 
-export default function BookMarkList({ items, loading, onSortChange, onToggleLike, onOpenDetail }) {
+export default function BookMarkList({ items, loading, sort, onSortChange, onToggleLike, onOpenDetail }) {
     return (
         <section>
             <div className="section-title">
                 <span>내가 찜한 목록</span>
-                <select defaultValue="latest" onChange={(e) => onSortChange?.(e.target.value)}>
-                    <option value="latest">최신순</option>
-                    <option value="oldest">오래된순</option>
-                </select>
+                <div className="sort">
+                    <Select
+                        options={[{ label: "최신순", value: "latest" }, { label: "오래된순", value: "oldest" }]}
+                        value={sort}
+                        onChange={onSortChange}
+                    />
+                </div>
             </div>
 
             {loading ? (

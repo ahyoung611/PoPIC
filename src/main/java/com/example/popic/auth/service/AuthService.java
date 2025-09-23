@@ -14,6 +14,7 @@ public class AuthService {
     private final UserRepository userRepository;
 
     public LoginResponse refreshAccessToken(String refreshToken) {
+
         // 1. refreshToken 유효성 검증
         if (!jwtUtil.validateToken(refreshToken)) {
             System.out.println("리프레시 토큰 실패");

@@ -2,8 +2,11 @@ package com.example.popic.user.service;
 
 import com.example.popic.entity.entities.User;
 import com.example.popic.entity.entities.Vendor;
+import com.example.popic.user.dto.UserPasswordDto;
 import com.example.popic.user.repository.UserRepository;
+import com.example.popic.vendor.dto.VendorPasswordDto;
 import com.example.popic.vendor.repository.VendorRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,5 +65,116 @@ public class AccountUserVendorService {
         if (v.getStatus() == -1) throw new IllegalStateException("탈퇴 처리된 계정입니다.");
 //        if (v.getStatus() == 3)  throw new IllegalStateException("가입이 반려된 계정입니다.");
         return v;
+    }
+
+
+    // young 유저 마이페이지 비밀번호
+    @Transactional
+    public void changeUserPassword(Long userId, UserPasswordDto req) {
+        // 입력값 존재
+        if(req == null) throw  new IllegalArgumentException("요청이 올바르지 않습니다.");
+        if(req.currentPassword() == null || req.currentPassword().trim().isEmpty())
+            throw new IllegalArgumentException("현재 비밀번호를 입력해 주세요.");
+        if(req.newPassword() == null || req.newPassword().trim().isEmpty())
+            throw new IllegalArgumentException("새 비밀번호를 입력해 주세요.");
+        if(req.confirmNewPassword() == null || req.confirmNewPassword().trim().isEmpty())
+            throw new IllegalArgumentException("새 비밀번호를 확인해 주세요.");
+
+        User u = userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 현재 비밀번호 일치
+        if (u.getPassword() == null || !passwordEncoder.matches(req.currentPassword(), u.getPassword())){
+            throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
+        }
+
+        // 확인 비밀번호 일치
+        if(!req.newPassword().equals(req.confirmNewPassword())) {
+            throw new IllegalArgumentException("새 비밀번호와 확인 값이 일치하지 않습니다.");
+        }
+
+        // 기존과 동일 x
+        if(passwordEncoder.matches(req.newPassword(), u.getPassword())) {
+            throw new IllegalArgumentException("기존 비밀번호와 동일합니다. 다른 비밀번호를 입력해 주세요.");
+        }
+
+        // 새 비밀번호 검사
+        validatePasswordPolicy(req.newPassword(), u.getLogin_id());
+
+        // 암호화 저장
+        u.setPassword(passwordEncoder.encode(req.newPassword()));
+        userRepository.save(u);
+    }
+
+    // young 벤더 마이페이지 비밀번호
+    @Transactional
+    public void changeVendorPassword(Long userId, VendorPasswordDto req) {
+        // 입력값 존재
+        if(req == null) throw  new IllegalArgumentException("요청이 올바르지 않습니다.");
+        if(req.currentPassword() == null || req.currentPassword().trim().isEmpty())
+            throw new IllegalArgumentException("현재 비밀번호를 입력해 주세요.");
+        if(req.newPassword() == null || req.newPassword().trim().isEmpty())
+            throw new IllegalArgumentException("새 비밀번호를 입력해 주세요.");
+        if(req.confirmNewPassword() == null || req.confirmNewPassword().trim().isEmpty())
+            throw new IllegalArgumentException("새 비밀번호를 확인해 주세요.");
+
+        Vendor v = vendorRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 현재 비밀번호 일치
+        if (v.getPassword() == null || !passwordEncoder.matches(req.currentPassword(), v.getPassword())){
+            throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
+        }
+
+        // 확인 비밀번호 일치
+        if(!req.newPassword().equals(req.confirmNewPassword())) {
+            throw new IllegalArgumentException("새 비밀번호와 확인 값이 일치하지 않습니다.");
+        }
+
+        // 기존과 동일 x
+        if(passwordEncoder.matches(req.newPassword(), v.getPassword())) {
+            throw new IllegalArgumentException("기존 비밀번호와 동일합니다. 다른 비밀번호를 입력해 주세요.");
+        }
+
+        // 새 비밀번호 검사
+        validatePasswordPolicy(req.newPassword(), v.getLogin_id());
+
+        // 암호화 저장
+        v.setPassword(passwordEncoder.encode(req.newPassword()));
+        vendorRepository.save(v);
+    }
+
+
+
+    // young 공통 비밀번호
+    private void validatePasswordPolicy(String pwd, String loginId) {
+        // 길이
+        if (pwd == null || pwd.length() < 8 || pwd.length() > 64) {
+            throw new IllegalArgumentException("비밀번호는 문자, 숫자, 특수문자를 모두 포함 8~64자여야 합니다.");
+        }
+
+        // 공백 x
+        if (pwd.chars().anyMatch(Character::isWhitespace)) {
+            throw new IllegalArgumentException("비밀번호에 공백은 사용할 수 없습니다.");
+        }
+
+        // 문자(알파벳) + 숫자 + 특수문자 모두 포함
+        boolean hasLetter  = pwd.matches(".*[A-Za-z].*");
+        boolean hasDigit   = pwd.matches(".*\\d.*");
+        boolean hasSpecial = pwd.matches(".*[^A-Za-z0-9].*");
+
+        if (!(hasLetter && hasDigit && hasSpecial)) {
+            throw new IllegalArgumentException("비밀번호는 문자, 숫자, 특수문자를 모두 포함해야 합니다.");
+        }
+
+        // 동일 문자 3회 이상 연속 x
+        if (pwd.matches(".*(.)\\1\\1.*")) {
+            throw new IllegalArgumentException("같은 문자를 3회 이상 연속 사용할 수 없습니다.");
+        }
+
+        // 아이디 포함 x
+        if (loginId != null && !loginId.isBlank()) {
+            if (pwd.toLowerCase().contains(loginId.toLowerCase())) {
+                throw new IllegalArgumentException("비밀번호에 아이디를 포함할 수 없습니다.");
+            }
+        }
     }
 }

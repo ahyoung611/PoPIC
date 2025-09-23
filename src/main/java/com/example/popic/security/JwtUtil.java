@@ -4,11 +4,18 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+
+import static javax.crypto.Cipher.SECRET_KEY;
 
 @Component
 @RequiredArgsConstructor
@@ -61,6 +68,23 @@ public class JwtUtil {
     /** ✅ userId(혹은 subject) 꺼내기 */
     public String getSubject(String token) {
         return getClaims(token).getSubject();
+    }
+
+    // 토큰에서 사용자 정보 추출 후 Authentication 객체 생성
+    public Authentication getAuthentication(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key())
+                .parseClaimsJws(token)
+                .getBody();
+
+        String username = claims.getSubject(); // JWT에서 sub 필드 사용
+        String role = claims.get("role", String.class); // JWT payload에 role 포함
+
+        List<SimpleGrantedAuthority> authorities = Collections.singletonList(
+                new SimpleGrantedAuthority(role)
+        );
+
+        return new UsernamePasswordAuthenticationToken(username, null, authorities);
     }
 
     public Jws<Claims> parse(String token) {
