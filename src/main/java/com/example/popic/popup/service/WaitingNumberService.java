@@ -10,7 +10,6 @@ import com.example.popic.popup.repository.WaitingNumberRepository;
 import com.example.popic.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
