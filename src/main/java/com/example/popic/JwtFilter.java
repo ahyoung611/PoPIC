@@ -1,18 +1,22 @@
 package com.example.popic;
 
 import com.example.popic.security.JwtUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor
@@ -23,9 +27,8 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        System.out.println("헤더: " + authHeader);
-
         String token = null;
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
         }
@@ -39,12 +42,23 @@ public class JwtFilter extends OncePerRequestFilter {
 //        }
 
         if (token != null && jwtUtil.validateToken(token)) {
-            // 토큰 유효 -> SecurityContext에 사용자 정보 저장 가능
-            Authentication auth =
-                    jwtUtil.getAuthentication(token);
+            // JWT에서 claims 꺼내기
+            Claims claims = jwtUtil.parse(token).getBody();
+            Long userId = claims.get("id", Long.class);
+            String username = claims.getSubject();
+            String role = claims.get("role", String.class);
+
+            // Custom principal 생성
+            CustomUserPrincipal principal = new CustomUserPrincipal(userId, username, role);
+
+            // Authentication 객체 생성
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    principal,
+                    null,
+                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role))
+            );
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
-
         chain.doFilter(request, response);
     }
 

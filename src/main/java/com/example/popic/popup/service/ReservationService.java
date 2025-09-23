@@ -39,6 +39,10 @@ public class ReservationService {
         return PopupReservationDTO.from(saved);
     }
 
+    public PopupReservationDTO findbyId(Long reservationId) {
+        return new PopupReservationDTO(reservationRepository.findById(reservationId).orElse(null));
+    }
+
     // 사용자 예약 조회
     public List<PopupReservationDTO> getUserReservations(Long userId) {
         return reservationRepository.findByUserId(userId)

@@ -45,9 +45,6 @@ public class AuthController {
 
     @GetMapping("/naver/callback")
     public ResponseEntity<?> callback(@RequestParam String code, @RequestParam String state, HttpServletResponse response) {
-        System.out.println("진입");
-        System.out.println("code: " + code);
-        System.out.println("state: " + state);
         // 1. 네이버 API로 Access Token 요청
 
         NaverUserInfo userInfo = naverLoginService.getUserInfo(code, state);
@@ -117,10 +114,12 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("리프레시 옴?");
         try {
             // 1. 쿠키에서 refreshToken 꺼내기
             String refreshToken = extractRefreshTokenFromCookies(request);
             if (refreshToken == null) {
+                System.out.println("리프레시 토큰 없음 수고");
                 return ResponseEntity.status(401).body(new LoginResponse(false, "리프레시 토큰 없음"));
             }
 
