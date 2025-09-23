@@ -1,5 +1,10 @@
 package com.example.popic.qr;
 
+import com.example.popic.CustomUserPrincipal;
+import com.example.popic.popup.dto.PopupReservationDTO;
+import com.example.popic.popup.service.ReservationService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -23,20 +28,33 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class QrCodeController {
     private final StringRedisTemplate redisTemplate;
+    private final ReservationService reservationService;
 
     @GetMapping(value = "/generate-qr", produces = "image/png")
-    public void generateQr(HttpServletResponse response) throws Exception {
+    public void generateQr(HttpServletResponse response, @RequestParam(name="reservationId")Long reservationId) throws Exception {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = authentication.getName();
-        System.out.println(authentication);
-        System.out.println(userName);
+        CustomUserPrincipal principal =  (CustomUserPrincipal) authentication.getPrincipal();
+        System.out.println(principal);
+        System.out.println(reservationId);
+//        if(!principal.getRole().equals("USER")) return;
+
+
+        // 입장권 확인
+        PopupReservationDTO reservationDTO = reservationService.findbyId(reservationId);
+
+//        if(!principal.getId().equals(reservationDTO.getUser().getUser_id())) return;
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        String json = objectMapper.writeValueAsString(reservationDTO);
+        System.out.println("json: " + json);
 
         // 1. 임시 토큰 생성
         String token = UUID.randomUUID().toString();
-        String dummyReservationData = "userId:1234,popupId:5678"; // 실제 데이터
-
-        redisTemplate.opsForValue().set(token, dummyReservationData, Duration.ofMinutes(1));
+        redisTemplate.opsForValue().set(token, json, Duration.ofMinutes(5));
 
         // 2. QR 코드 URL
         String qrData = "http://10.5.4.14:8080/scan-qr?token=" + token;
@@ -57,6 +75,11 @@ public class QrCodeController {
     @GetMapping("/scan-qr")
     public Map<String, Object> scanQr(@RequestParam("token") String token) {
         Map<String, Object> response = new HashMap<>();
+
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        CustomUserPrincipal principal =  (CustomUserPrincipal) authentication.getPrincipal();
+
+//        if(!principal.getRole().equals("VENDOR")){}
 
         // 1. Redis에서 토큰 조회
         String reservationData = redisTemplate.opsForValue().get(token);

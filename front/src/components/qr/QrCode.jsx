@@ -5,14 +5,13 @@ const QrCode = () => {
     const [qrUrl, setQrUrl] = useState(null);
     const [timeLeft, setTimeLeft] = useState(0); // 초 단위
     const [error, setError] = useState(null);
-    const auth = useAuth();
-    const token = auth.token;
+    const token = useAuth().getToken();
 
     // QR 생성
     useEffect(() => {
         const generateQr = async () => {
             try {
-                const res = await fetch("http://localhost:8080/generate-qr", {
+                const res = await fetch(`http://localhost:8080/generate-qr?reservationId=1`, {
                     headers: {
                         authorization: `Bearer ${token}`,
                     },

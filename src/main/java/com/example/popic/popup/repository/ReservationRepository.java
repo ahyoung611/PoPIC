@@ -6,8 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+    @Query("SELECT r FROM Reservation r WHERE r.reservation_id = :reservationId")
+    Optional<Reservation> findById(Long reservationId);
 
     @Query("SELECT r FROM Reservation r WHERE r.store.store_id = :popupId")
     List<Reservation> getReservationsByPopupId(Long popupId);

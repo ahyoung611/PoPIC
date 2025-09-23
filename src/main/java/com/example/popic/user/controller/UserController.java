@@ -51,6 +51,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiRes> login(@RequestBody User req, HttpServletResponse response) { // 요청은 엔티티(User)
+        System.out.println("옴?");
         try {
             if (req.getLogin_id() == null || req.getPassword() == null) {
                 return ResponseEntity.ok(ApiRes.fail("요청 형식이 올바르지 않습니다."));

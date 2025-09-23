@@ -22,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtFilter jwtFilter;
-    private final JwtUtil jwtUtil;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,7 +29,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configure(http)) // CORS 설정
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/login", "/auth/refresh", "/user/join", "/vendor/login", "/vendor/join", "/admin/login").permitAll() // 로그인/회원가입/토큰 갱신은 허용
+                        .requestMatchers("/user/login", "/auth/refresh", "/user/join", "/vendor/login", "/vendor/join", "/admin/login", "/images", "/scan-qr", "/", "login").permitAll() // 로그인/회원가입/토큰 갱신은 허용
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

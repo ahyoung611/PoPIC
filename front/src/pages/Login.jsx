@@ -60,7 +60,7 @@ const Login = () => {
                 alert(data?.message || "로그인에 실패했습니다.");
                 return;
             }
-            console.log(data);
+            console.log("data",data);
 
             if (data.token && data.user) {
                 login(data.token, data.user); // context에 저장
