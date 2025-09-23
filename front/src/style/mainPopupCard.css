@@ -1,0 +1,290 @@
+.mpc-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    padding: 50px 0;
+}
+
+.mpc-section .mpc-section__swiper .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    height: auto;
+}
+
+.mpc-section .mpc-section__title {
+    font-weight: 700;
+    font-size: var(--font-title-l);
+    color: var(--black-color);
+    text-align: center;
+    margin: 25px 0 50px 0;
+}
+
+.mpc-section--bgcolor {
+    background: var(--bg-color);
+}
+
+.mpc-section .mpc-section__tabs {
+    width: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.mpc-section .mpc-section__tab {
+    padding: 8px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--white-color);
+    font-size: var(--font-small);
+    color: var(--darkgray-color);
+    transition: .25s;
+}
+
+.mpc-section .mpc-section__tab.is-active {
+    color: var(--main-color);
+    border-color: var(--main-color);
+}
+
+.mpc-section .mpc-section__swiper-wrap {
+    width: 100%;
+    position: relative;
+    overflow: visible !important;
+}
+
+
+.mpc-section .mpc-section__viewport{
+    width: 80%;
+    margin: 0 auto;
+    padding: 0 36px;
+    position: relative;
+}
+
+.mpc-section .mpc-section__swiper-wrap::before,
+.mpc-section .mpc-section__swiper-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 24px; /* 필요하면 더 키워도 됨 */
+    z-index: 2; /* 슬라이드 위, 버튼 아래 */
+    pointer-events: none;
+    background: var(--white-color);
+}
+
+.mpc-section .mpc-section__swiper-wrap::before {
+    left: 0;
+}
+
+.mpc-section .mpc-section__swiper-wrap::after {
+    right: 0;
+}
+
+.mpc-section .mpc-section__loading {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--gray-color);
+}
+
+.mpc-swiper-button-prev,
+.mpc-swiper-button-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .05);
+    border: none;
+    color: var(--black-color);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .2s ease, opacity .2s ease;
+}
+
+.mpc-swiper-button-prev { left: 0; }
+.mpc-swiper-button-next { right: 0; }
+
+.mpc-section .mpc-section__swiper .swiper-button-disabled {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.mpc-section__more.btn{
+    padding: 25px 40px;
+    border-radius: 0;
+    margin-top: 50px;
+}
+
+.mpc-section .mpc-section__more.btn:hover {
+    background: var(--main-color);
+    color: var(--white-color);
+}
+
+.mpc-card, .pc-card {
+    display: block;
+    width: 100%;
+    max-width: 360px;
+    border: 1px solid var(--border-color);
+    background: var(--white-color);
+    overflow: hidden;
+    /*box-shadow: var(--shadow);*/
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .2s ease;
+}
+
+.mpc-card:hover, .pc-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, .1);
+}
+
+.mpc-card__body, .pc-card__body {
+    padding: 14px 16px 18px;
+}
+
+.mpc-card__title, .pc-card__title {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--black-color);
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.mpc-card__period, .pc-card__period {
+    font-size: var(--font-body);
+    font-weight: 600;
+    color: var(--main-color);
+    text-align: center;
+}
+
+.mpc-card__divider, .pc-card__divider {
+    border: none;
+    width: 24px;
+    height: 2px;
+    background: var(--black-color);
+    margin: 10px auto 12px;
+    opacity: .9;
+}
+
+.mpc-card--typeA .mpc-card__period,
+.pc-card--A .pc-card__period {
+    margin-top: 5px;
+}
+
+.mpc-card--typeB .mpc-card__title,
+.pc-card--B .pc-card__title {
+    margin-bottom: 5px;
+}
+
+.mpc-card--typeB .mpc-card__period,
+.pc-card--B .pc-card__period {
+    color: var(--darkgray-color);
+    font-weight: 600;
+    text-align: center;
+}
+
+.mpc-media {
+    aspect-ratio: 4 / 5;
+    max-height: 520px;
+}
+
+.mpc-media, .pc-media {
+    position: relative;
+    width: 100%;
+    background: var(--bg-color);
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mpc-media__img, .pc-media__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mpc-media__badge, .pc-media__badge {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    padding: 6px 10px;
+    font-size: var(--font-caption);
+    background: var(--white-color);
+    color: var(--black-color);
+    border-radius: 999px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
+    border: 1px solid var(--border-color);
+}
+
+.mpc-media__bookmark, .pc-media__bookmark {
+    position: absolute;
+    right: 12px;
+    bottom: 14px;
+    width: 35px;
+    height: 35px;
+    border: none;
+    background-color: initial;
+    transition: transform .12s ease;
+}
+
+.mpc-media__bookmark:hover, .pc-media__bookmark:hover {
+    transform: scale(1.04);
+}
+
+.mpc-media__bookmark-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+
+@media (max-width: 650px) {
+    .mpc-section {
+        padding: 24px 0;
+    }
+
+    .mpc-section .mpc-section__swiper {
+        width: 100%;
+    }
+
+    .mpc-media {
+        max-height: 420px;
+    }
+
+    .mpc-section .mpc-section__swiper {
+        width: 100%;
+    }
+
+    .mpc-section .mpc-section__swiper-wrap::before,
+    .mpc-section .mpc-section__swiper-wrap::after {
+        width: 8px;
+    }
+
+    .mpc-swiper-button-prev,
+    .mpc-swiper-button-next {
+        width: 48px;
+        height: 48px;
+    }
+    .mpc-swiper-button-prev { left: 6px; }
+    .mpc-swiper-button-next { right: 6px; }
+
+}
+
+@media (max-width: 1024px) {
+    .mpc-media {
+        max-height: 460px;
+    }
+}

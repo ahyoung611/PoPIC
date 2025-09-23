@@ -1,0 +1,10 @@
+[
+  {"category_id": "1", "name": "패션"},
+  {"category_id": "2", "name": "뷰티"},
+  {"category_id": "3", "name": "식음료"},
+  {"category_id": "4", "name": "라이프"},
+  {"category_id": "5", "name": "테크"},
+  {"category_id": "6", "name": "예술"},
+  {"category_id": "7", "name": "취미"},
+  {"category_id": "8", "name": "캐릭터"}
+]

@@ -4,8 +4,8 @@ import { Navigation, Autoplay, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/effect-fade";
-import useMediaQuery from "../hooks/useMediaQuery";
-import "../style/Banner.css";
+import useMediaQuery from "../../hooks/useMediaQuery.js";
+import "../../style/Banner.css";
 
 export default function Banner({
                                    slides = [],
