@@ -1,5 +1,6 @@
 package com.example.popic.vendor.service;
 
+import com.example.popic.entity.entities.UserProfile;
 import com.example.popic.entity.entities.Vendor;
 import com.example.popic.entity.entities.VendorProfile;
 import com.example.popic.file.FileSave;
@@ -108,7 +109,6 @@ public class VendorProfileService {
             Files.deleteIfExists(path);
         } catch (Exception ignored) {}
     }
-
 
     // 프로필 사진 조회
     public VendorProfile getProfileByVendorId(Long vendorId) {

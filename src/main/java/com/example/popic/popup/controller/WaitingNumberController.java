@@ -1,6 +1,8 @@
 package com.example.popic.popup.controller;
 
 import com.example.popic.entity.entities.WaitingNumber;
+import com.example.popic.popup.service.WaitingNumberService;
+import lombok.RequiredArgsConstructor;
 import com.example.popic.popup.dto.WaitingNumberDTO;
 import com.example.popic.popup.service.WaitingNumberService;
 import lombok.RequiredArgsConstructor;

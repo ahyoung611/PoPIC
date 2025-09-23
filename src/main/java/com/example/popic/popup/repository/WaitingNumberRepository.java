@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface WaitingNumberRepository  extends JpaRepository<WaitingNumber, Long> {
+public interface WaitingNumberRepository extends JpaRepository<WaitingNumber, Long> {
     @Query("SELECT MAX(w.queue_number) FROM WaitingNumber w WHERE w.store = :store")
     Optional<Integer> findMaxQueueNumberByStore(@Param("store") PopupStore store);
 

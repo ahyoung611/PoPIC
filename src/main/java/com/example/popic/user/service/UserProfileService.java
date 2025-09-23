@@ -55,6 +55,14 @@ public class UserProfileService {
         return new UserDTO(user);
     }
 
+
+    // 프로필 사진 조회
+//     public String getProfilePhotoUrl(Long userId) {
+//         return userProfileRepository.findByUser_Id(userId)
+//                 .map(p -> "/images?id=" + p.getId() + "&type=userProfile")
+//                 .orElse(null);
+//     }
+
     // 프로필 사진 업로드/교체
     @Transactional
     public UserDTO uploadProfilePhoto(Long userId, MultipartFile file) {

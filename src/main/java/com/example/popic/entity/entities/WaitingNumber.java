@@ -34,5 +34,4 @@ public class WaitingNumber {
     private LocalDateTime created_at; // 대기 신청 시각
 
     private LocalDateTime call_time; // 호출 시간
-
 }
