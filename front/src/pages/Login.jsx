@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import apiRequest from "../utils/apiRequest";
-import { API_BASE_URL } from "../utils/apiRequest";
 import eye from "../../public/eye.png";
 import nonEye from "../../public/nonEye.png";
 import logo from "../../public/popic-logo.png";

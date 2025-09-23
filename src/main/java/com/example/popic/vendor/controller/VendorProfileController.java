@@ -27,6 +27,7 @@ public class VendorProfileController {
     // 벤더 프로필 조회
     @GetMapping
     public VendorDTO get(@PathVariable Long vendorId) {
+        System.out.println("vendorId: ");
         VendorDTO dto = service.getProfile(vendorId);
         
         VendorProfile profile = service.getProfileByVendorId(vendorId);

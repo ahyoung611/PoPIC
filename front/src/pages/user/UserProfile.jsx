@@ -1,5 +1,6 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {useParams, useNavigate} from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
 import Button from "../../components/commons/Button.jsx";
 import ProfileForm from "../../components/commons/ProfileForm.jsx";
 import ProfilePhoto from "../../components/commons/ProfilePhoto.jsx";
@@ -52,6 +53,9 @@ function PasswordField({label, value, onChange, placeholder, autoComplete = "new
 
 
 export default function UserProfile() {
+    const { auth } = useAuth();
+    const token = auth.token;
+
     const {userId} = useParams();
     const navigate = useNavigate();
 
@@ -93,6 +97,11 @@ export default function UserProfile() {
     const handleChangePassword = async () => {
         setPwErr("");
 
+        if (pwForm.currentPassword === pwForm.newPassword) {
+            setPwErr("동일한 비밀번호 입니다.");
+            return; // API 호출을 중단합니다.
+        }
+
         // 프런트 선검증
         if (pwForm.newPassword !== pwForm.confirmNewPassword) {
             setPwErr("새 비밀번호와 확인 값이 일치하지 않습니다.");
@@ -111,9 +120,8 @@ export default function UserProfile() {
                 body: {
                     currentPassword: pwForm.currentPassword,
                     newPassword: pwForm.newPassword,
-                    confirmNewPassword: pwForm.confirmNewPassword,
                 },
-            });
+            }, token);
             alert("비밀번호가 변경되었습니다. 다시 로그인해 주세요.");
             setPwOpen(false);
             setPwForm({currentPassword: "", newPassword: "", confirmNewPassword: ""});
@@ -124,18 +132,48 @@ export default function UserProfile() {
         }
     };
 
+    const fetchUserData = async () => {
+        try {
+            const user = await apiRequest(`/api/users/${userId}`, {}, token);
+            let avatarUrl = null;
+            if (user.avatarExists) {
+                const photoResponse = await fetch(`/api/users/${userId}/photo`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (photoResponse && photoResponse.ok){
+                    const blob = await photoResponse.blob();
+                    avatarUrl = URL.createObjectURL(blob);
+                }
+            }
+            const merged = { ...user, avatarUrl: avatarUrl };
+            setData(merged);
+            setForm(merged);
+        } catch (e) {
+            console.error("사용자 정보를 불러오지 못했습니다.", e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // 데이터 로드 (사용자 정보 + 프로필 사진)
     useEffect(() => {
-        if (!userId) return;
+        if (!userId || !token) return;
+        fetchUserData();
         (async () => {
             try {
-                const user = await apiRequest(`/api/users/${userId}`);
+                const user = await apiRequest(`/api/users/${userId}`, {}, token);
 
                 let avatarUrl = null;
                 // 사진이 존재할 때만 요청
                 if (user.avatarExists) {
-                    const photoResponse = await fetch(`/api/users/${userId}/photo`);
-                    if (photoResponse.ok) {
+                    const photoResponse = await fetch(`/api/users/${userId}/photo`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (photoResponse && photoResponse.ok){
                         const blob = await photoResponse.blob();
                         avatarUrl = URL.createObjectURL(blob);
                     }
@@ -154,7 +192,7 @@ export default function UserProfile() {
                 setLoading(false);
             }
         })();
-    }, [userId]);
+    },  [userId, token]);
 
     // 프로필 폼 스키마
     const userSchema = useMemo(() => ({
@@ -180,34 +218,37 @@ export default function UserProfile() {
             await apiRequest(`/api/users/${userId}`, {
                 method: "PUT",
                 body: payload,
-            });
+            }, token);
 
             // 사진 삭제
             if (form.avatarRemoved) {
-                await apiRequest(`/api/users/${userId}/photo`, {method: "DELETE"});
+                await apiRequest(`/api/users/${userId}/photo`, {method: "DELETE"},token);
             }
 
             // 사진 업로드
             if (form.avatarFile) {
                 const fd = new FormData();
                 fd.append("file", form.avatarFile);
-                const res = await fetch(`/api/users/${userId}/photo`, {method: "POST", body: fd});
-                if (!res.ok) throw new Error(`사진 업로드 실패: ${res.status}`);
+                await apiRequest(`/api/users/${userId}/photo`, { method: "POST", body: fd }, token);
             }
+
+            await fetchUserData();
 
             setEdit(false);
             console.log("프로필이 수정되었습니다.");
+            alert("프로필이 성공적으로 저장되었습니다.");
         } catch (e) {
             console.error("프로필 수정 실패", e);
+            alert(`프로필 수정 실패: ${e.message || "알 수 없는 오류가 발생했습니다."}`);
         }
     };
 
     // 취소 핸들러
     const handleCancel = async () => {
         try {
-            const user = await apiRequest(`/api/users/${userId}`);
+            const user = await apiRequest(`/api/users/${userId}`, {}, token);
             if (user.avatarExists) {
-                const photoResponse = await fetch(`/api/users/${userId}/photo`);
+                const photoResponse = await apiRequest(`/api/users/${userId}/photo`, {}, token);
                 const blob = await photoResponse.blob();
                 user.avatarUrl = URL.createObjectURL(blob);
             }
@@ -224,7 +265,7 @@ export default function UserProfile() {
         const confirmWithdrawal = window.confirm("정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
         if (confirmWithdrawal) {
             try {
-                await apiRequest(`/api/users/${userId}`, {method: "DELETE"});
+                await apiRequest(`/api/users/${userId}`, { method: "DELETE" }, token);
                 console.log("회원 탈퇴 완료");
                 navigate("/");
             } catch (e) {

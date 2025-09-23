@@ -72,4 +72,29 @@ public class JwtFilter extends OncePerRequestFilter {
 //                || path.equals("/auth/refresh");
 //    }
 
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // // 추가: CORS preflight는 항상 패스
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true; // 추가
+
+        String uri = request.getRequestURI();
+
+        // // 추가: JWT 검사 제외할 경로들
+        // prefix는 startsWith, 단건은 equals로 처리
+        if (uri.startsWith("/auth/")) return true;                  // 추가: /auth/google/callback, /auth/refresh 등
+        if (uri.equals("/user/login")) return true;                 // 추가
+        if (uri.equals("/vendor/login")) return true;               // 추가
+        if (uri.equals("/admin/login")) return true;                // 추가
+
+        // (선택) 정적/문서화/헬스체크 등도 제외하고 싶으면 아래 열기
+        if (uri.startsWith("/swagger-ui")) return true;             // 추가
+        if (uri.startsWith("/v3/api-docs")) return true;            // 추가
+        if (uri.startsWith("/error")) return true;                  // 추가
+        if (uri.startsWith("/favicon")) return true;                // 추가
+        if (uri.startsWith("/css/") || uri.startsWith("/js/") || uri.startsWith("/images/")) return true; // 추가
+
+        return false; // 기본: 필터 적용
+    }
+
 }

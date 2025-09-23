@@ -1,6 +1,3 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-
-
 async function apiRequest(endpoint, options = {}, token) {
     const isFormData = options.body instanceof FormData;
     const config = {
@@ -16,7 +13,7 @@ async function apiRequest(endpoint, options = {}, token) {
 
     // 실제 요청을 함수로 빼서 재사용
     const doFetch = async () => {
-        const res = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        const res = await fetch(endpoint, config);
         const data = await res.json().catch(() => null);
         return { res, data };
     };
@@ -24,25 +21,25 @@ async function apiRequest(endpoint, options = {}, token) {
     try {
         let { res, data } = await doFetch();
 
-        if (res.status === 401 && refreshFn) {
-            // 1) 리프레시 시도
-            try {
-                const newToken = await refreshFn(API_BASE_URL); // AuthContext.refreshAccessToken
-                // 2) 토큰 바꿔서 재시도 (헤더 교체)
-                config.headers = {
-                    ...(isFormData ? {} : { "Content-Type": "application/json" }),
-                    Authorization: `Bearer ${newToken}`,
-                    ...options.headers,
-                };
-                ({ res, data } = await doFetch());
-            } catch (e) {
-                // 리프레시 실패 → 로그인 페이지로
-                console.warn("토큰 갱신 실패. 다시 로그인 해주세요.");
-                localStorage.removeItem("auth");
-                window.location.href = "/login";
-                return;
-            }
-        }
+        // if (res.status === 401 && refreshFn) {
+        //     // 1) 리프레시 시도
+        //     try {
+        //         const newToken = await refreshFn();
+        //         // 2) 토큰 바꿔서 재시도 (헤더 교체)
+        //         config.headers = {
+        //             ...(isFormData ? {} : { "Content-Type": "application/json" }),
+        //             Authorization: `Bearer ${newToken}`,
+        //             ...options.headers,
+        //         };
+        //         ({ res, data } = await doFetch());
+        //     } catch (e) {
+        //         // 리프레시 실패 → 로그인 페이지로
+        //         console.warn("토큰 갱신 실패. 다시 로그인 해주세요.");
+        //         localStorage.removeItem("auth");
+        //         window.location.href = "/login";
+        //         return;
+        //     }
+        // }
 
         // 기존코드
         /*
@@ -58,7 +55,7 @@ async function apiRequest(endpoint, options = {}, token) {
         JSON 변환
         const data = await response.json().catch(() => null);
          */
-        if (!response.ok) {
+        if (!res.ok) {
             throw new Error(data?.message || `API 요청 실패: ${response.status}`);
         }
 
@@ -70,4 +67,3 @@ async function apiRequest(endpoint, options = {}, token) {
 }
 
 export default apiRequest;
-export { API_BASE_URL };
