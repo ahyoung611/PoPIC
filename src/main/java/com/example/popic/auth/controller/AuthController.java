@@ -2,13 +2,13 @@ package com.example.popic.auth.controller;
 
 
 import com.example.popic.auth.dto.GoogleUserInfo;
-import com.example.popic.auth.dto.NaverUserInfo;
-import com.example.popic.auth.service.GoogleLoginService;
 import com.example.popic.auth.dto.LoginResponse;
 import com.example.popic.auth.dto.NaverUserInfo;
 import com.example.popic.auth.service.AuthService;
+import com.example.popic.auth.service.GoogleLoginService;
 import com.example.popic.auth.service.NaverLoginService;
 import com.example.popic.entity.entities.User;
+import com.example.popic.security.JwtUtil;
 import com.example.popic.user.repository.UserRepository;
 import com.example.popic.user.service.UserService;
 import com.example.popic.vendor.repository.VendorRepository;
@@ -17,22 +17,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
-// 리프레시 토큰용
-import com.example.popic.security.JwtUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-
-// 구글 연동
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -47,6 +36,12 @@ public class AuthController {
     private final UserRepository userRepository;
     private final UserService userService;
     private final VendorRepository vendorRepository;
+    private final AuthService authService;
+
+    @Value("${app.frontend.base-url}")
+    private String frontendBaseUrl;
+    @Value("${google.redirect-uri}")
+    private String googleRedirectUri;
 
     @GetMapping("/naver/callback")
     public ResponseEntity<?> callback(@RequestParam String code, @RequestParam String state, HttpServletResponse response) {
@@ -79,12 +74,6 @@ public class AuthController {
         return null;
     }
 
-    @Value("${app.frontend.base-url}")
-    private String frontendBaseUrl;
-
-    @Value("${google.redirect-uri}")
-    private String googleRedirectUri;
-
     @PostConstruct
     public void printGoogleRedirectUri() {
         System.out.println("프론트 base-url     = " + frontendBaseUrl);
@@ -104,7 +93,7 @@ public class AuthController {
         User u = userService.registerOrLoginFromGoogle(info);
 
         // 3) JWT 발급
-        String access  = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
+        String access = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
         String refresh = jwtUtil.createRefreshToken(u.getLogin_id());
 
         // 4) refresh 토큰 httpOnly 쿠키
