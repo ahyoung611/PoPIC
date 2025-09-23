@@ -5,6 +5,8 @@ import com.example.popic.security.JwtUtil;
 import com.example.popic.user.dto.UserDTO;
 import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.user.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 
@@ -46,7 +50,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<ApiRes> login(@RequestBody User req) { // 요청은 엔티티(User)
+    public ResponseEntity<ApiRes> login(@RequestBody User req, HttpServletResponse response) { // 요청은 엔티티(User)
         try {
             if (req.getLogin_id() == null || req.getPassword() == null) {
                 return ResponseEntity.ok(ApiRes.fail("요청 형식이 올바르지 않습니다."));
@@ -67,7 +71,11 @@ public class UserController {
             String refresh = jwtUtil.createRefreshToken(u.getLogin_id());
 
             // 리프레시 토큰 - http only 쿠키
-            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh).httpOnly(true).secure(false).sameSite("Lax").path("/").maxAge(Duration.ofDays(14)).build();
+            Cookie refreshCookie = new Cookie("refreshToken", refresh);
+            refreshCookie.setHttpOnly(true);
+            refreshCookie.setPath("/");
+            refreshCookie.setMaxAge((int) Duration.ofDays(14).getSeconds());
+            response.addCookie(refreshCookie);
 
             // 프론트로 응답
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshCookie.toString()).body(ApiRes.okLogin("로그인 성공", access, dto));

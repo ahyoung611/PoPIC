@@ -1,8 +1,8 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
+
 async function apiRequest(endpoint, options = {}, token) {
     const isFormData = options.body instanceof FormData;
-
 
     const config = {
         method: options.method || "GET",
@@ -26,7 +26,6 @@ async function apiRequest(endpoint, options = {}, token) {
 
         // JSON 변환
         const data = await response.json().catch(() => null);
-
 
         if (!response.ok) {
             throw new Error(data?.message || `API 요청 실패: ${response.status}`);
