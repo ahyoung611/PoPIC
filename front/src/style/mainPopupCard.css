@@ -237,6 +237,7 @@
     border: none;
     background-color: initial;
     transition: transform .12s ease;
+    cursor: pointer;
 }
 
 .mpc-media__bookmark:hover, .pc-media__bookmark:hover {

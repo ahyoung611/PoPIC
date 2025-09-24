@@ -1,4 +1,3 @@
-import { useAuth } from "../context/AuthContext";
 import Banner from "../components/commons/Banner.jsx";
 import React, { useState } from "react";
 import MainPopupCardSlide from "../components/commons/MainPopupCardSilde.jsx";
@@ -108,9 +107,8 @@ const fetchByCategory = async ({ categoryKey }) => {
 };
 
 const Main = () => {
-    const {auth} = useAuth();
+
     const [on, setOn] = useState(false);
-    console.log(auth);
 
     return (
         <>
