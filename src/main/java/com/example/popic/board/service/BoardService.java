@@ -10,10 +10,10 @@ import com.example.popic.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,10 +25,9 @@ public class BoardService {
     private final BoardImageRepository boardImageRepository;
 
     @Transactional
-    public BoardDTO save(BoardDTO dto) {
-        // 임시 사용자 - 나중에 꼭 수정해야됨
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new IllegalStateException("기본 사용자 없음"));
+    public BoardDTO save(BoardDTO dto, String username) {
+        User user = userRepository.findByLoginId(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Board board = new Board();
         board.setTitle(dto.getTitle());
@@ -36,24 +35,37 @@ public class BoardService {
         board.setUser(user);
         board.setView_count(0);
         board.setStatus(1);
-        board.setCreated_at(LocalDateTime.now());
-        board.setUpdated_at(LocalDateTime.now());
 
-        if (dto.getFiles() != null && !dto.getFiles().isEmpty()) {
+        // 첨부파일 처리
+        if (dto.getFiles() != null) {
             List<BoardImage> images = dto.getFiles().stream()
-                    .map(f -> {
+                    .map(fileDto -> {
                         BoardImage img = new BoardImage();
-                        img.setOriginal_name(f.getOriginalName()); // DTO 필드명에 맞게
-                        img.setSaved_name(f.getSavedName());
-                        img.setBoard(board); // 연관관계 주입 필수
+                        img.setOriginal_name(fileDto.getOriginalName());
+                        img.setSaved_name(fileDto.getSavedName());
+                        img.setBoard(board);   // 연관관계 주입 중요!!
                         return img;
                     })
                     .toList();
-            board.setFiles(images);
+            board.setFiles(images); // cascade=ALL 이면 같이 저장됨
         }
 
         Board saved = boardRepository.save(board);
         return BoardDTO.fromEntity(saved);
+    }
+
+    public BoardDTO update(Long id, BoardDTO dto, String loginId) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+
+        // 작성자 확인
+        if (!board.getUser().getLogin_id().equals(loginId)) {
+            throw new AccessDeniedException("수정 권한 없음");
+        }
+
+        board.setTitle(dto.getTitle());
+        board.setContent(dto.getContent());
+        return BoardDTO.fromEntity(boardRepository.save(board));
     }
 
     @Transactional(readOnly = true)
@@ -85,31 +97,6 @@ public class BoardService {
         return BoardDTO.fromEntity(board);
     }
 
-    @Transactional
-    public BoardDTO update(Long id, BoardDTO dto) {
-        Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Board not found: " + id));
-
-        board.setTitle(dto.getTitle());
-        board.setContent(dto.getContent());
-        board.setUpdated_at(LocalDateTime.now());
-
-        board.getFiles().clear();
-        if (dto.getFiles() != null) {
-            List<BoardImage> images = dto.getFiles().stream()
-                    .map(f -> {
-                        BoardImage img = new BoardImage();
-                        img.setOriginal_name(f.getOriginalName());
-                        img.setSaved_name(f.getSavedName());
-                        img.setBoard(board);
-                        return img;
-                    })
-                    .toList();
-            board.getFiles().addAll(images);
-        }
-        return BoardDTO.fromEntity(board);
-    }
-
     public void delete(Long id) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다. id=" + id));
@@ -126,5 +113,11 @@ public class BoardService {
     @Transactional
     public void increaseView(Long boardId) {
         boardRepository.increaseView(boardId);
+    }
+
+    @Transactional(readOnly = true)
+    public Board findEntityById(Long id) {
+        return boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found: " + id));
     }
 }

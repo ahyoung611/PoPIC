@@ -19,12 +19,13 @@ export default function FileUpload({
     const inputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
     const abortRef = useRef(null);
-    const token = useAuth().getToken();
+    const {auth} = useAuth();
+    const token = auth?.token;
 
     useEffect(() => {
         onUploadingChange?.(uploading);
     }, [uploading, onUploadingChange]);
-    useEffect(() => () => abortRef.current?.abort?.(), []);
+    useEffect(() => () => abortRef.current?.abort?.(), [token]);
 
     const normalizeItem = (item) =>
         typeof item === "string" ? {originalName: item, savedName: item} : item;
@@ -84,8 +85,9 @@ export default function FileUpload({
         const {savedName} = normalizeItem(item);
         try {
             const res = await fetch(deleteEndpoint, {
-                method: "POST", // 서버가 DELETE 지원하면 여기 DELETE /board/file/{savedName} 로 바꿔도 됨
+                method: "POST",
                 headers: {"Content-Type": "application/json", ...(headers || {}), "Authorization": `Bearer ${token}`,},
+                credentials: "include",
                 body: JSON.stringify({fileName: savedName}),
             });
             if (!res.ok) {

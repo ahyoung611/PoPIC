@@ -5,7 +5,8 @@ const host = window.location.hostname || "localhost";
 const API = import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`;
 
 function BoardComment({boardId}) {
-    const token = useAuth().getToken();
+    const { auth } = useAuth();
+    const token = auth?.token;
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [posting, setPosting] = useState(false);
@@ -34,6 +35,7 @@ function BoardComment({boardId}) {
 
     const fetchComments = useCallback(async () => {
         if (!boardId) return;
+        if (!token) return;
         setLoading(true);
         try {
             const res = await fetch(`${API}/board/${boardId}/comments`, {
@@ -41,6 +43,7 @@ function BoardComment({boardId}) {
                         "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
+                credentials: "include",
                 }
             );
             if (!res.ok) throw new Error("댓글 불러오기 실패");
@@ -56,7 +59,7 @@ function BoardComment({boardId}) {
     useEffect(() => {
         fetchComments();
         setReplyingId(null);
-    }, [boardId, fetchComments]);
+    }, [boardId, fetchComments, token]);
 
     const {roots, childrenByParent} = useMemo(() => {
         const byParent = new Map();
@@ -76,7 +79,7 @@ function BoardComment({boardId}) {
             }
         }
         return {roots, childrenByParent: byParent};
-    }, [items]);
+    }, [items, token]);
 
     const postComment = useCallback(
         async ({content, parentId = null}) => {
@@ -120,7 +123,7 @@ function BoardComment({boardId}) {
                 setPosting(false);
             }
         },
-        [posting, rootValue, postComment]
+        [posting, rootValue, postComment, token]
     );
 
     // 삭제(해당 ID만 제거)
@@ -154,7 +157,7 @@ function BoardComment({boardId}) {
             setReplyingId((cur) => (cur === commentId ? null : commentId));
             setTimeout(() => replyInputRef.current?.focus(), 0);
         },
-        []
+        [token]
     );
 
     return (

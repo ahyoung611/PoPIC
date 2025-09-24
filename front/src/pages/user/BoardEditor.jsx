@@ -5,14 +5,12 @@ import "../../style/board.css";
 import BoardComment from "../../components/board/BoardComment.jsx";
 import {useAuth} from "../../context/AuthContext.jsx";
 
-const host = window.location.hostname || "localhost";
-const API = import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`;
+const API = import.meta.env.VITE_API_BASE_URL;
 
 // 숫자면 그 값, 아니면 null
 const toNumericId = (v) => (/^\d+$/.test(String(v)) ? Number(v) : null);
 
 export default function BoardEditor() {
-    const token = useAuth().getToken();
     const {id} = useParams();
     const {pathname} = useLocation();
     const nav = useNavigate();
@@ -31,17 +29,19 @@ export default function BoardEditor() {
     const [meta, setMeta] = useState(null);
     const hasCountedRef = useRef(false);
 
+    const {auth} = useAuth();
+    const token = auth?.token;
+
     // 상세/수정일 때만 로드
     useEffect(() => {
-        if (!numericId) return;
-        console.log("token:", token);
+        if (!numericId || !token) return;
+
         let abort = false;
         (async () => {
             try {
                 const res = await fetch(`${API}/board/${numericId}`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    },
+                    headers: { "Authorization": `Bearer ${token}` },
+                    credentials: "include",
                 });
                 if (!res.ok) throw new Error("게시글 불러오기 실패");
                 const dto = await res.json();
@@ -63,28 +63,32 @@ export default function BoardEditor() {
             }
         })();
 
-        return () => {
-            abort = true;
-        };
-    }, [numericId, nav]);
+        return () => { abort = true; };
+    }, [numericId, nav, token]);
 
+
+    // 조회수 증가
     useEffect(() => {
-        if (mode !== "view" || !numericId) return;
+        if (mode !== "view" || !numericId || !token) return;
         if (hasCountedRef.current) return;
+
         const key = `viewed-board-${numericId}`;
         if (sessionStorage.getItem(key)) return;
         sessionStorage.setItem(key, "1");
         hasCountedRef.current = true;
+
         (async () => {
             try {
-                const res = await fetch(`${API}/board/${numericId}/views`, {method: "POST",
-                headers: {"Authorization": `Bearer ${token}`,}});
+                const res = await fetch(`${API}/board/${numericId}/views`, {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${token}` },
+                    credentials: "include",
+                });
                 if (!res.ok) return;
                 setMeta((prev) => prev ? {...prev, viewCount: (prev.viewCount ?? 0) + 1} : prev);
-            } catch (_) {
-            }
+            } catch (_) {}
         })();
-    }, [mode, numericId]);
+    }, [mode, numericId, token]);
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -98,7 +102,7 @@ export default function BoardEditor() {
                 title,
                 content,
                 files: (attachments ?? []).map((a) =>
-                    typeof a === "string" ? {originalName: a, savedName: a} : a
+                    typeof a === "string" ? { originalName: a, savedName: a } : a
                 ),
             };
 
@@ -107,8 +111,11 @@ export default function BoardEditor() {
 
             const res = await fetch(url, {
                 method,
-                headers: {"Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,},
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                credentials: "include",
                 body: JSON.stringify(payload),
             });
             if (!res.ok) throw new Error(isCreate ? "작성 실패" : "수정 실패");
@@ -122,7 +129,7 @@ export default function BoardEditor() {
         }
     };
 
-    const goEdit = () => numericId && nav(`/board/${numericId}/edit`);
+    const goEdit = () => numericId && nav(`/board/edit/${numericId}`);
     const goList = () => nav("/board");
 
     return (
@@ -143,7 +150,6 @@ export default function BoardEditor() {
                     </div>
                 )}
 
-
                 <form onSubmit={onSubmit} className="be-form">
                     <label className="be-label" htmlFor="title">제목</label>
                     <input id="title" className="be-input" value={title}
@@ -152,23 +158,19 @@ export default function BoardEditor() {
                     <label className="be-label">이미지</label>
                     {readOnly ? (
                         <div className="be-images">
-                            {(attachments ?? []).length === 0 ? (
+                            {attachments.length === 0 ? (
                                 <div className="be-empty">첨부 이미지가 없습니다.</div>
                             ) : (
                                 <>
                                     <img
                                         className="be-mainimg"
-                                        src={`${API}/board/file/${attachments[0].savedName}`}
-                                        alt={attachments[0].originalName ?? "image"}
+                                        src={`${API}${attachments[0].url}`}
+                                        alt={attachments[0]?.originalName ?? "image"}
                                     />
                                     {attachments.length > 1 && (
                                         <div className="be-thumbs">
                                             {attachments.slice(1).map((f, i) => (
-                                                <img
-                                                    key={i}
-                                                    src={`${API}/board/file/${f.savedName}`}
-                                                    alt={f.originalName ?? `image-${i + 2}`}
-                                                />
+                                                <img key={i} src={`${API}${f.url}`} alt={f.originalName} />
                                             ))}
                                         </div>
                                     )}
@@ -199,10 +201,11 @@ export default function BoardEditor() {
                                         onClick={async () => {
                                             if (window.confirm("정말 삭제하시겠습니까?")) {
                                                 try {
-                                                    await fetch(`${API}/board/${numericId}`, {method: "DELETE",
-                                                    headers:{
-                                                        "Authorization": `Bearer ${token}`,
-                                                    }});
+                                                    await fetch(`${API}/board/${numericId}`, {
+                                                        method: "DELETE",
+                                                        headers: { "Authorization": `Bearer ${token}` },
+                                                        credentials: "include",
+                                                    });
                                                     alert("삭제되었습니다.");
                                                     nav("/board");
                                                 } catch (e) {
@@ -210,9 +213,7 @@ export default function BoardEditor() {
                                                     alert("삭제 실패");
                                                 }
                                             }
-                                        }}>
-                                    삭제
-                                </button>
+                                        }}>삭제</button>
                             </>
                         ) : mode === "edit" ? (
                             <>
