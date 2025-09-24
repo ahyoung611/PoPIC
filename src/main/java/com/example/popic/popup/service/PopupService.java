@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -107,5 +109,33 @@ public class PopupService {
                 .stream()
                 .map(SlotDTO::new)
                 .toList();
+    }
+
+    // young 이달의 팝업
+    public List<PopupDTO> getPopupsForCurrentMonth() {
+        LocalDate now = LocalDate.now();
+        // 현재 월의 첫째 날
+        LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
+        // 현재 월의 마지막 날
+        LocalDate endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());
+
+        // 수정된 부분: Repository 메서드에 시작일과 마지막일을 전달합니다.
+        List<PopupStore> popups = popupRepository.findPopupsByMonth(startOfMonth, endOfMonth);
+
+        return popups.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    // Popup 엔티티를 PopupDTO로 변환하는 private 메서드
+    private PopupDTO convertToDto(PopupStore popup) {
+        PopupDTO dto = new PopupDTO();
+        dto.setStore_id(popup.getStore_id());
+        dto.setStore_name(popup.getStore_name());
+        dto.setCategories(popup.getCategories().stream().map(Category::getCategory_id).collect(Collectors.toList()));
+        dto.setCategory_names(popup.getCategories().stream().map(Category::getName).collect(Collectors.toList()));
+        dto.setStart_date(popup.getStart_date());
+        dto.setEnd_date(popup.getEnd_date());
+        return dto;
     }
 }
