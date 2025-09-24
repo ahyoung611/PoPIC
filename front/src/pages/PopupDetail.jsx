@@ -32,9 +32,14 @@ const PopupDetail = () => {
 
             const response = await apiRequest(`/popupStore/popupDetail?id=` + id, {}, token);
             setPopupDetail(response);
-            if (new Date(response.end_date) < new Date().setHours(0, 0, 0, 0)) {
-                setActiveTab("팝업 정보");
-                setTabs(["팝업 정보", "리뷰", "문의"]);
+            if (response?.end_date) {
+                const endDate = new Date(response.end_date);
+                const today = new Date().setHours(0, 0, 0, 0);
+
+                if (endDate < today) {
+                    setActiveTab("팝업 정보");
+                    setTabs(["팝업 정보", "리뷰", "문의"]);
+                }
             }
         };
         fetchPopupDetail();
