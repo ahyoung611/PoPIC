@@ -1,7 +1,10 @@
 import React, {useEffect, useMemo, useState} from "react";
 import "../../style/popupReservation.css";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 export default function PopupReservationCalendar({popup, value, onChange}) {
+    const token = useAuth().getToken();
+
     const storeId = popup?.store_id;
 
     // 내부 상태 (부모 value로 초기화)
@@ -42,7 +45,15 @@ export default function PopupReservationCalendar({popup, value, onChange}) {
         (async () => {
             try {
                 setLoadingCal(true);
-                const res = await fetch(`http://localhost:8080/popupStore/popupSchedule?popupId=${storeId}`);
+                const res = await fetch(`http://localhost:8080/popupStore/popupSchedule?popupId=${storeId}`,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json",
+                        },
+                        credentials: "include", // 쿠키 인증도 필요하다면
+                    }
+                );
                 if (!res.ok) throw new Error("달력을 불러오지 못했습니다.");
                 const data = await res.json();
                 const filtered = (Array.isArray(data) ? data : []).filter(s => {
@@ -66,7 +77,14 @@ export default function PopupReservationCalendar({popup, value, onChange}) {
         (async () => {
             try {
                 setLoadingSlots(true);
-                const res = await fetch(`http://localhost:8080/popupStore/slots?popupId=${storeId}&date=${selectedDate}`);
+                const res = await fetch(`http://localhost:8080/popupStore/slots?popupId=${storeId}&date=${selectedDate}`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json",
+                        },
+                        credentials: "include", // 쿠키 인증도 필요하다면
+                    }
+                );
                 if (!res.ok) throw new Error("시간을 불러오지 못했습니다.");
                 const data = await res.json();
                 setSlots(Array.isArray(data) ? data : []);

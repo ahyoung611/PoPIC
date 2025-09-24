@@ -3,6 +3,7 @@ import BoardListItem from "../../components/board/BoardListItem.jsx";
 import Select from "../../components/commons/Select.jsx";
 import "../../style/board.css";
 import "../../style/button.css"
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const API  = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
@@ -10,6 +11,7 @@ const API  = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:80
 export default function BoardListView() {
     const [boards, setBoards] = useState([]);
     const [loading, setLoading] = useState(true);
+    const token = useAuth().getToken();
 
     // 입력 전용
     const [kwInput, setKwInput] = useState("");
@@ -35,7 +37,6 @@ export default function BoardListView() {
                     keyword: kwQuery,
                     scope,
                 });
-                const token = localStorage.getItem("refreshToken");
 
                 const res = await fetch(`${API}/board?${qs}`, {
                     signal: controller.signal,
