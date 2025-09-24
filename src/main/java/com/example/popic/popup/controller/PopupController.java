@@ -120,4 +120,10 @@ public class PopupController {
     ) {
         return ResponseEntity.ok(popupService.getSlots(popupId, date));
     }
+
+    @GetMapping("/monthly")
+    public ResponseEntity<List<PopupDTO>> getMonthlyPopups() {
+        List<PopupDTO> popups = popupService.getPopupsForCurrentMonth();
+        return ResponseEntity.ok(popups);
+    }
 }

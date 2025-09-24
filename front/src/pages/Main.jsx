@@ -62,14 +62,29 @@ const sample = {
     category: "캐릭터",
 };
 
-const fetchTicketOpen = async () => {
-    return [
-        { id:1, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:2, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:3, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:4, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:5, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-    ];
+const fetchByMonthlyOpen = async () => {
+    try {
+        const response = await fetch('/api/popups/monthly');
+
+        if (!response.ok) {
+            throw new Error('네트워크 응답이 올바르지 않습니다.');
+        }
+
+        const data = await response.json();
+
+        // 백엔드에서 받은 데이터를 프론트엔드에서 사용하는 형식으로 변환
+        // 예시: { id, image, title, periodText } 형식으로 변환
+        return data.map(item => ({
+            id: item.store_id,
+            image: item.image_url, // 백엔드에서 image_url 필드를 제공한다고 가정
+            title: item.store_name,
+            periodText: `${item.start_date} - ${item.end_date}`
+        }));
+
+    } catch (error) {
+        console.error('월간 팝업 데이터를 가져오는 중 오류 발생:', error);
+        return []; // 에러 발생 시 빈 배열 반환
+    }
 };
 
 const fetchBgRanking = async () => {
@@ -119,7 +134,7 @@ const Main = () => {
             <div >
                 <MainPopupCardSlide
                     title="MONTHLY PICK"
-                    fetcher={fetchTicketOpen}
+                    fetcher={fetchByMonthlyOpen}
                     limit={5}
                     slidesPerView={4}
                 />
