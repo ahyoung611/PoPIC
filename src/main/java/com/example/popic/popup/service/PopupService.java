@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -127,13 +128,35 @@ public class PopupService {
                 .collect(Collectors.toList());
     }
 
-    // Popup 엔티티를 PopupDTO로 변환하는 private 메서드
+    public List<PopupDTO> findMonthlyPopups() {
+        List<PopupStore> entities = popupRepository.findByThisMonth();
+        if (entities == null || entities.isEmpty()) {
+            return new ArrayList<>(); // null 대신 빈 배열 반환
+        }
+        return entities.stream()
+                .map(PopupDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    // PopupStore 엔티티를 PopupDTO로 변환하는 private 메서드
     private PopupDTO convertToDto(PopupStore popup) {
         PopupDTO dto = new PopupDTO();
         dto.setStore_id(popup.getStore_id());
         dto.setStore_name(popup.getStore_name());
-        dto.setCategories(popup.getCategories().stream().map(Category::getCategory_id).collect(Collectors.toList()));
-        dto.setCategory_names(popup.getCategories().stream().map(Category::getName).collect(Collectors.toList()));
+        if (popup.getCategories() != null) {
+            dto.setCategories(popup.getCategories().stream().map(Category::getCategory_id).collect(Collectors.toList()));
+            dto.setCategory_names(popup.getCategories().stream().map(Category::getName).collect(Collectors.toList()));
+        } else {
+            dto.setCategories(new ArrayList<>());
+            dto.setCategory_names(new ArrayList<>());
+        }
+
+        // 현재 코드에 없는 images 필드에 대한 처리도 추가해주는 것이 좋습니다.
+        if (popup.getImages() != null) {
+            dto.setImages(popup.getImages().stream().map(Image::getImage_id).collect(Collectors.toList()));
+        } else {
+            dto.setImages(new ArrayList<>());
+        }
         dto.setStart_date(popup.getStart_date());
         dto.setEnd_date(popup.getEnd_date());
         return dto;
