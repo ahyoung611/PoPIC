@@ -26,6 +26,8 @@ public class BoardDTO {
     private int status;
 
     private String writerName; // User.name
+    private String writerId;
+
     private List<BoardImageDTO> files; // 첨부파일
     private List<BoardCommentDTO> comments; // 댓글 리스트
 
@@ -40,6 +42,7 @@ public class BoardDTO {
                 .deletedAt(board.getDeleted_at())
                 .status(board.getStatus())
                 .writerName(board.getUser().getName())
+                .writerId(board.getUser().getLogin_id())
                 .files(
                         board.getFiles().stream()
                                 .map(BoardImageDTO::fromEntity)

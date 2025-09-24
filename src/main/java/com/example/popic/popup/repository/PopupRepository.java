@@ -5,12 +5,13 @@ import com.example.popic.entity.entities.PopupStore;
 import com.example.popic.entity.entities.PopupStoreSchedule;
 import com.example.popic.entity.entities.Review;
 import com.example.popic.entity.entities.ReviewReply;
-import com.example.popic.popup.dto.PopupDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,4 +43,19 @@ public interface PopupRepository extends JpaRepository<PopupStore, Long> {
 
     @Query("SELECT p FROM PopupStore p WHERE p.status = -1 AND p.store_name LIKE CONCAT('%', :keyword, '%')")
     List<PopupStore> findRejectedPopup(String keyword);
+
+    // young 이달의 팝업
+    @Query("SELECT p FROM PopupStore p " +
+            "WHERE (p.start_date <= :currentMonthEnd AND p.end_date >= :currentMonthStart) " +
+            "AND p.status = 1")
+    List<PopupStore> findPopupsByMonth(
+            @Param("currentMonthStart") LocalDate currentMonthStart,
+            @Param("currentMonthEnd") LocalDate currentMonthEnd
+    );
+
+    // young 이달의 팝업
+    @Query("SELECT p FROM PopupStore p " +
+            "WHERE (p.start_date <= CURRENT_DATE AND p.end_date >= CURRENT_DATE) " +
+            "AND p.status = 1")
+    List<PopupStore> findByThisMonth();
 }

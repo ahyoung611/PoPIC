@@ -22,4 +22,5 @@ public class BoardImage {
 
     @Column(nullable = false, length = 255)
     private String saved_name;
+
 }

@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import "../../style/board.css";
+import {useAuth} from "../../context/AuthContext.jsx";
+
 const API = "http://localhost:8080";
 
 export default function FileUpload({
@@ -17,12 +19,16 @@ export default function FileUpload({
     const inputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
     const abortRef = useRef(null);
+    const {auth} = useAuth();
+    const token = auth?.token;
 
-    useEffect(() => { onUploadingChange?.(uploading); }, [uploading, onUploadingChange]);
-    useEffect(() => () => abortRef.current?.abort?.(), []);
+    useEffect(() => {
+        onUploadingChange?.(uploading);
+    }, [uploading, onUploadingChange]);
+    useEffect(() => () => abortRef.current?.abort?.(), [token]);
 
     const normalizeItem = (item) =>
-        typeof item === "string" ? { originalName: item, savedName: item } : item;
+        typeof item === "string" ? {originalName: item, savedName: item} : item;
 
     const getKey = (item) => normalizeItem(item).savedName || String(item);
     const getLabel = (item) => normalizeItem(item).originalName || normalizeItem(item).savedName;
@@ -48,7 +54,12 @@ export default function FileUpload({
         abortRef.current = controller;
 
         try {
-            const res = await fetch(endpoint, { method: "POST", body: fd, signal: controller.signal, headers });
+            const res = await fetch(endpoint, {
+                method: "POST", body: fd, signal: controller.signal, headers: {
+                    ...(headers || {}),
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
             if (!res.ok) {
                 const txt = await res.text();
                 console.error("UPLOAD ERROR", res.status, txt);
@@ -71,12 +82,13 @@ export default function FileUpload({
     };
 
     const removeServerFile = async (item) => {
-        const { savedName } = normalizeItem(item);
+        const {savedName} = normalizeItem(item);
         try {
             const res = await fetch(deleteEndpoint, {
-                method: "POST", // 서버가 DELETE 지원하면 여기 DELETE /board/file/{savedName} 로 바꿔도 됨
-                headers: { "Content-Type": "application/json", ...(headers || {}) },
-                body: JSON.stringify({ fileName: savedName }),
+                method: "POST",
+                headers: {"Content-Type": "application/json", ...(headers || {}), "Authorization": `Bearer ${token}`,},
+                credentials: "include",
+                body: JSON.stringify({fileName: savedName}),
             });
             if (!res.ok) {
                 const txt = await res.text();

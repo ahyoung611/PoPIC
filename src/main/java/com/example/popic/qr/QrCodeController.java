@@ -12,14 +12,21 @@ import com.google.zxing.common.BitMatrix;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -30,28 +37,33 @@ public class QrCodeController {
     private final StringRedisTemplate redisTemplate;
     private final ReservationService reservationService;
 
-    @GetMapping(value = "/generate-qr", produces = "image/png")
-    public void generateQr(HttpServletResponse response, @RequestParam(name="reservationId")Long reservationId) throws Exception {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserPrincipal principal =  (CustomUserPrincipal) authentication.getPrincipal();
-
-        System.out.println(principal);
-        System.out.println(reservationId);
-//        if(!principal.getRole().equals("USER")) return;
-
-
+    @GetMapping(value = "/generate-qr", produces = "application/json")
+    public ResponseEntity<Map<String, Object>> generateQr(HttpServletResponse response, @RequestParam(name="reservationId")Long reservationId) throws Exception {
         // 입장권 확인
         PopupReservationDTO reservationDTO = reservationService.findbyId(reservationId);
 
-//        if(!principal.getId().equals(reservationDTO.getUser().getUser_id())) return;
+        Map<String, Object> res = new HashMap<>();
 
+        res.put("reservation", reservationDTO);
+
+        int width = 250;
+        int height = 250;
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        g.setColor(Color.black);
+        g.fillRect(0, 0, width, height);
+
+        if(reservationDTO.getStatus() != 1){
+            res.put("status", "USED");
+        }else{
+            res.put("status", "OK");
+        }
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-
         String json = objectMapper.writeValueAsString(reservationDTO);
-        System.out.println("json: " + json);
+
 
         // 1. 임시 토큰 생성
         String token = UUID.randomUUID().toString();
@@ -59,18 +71,16 @@ public class QrCodeController {
 
         // 2. QR 코드 URL
         String qrData = "http://10.5.4.14:8080/scan-qr?token=" + token;
-
         // 3. QR 코드 생성
-        int width = 250;
-        int height = 250;
         BitMatrix matrix = new MultiFormatWriter().encode(qrData, BarcodeFormat.QR_CODE, width, height);
 
-        // 4. 이미지 응답
-        response.setContentType("image/png");
-        try (OutputStream out = response.getOutputStream()) {
-            MatrixToImageWriter.writeToStream(matrix, "PNG", out);
-            out.flush();
-        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        MatrixToImageWriter.writeToStream(matrix, "PNG", baos);
+        String base64Image = Base64.getEncoder().encodeToString(baos.toByteArray());
+
+        res.put("qrImage", "data:image/png;base64," + base64Image);
+
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping("/scan-qr")

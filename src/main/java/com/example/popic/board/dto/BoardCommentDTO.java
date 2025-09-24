@@ -16,6 +16,7 @@ public class BoardCommentDTO {
     private Long commentId;
     private String content;
     private String writerName;  // User.username
+    private String writerId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
@@ -29,6 +30,7 @@ public class BoardCommentDTO {
                 .commentId(comment.getComment_id())
                 .content(comment.getContent())
                 .writerName(comment.getUser().getName())
+                .writerId(comment.getUser().getLogin_id())
                 .createdAt(comment.getCreated_at())
                 .updatedAt(comment.getUpdated_at())
                 .deletedAt(comment.getDeleted_at())

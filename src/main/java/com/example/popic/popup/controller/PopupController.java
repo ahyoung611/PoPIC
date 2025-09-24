@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -54,7 +55,10 @@ public class PopupController {
     public ResponseEntity<PopupReviewDTO> saveReview(@ModelAttribute PopupReviewDTO popupReviewDTO,
                                                       @RequestParam(name = "file", required = false) MultipartFile file,
                                                       @RequestParam(name = "type") String type){
-        String savedFileName = FileSave.fileSave(type,file);
+        String savedFileName = null;
+        if (file != null && !file.isEmpty()) {
+            savedFileName = FileSave.fileSave(type, file);
+        }
         Review review = popupReviewService.saveReview(popupReviewDTO);
 
         ReviewImageDTO reviewImageDTO = new ReviewImageDTO();
@@ -120,5 +124,15 @@ public class PopupController {
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
         return ResponseEntity.ok(popupService.getSlots(popupId, date));
+    }
+
+    @GetMapping("/monthly")
+    public ResponseEntity<List<PopupDTO>> getMonthlyPopups() {
+        List<PopupDTO> list = popupService.findMonthlyPopups();
+        System.out.println("📢 findMonthlyPopups() result: " + list);
+        if (list != null) {
+            list.forEach(dto -> System.out.println(" - popup: " + dto.getStore_name()));
+        }
+        return ResponseEntity.ok(list != null ? list : new ArrayList<>());
     }
 }
