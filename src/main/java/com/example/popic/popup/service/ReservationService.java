@@ -6,6 +6,7 @@ import com.example.popic.popup.repository.PopupRepository;
 import com.example.popic.popup.repository.PopupStoreSlotRepository;
 import com.example.popic.popup.repository.ReservationRepository;
 import com.example.popic.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -49,5 +50,10 @@ public class ReservationService {
                 .stream()
                 .map(PopupReservationDTO::from)
                 .toList();
+    }
+
+    @Transactional
+    public void entryReservationById(Long reservationId) {
+        reservationRepository.entryReservationById(reservationId);
     }
 }

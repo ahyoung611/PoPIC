@@ -1,13 +1,23 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, {useState, useCallback, useEffect} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import AddressSelector from "./AddressSelector.jsx";
 import "../../style/vendorPopup.css";
 import Button from "../../components/commons/Button.jsx";
+import apiRequest from "../../utils/apiRequest.js";
+import {useAuth} from "../../context/AuthContext.jsx"
 
 // 상수/헬퍼
 const KAKAO_JS_API_KEY = import.meta.env.VITE_KAKAO_JS_API_KEY;
-const DAY_TO_ENUM = { "월":"MONDAY","화":"TUESDAY","수":"WEDNESDAY","목":"THURSDAY","금":"FRIDAY","토":"SATURDAY","일":"SUNDAY" };
-const DAYS = Object.entries(DAY_TO_ENUM).map(([label, value]) => ({ label, value }));
+const DAY_TO_ENUM = {
+    "월": "MONDAY",
+    "화": "TUESDAY",
+    "수": "WEDNESDAY",
+    "목": "THURSDAY",
+    "금": "FRIDAY",
+    "토": "SATURDAY",
+    "일": "SUNDAY"
+};
+const DAYS = Object.entries(DAY_TO_ENUM).map(([label, value]) => ({label, value}));
 const toYYYYMMDD = (d) => {
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -17,9 +27,10 @@ const toYYYYMMDD = (d) => {
 
 export default function VendorPopupForm() {
     // 라우트/네비게이션
-    const { vendorId, popupId } = useParams();     // /vendor/:vendorId/popups[/edit/:popupId]
+    const {vendorId, popupId} = useParams();     // /vendor/:vendorId/popups[/edit/:popupId]
     const isEdit = !!popupId;
     const navigate = useNavigate();
+    const token = useAuth().getToken();
 
     // API 엔드포인트 (벤더 스코프)
     const CATEGORY_API = `/api/vendors/${vendorId}/popups/categories`;
@@ -49,7 +60,7 @@ export default function VendorPopupForm() {
     // UI 전용 상태
     const [imageFiles, setImageFiles] = useState([]);          // 새로 추가할 파일
     const [existingImages, setExistingImages] = useState([]);  // [{id, savedName, url}]
-    const [categories, setCategories] = useState([{ id: 0, label: "전체" }]);
+    const [categories, setCategories] = useState([{id: 0, label: "전체"}]);
     const [categorySelect, setCategorySelect] = useState(0);
     const [openDays, setOpenDays] = useState(new Set());
     const [startTime, setStartTime] = useState("10:00");
@@ -59,32 +70,33 @@ export default function VendorPopupForm() {
     const todayStr = toYYYYMMDD(new Date());
 
     // 공용 setForm 헬퍼
-    const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+    const update = (k, v) => setForm((p) => ({...p, [k]: v}));
 
     // 카테고리 로드
     useEffect(() => {
         let alive = true;
         (async () => {
             try {
-                const res = await fetch(CATEGORY_API);
-                const list = await res.json();
+                const list = await apiRequest(CATEGORY_API, {}, token);
                 if (!alive) return;
-                setCategories([{ id: 0, label: "전체" }, ...list.map(c => ({ id: c.id, label: c.name }))]);
+                setCategories([{id: 0, label: "전체"}, ...list.map(c => ({id: c.id, label: c.name}))]);
             } catch (e) {
                 console.error("카테고리 로드 실패:", e);
             }
         })();
-        return () => { alive = false; };
-    }, [CATEGORY_API]);
+        return () => {
+            alive = false;
+        };
+    }, [CATEGORY_API, token]);
 
     // 수정 모드 – 서버 DTO를 폼에 반영
     useEffect(() => {
         if (!isEdit) return;
 
         (async () => {
-            const res = await fetch(`/api/vendors/${vendorId}/popups/${popupId}`);
-            if (!res.ok) throw new Error("popup load failed");
-            const dto = await res.json();
+            const dto = await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}`, {}, token);
+
+            if (!dto) throw new Error("popup data is not valid");
 
             // 기본 폼 채우기
             setForm(prev => ({
@@ -100,7 +112,7 @@ export default function VendorPopupForm() {
             // 요일/시간/정원
             setOpenDays(new Set(dto.open_days || []));
             if (dto.open_start_time) setStartTime(dto.open_start_time);
-            if (dto.open_end_time)   setEndTime(dto.open_end_time);
+            if (dto.open_end_time) setEndTime(dto.open_end_time);
             if (dto.capacity_per_hour != null) setCapacityPerHour(String(dto.capacity_per_hour));
 
             // 기존 이미지
@@ -114,11 +126,11 @@ export default function VendorPopupForm() {
                 .filter(x => !!x.url);
             setExistingImages(imgs);
         })().catch(err => {
-            console.error(err);
+            console.error("데이터 로드 실패:", err);
             alert("데이터를 불러오지 못했습니다.");
-            navigate(`/vendor/${vendorId}/popups`, { replace: true });
+            navigate(`/vendor/${vendorId}/popups`, {replace: true});
         });
-    }, [isEdit, vendorId, popupId, navigate]);
+    }, [isEdit, vendorId, popupId, navigate, token]);
 
     // 새 이미지 프리뷰 관리
     useEffect(() => {
@@ -161,8 +173,7 @@ export default function VendorPopupForm() {
     };
     const removeExistingImage = async (imageId) => {
         if (!confirm("이미지를 삭제할까요?")) return;
-        const res = await fetch(`/api/vendors/${vendorId}/popups/images/${imageId}`, { method: "DELETE" });
-        if (!res.ok && res.status !== 204) return alert("삭제 실패");
+        await apiRequest(`/api/vendors/${vendorId}/popups/images/${imageId}`, {method: "DELETE"}, token);
         setExistingImages(list => list.filter(x => x.id !== imageId));
     };
 
@@ -199,26 +210,24 @@ export default function VendorPopupForm() {
 
         try {
             if (!isEdit) {
+                // 등록: apiRequest만 호출
                 const fd = new FormData();
                 fd.append("dto", new Blob([JSON.stringify(dto)], { type: "application/json" }));
                 imageFiles.forEach(f => fd.append("files", f));
-                const res = await fetch(`/api/vendors/${vendorId}/popups`, { method: "POST", body: fd });
-                const json = await res.json().catch(() => ({ result: false, message: "JSON 파싱 실패" }));
-                if (!res.ok || !json.result) return alert(json.message || "등록 실패");
+                const json = await apiRequest(`/api/vendors/${vendorId}/popups`, { method: "POST", body: fd }, token);
+                if (!json?.result) return alert(json?.message || "등록 실패");
             } else {
-                const res = await fetch(`/api/vendors/${vendorId}/popups/${popupId}`, {
+                // 수정: PUT 요청은 JSON으로, 이미지 업로드는 별도 요청으로 분리
+                const json = await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(dto),
-                });
-                const json = await res.json().catch(() => ({ result: false, message: "JSON 파싱 실패" }));
-                if (!res.ok || !json.result) return alert(json.message || "수정 실패");
+                    body: dto,
+                }, token);
+                if (!json?.result) return alert(json?.message || "수정 실패");
 
                 if (imageFiles.length > 0) {
                     const fd = new FormData();
                     imageFiles.forEach(f => fd.append("files", f));
-                    const up = await fetch(`/api/vendors/${vendorId}/popups/${popupId}/images`, { method: "POST", body: fd });
-                    if (!up.ok) return alert("이미지 업로드 실패");
+                    await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}/images`, { method: "POST", body: fd }, token);
                 }
             }
             navigate(`/vendor/${vendorId}/popups`);
@@ -231,11 +240,7 @@ export default function VendorPopupForm() {
     // 팝업 삭제
     const handleDeletePopup = async () => {
         if (!confirm("이 팝업을 삭제할까요? 삭제 후 복구할 수 없습니다.")) return;
-        const res = await fetch(`/api/vendors/${vendorId}/popups/${popupId}`, { method: "DELETE" });
-        if (res.status !== 204) {
-            const msg = await res.text().catch(() => "");
-            return alert(msg || "삭제 실패");
-        }
+        await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}`, { method: "DELETE" }, token);
         navigate(`/vendor/${vendorId}/popups`);
     };
 
@@ -268,7 +273,7 @@ export default function VendorPopupForm() {
                         <label className="vp-label">이미지 추가</label>
 
                         <label className="vp-input vp-filebox">
-                            <input type="file" multiple accept="image/*" onChange={handleFiles} />
+                            <input type="file" multiple accept="image/*" onChange={handleFiles}/>
                             {imageFiles.length === 0 ? "파일을 선택하세요" : `${imageFiles.length}개 선택됨`}
                         </label>
 
@@ -370,6 +375,7 @@ export default function VendorPopupForm() {
                         <AddressSelector
                             kakaoAppKey={KAKAO_JS_API_KEY}
                             basePath={`/api/vendors/${vendorId}/popups`}
+                            token={token}
                             value={{
                                 city,
                                 district,
@@ -408,9 +414,11 @@ export default function VendorPopupForm() {
                         </div>
 
                         <div className="vp-time-row">
-                            <input type="time" className="vp-input" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+                            <input type="time" className="vp-input" value={startTime}
+                                   onChange={(e) => setStartTime(e.target.value)}/>
                             <span className="vp-tilde">~</span>
-                            <input type="time" className="vp-input" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+                            <input type="time" className="vp-input" value={endTime}
+                                   onChange={(e) => setEndTime(e.target.value)}/>
                         </div>
                     </div>
 
@@ -453,7 +461,7 @@ export default function VendorPopupForm() {
                                     type="button"
                                     variant="outline"
                                     color="gray"
-                                    onClick={() => navigate(`/vendor/${vendorId}/popups`, { replace: true })}
+                                    onClick={() => navigate(`/vendor/${vendorId}/popups`, {replace: true})}
                                 >
                                     팝업 목록
                                 </Button>
@@ -466,7 +474,7 @@ export default function VendorPopupForm() {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    navigate(`/vendor/${vendorId}/popups`, { replace: true });
+                                    navigate(`/vendor/${vendorId}/popups`, {replace: true});
                                 }}
                             >
                                 취소
