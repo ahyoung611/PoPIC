@@ -52,6 +52,7 @@ export default function BoardEditor() {
                 setAttachments(dto.files ?? []);
                 setMeta({
                     writerName: dto.writerName,
+                    writerId: dto.writerId,
                     createdAt: dto.createdAt,
                     updatedAt: dto.updatedAt,
                     viewCount: dto.viewCount,
@@ -195,25 +196,31 @@ export default function BoardEditor() {
                     <div className="be-actions">
                         {mode === "view" ? (
                             <>
-                                <button type="button" className="be-btn be-btn-primary" onClick={goEdit}>수정</button>
+                                {meta?.writerId === auth?.user?.login_id && (
+                                    <>
+                                        <button type="button" className="be-btn be-btn-primary" onClick={goEdit}>수정</button>
+                                        <button type="button" className="be-btn be-btn-danger"
+                                                onClick={async () => {
+                                                    if (window.confirm("정말 삭제하시겠습니까?")) {
+                                                        try {
+                                                            await fetch(`${API}/board/${numericId}`, {
+                                                                method: "DELETE",
+                                                                headers: { "Authorization": `Bearer ${token}` },
+                                                                credentials: "include",
+                                                            });
+                                                            alert("삭제되었습니다.");
+                                                            nav("/board");
+                                                        } catch (e) {
+                                                            console.error(e);
+                                                            alert("삭제 실패");
+                                                        }
+                                                    }
+                                                }}>
+                                            삭제
+                                        </button>
+                                    </>
+                                )}
                                 <button type="button" className="be-btn be-btn-ghost" onClick={goList}>목록</button>
-                                <button type="button" className="be-btn be-btn-danger"
-                                        onClick={async () => {
-                                            if (window.confirm("정말 삭제하시겠습니까?")) {
-                                                try {
-                                                    await fetch(`${API}/board/${numericId}`, {
-                                                        method: "DELETE",
-                                                        headers: { "Authorization": `Bearer ${token}` },
-                                                        credentials: "include",
-                                                    });
-                                                    alert("삭제되었습니다.");
-                                                    nav("/board");
-                                                } catch (e) {
-                                                    console.error(e);
-                                                    alert("삭제 실패");
-                                                }
-                                            }
-                                        }}>삭제</button>
                             </>
                         ) : mode === "edit" ? (
                             <>
