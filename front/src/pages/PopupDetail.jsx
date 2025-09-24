@@ -14,10 +14,12 @@ import {useParams} from "react-router-dom";
 import PopupReservationModal from "../components/popupdetail/PopupReservationModal.jsx";
 
 const PopupDetail = () => {
-    const token = useAuth().getToken();
+    const { auth } = useAuth();
+    const token = auth?.token;
+    const user = auth?.user;
     const [popupDetail, setPopupDetail] = useState(null);
-    const [activeTab, setActiveTab] = useState("예약"); // 기본 탭
-    const [tabs, setTabs] = useState(["예약", "팝업 정보", "리뷰", "문의"]);
+    const [activeTab, setActiveTab] = useState("팝업 정보"); // 기본 탭
+    const [tabs, setTabs] = useState(["팝업 정보", "예약", "리뷰", "문의"]);
     const {id} = useParams();
 
     // 예약 정보 및 예약 모달
@@ -52,6 +54,14 @@ const PopupDetail = () => {
         setModalOpen(true); // 모달 열기
     };
 
+    const loginMsg = (t) => {
+        if (t === "예약" && !user) {
+            alert("로그인 후 예약 가능합니다.");
+            return;
+        }
+        setActiveTab(t);
+    }
+
     return (
         <div className={"container"}>
             <div className={"popupStore-detail inner"}>
@@ -65,17 +75,17 @@ const PopupDetail = () => {
                                 <Button
                                     key={tab}
                                     className={activeTab === tab ? "tab active" : "tab"}
-                                    onClick={() => setActiveTab(tab)}
+                                    onClick={() => loginMsg(tab)}
                                 >{tab}</Button>
                             ))}
                         </div>
 
-                        {activeTab === "예약" && (
-                            <PopupReservation popup={popupDetail} onOpenModal={openModal}></PopupReservation>
-                        )}
-
                         {activeTab === "팝업 정보" && (
                             <PopupTabInfo popup={popupDetail}></PopupTabInfo>
+                        )}
+
+                        {activeTab === "예약" && (
+                            <PopupReservation popup={popupDetail} onOpenModal={openModal}></PopupReservation>
                         )}
 
                         {activeTab === "리뷰" && (

@@ -10,7 +10,7 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
         navigate(
             `/checkout?price=${reservationData.price}&name=${encodeURIComponent(
                 reservationData.name
-            )}&date=${reservationData.date}&time=${reservationData.time}&people=${reservationData.reservationCount}`
+            )}&date=${reservationData.date}&time=${reservationData.time}&people=${reservationData.reservationCount}&popupId=${reservationData.popupId}`
         );
     };
 

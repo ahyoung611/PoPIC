@@ -15,6 +15,7 @@ export default function CheckoutPage() {
     const [ready, setReady] = useState(false);
     const [widgets, setWidgets] = useState(null);
 
+
     useEffect(() => {
         async function fetchPaymentWidgets() {
             const tossPayments = await loadTossPayments(clientKey);
@@ -63,7 +64,7 @@ export default function CheckoutPage() {
                         await widgets.requestPayment({
                             orderId: generateRandomString(),
                             orderName: `${searchParams.get("name")} 예약`,
-                            successUrl: window.location.origin + `/success?people=${searchParams.get("people")}`,
+                            successUrl: window.location.origin + `/success?people=${searchParams.get("people")}&popupId=${searchParams.get("popupId")}`,
                             failUrl: window.location.origin + "/fail",
                             customerName: "고객명(추후연결)",
                             customerEmail: "customer@example.com",
