@@ -5,6 +5,8 @@ import com.example.popic.board.service.BoardCommentService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,10 +29,11 @@ public class BoardCommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public BoardCommentDTO create(
             @PathVariable Long boardId,
-            @RequestBody CreateReq req
+            @RequestBody CreateReq req,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Long userId = 1L;
-        return boardCommentService.addComment(boardId, userId, req.getContent(), req.getParentId());
+        String loginId = userDetails.getUsername(); // JWT에서 꺼낸 로그인 ID
+        return boardCommentService.addComment(boardId, loginId, req.getContent(), req.getParentId());
     }
 
     // 댓글 삭제
@@ -38,10 +41,11 @@ public class BoardCommentController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(
             @PathVariable Long boardId,
-            @PathVariable Long commentId
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Long userId = 1L;
-        boardCommentService.deleteComment(boardId, commentId, userId);
+        String loginId = userDetails.getUsername();
+        boardCommentService.deleteComment(boardId, commentId, loginId);
     }
 
     @Data

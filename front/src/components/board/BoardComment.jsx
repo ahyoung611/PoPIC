@@ -5,8 +5,9 @@ const host = window.location.hostname || "localhost";
 const API = import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`;
 
 function BoardComment({boardId}) {
-    const { auth } = useAuth();
+    const {auth} = useAuth();
     const token = auth?.token;
+
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [posting, setPosting] = useState(false);
@@ -27,6 +28,7 @@ function BoardComment({boardId}) {
         return {
             commentId: String(dto.commentId ?? dto.id),
             parentId,
+            writerId: dto.writerId,
             writerName: dto.writerName ?? dto.authorName ?? "",
             content: dto.content ?? "",
             createdAt: dto.createdAt ?? "",
@@ -43,7 +45,7 @@ function BoardComment({boardId}) {
                         "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
-                credentials: "include",
+                    credentials: "include",
                 }
             );
             if (!res.ok) throw new Error("댓글 불러오기 실패");
@@ -126,7 +128,6 @@ function BoardComment({boardId}) {
         [posting, rootValue, postComment, token]
     );
 
-    // 삭제(해당 ID만 제거)
     const onDelete = useCallback(
         async (commentId) => {
             if (!window.confirm("이 댓글을 삭제할까요?")) return;
@@ -199,6 +200,8 @@ function BoardComment({boardId}) {
                                 postComment={postComment}
                                 setReplyingId={setReplyingId}
                                 replyInputRef={replyInputRef}
+                                token={token}
+                                auth={auth}
                             />
                         ))
                     )}
@@ -263,6 +266,8 @@ const CommentNode = ({
                          postComment,
                          setReplyingId,
                          replyInputRef,
+                         token,
+                         auth
                      }) => {
     const children = childrenByParent.get(c.commentId) || [];
     const isReplyingHere = replyingId === c.commentId;
@@ -288,9 +293,15 @@ const CommentNode = ({
                         답글쓰기{(children?.length ?? 0) > 0 ? ` (${children.length})` : ""}
                     </button>
                 )}
-                <button type="button" className="be-link danger" onClick={() => onDelete(c.commentId)}>
-                    삭제
-                </button>
+                {token && c.writerId === auth?.user?.login_id && (
+                    <button
+                        type="button"
+                        className="be-link danger"
+                        onClick={() => onDelete(c.commentId)}
+                    >
+                        삭제
+                    </button>
+                )}
             </div>
 
             {isReplyingHere && allowReplyHere && (
@@ -319,6 +330,8 @@ const CommentNode = ({
                             postComment={postComment}
                             setReplyingId={setReplyingId}
                             replyInputRef={replyInputRef}
+                        token={token}
+                        auth={auth}
                         />
                     ))}
                 </ul>
