@@ -90,6 +90,7 @@ const Login = () => {
         console.log("NAVER_REDIRECT_URI: ", NAVER_REDIRECT_URI);
 
         const handleNaverLogin = () => {
+            console.log("handleNaverLogin 진입?");
             const state = crypto.randomUUID(); // CSRF 방지용 state
             localStorage.setItem("naver_oauth_state", state);
 
@@ -225,7 +226,7 @@ const Login = () => {
                             <img src={kakao} alt="kakao" />
                         </button>
                         <button type="button" className="login-social-btn" title="네이버 로그인"
-                        onClick={naverLogin}>
+                                onClickCapture={() => { console.log("naver login (capture)"); naverLogin(); }}>
                             <img src={naver} alt="naver" />
                         </button>
                         <button type="button" className="login-social-btn" title="구글 로그인" onClick={googleLogin}>
