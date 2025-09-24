@@ -1,6 +1,7 @@
 import Banner from "../components/commons/Banner.jsx";
 import React, { useState } from "react";
 import MainPopupCardSlide from "../components/commons/MainPopupCardSilde.jsx";
+import apiRequest from "../utils/apiRequest.js";
 
 const CATEGORY_JSON = [
     { category_id: "1", name: "패션" },
@@ -55,37 +56,26 @@ const slides = [
         alt: "배너 5",
     },
 ];
-const sample = {
-    image: "/sample.webp",
-    title: "곰 보금자리 프로젝트 : GOME SWEET HOME",
-    periodText: "25.09.09 - 25.09.29",
-    category: "캐릭터",
-};
 
 const fetchByMonthlyOpen = async () => {
     try {
-        const response = await fetch('/api/popups/monthly');
+        const data = await apiRequest('/popupStore/monthly');
+        console.log("API 응답:", data);
 
-        if (!response.ok) {
-            throw new Error('네트워크 응답이 올바르지 않습니다.');
-        }
-
-        const data = await response.json();
-
-        // 백엔드에서 받은 데이터를 프론트엔드에서 사용하는 형식으로 변환
-        // 예시: { id, image, title, periodText } 형식으로 변환
+        if (!Array.isArray(data)) return [];
         return data.map(item => ({
             id: item.store_id,
-            image: item.image_url, // 백엔드에서 image_url 필드를 제공한다고 가정
+            image: item.thumb, // PopupDTO 필드 기준
             title: item.store_name,
             periodText: `${item.start_date} - ${item.end_date}`
         }));
 
     } catch (error) {
         console.error('월간 팝업 데이터를 가져오는 중 오류 발생:', error);
-        return []; // 에러 발생 시 빈 배열 반환
+        return [];
     }
 };
+
 
 const fetchBgRanking = async () => {
     return [

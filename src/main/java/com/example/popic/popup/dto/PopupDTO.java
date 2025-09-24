@@ -54,11 +54,12 @@ public class PopupDTO {
         this.description = entity.getDescription();
         this.start_date = entity.getStart_date();
         this.end_date = entity.getEnd_date();
-        this.schedules = entity.getSchedules() == null ? List.of()
+        this.schedules = entity.getSchedules() == null ? new ArrayList<>()
                 : entity.getSchedules().stream()
                 .map(PopupStoreSchedule::getSchedule_id)
                 .collect(Collectors.toList());
-        this.address = entity.getAddress().getCity().concat(" ").concat(entity.getAddress().getDistrict());
+        this.address = (entity.getAddress() != null) ?
+                entity.getAddress().getCity().concat(" ").concat(entity.getAddress().getDistrict()) : null;
         this.address_detail = entity.getAddress_detail();
         this.latitude = entity.getLatitude();
         this.longitude = entity.getLongitude();
@@ -72,27 +73,40 @@ public class PopupDTO {
         this.delete_date = entity.getDelete_date();
         this.status = entity.getStatus();
 
-        // young 카테고리 이름, 카테고리 아이디
-        this.categories = entity.getCategories()
-                .stream()
-                .map(Category::getCategory_id)
-                .collect(Collectors.toList());
-
-        this.category_names = entity.getCategories()
-                .stream()
-                .map(Category::getName)
-                .collect(Collectors.toList());
-
-        this.images_detail = entity.getImages().stream()
-                .map(i -> new ImageDetail(i.getImage_id(), i.getSaved_name()))
-                .collect(java.util.stream.Collectors.toList());
+        // young categories에 대한 null 체크
+        if (entity.getCategories() != null) {
+            this.categories = entity.getCategories()
+                    .stream()
+                    .map(Category::getCategory_id)
+                    .collect(Collectors.toList());
+            this.category_names = entity.getCategories()
+                    .stream()
+                    .map(Category::getName)
+                    .collect(Collectors.toList());
+        } else {
+            this.categories = new ArrayList<>();
+            this.category_names = new ArrayList<>();
+        }
 
         // young 첫 번째 이미지가 있으면 URL로 생성
-        if (!entity.getImages().isEmpty()) {
-            Image firstImage = entity.getImages().get(0);
-            this.thumb = "/api/vendorPopups/images/" + entity.getStore_id() + "/" + firstImage.getSaved_name();
+        if (entity.getImages() != null) {
+            this.images = entity.getImages().stream()
+                    .map(Image::getImage_id)
+                    .collect(Collectors.toList());
+            this.images_detail = entity.getImages().stream()
+                    .map(i -> new ImageDetail(i.getImage_id(), i.getSaved_name()))
+                    .collect(Collectors.toList());
+
+            if (!entity.getImages().isEmpty()) {
+                Image firstImage = entity.getImages().get(0);
+                this.thumb = "/api/vendorPopups/images/" + entity.getStore_id() + "/" + firstImage.getSaved_name();
+            } else {
+                this.thumb = null;
+            }
         } else {
-            this.thumb = null; // 없으면 null
+            this.images = new ArrayList<>();
+            this.images_detail = new ArrayList<>();
+            this.thumb = null;
         }
 
         // young 스케줄 요일/운영시간
@@ -112,7 +126,11 @@ public class PopupDTO {
                     .max(java.time.LocalTime::compareTo).orElse(null);
 
             if (minStart != null) this.open_start_time = minStart.toString().substring(0, 5);
-            if (maxEnd   != null) this.open_end_time   = maxEnd.toString().substring(0, 5);
+            if (maxEnd != null) this.open_end_time = maxEnd.toString().substring(0, 5);
+        } else {
+            this.open_days = new ArrayList<>();
+            this.open_start_time = null;
+            this.open_end_time = null;
         }
     }
 

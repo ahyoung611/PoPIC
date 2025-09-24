@@ -52,4 +52,10 @@ public interface PopupRepository extends JpaRepository<PopupStore, Long> {
             @Param("currentMonthStart") LocalDate currentMonthStart,
             @Param("currentMonthEnd") LocalDate currentMonthEnd
     );
+
+    // young 이달의 팝업
+    @Query("SELECT p FROM PopupStore p " +
+            "WHERE (p.start_date <= CURRENT_DATE AND p.end_date >= CURRENT_DATE) " +
+            "AND p.status = 1")
+    List<PopupStore> findByThisMonth();
 }
