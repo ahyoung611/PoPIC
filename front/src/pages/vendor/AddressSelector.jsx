@@ -1,10 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import { loadKakaoMaps } from "../../utils/kakaoLoader.js";
+import React, {useEffect, useRef, useState} from "react";
+import {loadKakaoMaps} from "../../utils/kakaoLoader.js";
+import apiRequest from "../../utils/apiRequest.js";
 
 
 // JSON GET 유틸(getJson) : fetch + content-type 검증 + JSON 파싱
-async function getJson(url, { signal } = {}) {
-    const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
+async function getJson(url, {signal, token} = {}) {
+    const res = await fetch(url, {
+        signal,
+        headers: {
+            Accept: "application/json",
+            ...(token ? {Authorization: `Bearer ${token}`} : {}),
+        },
+        credentials: "include",
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status} @ ${url}`);
     const ct = res.headers.get("content-type") || "";
     if (!ct.includes("application/json")) {
@@ -50,10 +58,10 @@ export default function AddressSelector({
                                             showCoords = false,
                                             geocodeInline = true,
                                             basePath = "/api/vendors/0/popups",
+                                            token,
                                         }) {
     // API 베이스 경로 상수(API_BASE) : /api/vendors/{vendorId}/popups
     const API_BASE = basePath;
-
     // 로컬 상태(cities/districts/입력필드/좌표)
     const [cities, setCities] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -64,7 +72,7 @@ export default function AddressSelector({
     const [lng, setLng] = useState(value?.longitude ?? null);
 
     // 간단 캐시 레퍼런스(cacheRef) : cities 1회 로딩, districtsByCity 메모이즈
-    const cacheRef = useRef({ cities: undefined, districtsByCity: new Map() });
+    const cacheRef = useRef({cities: undefined, districtsByCity: new Map()});
 
     // props.value → 내부 상태 동기화 이펙트 : 동일값은 무시하여 불필요 렌더 방지
     useEffect(() => {
@@ -85,7 +93,7 @@ export default function AddressSelector({
         const ac = new AbortController();
         (async () => {
             try {
-                const list = await getJson(`${API_BASE}/addresses/cities`, { signal: ac.signal });
+                const list = await apiRequest(`${API_BASE}/addresses/cities`, {signal: ac.signal}, token);
                 const arr = Array.isArray(list) ? list : [];
                 cacheRef.current.cities = arr;
                 setCities(arr);
@@ -96,7 +104,7 @@ export default function AddressSelector({
             }
         })();
         return () => ac.abort();
-    }, [API_BASE]);
+    }, [API_BASE, token]);
 
     // 구 목록 로딩 이펙트 : city 변경 시 해당 구 목록 호출(캐시/Abort/정합성 유지)
     useEffect(() => {
@@ -116,9 +124,8 @@ export default function AddressSelector({
         const ac = new AbortController();
         (async () => {
             try {
-                const list = await getJson(`${API_BASE}/addresses?city=${encodeURIComponent(city)}`, {
-                    signal: ac.signal,
-                });
+                const list = await apiRequest(`${API_BASE}/addresses?city=${encodeURIComponent(city)}`, {
+                    signal: ac.signal}, token);
                 const arr = Array.isArray(list) ? list : [];
                 cacheRef.current.districtsByCity.set(city, arr);
                 setDistricts(arr);
@@ -130,11 +137,13 @@ export default function AddressSelector({
             }
         })();
         return () => ac.abort();
-    }, [API_BASE, city, district]);
+    }, [API_BASE, city, district, token]);
 
     // 부모 onChange 최신 참조 유지(onChangeRef)
     const onChangeRef = useRef(onChange);
-    useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
+    useEffect(() => {
+        onChangeRef.current = onChange;
+    }, [onChange]);
 
     // 부모 onChange 조건부 호출 이펙트 : 값이 실제로 바뀐 경우에만 통지(shallowEqual)
     const lastPayloadRef = useRef(null);
@@ -171,10 +180,10 @@ export default function AddressSelector({
 
         try {
             await loadKakaoMaps(kakaoAppKey);
-            const { kakao } = window;
+            const {kakao} = window;
             new kakao.maps.services.Geocoder().addressSearch(full, (results, status) => {
                 if (status === kakao.maps.services.Status.OK && results[0]) {
-                    const { x, y } = results[0];
+                    const {x, y} = results[0];
                     const nextLat = parseFloat(y);
                     const nextLng = parseFloat(x);
                     setLat(nextLat);
