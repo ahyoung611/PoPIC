@@ -22,7 +22,7 @@ public class CategoryDataLoader implements CommandLineRunner {
         if (categoryRepository.count() == 0) {
             try {
                 List<Category> categories = objectMapper.readValue(
-                        new File("src/main/resources/data/categories.json"),
+                        new File("src/main/resources/categories.json"),
                         new TypeReference<List<Category>>() {}
                 );
 

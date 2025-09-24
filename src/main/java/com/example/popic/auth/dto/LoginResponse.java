@@ -12,7 +12,7 @@ public class LoginResponse {
     private boolean result;
     private String message;
     private String accessToken;
-    private UserDTO user;
+    private Object user;
 
     public LoginResponse(boolean result, String message) {
         this.result = result;

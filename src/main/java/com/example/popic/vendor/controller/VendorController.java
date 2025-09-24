@@ -7,6 +7,8 @@ import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.vendor.dto.VendorDTO;
 import com.example.popic.vendor.repository.VendorRepository;
 import com.example.popic.vendor.service.VendorService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +50,7 @@ public class VendorController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiRes> login(@RequestBody Vendor req) {
+    public ResponseEntity<ApiRes> login(@RequestBody Vendor req, HttpServletResponse response) {
         try {
             if (req.getLogin_id() == null || req.getPassword() == null) { // ★
                 return ResponseEntity.ok(ApiRes.fail("요청 형식이 올바르지 않습니다."));
@@ -67,12 +69,11 @@ public class VendorController {
             String access  = jwtUtil.createAccessToken(v.getLogin_id(), String.valueOf(v.getRole()), v.getVendor_id());
             String refresh = jwtUtil.createRefreshToken(v.getLogin_id());
 
-            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
-                    .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
-                    .path("/")
-                    .maxAge(Duration.ofDays(14)).build();
+            Cookie refreshCookie = new Cookie("refreshToken", refresh);
+            refreshCookie.setHttpOnly(true);
+            refreshCookie.setPath("/");
+            refreshCookie.setMaxAge((int) Duration.ofDays(14).getSeconds());
+            response.addCookie(refreshCookie);
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())

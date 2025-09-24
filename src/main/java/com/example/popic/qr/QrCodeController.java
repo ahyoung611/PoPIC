@@ -35,6 +35,7 @@ public class QrCodeController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserPrincipal principal =  (CustomUserPrincipal) authentication.getPrincipal();
+
         System.out.println(principal);
         System.out.println(reservationId);
 //        if(!principal.getRole().equals("USER")) return;
