@@ -14,15 +14,20 @@ const NaverCallback = () => {
             return;
         }
 
-        fetch(`http://localhost:8080/auth/naver/callback?code=${code}&state=${state}`, {
-            method: "GET",
-            credentials: "include",
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log("로그인 성공", data);
-                // JWT 저장 or 쿠키 세팅됨
-            });
+        // fetch(`http://localhost:8080/auth/naver/callback?code=${code}&state=${state}`, {
+        //     method: "GET",
+        //     credentials: "include",
+        // })
+        //     .then((res) => res.json())
+        //     .then((data) => {
+        //         console.log("로그인 성공", data);
+        //         // JWT 저장 or 쿠키 세팅됨
+        //     });
+
+        window.location.replace(
+            `http://localhost:8080/auth/naver/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state ?? "")}`
+        );
+
     }, []);
 
     return <div>로그인 처리 중...</div>;
