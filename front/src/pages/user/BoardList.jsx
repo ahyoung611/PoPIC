@@ -35,9 +35,16 @@ export default function BoardListView() {
                     keyword: kwQuery,
                     scope,
                 });
+                const token = localStorage.getItem("refreshToken");
+
                 const res = await fetch(`${API}/board?${qs}`, {
                     signal: controller.signal,
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,   // 꼭 Bearer 붙여야 함
+                    },
                 });
+
                 if (!res.ok) throw new Error("불러오기 실패");
                 const data = await res.json(); // Page<BoardDTO>
                 setBoards(data.content || []);
