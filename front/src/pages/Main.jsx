@@ -1,7 +1,8 @@
 import Banner from "../components/commons/Banner.jsx";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import MainPopupCardSlide from "../components/commons/MainPopupCardSilde.jsx";
 import apiRequest from "../utils/apiRequest.js";
+import {useAuth} from "../context/AuthContext.jsx";
 
 const CATEGORY_JSON = [
     { category_id: "1", name: "패션" },
@@ -57,24 +58,7 @@ const slides = [
     },
 ];
 
-const fetchByMonthlyOpen = async () => {
-    try {
-        const data = await apiRequest('/popupStore/monthly');
-        console.log("API 응답:", data);
 
-        if (!Array.isArray(data)) return [];
-        return data.map(item => ({
-            id: item.store_id,
-            image: item.thumb, // PopupDTO 필드 기준
-            title: item.store_name,
-            periodText: `${item.start_date} - ${item.end_date}`
-        }));
-
-    } catch (error) {
-        console.error('월간 팝업 데이터를 가져오는 중 오류 발생:', error);
-        return [];
-    }
-};
 
 
 const fetchBgRanking = async () => {
@@ -112,6 +96,29 @@ const fetchByCategory = async ({ categoryKey }) => {
 };
 
 const Main = () => {
+    const token = useAuth().getToken();
+
+    const fetchByMonthlyOpen = async () => {
+        try {
+            const data = await apiRequest('/popupStore/monthly',{});
+            console.log("API 응답:", data);
+
+            if (!Array.isArray(data)) return [];
+            return data.map(item => ({
+                id: item.store_id,
+                image: item.thumb, // PopupDTO 필드 기준
+                title: item.store_name,
+                periodText: `${item.start_date} - ${item.end_date}`
+            }));
+
+        } catch (error) {
+            console.error('월간 팝업 데이터를 가져오는 중 오류 발생:', error);
+            return [];
+        }
+    };
+    useEffect(() => {
+        fetchByMonthlyOpen();
+    }, [token]);
 
     const [on, setOn] = useState(false);
 
