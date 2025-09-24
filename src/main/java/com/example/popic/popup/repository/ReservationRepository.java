@@ -2,6 +2,7 @@ package com.example.popic.popup.repository;
 
 import com.example.popic.entity.entities.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -21,4 +22,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT r FROM Reservation r WHERE r.store.store_id = :popupId AND r.status = :sortNum")
     List<Reservation> getReservationsByPopupIdAndSortNum(Long popupId, int sortNum);
+
+    @Modifying
+    @Query("UPDATE Reservation r SET r.status = 0 WHERE r.reservation_id = :reservationId ")
+    void entryReservationById(Long reservationId);
 }
