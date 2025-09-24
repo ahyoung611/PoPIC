@@ -1,6 +1,7 @@
 import Banner from "../components/commons/Banner.jsx";
 import React, { useState } from "react";
 import MainPopupCardSlide from "../components/commons/MainPopupCardSilde.jsx";
+import apiRequest from "../utils/apiRequest.js";
 
 const CATEGORY_JSON = [
     { category_id: "1", name: "패션" },
@@ -55,22 +56,26 @@ const slides = [
         alt: "배너 5",
     },
 ];
-const sample = {
-    image: "/sample.webp",
-    title: "곰 보금자리 프로젝트 : GOME SWEET HOME",
-    periodText: "25.09.09 - 25.09.29",
-    category: "캐릭터",
+
+const fetchByMonthlyOpen = async () => {
+    try {
+        const data = await apiRequest('/popupStore/monthly');
+        console.log("API 응답:", data);
+
+        if (!Array.isArray(data)) return [];
+        return data.map(item => ({
+            id: item.store_id,
+            image: item.thumb, // PopupDTO 필드 기준
+            title: item.store_name,
+            periodText: `${item.start_date} - ${item.end_date}`
+        }));
+
+    } catch (error) {
+        console.error('월간 팝업 데이터를 가져오는 중 오류 발생:', error);
+        return [];
+    }
 };
 
-const fetchTicketOpen = async () => {
-    return [
-        { id:1, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:2, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:3, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:4, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:5, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-    ];
-};
 
 const fetchBgRanking = async () => {
     return [
@@ -119,7 +124,7 @@ const Main = () => {
             <div >
                 <MainPopupCardSlide
                     title="MONTHLY PICK"
-                    fetcher={fetchTicketOpen}
+                    fetcher={fetchByMonthlyOpen}
                     limit={5}
                     slidesPerView={4}
                 />
