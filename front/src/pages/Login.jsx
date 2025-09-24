@@ -51,13 +51,12 @@ const Login = () => {
 //                 method: "POST",
 //                 headers:{"Content-Type": "application/json" },
 //                 body: JSON.stringify(form)
-            const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "/vendor/login";
+            const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "http://localhost:8080/vendor/login";
             const res = await fetch(endpoint, {
                 method: "POST",
                 headers:{"Content-Type": "application/json" },
                 body: JSON.stringify(form),
                 credentials: "include",
-
             });
 
             const data = await res.json();

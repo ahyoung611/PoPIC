@@ -118,6 +118,7 @@ public class AuthController {
         try {
             // 1. 쿠키에서 refreshToken 꺼내기
             String refreshToken = extractRefreshTokenFromCookies(request);
+            System.out.println(refreshToken);
             if (refreshToken == null) {
                 System.out.println("리프레시 토큰 없음 수고");
                 return ResponseEntity.status(401).body(new LoginResponse(false, "리프레시 토큰 없음"));
@@ -142,6 +143,7 @@ public class AuthController {
             return ResponseEntity.ok(loginResponse);
 
         } catch (Exception e) {
+            System.out.println("설마 여기?");
             return ResponseEntity.status(500).body(new LoginResponse(false, "서버 오류"));
         }
     }
