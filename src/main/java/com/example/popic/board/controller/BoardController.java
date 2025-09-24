@@ -10,8 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,6 +49,7 @@ public class BoardController {
             return BoardImageDTO.builder()
                     .originalName(file.getOriginalFilename())
                     .savedName(savedName)
+                    .url("/board/file/" + savedName)
                     .build();
         }).toList();
 
@@ -71,10 +75,11 @@ public class BoardController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "/new", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BoardDTO> save(@RequestBody BoardDTO dto) {
-        if (dto.getFiles() == null) dto.setFiles(Collections.emptyList());
-        BoardDTO saved = boardService.save(dto);
+    @PostMapping("/new")
+    public ResponseEntity<BoardDTO> save(@RequestBody BoardDTO dto,
+                                         @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername(); // JWT 토큰에서 복원된 username
+        BoardDTO saved = boardService.save(dto, username);
         return ResponseEntity.created(URI.create("/board/" + saved.getBoardId())).body(saved);
     }
 
@@ -96,15 +101,30 @@ public class BoardController {
         return ResponseEntity.ok(boardService.findByBoardId(id));
     }
 
-    @PutMapping(value = "/{id:\\d+}", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BoardDTO> update(@PathVariable Long id, @RequestBody BoardDTO dto) {
-        BoardDTO updated = boardService.update(id, dto);
+    @PutMapping("/{id:\\d+}")
+    public ResponseEntity<BoardDTO> update(@PathVariable Long id,
+                                           @RequestBody BoardDTO dto,
+                                           @AuthenticationPrincipal UserDetails userDetails) {
+        Board board = boardService.findEntityById(id);
+
+        // 권한 체크는 login_id 기준
+        if (!board.getUser().getLogin_id().equals(userDetails.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        BoardDTO updated = boardService.update(id, dto, userDetails.getUsername());
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id:\\d+}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id,
+                                       @AuthenticationPrincipal UserDetails userDetails) {
+        Board board = boardService.findEntityById(id);
+
+        if (!board.getUser().getLogin_id().equals(userDetails.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         boardService.delete(id);
         return ResponseEntity.noContent().build();
     }

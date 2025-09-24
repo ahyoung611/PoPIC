@@ -11,7 +11,8 @@ const API  = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:80
 export default function BoardListView() {
     const [boards, setBoards] = useState([]);
     const [loading, setLoading] = useState(true);
-    const token = useAuth().getToken();
+    const {auth} = useAuth();
+    const token = auth?.token;
 
     // 입력 전용
     const [kwInput, setKwInput] = useState("");
@@ -27,6 +28,7 @@ export default function BoardListView() {
     const size = 5;
 
     useEffect(() => {
+        if (!token) return;
         const controller = new AbortController();
         (async () => {
             setLoading(true);
@@ -42,9 +44,12 @@ export default function BoardListView() {
                     signal: controller.signal,
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,   // 꼭 Bearer 붙여야 함
+                        Authorization: `Bearer ${token}`,
                     },
+                    credentials: "include",
                 });
+                console.log("res")
+                console.log(res);
 
                 if (!res.ok) throw new Error("불러오기 실패");
                 const data = await res.json(); // Page<BoardDTO>
@@ -57,13 +62,14 @@ export default function BoardListView() {
             }
         })();
         return () => controller.abort();
-    }, [kwQuery, scope, page]);
+    }, [kwQuery, scope, page, token]);
 
     const submitSearch = (e) => {
         e.preventDefault();
         setPage(0);
         setKwQuery(kwInput.trim());
     };
+
 
     if (loading) return <div className="inner">불러오는 중...</div>;
 
