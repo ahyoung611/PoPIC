@@ -30,6 +30,7 @@ public class PopupController {
 
     @GetMapping("/popupDetail")
     public ResponseEntity<PopupDTO> popupDetail(@RequestParam(name="id") Long id){
+        System.out.println("팝업 디테일 진입");
         PopupDTO popupDTO = popupService.findByIdWithImages(id);
         return ResponseEntity.ok(popupDTO);
     }

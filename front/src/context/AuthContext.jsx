@@ -9,36 +9,6 @@ export function AuthProvider({ children }) {
         user: null,
     });
 
-    // 새로고침 후에도 유지
-    useEffect(() => {
-        const saved = localStorage.getItem("auth");
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                setAuth(parsed);
-            } catch (_) {}
-        }
-    }, []);
-
-    // 변경 시 저장
-    useEffect(() => {
-        localStorage.setItem("auth", JSON.stringify(auth));
-    }, [auth]);
-
-    // 소셜 콜백 (?social=google&token=...)
-    useEffect(() => {
-        const qs = new URLSearchParams(window.location.search);
-        const social = qs.get("social");
-        const token = qs.get("token");
-        if (social && token) {
-            setAuth(prev => ({ ...prev, token }));
-            // 콜백 파라미터 정리
-            const url = new URL(window.location.href);
-            url.searchParams.delete("social");
-            url.searchParams.delete("token");
-            window.history.replaceState({}, "", url.toString());
-        }
-    }, []);
 
     const login = (token, user) => {
         setAuth({ token, user });
