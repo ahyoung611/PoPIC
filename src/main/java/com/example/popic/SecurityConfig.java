@@ -29,7 +29,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configure(http)) // CORS 설정
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/login", "/auth/refresh", "/user/join", "/vendor/login", "/vendor/join", "/admin/login", "/auth/**", "/images", "/scan-qr", "/", "/login", "/board/file/**").permitAll() // 로그인/회원가입/토큰 갱신은 허용
+                        .requestMatchers("/user/login", "/auth/refresh", "/user/join", "/vendor/login", "/vendor/join", "/admin/login", "/auth/**", "/images", "/scan-qr",
+                                "/", "/login", "/board/file/**", "/popupStore/monthly","/qr-stream").permitAll() // 로그인/회원가입/토큰 갱신은 허용
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
