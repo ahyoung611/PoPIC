@@ -51,7 +51,7 @@ const Login = () => {
 //                 method: "POST",
 //                 headers:{"Content-Type": "application/json" },
 //                 body: JSON.stringify(form)
-            const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "/vendor/login";
+            const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "http://localhost:8080/vendor/login";
             const res = await fetch(endpoint, {
                 method: "POST",
                 headers:{"Content-Type": "application/json" },
@@ -91,6 +91,7 @@ const Login = () => {
         console.log("NAVER_REDIRECT_URI: ", NAVER_REDIRECT_URI);
 
         const handleNaverLogin = () => {
+            console.log("handleNaverLogin 진입?");
             const state = crypto.randomUUID(); // CSRF 방지용 state
             localStorage.setItem("naver_oauth_state", state);
 
@@ -226,7 +227,7 @@ const Login = () => {
                             <img src={kakao} alt="kakao" />
                         </button>
                         <button type="button" className="login-social-btn" title="네이버 로그인"
-                        onClick={naverLogin}>
+                                onClickCapture={() => { console.log("naver login (capture)"); naverLogin(); }}>
                             <img src={naver} alt="naver" />
                         </button>
                         <button type="button" className="login-social-btn" title="구글 로그인" onClick={googleLogin}>
