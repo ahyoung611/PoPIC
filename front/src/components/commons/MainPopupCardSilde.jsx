@@ -90,21 +90,26 @@ export default function MainPopupCardSlide({
                                 nextEl: nextRef.current,
                             }}
                             onSwiper={(swiper) => {
+                                setTimeout(() => {
+                                    if (prevRef.current && nextRef.current) {
+                                        // 네비게이션 매개변수 ref 요소로 설정
+                                        swiper.params.navigation.prevEl = prevRef.current;
+                                        swiper.params.navigation.nextEl = nextRef.current;
 
-                                if (prevRef.current && nextRef.current) {
-                                    swiper.params.navigation.prevEl = prevRef.current;
-                                    swiper.params.navigation.nextEl = nextRef.current;
-                                    swiper.navigation.init();
-                                    swiper.navigation.update();
-                                }
+                                        // 네비게이션 모듈을 초기화 -> 업데이트
+                                        swiper.navigation.init();
+                                        swiper.navigation.update();
+                                    }
 
-                                setPrevVisible(!swiper.isBeginning);
-                                setNextVisible(!swiper.isEnd);
-
-                                swiper.on("slideChange", () => {
+                                    // 슬라이드 변경 시 버튼 가시성 업데이트
                                     setPrevVisible(!swiper.isBeginning);
                                     setNextVisible(!swiper.isEnd);
-                                });
+
+                                    swiper.on("slideChange", () => {
+                                        setPrevVisible(!swiper.isBeginning);
+                                        setNextVisible(!swiper.isEnd);
+                                    });
+                                }, 0);
                             }}
                             slidesPerView={slidesPerView}
                             autoHeight={false}
@@ -142,7 +147,6 @@ export default function MainPopupCardSlide({
                             ))}
                         </Swiper>
 
-                        {/* 고유 ref로 연결 */}
                         <button  ref={prevRef}
                                  className="mpc-swiper-button-prev"
                                  type="button"
