@@ -11,7 +11,7 @@ const STATUS_META = {
     [-1]: { text: "운영 종료", color: "gray" },
 };
 
-export default function PopupCard({
+export default function VendorPopupCard({
                                       id,
                                       title,
                                       startDate,

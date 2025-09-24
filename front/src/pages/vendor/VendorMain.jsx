@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, {useEffect, useMemo, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import SearchHeader from "../../components/commons/SearchHeader";
 import Pagination from "../../components/commons/Pagination";
 import "../../style/vendorList.css";
-import PopupCard from "../../components/vendorPopups/PopupCard.jsx";
+import VendorPopupCard from "../../components/vendorPopups/VendorPopupCard.jsx";
 import apiRequest from "../../utils/apiRequest.js";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 // 날짜 포맷터(YYYY-MM-DD → YY.MM.DD)
 const fmt = (d) => {
@@ -15,7 +16,8 @@ const fmt = (d) => {
 
 export default function VendorMain() {
     const navigate = useNavigate();
-    const { vendorId } = useParams();
+    const {vendorId} = useParams();
+    const token = useAuth().getToken();
 
     // 벤더 스코프 API 엔드포인트
     const LIST_API = `/api/vendors/${vendorId}/popups`;
@@ -37,20 +39,20 @@ export default function VendorMain() {
     useEffect(() => {
         (async () => {
             try {
-                const list = await apiRequest(CATEGORY_API);
+                const list = await apiRequest(CATEGORY_API, {}, token);
                 setCatMap(new Map(list.map((c) => [c.id, c.name])));
             } catch (e) {
                 console.error("카테고리 로드 실패:", e);
                 setCatMap(new Map());
             }
         })();
-    }, [CATEGORY_API]);
+    }, [CATEGORY_API, token]);
 
     // 팝업 리스트 로드
     useEffect(() => {
         (async () => {
             try {
-                const data = await apiRequest(LIST_API);
+                const data = await apiRequest(LIST_API, {}, token);
                 const mapped = (data || []).map((d) => {
                     const status = d.status;
                     const canEdit = status === 2 || status === 3;
@@ -74,7 +76,7 @@ export default function VendorMain() {
                 setRows([]);
             }
         })();
-    }, [LIST_API, catMap]);
+    }, [LIST_API, catMap, token]);
 
     // 검색 필터링
     const filtered = useMemo(() => {
@@ -120,7 +122,7 @@ export default function VendorMain() {
                         <div className="empty">표시할 팝업이 없습니다.</div>
                     ) : (
                         paged.map((p) => (
-                            <PopupCard
+                            <VendorPopupCard
                                 key={p.id}
                                 id={p.id}
                                 title={p.title}

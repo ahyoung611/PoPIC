@@ -90,11 +90,13 @@ const Login = () => {
         console.log("NAVER_REDIRECT_URI: ", NAVER_REDIRECT_URI);
 
         const handleNaverLogin = () => {
-            console.log("handleNaverLogin 진입?");
             const state = crypto.randomUUID(); // CSRF 방지용 state
             localStorage.setItem("naver_oauth_state", state);
 
-            const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${NAVER_REDIRECT_URI}&state=${state}`;
+            // const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${NAVER_REDIRECT_URI}&state=${state}`;
+            // 인코딩 버전
+            const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_REDIRECT_URI)}&state=${state}`;
+
             window.location.href = naverAuthUrl;
         };
         handleNaverLogin();
@@ -226,7 +228,7 @@ const Login = () => {
                             <img src={kakao} alt="kakao" />
                         </button>
                         <button type="button" className="login-social-btn" title="네이버 로그인"
-                                onClickCapture={() => { console.log("naver login (capture)"); naverLogin(); }}>
+                                onClick={naverLogin}>
                             <img src={naver} alt="naver" />
                         </button>
                         <button type="button" className="login-social-btn" title="구글 로그인" onClick={googleLogin}>

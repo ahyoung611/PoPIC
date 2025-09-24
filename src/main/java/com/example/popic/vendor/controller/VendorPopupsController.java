@@ -20,21 +20,31 @@ public class VendorPopupsController {
     // 해당 벤더 목록 조회
     @GetMapping
     public List<PopupDTO> list(@PathVariable Long vendorId) {
+        System.out.println("[HIT] GET /api/vendors/" + vendorId + "/popups");
         return service.listPopupsByVendor(vendorId);
     }
 
     // 카카오 주소(시)
     @GetMapping("/addresses/cities")
-    public List<String> cities() { return service.getCities(); }
+    public List<String> cities() {
+        return service.getCities();
+    }
 
     // 카카오 주소(구)
     @GetMapping("/addresses")
-    public List<String> districts(@RequestParam String city) { return service.getDistricts(city); }
+    public List<String> districts(@RequestParam String city) {
+        return service.getDistricts(city);
+    }
 
     // 카테고리 목록
     @GetMapping("/categories")
-    public List<CategorySimple> categories() { return service.getCategories(); }
-    public record CategorySimple(Long id, String name) {}
+    public List<CategorySimple> categories() {
+        System.out.println("[HIT] GET /api/vendors/*/popups/categories");
+        return service.getCategories();
+    }
+
+    public record CategorySimple(Long id, String name) {
+    }
 
     // 팝업 생성(소유자 = vendorId)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -93,8 +103,13 @@ public class VendorPopupsController {
     }
 
     public record ApiRes(boolean result, String message, Long id) {
-        public static ApiRes ok(Long id){ return new ApiRes(true, "OK", id); }
-        public static ApiRes fail(String m){ return new ApiRes(false, m, null); }
+        public static ApiRes ok(Long id) {
+            return new ApiRes(true, "OK", id);
+        }
+
+        public static ApiRes fail(String m) {
+            return new ApiRes(false, m, null);
+        }
     }
 
     // 팝업 조회
@@ -104,7 +119,7 @@ public class VendorPopupsController {
     }
 
     // 팝업 수정
-    @PutMapping(value="/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiRes> update(@PathVariable Long vendorId, @PathVariable Long id, @RequestBody PopupDTO dto) {
         service.updatePopupOwnedBy(vendorId, id, dto);
         return ResponseEntity.ok(ApiRes.ok(id));
