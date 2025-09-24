@@ -159,6 +159,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
+        System.out.println("로그아웃 하러옴");
         var cleared = org.springframework.http.ResponseCookie.from("refreshToken", "")
                 .httpOnly(true).secure(false).sameSite("Lax").path("/").maxAge(0).build();
         return ResponseEntity.ok().header(org.springframework.http.HttpHeaders.SET_COOKIE, cleared.toString()).build();

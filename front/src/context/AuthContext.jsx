@@ -14,8 +14,12 @@ export function AuthProvider({ children }) {
         setAuth({ token, user });
     };
 
-    const logout = () => {
-        setAuth({ token: null, user: null });
+    const logout = async () => {
+        try{
+            await apiRequest("/auth/logout", {method: "POST"}, getToken())
+        }finally {
+            setAuth({ token: null, user: null });
+        }
     };
 
     const getToken = () => auth.token;
