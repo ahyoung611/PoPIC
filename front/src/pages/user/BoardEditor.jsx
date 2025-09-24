@@ -3,6 +3,7 @@ import {useLocation, useNavigate, useParams} from "react-router-dom";
 import FileUpload from "../../components/board/FileUpload.jsx";
 import "../../style/board.css";
 import BoardComment from "../../components/board/BoardComment.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const host = window.location.hostname || "localhost";
 const API = import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`;
@@ -11,13 +12,14 @@ const API = import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`
 const toNumericId = (v) => (/^\d+$/.test(String(v)) ? Number(v) : null);
 
 export default function BoardEditor() {
+    const token = useAuth().getToken();
     const {id} = useParams();
     const {pathname} = useLocation();
     const nav = useNavigate();
 
     const numericId = toNumericId(id);
-    const isCreate = pathname.endsWith("/new");
-    const isEdit = pathname.endsWith("/edit");
+    const isCreate = pathname.includes("/new");
+    const isEdit = pathname.includes("/edit");
     const mode = isCreate ? "create" : isEdit ? "edit" : "view";
     const readOnly = mode === "view";
 
@@ -32,11 +34,15 @@ export default function BoardEditor() {
     // 상세/수정일 때만 로드
     useEffect(() => {
         if (!numericId) return;
-
+        console.log("token:", token);
         let abort = false;
         (async () => {
             try {
-                const res = await fetch(`${API}/board/${numericId}`);
+                const res = await fetch(`${API}/board/${numericId}`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
                 if (!res.ok) throw new Error("게시글 불러오기 실패");
                 const dto = await res.json();
                 if (abort) return;
@@ -71,7 +77,8 @@ export default function BoardEditor() {
         hasCountedRef.current = true;
         (async () => {
             try {
-                const res = await fetch(`${API}/board/${numericId}/views`, {method: "POST"});
+                const res = await fetch(`${API}/board/${numericId}/views`, {method: "POST",
+                headers: {"Authorization": `Bearer ${token}`,}});
                 if (!res.ok) return;
                 setMeta((prev) => prev ? {...prev, viewCount: (prev.viewCount ?? 0) + 1} : prev);
             } catch (_) {
@@ -100,7 +107,8 @@ export default function BoardEditor() {
 
             const res = await fetch(url, {
                 method,
-                headers: {"Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,},
                 body: JSON.stringify(payload),
             });
             if (!res.ok) throw new Error(isCreate ? "작성 실패" : "수정 실패");
@@ -191,7 +199,10 @@ export default function BoardEditor() {
                                         onClick={async () => {
                                             if (window.confirm("정말 삭제하시겠습니까?")) {
                                                 try {
-                                                    await fetch(`${API}/board/${numericId}`, {method: "DELETE"});
+                                                    await fetch(`${API}/board/${numericId}`, {method: "DELETE",
+                                                    headers:{
+                                                        "Authorization": `Bearer ${token}`,
+                                                    }});
                                                     alert("삭제되었습니다.");
                                                     nav("/board");
                                                 } catch (e) {

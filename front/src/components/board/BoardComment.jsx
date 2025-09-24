@@ -1,9 +1,11 @@
 import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const host = window.location.hostname || "localhost";
 const API = import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`;
 
 function BoardComment({boardId}) {
+    const token = useAuth().getToken();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [posting, setPosting] = useState(false);
@@ -34,7 +36,13 @@ function BoardComment({boardId}) {
         if (!boardId) return;
         setLoading(true);
         try {
-            const res = await fetch(`${API}/board/${boardId}/comments`);
+            const res = await fetch(`${API}/board/${boardId}/comments`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
             if (!res.ok) throw new Error("댓글 불러오기 실패");
             const list = await res.json();
             setItems(Array.isArray(list) ? list.map(normalize) : []);
@@ -43,7 +51,7 @@ function BoardComment({boardId}) {
         } finally {
             setLoading(false);
         }
-    }, [boardId]);
+    }, [boardId, token]);
 
     useEffect(() => {
         fetchComments();
@@ -75,7 +83,7 @@ function BoardComment({boardId}) {
             const body = parentId ? {content, parentId} : {content};
             const res = await fetch(`${API}/board/${boardId}/comments`, {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`,},
                 body: JSON.stringify(body),
             });
             if (!res.ok) throw new Error("등록 실패");
@@ -91,7 +99,7 @@ function BoardComment({boardId}) {
             }
             await fetchComments();
         },
-        [boardId, fetchComments]
+        [boardId, token, fetchComments]
     );
 
     const onSubmitRoot = useCallback(
@@ -122,17 +130,22 @@ function BoardComment({boardId}) {
             const backup = items;
             setItems((prev) => prev.filter((c) => c.commentId !== commentId));
             try {
-                const res = await fetch(`${API}/board/${boardId}/comments/${commentId}`, {method: "DELETE"});
+                const res = await fetch(`${API}/board/${boardId}/comments/${commentId}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                });
                 if (!res.ok) throw new Error("삭제 실패");
-                // 필요 시 최신 서버 상태로 동기화
-                // await fetchComments();
             } catch (e) {
                 console.error(e);
                 alert("삭제에 실패했습니다.");
                 setItems(backup);
             }
         },
-        [items, boardId]
+        [items, boardId, token]
     );
 
     const toggleReplyForm = useCallback(

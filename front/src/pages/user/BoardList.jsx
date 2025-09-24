@@ -11,7 +11,8 @@ const API  = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:80
 export default function BoardListView() {
     const [boards, setBoards] = useState([]);
     const [loading, setLoading] = useState(true);
-    const token = useAuth().getToken();
+    const auth = useAuth();
+    const token = auth?.token;
 
     // 입력 전용
     const [kwInput, setKwInput] = useState("");
@@ -27,6 +28,8 @@ export default function BoardListView() {
     const size = 5;
 
     useEffect(() => {
+        if (!token) return;
+
         const controller = new AbortController();
         (async () => {
             setLoading(true);
@@ -42,9 +45,10 @@ export default function BoardListView() {
                     signal: controller.signal,
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,   // 꼭 Bearer 붙여야 함
+                        Authorization: `Bearer ${token}`,
                     },
                 });
+                console.log(res);
 
                 if (!res.ok) throw new Error("불러오기 실패");
                 const data = await res.json(); // Page<BoardDTO>
@@ -64,6 +68,10 @@ export default function BoardListView() {
         setPage(0);
         setKwQuery(kwInput.trim());
     };
+
+    if (auth.loading) return <div className="inner">인증 확인 중...</div>;
+
+    if (!auth.token) return <div className="inner">로그인 후 이용해주세요.</div>;
 
     if (loading) return <div className="inner">불러오는 중...</div>;
 
