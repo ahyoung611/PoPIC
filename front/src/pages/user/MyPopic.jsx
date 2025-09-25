@@ -20,6 +20,16 @@ const MyPopic = () => {
         return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
     };
 
+    const formatStatus = (status) => {
+        if (status === 1) {
+            return "예약 완료";
+        } else if (status === -1) {
+            return "예약 취소";
+        } else if (status === 0) {
+            return "참여 완료";
+        }
+    }
+
     useEffect(() => {
         const userId = auth?.user?.user_id; // 로그인 후 상태에 userId 저장되어 있어야 함
         if (!userId) return;
@@ -40,10 +50,11 @@ const MyPopic = () => {
             <h2>내 예약 내역</h2>
             {reservations.map(r => (
                 <div key={r.reservationId}>
-                    <p>예약일: {formatDateTime(r.createdAt)}</p>
                     <p>팝업명: {r.popup?.store_name}</p>
                     <p>팝업시간: {r.slot?.start_time}</p>
+                    <p>팝업장소: {r.popup?.address} {r.popup?.address_detail}</p>
                     <p>결제금액: {r.depositAmount}</p>
+                    <p>상태: {formatStatus(r.status)}</p>
                 </div>
             ))}
         </div>
