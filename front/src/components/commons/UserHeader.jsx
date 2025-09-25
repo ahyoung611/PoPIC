@@ -41,7 +41,7 @@ export default function UserHeader() {
                     </div>
 
                     <nav className="header__nav">
-                        <NavLink to="/" end className={linkClass}>홈</NavLink>
+                        <NavLink to="/main" end className={linkClass}>홈</NavLink>
                         <NavLink to="/popups" className={linkClass}>팝업 예약</NavLink>
                         <NavLink to="/board" className={linkClass}>게시판</NavLink>
                     </nav>
@@ -65,7 +65,7 @@ export default function UserHeader() {
                         style={{ background: "transparent", border: 0, fontSize: 22, marginBottom: 8, cursor: "pointer" }}>✕</button>
 
                 <div className="Drawer__section">
-                    <NavLink to="/" end className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>홈</NavLink>
+                    <NavLink to="/main" end className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>홈</NavLink>
                     <NavLink to="/popups" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>팝업 예약</NavLink>
                     <NavLink to="/board" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>게시판</NavLink>
 
