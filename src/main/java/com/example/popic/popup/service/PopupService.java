@@ -113,52 +113,24 @@ public class PopupService {
     }
 
     // young 이달의 팝업
-    public List<PopupDTO> getPopupsForCurrentMonth() {
-        LocalDate now = LocalDate.now();
-        // 현재 월의 첫째 날
-        LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
-        // 현재 월의 마지막 날
-        LocalDate endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());
-
-        // 수정된 부분: Repository 메서드에 시작일과 마지막일을 전달합니다.
-        List<PopupStore> popups = popupRepository.findPopupsByMonth(startOfMonth, endOfMonth);
-
-        return popups.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
     public List<PopupDTO> findMonthlyPopups() {
         List<PopupStore> entities = popupRepository.findByThisMonth();
-        if (entities == null || entities.isEmpty()) {
-            return new ArrayList<>(); // null 대신 빈 배열 반환
-        }
-        return entities.stream()
-                .map(PopupDTO::new)
-                .collect(Collectors.toList());
+        if (entities == null || entities.isEmpty()) return new ArrayList<>();
+        return entities.stream().map(PopupDTO::new).collect(Collectors.toList());
     }
 
-    // PopupStore 엔티티를 PopupDTO로 변환하는 private 메서드
-    private PopupDTO convertToDto(PopupStore popup) {
-        PopupDTO dto = new PopupDTO();
-        dto.setStore_id(popup.getStore_id());
-        dto.setStore_name(popup.getStore_name());
-        if (popup.getCategories() != null) {
-            dto.setCategories(popup.getCategories().stream().map(Category::getCategory_id).collect(Collectors.toList()));
-            dto.setCategory_names(popup.getCategories().stream().map(Category::getName).collect(Collectors.toList()));
-        } else {
-            dto.setCategories(new ArrayList<>());
-            dto.setCategory_names(new ArrayList<>());
-        }
-
-        // 현재 코드에 없는 images 필드에 대한 처리도 추가해주는 것이 좋습니다.
-        if (popup.getImages() != null) {
-            dto.setImages(popup.getImages().stream().map(Image::getImage_id).collect(Collectors.toList()));
-        } else {
-            dto.setImages(new ArrayList<>());
-        }
-        dto.setStart_date(popup.getStart_date());
-        dto.setEnd_date(popup.getEnd_date());
-        return dto;
+    // young 승인 완료 팝업
+    public List<PopupDTO> findApprovedPopups() {
+        List<PopupStore> entities = popupRepository.findAllByStatus(1);
+        if (entities == null || entities.isEmpty()) return new ArrayList<>();
+        return entities.stream().map(PopupDTO::new).collect(Collectors.toList());
     }
+
+    // young 카테고리 팝업
+    public List<PopupDTO> findApprovedPopupsByCategoryId(Long categoryId) {
+        List<PopupStore> entities = popupRepository.findAllByStatusAndCategory(1, categoryId);
+        if (entities == null || entities.isEmpty()) return new ArrayList<>();
+        return entities.stream().map(PopupDTO::new).collect(Collectors.toList());
+    }
+
 }

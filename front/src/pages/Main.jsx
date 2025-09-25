@@ -4,6 +4,8 @@ import MainPopupCardSlide from "../components/commons/MainPopupCardSilde.jsx";
 import apiRequest from "../utils/apiRequest.js";
 import {useAuth} from "../context/AuthContext.jsx";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+
 const CATEGORY_JSON = [
     { category_id: "1", name: "패션" },
     { category_id: "2", name: "뷰티" },
@@ -58,46 +60,8 @@ const slides = [
     },
 ];
 
-
-
-
-const fetchBgRanking = async () => {
-    return [
-        { id:1, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:2, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:3, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:4, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-        { id:5, image:"/sample.webp", title:"곰 보금자리 프로젝트 : GOME SWEET HOME", periodText:"25.09.09 - 25.09.29" },
-    ];
-};
-
-const fetchByCategory = async ({ categoryKey }) => {
-    if (!categoryKey || categoryKey === "all") {
-        return [
-            { id:21, image:"/sample.webp", title:"곰 보금자리 프로젝트", periodText:"25.09.09 - 25.09.29", categoryLabel:"캐릭터" },
-            { id:22, image:"/sample.webp", title:"OO 패션 팝업", periodText:"25.10.01 - 25.10.30", categoryLabel:"패션" },
-            { id:23, image:"/sample.webp", title:"디저트 팝업", periodText:"25.10.05 - 25.10.12", categoryLabel:"식음료" },
-            { id:24, image:"/sample.webp", title:"라이프 굿즈", periodText:"25.10.08 - 25.10.20", categoryLabel:"라이프" },
-            { id:25, image:"/sample.webp", title:"테크 체험존", periodText:"25.10.10 - 25.10.25", categoryLabel:"테크" },
-        ];
-    }
-
-    // 실제로는 categoryKey(=카테고리 id)로 API 호출하거나 DB 조건 주면 됨
-    const mockById = {
-        "1": [ // 패션
-            { id:31, image:"/sample.webp", title:"F/W 한정 팝업", periodText:"25.10.01 - 25.10.15", categoryLabel:"패션" },
-            { id:32, image:"/sample.webp", title:"스트릿 브랜드 X", periodText:"25.10.10 - 25.10.20", categoryLabel:"패션" },
-        ],
-        "8": [ // 캐릭터
-            { id:41, image:"/sample.webp", title:"곰돌이 굿즈샵", periodText:"25.10.01 - 25.10.10", categoryLabel:"캐릭터" },
-        ],
-    };
-    return mockById[categoryKey] ?? [];
-};
-
 const Main = () => {
-    const token = useAuth().getToken();
-
+    // 이달의 팝업
     const fetchByMonthlyOpen = async () => {
         try {
             const data = await apiRequest('/popupStore/monthly',{});
@@ -106,7 +70,7 @@ const Main = () => {
             if (!Array.isArray(data)) return [];
             return data.map(item => ({
                 id: item.store_id,
-                image: item.thumb, // PopupDTO 필드 기준
+                image: item.thumb,
                 title: item.store_name,
                 periodText: `${item.start_date} - ${item.end_date}`
             }));
@@ -118,7 +82,59 @@ const Main = () => {
     };
     useEffect(() => {
         fetchByMonthlyOpen();
-    }, [token]);
+    }, []);
+
+    // 곧 종료되는 팝업
+    const fetchByClosingSoon = async () => {
+        try {
+            const data = await apiRequest('/popupStore/monthly'); // 월간 팝업 데이터 가져오기
+            if (!Array.isArray(data)) return [];
+
+            const today = new Date();
+            const closingSoonList = data
+                .filter(item => {
+                    const endDate = new Date(item.end_date);
+                    const diffDays = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+                    return diffDays >= 0 && diffDays <= 10; // 오늘~10일 이내 종료
+                })
+                .map(item => ({
+                    id: item.store_id,
+                    image: `${API_BASE_URL}${item.thumb}`,
+                    title: item.store_name,
+                    periodText: `${item.start_date} - ${item.end_date}`
+                }));
+
+            return closingSoonList;
+        } catch (error) {
+            console.error('CLOSING SOON 데이터를 가져오는 중 오류 발생:', error);
+            return [];
+        }
+    };
+
+    // 카테고리 별 팝업
+    const fetchByCategory = async ({ categoryKey }) => {
+        try {
+            const endpoint = categoryKey && categoryKey !== "all"
+                ? `/popupStore?category=${categoryKey}`
+                : '/popupStore/monthly';
+            console.log("categoryKey:", categoryKey);
+
+            const data = await apiRequest(endpoint);
+            if (!Array.isArray(data)) return [];
+
+            return data.map(item => ({
+                id: item.store_id,
+                image: item.thumb,
+                title: item.store_name,
+                periodText: `${item.start_date} - ${item.end_date}`,
+                // 백엔드에서 category_names 배열을 반환한다고 가정하고, 첫 번째 요소를 사용합니다.
+                categoryLabel: item.category_names && item.category_names.length > 0 ? item.category_names[0] : ''
+            }));
+        } catch (error) {
+            console.error('카테고리별 팝업 데이터를 가져오는 중 오류 발생:', error);
+            return [];
+        }
+    };
 
     const [on, setOn] = useState(false);
 
@@ -140,7 +156,7 @@ const Main = () => {
             <div className="mpc-section--bgcolor">
                 <MainPopupCardSlide
                     title="CLOSING SOON"
-                    fetcher={fetchBgRanking}
+                    fetcher={fetchByClosingSoon}
                     limit={5}
                     slidesPerView={4}
                     variant="bg"

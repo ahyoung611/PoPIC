@@ -46,17 +46,15 @@ public class VendorPopupsController {
     public record CategorySimple(Long id, String name) {
     }
 
+
+
     // 팝업 생성(소유자 = vendorId)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiRes> create(@PathVariable Long vendorId,
                                          @RequestPart("dto") PopupDTO dto,
                                          @RequestPart(value = "files", required = false) List<MultipartFile> files) {
-        try {
-            Long id = service.createPopupForVendor(vendorId, dto, files == null ? List.of() : files);
-            return ResponseEntity.ok(ApiRes.ok(id));
-        } catch (Exception e) {
-            return ResponseEntity.ok(ApiRes.fail(e.getMessage()));
-        }
+        Long id = service.createPopupForVendor(vendorId, dto, files == null ? List.of() : files);
+        return ResponseEntity.ok(ApiRes.ok(id));
     }
 
     // 이미지 파일 서빙(storeId/savedName)

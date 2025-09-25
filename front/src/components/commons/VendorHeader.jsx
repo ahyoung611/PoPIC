@@ -48,14 +48,15 @@ export default function VendorHeader() {
                     </button>
 
                     {/* 로고 */}
-                    <div className="header__brand" onClick={() => nav(brandLanding)}>
+                    <div className="header__brand" onClick={() => nav("/vendor/${vendorId}/popups")}>
                         <img src="/popic-logo.png" alt="logo" />
                     </div>
 
                     {/* 데스크톱 내비 */}
                     <nav className="header__nav">
-                        <NavLink to={homePath} end className={linkClass}>홈</NavLink>
-                        <NavLink to={newPopupPath} className={linkClass}>팝업 등록</NavLink>
+                        <NavLink to={homePath} end className={linkClass}>팝업 관리</NavLink>
+                        {/* 팝업 등록 : 승인 완료 운영자만 가능하게 제어 필요 */}
+                        {/*<NavLink to={newPopupPath} className={linkClass}>팝업 등록</NavLink>*/}
                         <NavLink to={reservationsPath} className={linkClass}>예약 관리</NavLink>
                         <NavLink to={onsitePath} className={linkClass}>현장 관리</NavLink>
                     </nav>
@@ -64,7 +65,7 @@ export default function VendorHeader() {
                         {vendorId ? (
                             <>
                                 <NavLink to={myPagePath} className={linkClass}>마이페이지</NavLink>
-                                <button className="header__logout" onClick={onLogout}>로그아웃</button>
+                                <a className="header__logout" onClick={onLogout}>로그아웃</a>
                             </>
                         ) : (
                             <NavLink to={loginPath} className={linkClass}>로그인</NavLink>
@@ -93,7 +94,7 @@ export default function VendorHeader() {
                     {vendorId ? (
                         <>
                             <NavLink to={myPagePath} className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>마이페이지</NavLink>
-                            <button className="Drawer__item" onClick={() => { onLogout(); close(); }}>로그아웃</button>
+                            <a className="Drawer__item" onClick={() => { onLogout(); close(); }}>로그아웃</a>
                         </>
                     ) : (
                         <NavLink to={loginPath} className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>로그인</NavLink>

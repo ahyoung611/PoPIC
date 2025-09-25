@@ -57,7 +57,7 @@ public class ImageController {
             case "vendorProfile":
 
                 VendorProfile vendorProfile = vendorProfileService.getProfileByVendorId(imageId);
-            
+
                 if (vendorProfile != null && vendorProfile.getSaved_name() != null) {
                     return getImageFile("vendorProfile", vendorProfile.getSaved_name());
                 }
