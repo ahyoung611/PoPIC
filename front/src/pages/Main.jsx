@@ -148,7 +148,7 @@ const Main = () => {
                 <MainPopupCardSlide
                     title="MONTHLY PICK"
                     fetcher={fetchByMonthlyOpen}
-                    limit={5}
+                    limit={8}
                     slidesPerView={4}
                 />
             </div>
@@ -157,7 +157,7 @@ const Main = () => {
                 <MainPopupCardSlide
                     title="CLOSING SOON"
                     fetcher={fetchByClosingSoon}
-                    limit={5}
+                    limit={8}
                     slidesPerView={4}
                     variant="bg"
                 />
@@ -168,7 +168,7 @@ const Main = () => {
                     title="CATEGORY PICK"
                     fetcher={fetchByCategory}
                     categories={CATEGORY_TABS}
-                    limit={5}
+                    limit={8}
                     slidesPerView={4}
                     showMore
                     moreLink="/popupstores/themes"

@@ -1,8 +1,10 @@
 import React from "react";
 import "../../style/mainPopupCard.css";
+import apiRequest from "../../utils/apiRequest";
+import {useState, useEffect} from "react";
 
 export default function MainPopupCardImg({
-                                             image,
+                                             popupId,
                                              alt = "",
                                              category,
                                              bookmarked = false,
@@ -17,12 +19,24 @@ export default function MainPopupCardImg({
         e.stopPropagation();
         onToggleBookmark?.();
     };
+    const [popup, setPopup] = useState(null);
+
+    const fetchPopup = async()=>{
+            const res = await apiRequest(`/popupStore/popupDetail?id=${popupId}`)
+//             console.log("res", res);
+            setPopup(res);
+        }
+    useEffect(()=>{
+    fetchPopup();
+    },[])
+
+    const id = popup?.images?.[0] || 12;
 
     return (
         <div className="mpc-media" style={{ aspectRatio: aspect }}>
             <img
                 className="mpc-media__img"
-                src={image}
+                src={"http://localhost:8080/images?type=popup&id=" + id }
                 alt={alt}
                 loading="lazy"
             />

@@ -86,6 +86,10 @@ public class JwtFilter extends OncePerRequestFilter {
         if (uri.equals("/vendor/login")) return true;               // 추가
         if (uri.equals("/admin/login")) return true;                // 추가
 
+        if (uri.startsWith("/images")) return true;                 // images/** 커버
+        if (uri.startsWith("/api/vendorPopups")) return true;
+        if (uri.startsWith("/popupStore/popupDetail")) return true;
+
         // (선택) 정적/문서화/헬스체크 등도 제외하고 싶으면 아래 열기
         if (uri.startsWith("/swagger-ui")) return true;             // 추가
         if (uri.startsWith("/v3/api-docs")) return true;            // 추가

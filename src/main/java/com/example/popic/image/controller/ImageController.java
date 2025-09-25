@@ -38,6 +38,7 @@ public class ImageController {
         switch (type) {
             case "popup":
                 ImageDTO image = imageService.findById(imageId);
+                System.out.println(image);
                 return getImageFile(type, image.getSaved_name());
 
             case "review":

@@ -16,6 +16,7 @@ export default function MainPopupCardSlide({
                                                categories = null,
                                                variant = "default",
                                                showMore = false,
+
                                            }) {
     // 선택된 카테고리 상태 관리
     const [activeCategory, setActiveCategory] = useState(categories?.[0]?.key ?? null);
@@ -37,6 +38,7 @@ export default function MainPopupCardSlide({
             try {
                 const data = await fetcher?.({categoryKey: activeCategory ?? undefined});
                 if (mounted) setItems(Array.isArray(data) ? data.slice(0, limit) : []);
+//                 console.log("data",data);
             } catch (e) {
                 if (mounted) setItems([]);
                 console.error(e);
@@ -134,7 +136,7 @@ export default function MainPopupCardSlide({
                             {items.map((item) => (
                                 <SwiperSlide key={item.id}>
                                     <MainPopupCardA
-                                        image={item.image}
+                                        popupId={item.id}
                                         alt={item.title}
                                         category={item.categoryLabel}
                                         bookmarked={Boolean(item.bookmarked)}
