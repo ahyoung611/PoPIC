@@ -101,7 +101,8 @@ public class AuthController {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 리다이렉트 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/?social=naver"
+        String redirect = frontendBaseUrl + "/main"
+                + "?social=naver"
                 + "&token=" + URLEncoder.encode(access, java.nio.charset.StandardCharsets.UTF_8)
                 + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), java.nio.charset.StandardCharsets.UTF_8);
 
@@ -143,7 +144,8 @@ public class AuthController {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 리다이렉트 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/?social=google"
+        String redirect = frontendBaseUrl + "/main"
+                + "?social=google"
                 + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
                 + "&name=" + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
 
@@ -182,7 +184,8 @@ public class AuthController {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/?social=kakao"
+        String redirect = frontendBaseUrl + "/main"
+                + "?social=kakao"
                 + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
                 + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
 
