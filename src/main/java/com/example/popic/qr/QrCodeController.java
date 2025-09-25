@@ -3,6 +3,7 @@ package com.example.popic.qr;
 import com.example.popic.CustomUserPrincipal;
 import com.example.popic.popup.dto.PopupReservationDTO;
 import com.example.popic.popup.service.ReservationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.zxing.BarcodeFormat;
@@ -12,24 +13,22 @@ import com.google.zxing.common.BitMatrix;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Executors;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,72 +42,96 @@ public class QrCodeController {
         PopupReservationDTO reservationDTO = reservationService.findbyId(reservationId);
 
         Map<String, Object> res = new HashMap<>();
-
         res.put("reservation", reservationDTO);
+        res.put("status", reservationDTO.getStatus() == 1 ? "OK" : "USED");
 
-        int width = 250;
-        int height = 250;
-
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = image.createGraphics();
-        g.setColor(Color.black);
-        g.fillRect(0, 0, width, height);
-
-        if(reservationDTO.getStatus() != 1){
-            res.put("status", "USED");
-        }else{
-            res.put("status", "OK");
-        }
-
+        // 직렬화
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         String json = objectMapper.writeValueAsString(reservationDTO);
 
-
-        // 1. 임시 토큰 생성
+        // 임시 토큰 생성
         String token = UUID.randomUUID().toString();
         redisTemplate.opsForValue().set(token, json, Duration.ofMinutes(5));
 
-        // 2. QR 코드 URL
+        // QR 생성
+        int width = 250;
+        int height = 250;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        g.setColor(Color.black);
+        g.fillRect(0, 0, width, height);
         String qrData = "http://10.5.4.14:8080/scan-qr?token=" + token;
-        // 3. QR 코드 생성
         BitMatrix matrix = new MultiFormatWriter().encode(qrData, BarcodeFormat.QR_CODE, width, height);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(matrix, "PNG", baos);
         String base64Image = Base64.getEncoder().encodeToString(baos.toByteArray());
 
+        res.put("token", token);
         res.put("qrImage", "data:image/png;base64," + base64Image);
 
         return ResponseEntity.ok(res);
     }
 
     @GetMapping("/scan-qr")
-    public Map<String, Object> scanQr(@RequestParam("token") String token) {
+    public Map<String, Object> scanQr(@RequestParam("token") String token) throws JsonProcessingException {
         Map<String, Object> response = new HashMap<>();
 
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        CustomUserPrincipal principal =  (CustomUserPrincipal) authentication.getPrincipal();
-
-//        if(!principal.getRole().equals("VENDOR")){}
-
-        // 1. Redis에서 토큰 조회
         String reservationData = redisTemplate.opsForValue().get(token);
-
-        System.out.println("reservation: " + reservationData);
 
         if (reservationData == null) {
             response.put("success", false);
             response.put("message", "QR 코드가 만료되었거나 유효하지 않습니다.");
-        } else {
-            // 2. 토큰이 유효하면 예약 정보 반환
-            response.put("success", true);
-            response.put("data", reservationData);
-
-            // 3. 토큰 즉시 삭제 (1회용)
-            redisTemplate.delete(token);
+            return response;
         }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        PopupReservationDTO reservationDTO = objectMapper.readValue(reservationData, PopupReservationDTO.class);
+        System.out.println("reservationDTO: " + reservationDTO);
+
+        if(reservationDTO.getStatus() != 1){
+            throw new RuntimeException("유효하지 않은 티켓입니다.");
+        }
+        reservationService.entryReservationById(reservationDTO.getReservationId());
+
+        response.put("success", true);
+        response.put("data", reservationData);
+
+        redisTemplate.delete(token);
+
         return response;
+    }
+
+    // ----------------- SSE 실시간 상태 -----------------
+    @GetMapping(value = "/qr-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamQrStatus(@RequestParam String token) {
+        SseEmitter emitter = new SseEmitter(0L); // 타임아웃 없음
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                while (true) {
+                    String reservationData = redisTemplate.opsForValue().get(token);
+                    String status = (reservationData == null) ? "USED" : "OK";
+                    emitter.send(status);
+
+                    if (reservationData == null) {
+                        status = "USED"; // 이미 스캔됨
+                        emitter.send(status);
+                        break;
+                    } else {
+                        status = "OK"; // 아직 사용 안됨
+                        emitter.send(status);
+                    }
+
+                    Thread.sleep(2000); // 2초마다 상태 체크
+                }
+                emitter.complete();
+            } catch (Exception e) {
+                emitter.completeWithError(e);
+            }
+        });
+        return emitter;
     }
 
 }

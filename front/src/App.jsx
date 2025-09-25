@@ -113,8 +113,8 @@ function App() {
                         <Route path={"/vendor/onsite"} element={<OperatorOnsite/>}></Route>
                         <Route path="/vendor/:vendorId/popups" element={<VendorMain/>} />
                         <Route path="/vendor/:vendorId/popups/new" element={<VendorPopupForm/>} />
-                        <Route path={"/vendor/reservationManage/:popupId"} element={<ReservationManage/>}></Route>
-                        <Route path={"/vendor/fieldWaiting/:popupId"} element={<FieldWaiting/>}></Route>
+                        <Route path={"/vendor/:vendorId/reservations"} element={<ReservationManage/>}></Route>
+                        <Route path={"/vendor/:vendorId/onsite"} element={<FieldWaiting/>}></Route>
                         <Route path="/vendor/:vendorId/popups/edit/:popupId" element={<VendorPopupForm/>} />
                         <Route path="/vendor/myPage/:vendorId" element={<VendorMyPage/>} />
                     </Route>

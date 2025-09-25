@@ -28,8 +28,9 @@ const PopupReservation = (props) => {
             time: reservationTime,
             price: props.popup?.price,
             reservationCount: reservationNumber,
-            slot_id: selectedSlot?.slot_id ?? selectedSlot?.slotId,
+            slot_id: selectedSlot?.slot_id,
             slot_version: selectedSlot?.version,
+            popupId: props.popup?.store_id ?? null,
         };
 
         props.onOpenModal(reservationData); // 모달 열기 및 예약 데이터 전달

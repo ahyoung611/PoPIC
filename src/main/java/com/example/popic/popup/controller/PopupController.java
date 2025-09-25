@@ -129,7 +129,6 @@ public class PopupController {
     @GetMapping("/monthly")
     public ResponseEntity<List<PopupDTO>> getMonthlyPopups() {
         List<PopupDTO> list = popupService.findMonthlyPopups();
-        System.out.println("📢 findMonthlyPopups() result: " + list);
         if (list != null) {
             list.forEach(dto -> System.out.println(" - popup: " + dto.getStore_name()));
         }

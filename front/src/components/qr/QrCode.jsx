@@ -23,9 +23,10 @@ const QrCode = () => {
                 if (!res.ok) throw new Error(`QR 요청 실패: ${res.status}`);
 
                 const data = await res.json();
-                console.log(data);
+                console.log("QR 생성:", data);
+
                 setQrData(data);
-                setTimeLeft(5 * 60); // 5분
+                setTimeLeft(5 * 60); // 타이머 5분 초기화
                 setError(null);
             } catch (err) {
                 console.error("QR 코드 생성 오류:", err);
@@ -35,7 +36,32 @@ const QrCode = () => {
         };
 
         fetchQr();
-    }, []);
+    }, [token]);
+
+    // SSE 연결
+    useEffect(() => {
+        if (!qrData?.token) return;
+
+        const evtSource = new EventSource(
+            `http://localhost:8080/qr-stream?token=${qrData.token}`
+        );
+
+        evtSource.onmessage = (event) => {
+            console.log("QR 상태 업데이트:", event.data);
+
+            if (event.data === "USED") {
+                setQrData((prev) => ({
+                    ...prev,
+                    status: "USED",
+                }));
+                evtSource.close();
+            }
+        };
+
+        evtSource.onerror = () => evtSource.close();
+
+        return () => evtSource.close(); // 언마운트 시 종료
+    }, [qrData?.token]);
 
     useEffect(() => {
         if (timeLeft <= 0) return;
@@ -44,6 +70,13 @@ const QrCode = () => {
         }, 1000);
         return () => clearInterval(interval);
     }, [timeLeft]);
+
+
+
+    useEffect(() => {
+        if (!qrData) return;
+        if(qrData.status === "USED") setTimeLeft(0);
+    }, [qrData]);
 
     const formatTime = (seconds) => {
         const m = Math.floor(seconds / 60).toString().padStart(2, "0");

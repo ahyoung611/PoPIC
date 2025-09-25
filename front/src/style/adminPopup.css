@@ -27,7 +27,7 @@
 
 /*상세보기 css*/
 /* 배경 (BackDrop) */
-.popup-modal-backdrop {
+.admin-popup  .popup-modal-backdrop {
     position: fixed;
     top: 0;
     left: 0;
@@ -41,7 +41,7 @@
 }
 
 /* 모달 컨테이너 */
-.popup-modal-content {
+.admin-popup  .popup-modal-content {
     background: #F5F5F7;
     border-radius: 5px;
     padding: 2rem;
@@ -55,7 +55,7 @@
 }
 
 /* 닫기 버튼 */
-.popup-close-btn {
+.admin-popup .popup-close-btn {
     position: absolute;
     top: 16px;
     right: 16px;
@@ -66,7 +66,7 @@
 }
 
 /* 이미지 */
-.admin-popup .popup-image .popup-image{
+.admin-popup .admin-popup .popup-image .popup-image{
     width: 100%;
     height: 300px;
     object-fit: cover;
@@ -76,7 +76,7 @@
 }
 
 /* 제목 */
-.popup-title {
+.admin-popup .popup-title {
     text-align: center;
     font-size: 1.25rem;
     font-weight: bold;
@@ -85,14 +85,14 @@
 
 
 /* 정보 섹션 */
-.popup-info {
+.admin-popup .popup-info {
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
     margin-bottom: 1.5rem;
 }
 
-.popup-row {
+.admin-popup .popup-row {
     display: block;
     justify-content: space-between;
     text-align: center;
@@ -100,17 +100,17 @@
     padding: 8px;
 }
 
-.popup-row .label {
+.admin-popup .popup-row .label {
     font-weight: 600;
     color: #555;
 }
 
-.popup-row .value {
+.admin-popup .popup-row .value {
     color: #222;
 }
 
 /* 설명 */
-.popup-description {
+.admin-popup .popup-description {
     font-size: 0.95rem;
     line-height: 1.4;
     color: #444;
