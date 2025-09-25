@@ -1,7 +1,8 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import InquiryModal from "../commons/InquiryModal.jsx";
 import apiRequest from "../../utils/apiRequest.js";
 import PopupInquiryList from "./PopupInquiryList.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const PopupInquiry = ({popup})=>{
 
@@ -9,13 +10,14 @@ const PopupInquiry = ({popup})=>{
     const [subject, setSubject] = useState(""); // 제목
     const [content, setContent] = useState(""); // 내용
     const [isPrivate, setIsPrivate] = useState(false); // 비공개 체크 상태
+    const token = useAuth().getToken();
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
 
     const handleSubmit = async () => {
         try {
-            const userId = 1;
+            const userId = user.user_id;
             const popupId = popup.store_id;
 
             const payload = {
@@ -30,9 +32,8 @@ const PopupInquiry = ({popup})=>{
             const response = await apiRequest("/popupStore/inquiry", {
                 method: "POST",
                 body: payload,
-            });
+            }, token);
 
-            console.log("서버 응답:", response);
             alert("문의가 정상적으로 전송되었습니다.");
 
             // 상태 초기화 및 모달 닫기

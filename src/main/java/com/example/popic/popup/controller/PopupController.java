@@ -1,5 +1,6 @@
 package com.example.popic.popup.controller;
 
+import com.example.popic.CustomUserPrincipal;
 import com.example.popic.entity.entities.PopupStoreSchedule;
 import com.example.popic.entity.entities.PopupStoreSlot;
 import com.example.popic.entity.entities.Review;
@@ -10,9 +11,12 @@ import com.example.popic.popup.dto.*;
 import com.example.popic.popup.service.InquiryService;
 import com.example.popic.popup.service.PopupReviewService;
 import com.example.popic.popup.service.PopupService;
+import com.example.popic.vendor.dto.VendorDTO;
+import com.example.popic.vendor.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,10 +32,10 @@ public class PopupController {
     private final PopupReviewService popupReviewService;
     private final ReviewImageService reviewImageService;
     private final InquiryService inquiryService;
+    private final VendorRepository vendorRepository;
 
     @GetMapping("/popupDetail")
     public ResponseEntity<PopupDTO> popupDetail(@RequestParam(name="id") Long id){
-        System.out.println("팝업 디테일 진입");
         PopupDTO popupDTO = popupService.findByIdWithImages(id);
         return ResponseEntity.ok(popupDTO);
     }
@@ -46,8 +50,6 @@ public class PopupController {
     public ResponseEntity<List<PopupReviewDTO>> getReview(@RequestParam(name = "popupId") Long id,
                                                            @RequestParam(name = "keyword", defaultValue = "")String keyword){
         List<PopupReviewDTO> reviewList = popupService.getReviewByIdAndKeyword(id, keyword);
-
-        System.out.println("size: " + reviewList.size());
         return ResponseEntity.ok(reviewList);
     }
 
@@ -86,12 +88,33 @@ public class PopupController {
         return ResponseEntity.ok(inquiryDTOList);
     }
 
+    @GetMapping("/inquiryReplies")
+    public ResponseEntity<List<InquiryRepliyDTO>> getInquiryReply(@RequestParam(name = "popupId")Long popupId){
+        List<InquiryRepliyDTO> replies = inquiryService.getAllReply(popupId);
+
+        return ResponseEntity.ok(replies);
+    }
+
     @PostMapping("/inquiry")
     public String createInquiry(@RequestBody InquiryDTO inquiryRequestDTO) {
-
+        System.out.println(inquiryRequestDTO);
         inquiryService.save(inquiryRequestDTO);
-
         return "문의가 등록되었습니다.";
+    }
+
+    @PostMapping("/inquiryReply")
+    public ResponseEntity<?> createReply( @RequestBody InquiryRepliyDTO reply, Authentication authentication) {
+
+        // 로그인 벤더 정보 가져오기
+        CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
+        System.out.println("principal" + principal);
+
+        reply.setVendor(new VendorDTO(vendorRepository.findById(principal.getId()).orElse(null)));
+
+        inquiryService.saveReply(reply);
+
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{popupId}/schedules")
