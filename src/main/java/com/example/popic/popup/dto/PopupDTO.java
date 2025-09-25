@@ -89,24 +89,25 @@ public class PopupDTO {
         }
 
         // young 첫 번째 이미지가 있으면 URL로 생성
-        if (entity.getImages() != null) {
-            this.images = entity.getImages().stream()
-                    .map(Image::getImage_id)
-                    .collect(Collectors.toList());
+        if (entity.getImages() != null && !entity.getImages().isEmpty()) {
+            Image firstImage = entity.getImages().get(0);
+
+            // 썸네일 경로 설정
+            this.thumb = "/api/vendorPopups/images/" + entity.getStore_id() + "/" + firstImage.getSaved_name();
+
+            // images_detail 초기화 및 할당
             this.images_detail = entity.getImages().stream()
                     .map(i -> new ImageDetail(i.getImage_id(), i.getSaved_name()))
                     .collect(Collectors.toList());
 
-            if (!entity.getImages().isEmpty()) {
-                Image firstImage = entity.getImages().get(0);
-                this.thumb = "/api/vendorPopups/images/" + entity.getStore_id() + "/" + firstImage.getSaved_name();
-            } else {
-                this.thumb = null;
-            }
+            // images 필드 초기화 (이미지 ID만 담기)
+            this.images = entity.getImages().stream()
+                    .map(Image::getImage_id)
+                    .collect(Collectors.toList());
         } else {
-            this.images = new ArrayList<>();
-            this.images_detail = new ArrayList<>();
             this.thumb = null;
+            this.images_detail = new ArrayList<>(); // null 대신 빈 리스트로 초기화
+            this.images = new ArrayList<>();
         }
 
         // young 스케줄 요일/운영시간

@@ -71,6 +71,10 @@ public class VendorPopupsService {
          Vendor vendor = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new IllegalArgumentException("vendor not found: " + vendorId));
 
+        if (vendor.getStatus() != 1) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "벤더가 승인 상태가 아닙니다.");
+        }
 
         // 엔티티 생성
         PopupStore store = new PopupStore();

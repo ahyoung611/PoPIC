@@ -1,11 +1,11 @@
-import React, {useEffect, useMemo, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import SearchHeader from "../../components/commons/SearchHeader";
 import Pagination from "../../components/commons/Pagination";
 import "../../style/vendorList.css";
 import VendorPopupCard from "../../components/vendorPopups/VendorPopupCard.jsx";
 import apiRequest from "../../utils/apiRequest.js";
-import {useAuth} from "../../context/AuthContext.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 // 날짜 포맷터(YYYY-MM-DD → YY.MM.DD)
 const fmt = (d) => {
@@ -16,10 +16,10 @@ const fmt = (d) => {
 
 export default function VendorMain() {
     const navigate = useNavigate();
-    const {vendorId} = useParams();
+    const { vendorId } = useParams();
     const token = useAuth().getToken();
 
-    // 벤더 스코프 API 엔드포인트
+    // 벤더 API 엔드포인트
     const LIST_API = `/api/vendors/${vendorId}/popups`;
     const CATEGORY_API = `/api/vendors/${vendorId}/popups/categories`;
 
@@ -31,7 +31,7 @@ export default function VendorMain() {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;
 
-    // 데이터 상태(카테고리맵/카드 rows)
+    // 데이터 상태
     const [catMap, setCatMap] = useState(new Map());
     const [rows, setRows] = useState([]);
 
@@ -98,15 +98,30 @@ export default function VendorMain() {
         return filtered.slice(start, start + pageSize);
     }, [filtered, currentPage]);
 
-    // 버튼 핸들러(검색/등록/수정/상세)
+    // 버튼 핸들러
     const handleSearch = () => {
         setCurrentPage(1);
         setAppliedSearch(searchValue);
     };
-    const handleRegister = () => navigate(`/vendor/${vendorId}/popups/new`);
+
+    const handleRegister = async () => {
+        try {
+            const v = await apiRequest(`/api/vendors/${vendorId}`, {}, token);
+            if (!v || Number(v.status) !== 1) {
+                alert("승인 완료된 운영자만 팝업을 등록할 수 있습니다.");
+                return;
+            }
+            navigate(`/vendor/${vendorId}/popups/new`);
+        } catch (e) {
+            console.error(e);
+            alert("운영자 상태를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.");
+        }
+    };
+
     const handleEdit = (popupId) =>
         navigate(`/vendor/${vendorId}/popups/edit/${popupId}`);
-    const handleView = (popupId) => navigate(`/popupStore/detail/${popupId}`);
+    const handleView = (popupId) =>
+        navigate(`/popupStore/detail/${popupId}`);
 
     return (
         <div className="container">
@@ -135,6 +150,7 @@ export default function VendorMain() {
                                 onEdit={handleEdit}
                                 onView={handleView}
                                 canEdit={p.canEdit}
+                                token={token} // 이미지 fetch용 token 전달
                             />
                         ))
                     )}

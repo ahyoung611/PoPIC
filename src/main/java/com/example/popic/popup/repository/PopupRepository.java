@@ -46,16 +46,14 @@ public interface PopupRepository extends JpaRepository<PopupStore, Long> {
 
     // young 이달의 팝업
     @Query("SELECT p FROM PopupStore p " +
-            "WHERE (p.start_date <= :currentMonthEnd AND p.end_date >= :currentMonthStart) " +
-            "AND p.status = 1")
-    List<PopupStore> findPopupsByMonth(
-            @Param("currentMonthStart") LocalDate currentMonthStart,
-            @Param("currentMonthEnd") LocalDate currentMonthEnd
-    );
-
-    // young 이달의 팝업
-    @Query("SELECT p FROM PopupStore p " +
             "WHERE (p.start_date <= CURRENT_DATE AND p.end_date >= CURRENT_DATE) " +
             "AND p.status = 1")
     List<PopupStore> findByThisMonth();
+
+    List<PopupStore> findAllByStatus(int status);
+
+    // young 카테고리 팝업 (수정된 부분)
+    @Query("SELECT DISTINCT p FROM PopupStore p JOIN p.categories c LEFT JOIN FETCH p.images i WHERE p.status = :status AND c.category_id = :categoryId")
+    List<PopupStore> findAllByStatusAndCategory(@Param("status") int status, @Param("categoryId") Long categoryId);
+
 }
