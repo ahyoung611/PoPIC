@@ -85,6 +85,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (uri.equals("/user/login")) return true;                 // 추가
         if (uri.equals("/vendor/login")) return true;               // 추가
         if (uri.equals("/admin/login")) return true;                // 추가
+        if (uri.equals("/reservations/confirm")) return true;
 
         if (uri.startsWith("/images")) return true;                 // images/** 커버
         if (uri.startsWith("/api/vendorPopups")) return true;

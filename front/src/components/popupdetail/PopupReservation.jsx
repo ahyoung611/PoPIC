@@ -13,6 +13,8 @@ const PopupReservation = (props) => {
         setReservationTime(start);
         setSelectedSlot(slot || null);
     };
+    console.log(selectedSlot?.capacity);
+    console.log(selectedSlot?.slot_id);
 
     function reservationSubmit() {
         if (reservationDate == "") {
@@ -21,15 +23,28 @@ const PopupReservation = (props) => {
             alert("예약 시간을 선택해주세요.");
         }
 
-        // 예약 버튼을 클릭했을 때 모달에 정보를 전달
+        if (selectedSlot && (selectedSlot.capacity - selectedSlot.reserved_count) < reservationNumber) {
+            alert("해당 슬롯에 남은 자리가 부족합니다.");
+            return;
+        }
+
+        const depositPerPerson = 10000;
+        const basePrice = Number(props.popup?.price) || 0;
+
+        const finalPrice = basePrice === 0
+            ? depositPerPerson
+            : basePrice;
+
         const reservationData = {
             name: props.popup.store_name,
             date: reservationDate,
             time: reservationTime,
-            price: props.popup?.price,
+            price: finalPrice,
             reservationCount: reservationNumber,
-            slot_id: selectedSlot?.slot_id ?? selectedSlot?.slotId,
+            slot_id: selectedSlot?.slot_id,
             slot_version: selectedSlot?.version,
+            popupId: props.popup?.store_id ?? null,
+            remaining: selectedSlot ? selectedSlot.capacity - selectedSlot.reserved_count : null
         };
 
         props.onOpenModal(reservationData); // 모달 열기 및 예약 데이터 전달
@@ -47,7 +62,8 @@ const PopupReservation = (props) => {
             </div>
 
             <div className={"reservation-number-input"}>
-                <p>입장 예약</p>
+                입장 예약{" "}
+                {selectedSlot ? `${selectedSlot.capacity}명 (남은 ${selectedSlot.capacity - selectedSlot.reserved_count}명)` : "슬롯을 선택하세요"}
                 <button className={"minus"} onClick={() => {
                     if (reservationNumber > 1) {
                         setReservationNumber(prev => prev - 1);

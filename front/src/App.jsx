@@ -30,6 +30,7 @@ import ReservationManage from "./pages/vendor/ReservationManage.jsx";
 import FieldWaiting from "./pages/vendor/FieldWaiting.jsx";
 import {AuthProvider} from "./context/AuthContext.jsx";
 import GoogleCallback from "./pages/user/GoogleCallback.jsx";
+import WelcomePage from "./pages/WelcomePage.jsx";
 
 
 function App() {
@@ -85,6 +86,8 @@ function App() {
     return (
         <AuthProvider>
             <Routes>
+                <Route path={"/"} element={<WelcomePage/>}></Route>
+
                 <Route element={<FooterLayout/>}>
 
                     {/* 회원가입 & 로그인(header 필요없음) */}
@@ -93,7 +96,7 @@ function App() {
 
                     {/*일반 유저 Layout */}
                     <Route element={<UserHeaderLayout/>}>
-                        <Route path={"/"} element={<Main/>}></Route>
+                        <Route path={"/main"} element={<Main/>}></Route>
                         <Route path={"/popupStore/detail/:id"} element={<PopupDetail/>}></Route>
                         <Route path={"/board"} element={<BoardList/>}></Route>
                         <Route path={"/board/new"} element={<BoardEditor/>}></Route>
@@ -113,8 +116,8 @@ function App() {
                         <Route path={"/vendor/onsite"} element={<OperatorOnsite/>}></Route>
                         <Route path="/vendor/:vendorId/popups" element={<VendorMain/>} />
                         <Route path="/vendor/:vendorId/popups/new" element={<VendorPopupForm/>} />
-                        <Route path={"/vendor/reservationManage/:popupId"} element={<ReservationManage/>}></Route>
-                        <Route path={"/vendor/fieldWaiting/:popupId"} element={<FieldWaiting/>}></Route>
+                        <Route path={"/vendor/:vendorId/reservations"} element={<ReservationManage/>}></Route>
+                        <Route path={"/vendor/:vendorId/onsite"} element={<FieldWaiting/>}></Route>
                         <Route path="/vendor/:vendorId/popups/edit/:popupId" element={<VendorPopupForm/>} />
                         <Route path="/vendor/myPage/:vendorId" element={<VendorMyPage/>} />
                     </Route>

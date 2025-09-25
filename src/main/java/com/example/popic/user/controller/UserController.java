@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,7 +47,6 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiRes> login(@RequestBody User req, HttpServletResponse response) { // 요청은 엔티티(User)
-        System.out.println("옴?");
         try {
             if (req.getLogin_id() == null || req.getPassword() == null) {
                 return ResponseEntity.ok(ApiRes.fail("요청 형식이 올바르지 않습니다."));
@@ -84,7 +82,6 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.ok(ApiRes.fail("로그인 처리 중 오류가 발생했습니다."));
         }
-
 
     }
 
