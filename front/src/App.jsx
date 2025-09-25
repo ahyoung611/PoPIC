@@ -30,6 +30,7 @@ import ReservationManage from "./pages/vendor/ReservationManage.jsx";
 import FieldWaiting from "./pages/vendor/FieldWaiting.jsx";
 import {AuthProvider} from "./context/AuthContext.jsx";
 import GoogleCallback from "./pages/user/GoogleCallback.jsx";
+import WelcomePage from "./pages/WelcomePage.jsx";
 
 
 function App() {
@@ -85,6 +86,8 @@ function App() {
     return (
         <AuthProvider>
             <Routes>
+                <Route path={"/"} element={<WelcomePage/>}></Route>
+
                 <Route element={<FooterLayout/>}>
 
                     {/* 회원가입 & 로그인(header 필요없음) */}
@@ -93,7 +96,7 @@ function App() {
 
                     {/*일반 유저 Layout */}
                     <Route element={<UserHeaderLayout/>}>
-                        <Route path={"/"} element={<Main/>}></Route>
+                        <Route path={"/main"} element={<Main/>}></Route>
                         <Route path={"/popupStore/detail/:id"} element={<PopupDetail/>}></Route>
                         <Route path={"/board"} element={<BoardList/>}></Route>
                         <Route path={"/board/new"} element={<BoardEditor/>}></Route>
