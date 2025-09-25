@@ -1,6 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {Swiper, SwiperSlide} from "swiper/react";
 import {Navigation, A11y} from "swiper/modules";
+import Button from "../commons/Button";
 import "swiper/css";
 import "swiper/css/navigation";
 
@@ -9,21 +10,24 @@ import MainPopupCardA from "./MainPopupCardA.jsx";
 
 export default function MainPopupCardSlide({
                                                title = "",
-                                               moreLink = "#",
+                                               moreLink = "",
                                                fetcher,
                                                limit = 8,
                                                slidesPerView = 4,
-                                               categories = null,
+                                               categories = null, // Main.jsx로부터 카테고리 목록을 받음
                                                variant = "default",
                                                showMore = false,
-
+                                               onCardClick,
                                            }) {
-    // 선택된 카테고리 상태 관리
+    // 선택된 카테고리 상태 관리 (props로 받은 categories를 사용)
     const [activeCategory, setActiveCategory] = useState(categories?.[0]?.key ?? null);
     // API로부터 받아온 데이터 저장할 상태
     const [items, setItems] = useState([]);
     // 로딩 상태 관리
     const [loading, setLoading] = useState(true);
+    const [cachedData, setCachedData] = useState({});
+
+    const [swiperInstance, setSwiperInstance] = useState(null);
 
     const sectionRef = useRef(null);
     const prevRef = useRef(null);
@@ -34,11 +38,20 @@ export default function MainPopupCardSlide({
     useEffect(() => {
         let mounted = true;
         (async () => {
+            if (cachedData[activeCategory]) {
+                setItems(cachedData[activeCategory]);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             try {
-                const data = await fetcher?.({categoryKey: activeCategory ?? undefined});
-                if (mounted) setItems(Array.isArray(data) ? data.slice(0, limit) : []);
-//                 console.log("data",data);
+                const data = await fetcher?.({ categoryKey: activeCategory ?? undefined });
+                if (mounted) {
+                    const slicedData = Array.isArray(data) ? data.slice(0, limit) : [];
+                    setItems(slicedData);
+                    setCachedData(prev => ({ ...prev, [activeCategory]: slicedData }));
+                }
             } catch (e) {
                 if (mounted) setItems([]);
                 console.error(e);
@@ -49,11 +62,29 @@ export default function MainPopupCardSlide({
         return () => {
             mounted = false;
         };
-    }, [fetcher, activeCategory, limit]);
+    }, [fetcher, activeCategory, limit, cachedData]);
+
+    useEffect(() => {
+        if (categories && categories.length > 0) {
+            setActiveCategory(categories[0].key);
+        }
+    }, [categories]);
+
+    useEffect(() => {
+        if (swiperInstance) {
+            // Swiper를 초기 상태로 리셋
+            swiperInstance.slideTo(0, 0);
+            swiperInstance.update();
+
+            // 네비게이션 버튼 상태 업데이트
+            setPrevVisible(!swiperInstance.isBeginning);
+            setNextVisible(!swiperInstance.isEnd);
+        }
+    }, [swiperInstance, items]);
 
     const bgImage = useMemo(() => {
         if (variant !== "bg" || items.length === 0) return null;
-        return items[0].image;
+        return items[0]?.image;
     }, [items, variant]);
 
     const isBgFx = variant === "bg";
@@ -67,16 +98,14 @@ export default function MainPopupCardSlide({
             <h2 className="mpc-section__title">{title}</h2>
 
             {Array.isArray(categories) && categories.length > 0 && (
-                <ul className="mpc-section__tabs">
+                 <ul className="mpc-section__tabs">
                     {categories.map((c) => (
                         <li key={c.key}>
-                            <button
-                                className={`mpc-section__tab ${activeCategory === c.key ? "is-active" : ""}`}
-                                onClick={() => setActiveCategory(c.key)}
-                                type="button"
-                            >
-                                {c.label}
-                            </button>
+                            <Button
+                             variant="filter"
+                             selected={activeCategory === c.key}
+                             onClick={() => setActiveCategory(c.key)}
+                           >{c.label}</Button>
                         </li>
                     ))}
                 </ul>
@@ -94,21 +123,17 @@ export default function MainPopupCardSlide({
                                 nextEl: nextRef.current,
                             }}
                             onSwiper={(swiper) => {
+                                setSwiperInstance(swiper); // 스와이퍼 인스턴스
+
                                 setTimeout(() => {
                                     if (prevRef.current && nextRef.current) {
-                                        // 네비게이션 매개변수 ref 요소로 설정
                                         swiper.params.navigation.prevEl = prevRef.current;
                                         swiper.params.navigation.nextEl = nextRef.current;
-
-                                        // 네비게이션 모듈을 초기화 -> 업데이트
                                         swiper.navigation.init();
                                         swiper.navigation.update();
                                     }
-
-                                    // 슬라이드 변경 시 버튼 가시성 업데이트
                                     setPrevVisible(!swiper.isBeginning);
                                     setNextVisible(!swiper.isEnd);
-
                                     swiper.on("slideChange", () => {
                                         setPrevVisible(!swiper.isBeginning);
                                         setNextVisible(!swiper.isEnd);
@@ -140,12 +165,10 @@ export default function MainPopupCardSlide({
                                         alt={item.title}
                                         category={item.categoryLabel}
                                         bookmarked={Boolean(item.bookmarked)}
-                                        onToggleBookmark={() => {
-                                        }}
+                                        onToggleBookmark={() => {}}
                                         periodText={item.periodText}
                                         title={item.title}
-                                        onClick={() => {
-                                        }}
+                                        onClick={() => onCardClick(item.id)}
                                     />
                                 </SwiperSlide>
                             ))}
@@ -175,7 +198,7 @@ export default function MainPopupCardSlide({
 
             {showMore && (
                 <a className="mpc-section__more btn" href={moreLink}>
-                    테마별 팝업 더보기 +
+                    팝업 더보기 +
                 </a>
             )}
         </section>

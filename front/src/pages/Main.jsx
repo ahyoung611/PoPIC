@@ -1,5 +1,6 @@
 import Banner from "../components/commons/Banner.jsx";
 import React, {useEffect, useState} from "react";
+import { useNavigate } from 'react-router-dom';
 import MainPopupCardSlide from "../components/commons/MainPopupCardSilde.jsx";
 import apiRequest from "../utils/apiRequest.js";
 import {useAuth} from "../context/AuthContext.jsx";
@@ -61,6 +62,8 @@ const slides = [
 ];
 
 const Main = () => {
+     const navigate = useNavigate();
+
     // 이달의 팝업
     const fetchByMonthlyOpen = async () => {
         try {
@@ -115,9 +118,10 @@ const Main = () => {
     const fetchByCategory = async ({ categoryKey }) => {
         try {
             const endpoint = categoryKey && categoryKey !== "all"
-                ? `/popupStore?category=${categoryKey}`
+                 ? `/popupStore/category?category=${categoryKey}`
                 : '/popupStore/monthly';
-            console.log("categoryKey:", categoryKey);
+            console.log("categoryKey: " + categoryKey);
+            console.log("endpoint: " + endpoint);
 
             const data = await apiRequest(endpoint);
             if (!Array.isArray(data)) return [];
@@ -127,7 +131,6 @@ const Main = () => {
                 image: item.thumb,
                 title: item.store_name,
                 periodText: `${item.start_date} - ${item.end_date}`,
-                // 백엔드에서 category_names 배열을 반환한다고 가정하고, 첫 번째 요소를 사용합니다.
                 categoryLabel: item.category_names && item.category_names.length > 0 ? item.category_names[0] : ''
             }));
         } catch (error) {
@@ -137,6 +140,9 @@ const Main = () => {
     };
 
     const [on, setOn] = useState(false);
+     const handleCardClick = (popupId) => {
+          navigate(`/popupStore/detail/${popupId}`);
+        };
 
     return (
         <>
@@ -150,6 +156,7 @@ const Main = () => {
                     fetcher={fetchByMonthlyOpen}
                     limit={8}
                     slidesPerView={4}
+                    onCardClick={handleCardClick}
                 />
             </div>
 
@@ -160,6 +167,7 @@ const Main = () => {
                     limit={8}
                     slidesPerView={4}
                     variant="bg"
+                    onCardClick={handleCardClick}
                 />
             </div>
 
@@ -171,7 +179,8 @@ const Main = () => {
                     limit={8}
                     slidesPerView={4}
                     showMore
-                    moreLink="/popupstores/themes"
+                    moreLink="/popupList"
+                    onCardClick={handleCardClick}
                 />
             </div>
         </>
