@@ -1,6 +1,7 @@
 package com.example.popic.user.service;
 
 import com.example.popic.auth.dto.GoogleUserInfo;
+import com.example.popic.auth.dto.NaverUserInfo;
 import com.example.popic.entity.entities.ROLE;
 import com.example.popic.entity.entities.User;
 import com.example.popic.user.repository.UserRepository;
@@ -29,7 +30,6 @@ public class UserService {
         return userRepository.save(user).getUser_id();
     }
 
-    // UserService 내부에 추가/수정
     public User registerOrLoginFromGoogle(GoogleUserInfo info) {
         String oauthLoginId = "google_" + info.getId();
 
@@ -63,5 +63,48 @@ public class UserService {
 
         return userRepository.save(u);
     }
+
+    // UserService 내 (구글 메서드와 나란히 배치)
+    public User registerOrLoginFromNaver(NaverUserInfo info) {
+        if (info == null || info.getId() == null || info.getId().isBlank()) {
+            throw new IllegalArgumentException("Naver userinfo id is missing");
+        }
+
+        // 로그인 아이디(고유)
+        String oauthLoginId = "naver_" + info.getId();
+        var exist = userRepository.findByLoginId(oauthLoginId);
+        if (exist.isPresent()) return exist.get();
+
+        // 신규 가입
+        User u = new User();
+        u.setLogin_id(oauthLoginId);
+        u.setPassword(passwordEncoder.encode("oauth-" + java.util.UUID.randomUUID())); // 소셜용 더미 PW
+        u.setRole(ROLE.USER);
+        u.setStatus(1);
+        u.setPoint(0);
+
+        // 이메일
+        String email = info.getEmail();
+        boolean emailInvalid = (email == null || email.isBlank());
+        boolean emailDup = (!emailInvalid && userRepository.existsEmail(email));
+        if (emailInvalid || emailDup) {
+            email = oauthLoginId + "@naver.local";   // 예: naver_abc123@naver.local
+        }
+        u.setEmail(email);
+
+        // 이름 -> 없으면 닉네임
+        String name = (info.getName() != null && !info.getName().isBlank())
+                ? info.getName()
+                : (info.getNickname() != null && !info.getNickname().isBlank()
+                ? info.getNickname()
+                : "NaverUser");
+        u.setName(name);
+
+        // 휴대폰
+         if (info.getMobile() != null) u.setPhone_number(info.getMobile());
+
+        return userRepository.save(u);
+    }
+
 
 }

@@ -41,33 +41,70 @@ public class AuthController {
     @Value("${google.redirect-uri}")
     private String googleRedirectUri;
 
+//    @GetMapping("/naver/callback")
+//    public ResponseEntity<?> callback(@RequestParam String code, @RequestParam String state, HttpServletResponse response) {
+//        // 1. 네이버 API로 Access Token 요청
+//
+//        NaverUserInfo userInfo = naverLoginService.getUserInfo(code, state);
+//
+//        /*
+//        NaverUserInfo userInfo = naverOAuthService.getUserInfo(code, state);
+//
+//        // DB에 사용자 저장 or 조회
+//        User user = userService.registerOrLogin(userInfo);
+//
+//        // JWT 발급
+//        String jwt = jwtProvider.createToken(user);
+//
+//        // 쿠키에 JWT 저장 (httpOnly)
+//        Cookie cookie = new Cookie("ACCESS_TOKEN", jwt);
+//        cookie.setHttpOnly(true);
+//        cookie.setPath("/");
+//        response.addCookie(cookie);
+//
+//
+//
+//        return ResponseEntity.ok(user);
+//        */
+//        return null;
+//    }
+
     @GetMapping("/naver/callback")
-    public ResponseEntity<?> callback(@RequestParam String code, @RequestParam String state, HttpServletResponse response) {
-        // 1. 네이버 API로 Access Token 요청
+    public void naverCallback(@RequestParam("code") String code,
+                              @RequestParam("state") String state,
+                              HttpServletResponse response) throws Exception {
 
-        NaverUserInfo userInfo = naverLoginService.getUserInfo(code, state);
+        System.out.println("✅ 네이버 콜백 도착, code = " + code + ", state = " + state);
 
-        /*
-        NaverUserInfo userInfo = naverOAuthService.getUserInfo(code, state);
+        // 1) 네이버 유저 정보
+        NaverUserInfo info = naverLoginService.getUserInfo(code, state);
 
-        // DB에 사용자 저장 or 조회
-        User user = userService.registerOrLogin(userInfo);
+        // 2) 없으면 가입, 있으면 조회 (메서드명은 프로젝트에 맞게)
+        User u = userService.registerOrLoginFromNaver(info);
 
-        // JWT 발급
-        String jwt = jwtProvider.createToken(user);
+        // 3) JWT 발급
+        String access  = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
+        String refresh = jwtUtil.createRefreshToken(u.getLogin_id());
 
-        // 쿠키에 JWT 저장 (httpOnly)
-        Cookie cookie = new Cookie("ACCESS_TOKEN", jwt);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        // 4) refresh 토큰 httpOnly 쿠키로 심기
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
+                .httpOnly(true)
+                .secure(false)      // 배포 HTTPS면 true
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(java.time.Duration.ofDays(14))
+                .build();
+        response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
+        // 5) 프론트로 302 리다이렉트 (access는 쿼리로 전달)
+        String redirect = frontendBaseUrl + "/?social=naver"
+                + "&token=" + URLEncoder.encode(access, java.nio.charset.StandardCharsets.UTF_8)
+                + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), java.nio.charset.StandardCharsets.UTF_8);
 
-
-        return ResponseEntity.ok(user);
-        */
-        return null;
+        response.setStatus(302);
+        response.setHeader("Location", redirect);
     }
+
 
     @PostConstruct
     public void printGoogleRedirectUri() {
@@ -79,7 +116,7 @@ public class AuthController {
     public void googleCallback(@RequestParam("code") String code,
                                HttpServletResponse response) throws Exception {
 
-        System.out.println("✅ 구글 콜백 도착, code = " + code);
+        System.out.println("구글 콜백 도착, code = " + code);
 
         // 1) 구글 유저 정보
         GoogleUserInfo info = googleLoginService.getUserInfo(code);

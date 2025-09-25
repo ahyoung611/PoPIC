@@ -40,7 +40,7 @@ export default function BoardEditor() {
         (async () => {
             try {
                 const res = await fetch(`${API}/board/${numericId}`, {
-                    headers: { "Authorization": `Bearer ${token}` },
+                    headers: {"Authorization": `Bearer ${token}`},
                     credentials: "include",
                 });
                 if (!res.ok) throw new Error("게시글 불러오기 실패");
@@ -64,7 +64,9 @@ export default function BoardEditor() {
             }
         })();
 
-        return () => { abort = true; };
+        return () => {
+            abort = true;
+        };
     }, [numericId, nav, token]);
 
 
@@ -82,12 +84,13 @@ export default function BoardEditor() {
             try {
                 const res = await fetch(`${API}/board/${numericId}/views`, {
                     method: "POST",
-                    headers: { "Authorization": `Bearer ${token}` },
+                    headers: {"Authorization": `Bearer ${token}`},
                     credentials: "include",
                 });
                 if (!res.ok) return;
                 setMeta((prev) => prev ? {...prev, viewCount: (prev.viewCount ?? 0) + 1} : prev);
-            } catch (_) {}
+            } catch (_) {
+            }
         })();
     }, [mode, numericId, token]);
 
@@ -103,7 +106,7 @@ export default function BoardEditor() {
                 title,
                 content,
                 files: (attachments ?? []).map((a) =>
-                    typeof a === "string" ? { originalName: a, savedName: a } : a
+                    typeof a === "string" ? {originalName: a, savedName: a} : a
                 ),
             };
 
@@ -132,6 +135,7 @@ export default function BoardEditor() {
 
     const goEdit = () => numericId && nav(`/board/edit/${numericId}`);
     const goList = () => nav("/board");
+    const goReport = () => nav("/report");
 
     return (
         <div className="be-wrap">
@@ -171,7 +175,7 @@ export default function BoardEditor() {
                                     {attachments.length > 1 && (
                                         <div className="be-thumbs">
                                             {attachments.slice(1).map((f, i) => (
-                                                <img key={i} src={`${API}${f.url}`} alt={f.originalName} />
+                                                <img key={i} src={`${API}${f.url}`} alt={f.originalName}/>
                                             ))}
                                         </div>
                                     )}
@@ -198,14 +202,15 @@ export default function BoardEditor() {
                             <>
                                 {meta?.writerId === auth?.user?.login_id && (
                                     <>
-                                        <button type="button" className="be-btn be-btn-primary" onClick={goEdit}>수정</button>
+                                        <button type="button" className="be-btn be-btn-primary" onClick={goEdit}>수정
+                                        </button>
                                         <button type="button" className="be-btn be-btn-danger"
                                                 onClick={async () => {
                                                     if (window.confirm("정말 삭제하시겠습니까?")) {
                                                         try {
                                                             await fetch(`${API}/board/${numericId}`, {
                                                                 method: "DELETE",
-                                                                headers: { "Authorization": `Bearer ${token}` },
+                                                                headers: {"Authorization": `Bearer ${token}`},
                                                                 credentials: "include",
                                                             });
                                                             alert("삭제되었습니다.");
@@ -217,6 +222,12 @@ export default function BoardEditor() {
                                                     }
                                                 }}>
                                             삭제
+                                        </button>
+                                    </>
+                                )}
+                                {meta?.writerId !== auth?.user?.login_id && (
+                                    <>
+                                        <button type="button" className="be-btn be-btn-primary" onClick={goReport}>신고
                                         </button>
                                     </>
                                 )}
@@ -242,11 +253,13 @@ export default function BoardEditor() {
                     </div>
                 </form>
             </div>
-            {mode === "view" && numericId && (
-                <div className="be-card" style={{marginTop: 16, position: 'relative', zIndex: 2}}>
-                    <BoardComment boardId={numericId}/>
-                </div>
-            )}
+            {
+                mode === "view" && numericId && (
+                    <div className="be-card" style={{marginTop: 16, position: 'relative', zIndex: 2}}>
+                        <BoardComment boardId={numericId}/>
+                    </div>
+                )
+            }
         </div>
     );
 }
