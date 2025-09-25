@@ -60,7 +60,7 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
                     <p><strong>예약 날짜 </strong> {reservationData.date}</p>
                     <p><strong>예약 시간 </strong> {reservationData.time}</p>
                     <p><strong>인원 </strong> {reservationData.reservationCount}명</p>
-                    <p><strong>금액 </strong> <span className="price">{reservationData.price*reservationData.reservationCount}</span></p>
+                    <p><strong>금액 </strong> <span className="price">{(reservationData.price*reservationData.reservationCount).toLocaleString()}원</span></p>
                 </div>
 
                 <div className="modalActions">

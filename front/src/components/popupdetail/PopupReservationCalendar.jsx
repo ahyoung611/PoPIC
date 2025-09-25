@@ -217,6 +217,7 @@ export default function PopupReservationCalendar({popup, value, onChange}) {
                             </div>
                         )}
                         {slots.map((slot) => {
+                            console.log("슬롯 인원? ",slot.reserved_count);
                             const full = (slot.reserved_count ?? slot.reservedCount) >= slot.capacity;
 
                             // 오늘 과거 시간 비활성화
