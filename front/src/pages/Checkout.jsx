@@ -69,7 +69,7 @@ export default function CheckoutPage() {
                         await widgets.requestPayment({
                             orderId: generateRandomString(),
                             orderName: `${searchParams.get("name")} 예약`,
-                            successUrl: window.location.origin + `/success?people=${searchParams.get("people")}&popupId=${popupId}&slotId=${slotId}`,
+                            successUrl: window.location.origin + `/success?people=${searchParams.get("people")}&popupId=${popupId}&slotId=${slotId}&amount=${amount.value}`,
                             failUrl: window.location.origin + "/fail",
                             customerName: user.name,
                             customerEmail: user.email,
