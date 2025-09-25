@@ -32,6 +32,7 @@ import {AuthProvider} from "./context/AuthContext.jsx";
 import GoogleCallback from "./pages/user/GoogleCallback.jsx";
 import KakaoCallback from "./pages/user/KakaoCallback.jsx";
 import WelcomePage from "./pages/WelcomePage.jsx";
+import PopupList from "./pages/user/PopupList.jsx";
 
 
 function App() {
@@ -98,6 +99,7 @@ function App() {
                     {/*일반 유저 Layout */}
                     <Route element={<UserHeaderLayout/>}>
                         <Route path={"/main"} element={<Main/>}></Route>
+                        <Route path={"/popupList"} element={<PopupList/>}></Route>
                         <Route path={"/popupStore/detail/:id"} element={<PopupDetail/>}></Route>
                         <Route path={"/board"} element={<BoardList/>}></Route>
                         <Route path={"/board/new"} element={<BoardEditor/>}></Route>

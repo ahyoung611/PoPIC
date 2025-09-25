@@ -2,7 +2,6 @@ package com.example.popic.popup.controller;
 
 import com.example.popic.CustomUserPrincipal;
 import com.example.popic.entity.entities.PopupStoreSchedule;
-import com.example.popic.entity.entities.PopupStoreSlot;
 import com.example.popic.entity.entities.Review;
 import com.example.popic.file.FileSave;
 import com.example.popic.image.dto.ReviewImageDTO;
@@ -157,7 +156,7 @@ public class PopupController {
     }
 
     // young 카테고리 팝업
-    @GetMapping
+    @GetMapping("/category")
     public ResponseEntity<List<PopupDTO>> getPopupsByCategory(
             @RequestParam(name = "category", required = false) String categoryId) {
         System.out.println("받은 categoryId = " + categoryId);

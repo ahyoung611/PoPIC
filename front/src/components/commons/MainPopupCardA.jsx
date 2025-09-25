@@ -7,12 +7,12 @@ export default function MainPopupCardA({
                                            popupId, alt, category,
                                            title, periodText,
                                            bookmarked, onToggleBookmark,
-                                           onClick, href = "#",
+                                           onClick
                                        }) {
 //                                            console.log("popupId", popupId);
 
     return (
-        <a href={href} className="mpc-card mpc-card--typeA" onClick={onClick}>
+         <div className="mpc-card mpc-card--typeA" onClick={onClick}>
             <MainPopupCardImg
                 popupId={popupId}
                 alt={alt}
@@ -26,6 +26,6 @@ export default function MainPopupCardA({
                 <hr className="mpc-card__divider" />
                 <h3 className="mpc-card__title">{title}</h3>
             </div>
-        </a>
+        </div>
     );
 }
