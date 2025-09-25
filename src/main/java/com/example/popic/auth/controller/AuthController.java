@@ -194,13 +194,11 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("리프레시 옴?");
         try {
             // 1. 쿠키에서 refreshToken 꺼내기
             String refreshToken = extractRefreshTokenFromCookies(request);
             System.out.println(refreshToken);
             if (refreshToken == null) {
-                System.out.println("리프레시 토큰 없음 수고");
                 return ResponseEntity.status(401).body(new LoginResponse(false, "리프레시 토큰 없음"));
             }
 
@@ -239,7 +237,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
-        System.out.println("로그아웃 하러옴");
         var cleared = org.springframework.http.ResponseCookie.from("refreshToken", "")
                 .httpOnly(true).secure(false).sameSite("Lax").path("/").maxAge(0).build();
         return ResponseEntity.ok().header(org.springframework.http.HttpHeaders.SET_COOKIE, cleared.toString()).build();

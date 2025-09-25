@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class InquiryReply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +22,10 @@ public class InquiryReply {
     @ManyToOne
     @JoinColumn(name = "inquiry_id", nullable = false)
     private Inquiry inquiry; // 소속 문의
+
+    @ManyToOne
+    @JoinColumn(name = "store_id", nullable = false)
+    private PopupStore popup_store; // 대상 팝업스토어
 
     @ManyToOne
     @JoinColumn(name = "Vendor_id", nullable = false)
