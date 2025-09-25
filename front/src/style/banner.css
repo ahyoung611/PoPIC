@@ -65,7 +65,7 @@
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     width: 100%;
     position: absolute;
-    bottom: -165px;
+    bottom: -150px;
     z-index: 10;
     transition: 0.5s;
 }
@@ -81,8 +81,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 8px 0 12px;
+    gap: 10px;
+    padding: 10px 0 15px 0;
+    margin-top: -13px;
 }
 
 .banner-react .page-wrap a {
@@ -113,14 +114,14 @@
     background: rgba(0, 0, 0, 0.5);
     position: absolute;
     left: 0;
-    top: 18px;
+    top: 25px;
 }
 
 .banner-react .page-wrap img {
     display: block;
     width: 86px;
     height: 120px;
-    margin-top: 18px;
+    margin-top: 25px;
     object-fit: cover;
 }
 

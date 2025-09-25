@@ -208,6 +208,13 @@ export default function UserProfile() {
 
     // 저장 핸들러
     const handleSave = async () => {
+        const requiredFields = userSchema.fields.filter(field => field.required && !field.readOnly);
+        for (const field of requiredFields) {
+            if (!form[field.name] || form[field.name].trim() === '') {
+                alert(`${field.label}은(는) 필수 입력 항목입니다.`);
+                return;
+            }
+        }
         try {
             const payload = {
                 name: form.name,

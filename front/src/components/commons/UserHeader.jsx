@@ -50,7 +50,7 @@ export default function UserHeader() {
                         {isLoggedIn ? (
                             <>
                                 <NavLink to={myPagePath} className={linkClass}>마이페이지</NavLink>
-                                <button className="header__logout" onClick={onLogout}>로그아웃</button>
+                                <a className="header__logout" onClick={onLogout}>로그아웃</a>
                             </>
                         ) : (
                             <NavLink to="/login" className={linkClass}>로그인</NavLink>
@@ -72,7 +72,7 @@ export default function UserHeader() {
                     {isLoggedIn ? (
                         <>
                             <NavLink to={myPagePath} className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>마이페이지</NavLink>
-                            <button className="Drawer__item header__logout" onClick={() => { onLogout(); close(); }}>로그아웃</button>
+                            <a className="Drawer__item header__logout" onClick={() => { onLogout(); close(); }}>로그아웃</a>
                         </>
                     ) : (
                         <NavLink to="/login" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>로그인</NavLink>

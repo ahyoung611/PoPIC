@@ -33,9 +33,7 @@ public class AuthController {
     private final NaverLoginService naverLoginService;
     private final GoogleLoginService googleLoginService;
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
     private final UserService userService;
-    private final VendorRepository vendorRepository;
     private final AuthService authService;
 
     @Value("${app.frontend.base-url}")

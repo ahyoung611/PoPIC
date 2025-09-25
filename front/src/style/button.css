@@ -8,7 +8,7 @@
     font-weight: 500;
     font-size: var(--font-button);
     line-height: 1;
-    padding: 10px 16px;
+    padding: 10px;
     border: 1px solid var(--border-color);
     background-color: var(--white-color);
     color: var(--black-color);
@@ -32,7 +32,7 @@
 
 /* ghost : 상세보기 -> */
 .btn.btn--ghost { background: transparent; color: inherit; border-color: transparent; }
-.btn.btn--ghost:hover { background: var(--bg-color); }
+.btn.btn--ghost:hover { color: var(--main-color)!important; }
 
 /* filter : 전체 | 패션 | 뷰티  */
 .btn.btn--filter { border-radius: 9999px; padding: 10px 16px; background: var(--white-color); color: var(--black-color); }

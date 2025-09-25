@@ -11,20 +11,22 @@ export default function MainPopupCardSlide({
                                                title = "",
                                                moreLink = "#",
                                                fetcher,
-                                               limit = 5,
+                                               limit = 8,
                                                slidesPerView = 4,
                                                categories = null,
                                                variant = "default",
                                                showMore = false,
                                            }) {
+    // 선택된 카테고리 상태 관리
     const [activeCategory, setActiveCategory] = useState(categories?.[0]?.key ?? null);
+    // API로부터 받아온 데이터 저장할 상태
     const [items, setItems] = useState([]);
+    // 로딩 상태 관리
     const [loading, setLoading] = useState(true);
 
     const sectionRef = useRef(null);
     const prevRef = useRef(null);
     const nextRef = useRef(null);
-
     const [isPrevVisible, setPrevVisible] = useState(false);
     const [isNextVisible, setNextVisible] = useState(true);
 
