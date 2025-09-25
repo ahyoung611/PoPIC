@@ -36,9 +36,7 @@ public class AuthController {
     private final GoogleLoginService googleLoginService;
     private final KakaoLoginService kakaoLoginService;
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
     private final UserService userService;
-    private final VendorRepository vendorRepository;
     private final AuthService authService;
 
     @Value("${app.frontend.base-url}")
@@ -224,7 +222,6 @@ public class AuthController {
             return ResponseEntity.ok(loginResponse);
 
         } catch (Exception e) {
-            System.out.println("설마 여기?");
             return ResponseEntity.status(500).body(new LoginResponse(false, "서버 오류"));
         }
     }

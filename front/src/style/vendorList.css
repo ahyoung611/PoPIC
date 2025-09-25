@@ -7,7 +7,7 @@
     display:flex;
     align-items:center;
     gap:28px;
-    padding:20px 0;
+    padding:20px 20px 20px 0;
     border:none;
     border-radius:0;
     background:transparent;
@@ -66,15 +66,8 @@
 
 .vendor-list .popup-actions{
     position:absolute;
-    right:0; bottom:22px;
+    right:20px; bottom:22px;
     display:flex; align-items:center;
-}
-.vendor-list .popup-actions .btn.btn--ghost{
-    padding:0;
-    font-weight:500;
-    font-size:var(--font-caption);
-    color:var(--black-color);
-    width: 70px;
 }
 
 .vendor-list .popup-actions .btn.btn--ghost::after{

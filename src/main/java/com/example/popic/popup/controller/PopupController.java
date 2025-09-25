@@ -126,11 +126,29 @@ public class PopupController {
         return ResponseEntity.ok(popupService.getSlots(popupId, date));
     }
 
+    // young 이달의 팝업
     @GetMapping("/monthly")
     public ResponseEntity<List<PopupDTO>> getMonthlyPopups() {
         List<PopupDTO> list = popupService.findMonthlyPopups();
-        if (list != null) {
-            list.forEach(dto -> System.out.println(" - popup: " + dto.getStore_name()));
+        return ResponseEntity.ok(list != null ? list : new ArrayList<>());
+    }
+
+    // young 카테고리 팝업
+    @GetMapping
+    public ResponseEntity<List<PopupDTO>> getPopupsByCategory(
+            @RequestParam(name = "category", required = false) String categoryId) {
+        System.out.println("받은 categoryId = " + categoryId);
+
+        List<PopupDTO> list;
+        if (categoryId == null || categoryId.isEmpty() || "all".equals(categoryId)) {
+            list = popupService.findApprovedPopups();
+        } else {
+            try {
+                Long catId = Long.parseLong(categoryId);
+                list = popupService.findApprovedPopupsByCategoryId(catId);
+            } catch (NumberFormatException e) {
+                list = new ArrayList<>();
+            }
         }
         return ResponseEntity.ok(list != null ? list : new ArrayList<>());
     }

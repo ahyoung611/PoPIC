@@ -4,7 +4,7 @@ import Button from "../../components/commons/Button.jsx";
 import apiRequest from "../../utils/apiRequest.js";
 import PopupDetailModal from "./PopupDetailModal.jsx";
 import '../../style/adminPopup.css';
-import ConfirmModal from "../../components/commons/ConfirmModal.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const AdminPopup = () => {
     const [popupList, setPopupList] = useState([]);
@@ -12,12 +12,14 @@ const AdminPopup = () => {
     const [keyword, setKeyword] = useState("");
     const [modal, setModal] = useState(false);
     const [selected, setSelected] = useState(null);
+    const token = useAuth().getToken();
+
 
 
     const fetchPopup = async () => {
         const response = await apiRequest(`/admin/popup?sort=${sort}&keyword=${keyword}`, {
             credentials: "include",
-        });
+        }, token);
         setPopupList(response);
         console.log(response);
     }
@@ -25,7 +27,7 @@ const AdminPopup = () => {
     const fetchPopupStatus = async (storeId,statusCode) => {
         const response = await apiRequest(`/admin/popupConfirm?popupId=${storeId}&statusCode=${statusCode}`, {
             credentials: "include",
-        });
+        }, token);
     }
 
     const changePopupStatus = async (storeId,newStatus)=>{
@@ -48,7 +50,7 @@ const AdminPopup = () => {
 
     useEffect(() => {
         fetchPopup();
-    },[sort])
+    },[sort, token])
 
     const adminPopupDetail = (popup)=>{
         setSelected(popup);

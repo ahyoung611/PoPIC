@@ -1,8 +1,16 @@
 import {useNavigate} from "react-router-dom";
 import '../../style/adminMain.css';
+import {useAuth} from "../../context/AuthContext.jsx";
+import {useEffect} from "react";
 
 const AdminMain = () => {
     const nav = useNavigate();
+    const token = useAuth().getToken();
+    const user = useAuth().getUser();
+
+    useEffect(() => {
+        console.log(user);
+    },[token, user])
 
     return (
         <div className={"container"}>

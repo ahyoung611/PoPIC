@@ -116,15 +116,22 @@ export default function VendorPopupForm() {
             if (dto.capacity_per_hour != null) setCapacityPerHour(String(dto.capacity_per_hour));
 
             // 기존 이미지
-            const storeId = dto.store_id;
-            const imgs = (dto.images_detail || [])
-                .map((img, i) => ({
-                    id: img.image_id ?? `img-${i}`,
-                    savedName: img.saved_name,
-                    url: `/api/vendors/${vendorId}/popups/images/${storeId}/${img.saved_name}`,
-                }))
-                .filter(x => !!x.url);
-            setExistingImages(imgs);
+            const fetchImage = async (imageId) => {
+                const res = await fetch(`/images?type=popup&id=${imageId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (!res.ok) return null;
+                const blob = await res.blob();
+                return URL.createObjectURL(blob);
+            };
+
+            const imgs = await Promise.all(
+                (dto.images_detail || []).map(async (img, i) => {
+                    const url = await fetchImage(img.saved_name);
+                    return { id: img.image_id, savedName: img.saved_name, url };
+                })
+            );
+            setExistingImages(imgs.filter(x => x.url));
         })().catch(err => {
             console.error("데이터 로드 실패:", err);
             alert("데이터를 불러오지 못했습니다.");
@@ -227,8 +234,16 @@ export default function VendorPopupForm() {
                 if (imageFiles.length > 0) {
                     const fd = new FormData();
                     imageFiles.forEach(f => fd.append("files", f));
-                    await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}/images`, { method: "POST", body: fd }, token);
+                    const uploaded = await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}/images`, { method: "POST", body: fd }, token);
+
+                    // 업로드 후 화면에 표시
+                    const newImgs = await Promise.all(uploaded.map(async img => {
+                        const url = await fetchImage(img.saved_name); // 위 fetchImage 재사용
+                        return { id: img.image_id, savedName: img.saved_name, url };
+                    }));
+                    setExistingImages(prev => [...prev, ...newImgs]);
                 }
+                setImageFiles([]);
             }
             navigate(`/vendor/${vendorId}/popups`);
         } catch (e) {
