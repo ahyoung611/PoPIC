@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
 
@@ -13,16 +13,25 @@ export default function SuccessPage() {
     const {auth, getToken} = useAuth();
     const token = getToken();
     const user = auth?.user;
+    const [depositAmount, setDepositAmount] = useState(0);
 
     useEffect(() => {
-        if (!user) {
-            return;
-        }
+        if (!user) return;
+
+        const rawAmount = Number(searchParams.get("amount") || 0);
+        const people = peopleCount || 0;
+
+        const deposit = 10000;
+        const totalAmount = rawAmount === 0
+            ? deposit  // 예약금 결제
+            : rawAmount;
+
+        setDepositAmount(totalAmount);
 
         const requestData = {
-            reservationCount: peopleCount || 0,
+            reservationCount: people,
             status: 0,
-            depositAmount: (Number(searchParams.get("amount") || 0)) * (peopleCount || 0),
+            depositAmount: totalAmount,
             paymentKey: searchParams.get("paymentKey") || null,
             user: { user_id: user?.user_id || null },
             popup: { store_id: popupId },
@@ -30,7 +39,6 @@ export default function SuccessPage() {
         };
 
         async function confirm() {
-            console.log("token", token);
             const response = await fetch(`${URL}/reservations/confirm`, {
                 method: "POST",
                 headers: {
@@ -51,6 +59,16 @@ export default function SuccessPage() {
 
             const data = await response.json();
             console.log("예약 확인 성공:", data);
+
+            fetch(`${URL}/popupStore/slots?popupId=${popupId}&date=${requestData.date}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                }
+            })
+                .then(res => res.json())
+                .then(updatedSlots => {
+                    console.log("최신 슬롯:", updatedSlots);
+                });
         }
 
         confirm();
@@ -63,9 +81,7 @@ export default function SuccessPage() {
                     결제 성공
                 </h2>
                 <p>{`주문번호: ${searchParams.get("orderId")}`}</p>
-                <p>{`결제 금액: ${Number(
-                    searchParams.get("amount")
-                ).toLocaleString()}원`}</p>
+                <p>{`결제 금액: ${depositAmount.toLocaleString()}원`}</p>
                 <p>{`paymentKey: ${searchParams.get("paymentKey")}`}</p>
                 <button type={"button"} onClick={() => navigate(`/userMyPage/${user.user_id}`)}>마이페이지</button>
             </div>

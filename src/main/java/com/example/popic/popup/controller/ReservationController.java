@@ -21,11 +21,19 @@ public class ReservationController {
 
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmPayment(@RequestBody PopupReservationDTO dto) {
+        System.out.println(">>> 예약 요청 인원 = " + dto.getReservationCount());
         try {
-            PopupReservationDTO saved = reservationService.saveReservation(dto);
+            PopupReservationDTO saved = reservationService.reserveSlot(
+                    dto.getSlot().getSlot_id(),
+                    dto.getUser().getUser_id(),
+                    dto.getPopup().getStore_id(),
+                    dto.getReservationCount(),
+                    dto.getDepositAmount(),
+                    dto.getPaymentKey()
+            );
             return ResponseEntity.ok(saved);
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT) // 409
+            return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("message", e.getMessage()));
         }
     }
@@ -44,4 +52,11 @@ public class ReservationController {
         List<PopupReservationDTO> reservations = reservationService.getUserReservations(userId);
         return ResponseEntity.ok(reservations);
     }
+
+    // 슬롯 잔여 조회
+    @GetMapping("/slot/{slotId}/remaining")
+    public ResponseEntity<?> getSlotRemaining(@PathVariable Long slotId) {
+        return ResponseEntity.ok(reservationService.getSlotRemaining(slotId));
+    }
+
 }
