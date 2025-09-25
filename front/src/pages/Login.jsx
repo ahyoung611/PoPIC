@@ -82,7 +82,7 @@ const Login = () => {
                     if (vendorId) navigate(`/vendor/${vendorId}/popups`);
                     else navigate("/vendor");
                 } else {
-                    navigate("/");
+                    navigate("/main");
                 }
             }
 

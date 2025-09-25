@@ -50,7 +50,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    /** ✅ 토큰 유효성 검증 */
+    /* 토큰 유효성 검증 */
     public boolean validateToken(String token) {
         try {
             parse(token); // 성공하면 유효
@@ -60,12 +60,12 @@ public class JwtUtil {
         }
     }
 
-    /** ✅ Claims 꺼내기 */
+    /* Claims 꺼내기 */
     public Claims getClaims(String token) {
         return parse(token).getBody();
     }
 
-    /** ✅ userId(혹은 subject) 꺼내기 */
+    /* userId(혹은 subject) 꺼내기 */
     public String getSubject(String token) {
         return getClaims(token).getSubject();
     }
