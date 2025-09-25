@@ -1,12 +1,15 @@
 package com.example.popic.popup.controller;
 
 import com.example.popic.popup.dto.PopupReservationDTO;
+import com.example.popic.popup.repository.ReservationRepository;
 import com.example.popic.popup.service.ReservationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/reservations")
@@ -14,13 +17,25 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final ReservationRepository reservationRepository;
 
-    // 결제 확인 + 예약 저장
     @PostMapping("/confirm")
-    public ResponseEntity<PopupReservationDTO> confirmAndSave(@RequestBody PopupReservationDTO dto) {
-        // 토스 결제 confirm API 호출 후 성공 시 저장
-        PopupReservationDTO saved = reservationService.saveReservation(dto);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<?> confirmPayment(@RequestBody PopupReservationDTO dto) {
+        try {
+            PopupReservationDTO saved = reservationService.saveReservation(dto);
+            return ResponseEntity.ok(saved);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT) // 409
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/check-duplicate")
+    public ResponseEntity<?> checkDuplicate(@RequestParam Long userId,
+                                            @RequestParam Long storeId,
+                                            @RequestParam Long slotId) {
+        boolean exists = reservationRepository.existsDuplicateReservation(userId, storeId, slotId);
+        return ResponseEntity.ok(Map.of("exists", exists));
     }
 
     // 사용자 예약 조회
