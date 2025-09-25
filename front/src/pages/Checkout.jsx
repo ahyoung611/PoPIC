@@ -1,6 +1,7 @@
 import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import {useAuth} from "../context/AuthContext.jsx";
 
 const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
 const customerKey = generateRandomString();
@@ -14,6 +15,10 @@ export default function CheckoutPage() {
     });
     const [ready, setReady] = useState(false);
     const [widgets, setWidgets] = useState(null);
+    const { auth } = useAuth();
+    const user = auth?.user;
+    const popupId = searchParams.get("popupId");
+    const slotId = searchParams.get("slotId");
 
 
     useEffect(() => {
@@ -64,10 +69,10 @@ export default function CheckoutPage() {
                         await widgets.requestPayment({
                             orderId: generateRandomString(),
                             orderName: `${searchParams.get("name")} 예약`,
-                            successUrl: window.location.origin + `/success?people=${searchParams.get("people")}&popupId=${searchParams.get("popupId")}`,
+                            successUrl: window.location.origin + `/success?people=${searchParams.get("people")}&popupId=${popupId}&slotId=${slotId}`,
                             failUrl: window.location.origin + "/fail",
-                            customerName: "고객명(추후연결)",
-                            customerEmail: "customer@example.com",
+                            customerName: user.name,
+                            customerEmail: user.email,
                         });
                     }}
                 >

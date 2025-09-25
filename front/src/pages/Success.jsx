@@ -9,6 +9,7 @@ export default function SuccessPage() {
     const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
     const peopleCount = Number(searchParams.get("people"));
     const popupId = searchParams.get("popupId");
+    const slotId = searchParams.get("slotId");
     const {auth, getToken} = useAuth();
     const token = getToken();
     const user = auth?.user;
@@ -19,20 +20,17 @@ export default function SuccessPage() {
         }
 
         const requestData = {
-            reservationId: null,
-            userId: user.user_id,
-            reservationCount: peopleCount,
+            reservationCount: peopleCount || 0,
             status: 0,
-            depositAmount: Number(searchParams.get("amount")) * peopleCount,
-            paymentKey: searchParams.get("paymentKey"),
-            orderId: searchParams.get("orderId"),
-            amount: Number(searchParams.get("amount")),
-            user: { user_id: user.user_id },
+            depositAmount: (Number(searchParams.get("amount") || 0)) * (peopleCount || 0),
+            paymentKey: searchParams.get("paymentKey") || null,
+            user: { user_id: user?.user_id || null },
             popup: { store_id: popupId },
-            slot: {slot_id: searchParams.get("slotId")},
+            slot: { slot_id: slotId },
         };
 
         async function confirm() {
+            console.log("token", token);
             const response = await fetch(`${URL}/reservations/confirm`, {
                 method: "POST",
                 headers: {
@@ -43,19 +41,16 @@ export default function SuccessPage() {
                 body: JSON.stringify(requestData),
             });
 
-            let json = {};
-            try {
-                json = await response.json();
-            } catch (err) {
-                console.error("JSON 파싱 실패:", err);
-            }
-
             if (!response.ok) {
+                // JSON 본문 파싱
+                const json = await response.json().catch(() => null);
                 console.error("예약 확인 실패:", response.status, json);
                 navigate(`/fail?message=${json?.message || "권한 오류"}&code=${response.status}`);
                 return;
             }
 
+            const data = await response.json();
+            console.log("예약 확인 성공:", data);
         }
 
         confirm();

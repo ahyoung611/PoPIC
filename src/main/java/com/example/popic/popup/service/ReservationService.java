@@ -22,13 +22,22 @@ public class ReservationService {
     private final PopupStoreSlotRepository slotRepository;
 
     public PopupReservationDTO saveReservation(PopupReservationDTO dto) {
+        boolean exists = reservationRepository.existsDuplicateReservation(
+                dto.getUser().getUser_id(),
+                dto.getPopup().getStore_id(),
+                dto.getSlot().getSlot_id()
+        );
+
+        if (exists) {
+            throw new IllegalStateException("이미 해당 팝업/슬롯에 예약이 존재합니다.");
+        }
+
         Reservation reservation = new Reservation();
         reservation.setReservation_count(dto.getReservationCount());
-        reservation.setStatus(1); // 예약완료
+        reservation.setStatus(1);
         reservation.setDeposit_amount(dto.getDepositAmount());
         reservation.setPayment_key(dto.getPaymentKey());
 
-        // FK 매핑
         reservation.setUser(userRepository.findById(dto.getUser().getUser_id())
                 .orElseThrow(() -> new RuntimeException("User not found")));
         reservation.setStore(storeRepository.findById(dto.getPopup().getStore_id())
@@ -39,6 +48,7 @@ public class ReservationService {
         Reservation saved = reservationRepository.save(reservation);
         return PopupReservationDTO.from(saved);
     }
+
 
     public PopupReservationDTO findbyId(Long reservationId) {
         return new PopupReservationDTO(reservationRepository.findById(reservationId).orElse(null));

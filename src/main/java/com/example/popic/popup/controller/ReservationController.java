@@ -1,6 +1,7 @@
 package com.example.popic.popup.controller;
 
 import com.example.popic.popup.dto.PopupReservationDTO;
+import com.example.popic.popup.repository.ReservationRepository;
 import com.example.popic.popup.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,21 +17,25 @@ import java.util.Map;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final ReservationRepository reservationRepository;
 
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmPayment(@RequestBody PopupReservationDTO dto) {
-        // 1. 토스 결제 승인 API 호출
-        boolean success = true; // 임시
-
-        if (!success) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("message", "결제 승인 실패"));
+        try {
+            PopupReservationDTO saved = reservationService.saveReservation(dto);
+            return ResponseEntity.ok(saved);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT) // 409
+                    .body(Map.of("message", e.getMessage()));
         }
+    }
 
-        // 2. DB 저장
-        PopupReservationDTO saved = reservationService.saveReservation(dto);
-
-        return ResponseEntity.ok(saved);
+    @GetMapping("/check-duplicate")
+    public ResponseEntity<?> checkDuplicate(@RequestParam Long userId,
+                                            @RequestParam Long storeId,
+                                            @RequestParam Long slotId) {
+        boolean exists = reservationRepository.existsDuplicateReservation(userId, storeId, slotId);
+        return ResponseEntity.ok(Map.of("exists", exists));
     }
 
     // 사용자 예약 조회
