@@ -1,6 +1,7 @@
 package com.example.popic.user.service;
 
 import com.example.popic.auth.dto.GoogleUserInfo;
+import com.example.popic.auth.dto.KakaoUserInfo;
 import com.example.popic.auth.dto.NaverUserInfo;
 import com.example.popic.entity.entities.ROLE;
 import com.example.popic.entity.entities.User;
@@ -30,6 +31,7 @@ public class UserService {
         return userRepository.save(user).getUser_id();
     }
 
+    // 구글
     public User registerOrLoginFromGoogle(GoogleUserInfo info) {
         String oauthLoginId = "google_" + info.getId();
 
@@ -64,7 +66,7 @@ public class UserService {
         return userRepository.save(u);
     }
 
-    // UserService 내 (구글 메서드와 나란히 배치)
+    // 네이버
     public User registerOrLoginFromNaver(NaverUserInfo info) {
         if (info == null || info.getId() == null || info.getId().isBlank()) {
             throw new IllegalArgumentException("Naver userinfo id is missing");
@@ -103,6 +105,36 @@ public class UserService {
         // 휴대폰
          if (info.getMobile() != null) u.setPhone_number(info.getMobile());
 
+        return userRepository.save(u);
+    }
+
+    // 카카오
+    public User registerOrLoginFromKakao(KakaoUserInfo info) {
+        System.out.println("userservice from kakao 진입");
+        String oauthLoginId = "kakao_" + info.getId();
+
+        var exist = userRepository.findByLoginId(oauthLoginId);
+        if (exist.isPresent()) return exist.get();
+
+        User u = new User();
+        u.setLogin_id(oauthLoginId);
+        u.setPassword(passwordEncoder.encode("oauth-" + UUID.randomUUID()));
+        u.setRole(ROLE.USER);
+        u.setStatus(1);
+        u.setPoint(0);
+
+        // 1) 카카오에서 이메일 가져왔으면 사용
+        String email = info.getEmail();
+
+        // 2) 없으면 임시 이메일 생성(중복 방지)
+        if (email == null || email.isBlank()) {
+            email = "kakao_" + info.getId() + "@noemail.kakao";
+        }
+        u.setEmail(email);
+
+        // 이름 = 닉네임
+        u.setName(info.getNickname());
+        System.out.println("유저 서비스에 신규 유저 들어감? : " + u);
         return userRepository.save(u);
     }
 

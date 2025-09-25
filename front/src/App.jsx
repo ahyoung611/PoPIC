@@ -30,6 +30,7 @@ import ReservationManage from "./pages/vendor/ReservationManage.jsx";
 import FieldWaiting from "./pages/vendor/FieldWaiting.jsx";
 import {AuthProvider} from "./context/AuthContext.jsx";
 import GoogleCallback from "./pages/user/GoogleCallback.jsx";
+import KakaoCallback from "./pages/user/KakaoCallback.jsx";
 
 
 function App() {
@@ -130,6 +131,7 @@ function App() {
                 </Route>
                 <Route path={"/naver/callback"} element={<NaverCallback/>}></Route>
                 <Route path={"/google/callback"} element={<GoogleCallback/>}></Route>
+                <Route path={"/kakao/callback"} element={<KakaoCallback/>}></Route>
             </Routes>
         </AuthProvider>
     )
