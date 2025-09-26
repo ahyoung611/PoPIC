@@ -120,4 +120,8 @@ public class BoardService {
         return boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Board not found: " + id));
     }
+
+    public Page<Board> findByUserId(Long userId, Pageable pageable) {
+        return boardRepository.findBoardsByUserId(userId, pageable);
+    }
 }

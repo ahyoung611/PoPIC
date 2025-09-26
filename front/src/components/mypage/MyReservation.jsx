@@ -1,21 +1,20 @@
-const MyReservation = ({reservations, formatStatus}) => {
-
+const MyReservation = ({reservations}) => {
     return (
-        <div>
-            <h3>예약 내역</h3>
-            {reservations
-                .filter(r => r.status === 1 || r.status === 0) // 예약 완료, 참여 완료
-                .map(r => (
-                    <div key={r.reservationId}>
-                        <p>팝업명: {r.popup?.store_name}</p>
-                        <p>팝업시간: {r.slot?.start_time}</p>
-                        <p>팝업장소: {r.popup?.address} {r.popup?.address_detail}</p>
-                        <p>결제금액: {r.depositAmount}</p>
-                        <p>상태: {formatStatus(r.status)}</p>
+        <div className="reservation-list">
+            {reservations.map(r => (
+                <div key={r.reservationId} className="reservation-card">
+                    <div className="thumb">
+                        <img src={r.popup?.imageUrl || "/default.jpg"} alt="popup"/>
                     </div>
-                ))}
+                    <div className="info">
+                        <p><strong>예약번호</strong> {r.reservationId}</p>
+                        <p><strong>예매일</strong> {r.slot?.start_time?.slice(0,10)}</p>
+                        <p><strong>장소</strong> {r.popup?.address} {r.popup?.address_detail}</p>
+                        <p><strong>상태</strong> 예약완료</p>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 };
-
 export default MyReservation;

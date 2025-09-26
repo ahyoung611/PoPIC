@@ -140,26 +140,21 @@ export default function BoardEditor() {
     return (
         <div className="be-wrap">
             <div className="be-card">
-                <h2 className="be-title">
-                    {mode === "create" ? "게시글 등록" : mode === "edit" ? "게시글 수정" : "게시글 상세"}
-                </h2>
 
-                {meta && mode !== "create" && (
-                    <div className="be-meta">
-                        <span>{meta.writerName}</span>
-                        <span className="be-right">
-                            <span>작성: {meta.createdAt?.slice(0, 10)}</span>
-                            {meta.updatedAt && <span>수정: {meta.updatedAt.slice(0, 10)}</span>}
-                            <span>조회 {meta.viewCount}</span>
-                        </span>
-                    </div>
-                )}
 
                 <form onSubmit={onSubmit} className="be-form">
-                    <label className="be-label" htmlFor="title">제목</label>
-                    <input id="title" className="be-input" value={title}
+                    <input id="title" className="be-title" value={title}
                            onChange={(e) => setTitle(e.target.value)} readOnly={readOnly}/>
-
+                    {meta && mode !== "create" && (
+                        <div className="be-meta">
+                            <span>{meta.writerName}</span>
+                            <span className="be-right">
+                            <span>작성: {meta.createdAt?.slice(0, 10)}</span>
+                                {meta.updatedAt && <span>수정: {meta.updatedAt.slice(0, 10)}</span>}
+                                <span>조회 {meta.viewCount}</span>
+                        </span>
+                        </div>
+                    )}
                     <label className="be-label">이미지</label>
                     {readOnly ? (
                         <div className="be-images">
