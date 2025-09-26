@@ -33,6 +33,8 @@ import KakaoCallback from "./pages/user/KakaoCallback.jsx";
 import WelcomePage from "./pages/WelcomePage.jsx";
 import PopupList from "./pages/user/PopupList.jsx";
 import {useAuth} from "./context/AuthContext.jsx";
+import MyPosts from "./pages/user/MyPosts.jsx";
+import MyReviews from "./pages/user/MyReviews.jsx";
 
 
 function App() {
@@ -118,6 +120,8 @@ function App() {
                     <Route path={"/success"} element={<SuccessPage />} />
                     <Route path={"/fail"} element={<FailPage />} />
                     <Route path={"/me/popic"} element={<MyPopic />} />
+                    <Route path={"/me/posts"} element={<MyPosts />} />
+                    <Route path={"/me/reviews"} element={<MyReviews />} />
 
                 {/*벤더 유저 Layout */}
                     <Route path={"/vendor/reservations"} element={<OperatorReservations/>}></Route>
