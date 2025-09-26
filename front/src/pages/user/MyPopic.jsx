@@ -1,13 +1,18 @@
 import {useEffect, useState} from "react";
-import { useAuth } from "../../context/AuthContext.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
+import MyReservation from "../../components/mypage/MyReservation.jsx";
+import MyWalkIn from "../../components/mypage/MyWalkIn.jsx";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
 const MyPopic = () => {
     const [reservations, setReservations] = useState([]);
+    const [walkIn, setWalkIn] = useState([]);
     const {auth, getToken} = useAuth();
     const token = getToken();
+    const [activeTab, setActiveTab] = useState("예약"); // 기본 탭
+    const [tabs, setTabs] = useState(["예약", "대기"]);
 
     const formatDateTime = (dateString) => {
         if (!dateString) return "";
@@ -21,12 +26,22 @@ const MyPopic = () => {
     };
 
     const formatStatus = (status) => {
-        if (status === 1) {
-            return "예약 완료";
-        } else if (status === -1) {
-            return "예약 취소";
-        } else if (status === 0) {
-            return "참여 완료";
+        if (activeTab === "예약") {
+            if (status === 1) {
+                return "예약 완료";
+            } else if (status === -1) {
+                return "예약 취소";
+            } else if (status === 0) {
+                return "참여 완료";
+            }
+        } else {
+            if (status === 1) {
+                return "대기 완료";
+            } else if (status === -1) {
+                return "대기 취소";
+            } else if (status === 0) {
+                return "참여 완료";
+            }
         }
     }
 
@@ -43,20 +58,39 @@ const MyPopic = () => {
             .then(res => res.json())
             .then(data => setReservations(data))
             .catch(err => console.error("예약 내역 조회 실패", err));
+
+        fetch(`${URL}/waiting/user/${userId}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            }
+        })
+            .then(res => res.json())
+            .then(data => setWalkIn(data))
+            .catch(err => console.error("대기 내역 조회 실패", err));
     }, [token]);
 
     return (
         <div>
             <h2>내 예약 내역</h2>
-            {reservations.map(r => (
-                <div key={r.reservationId}>
-                    <p>팝업명: {r.popup?.store_name}</p>
-                    <p>팝업시간: {r.slot?.start_time}</p>
-                    <p>팝업장소: {r.popup?.address} {r.popup?.address_detail}</p>
-                    <p>결제금액: {r.depositAmount}</p>
-                    <p>상태: {formatStatus(r.status)}</p>
-                </div>
-            ))}
+            <div>
+                <button onClick={() => setActiveTab("예약")}>예약</button>
+                <button onClick={() => setActiveTab("대기")}>대기</button>
+            </div>
+
+            {activeTab === "예약" && (
+                <MyReservation
+                    reservations={reservations}
+                    formatStatus={formatStatus}
+                />
+            )}
+            {activeTab === "대기" && (
+                <MyWalkIn
+                    walkIn={walkIn}
+                    formatDateTime={formatDateTime}
+                    formatStatus={formatStatus}
+                />
+            )}
         </div>
     );
 }

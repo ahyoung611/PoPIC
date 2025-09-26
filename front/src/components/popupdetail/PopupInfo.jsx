@@ -1,11 +1,14 @@
 import Button from "../commons/Button.jsx";
 import ConfirmModal from "../commons/ConfirmModal.jsx";
 import {useState} from "react";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const PopupInfo = (props) => {
     const popup = props.popup;
-    console.log(props);
     const [walkInModalOpen, setWalkInModalOpen] = useState(false);
+    const {auth, getToken} = useAuth();
+    const token = getToken();
+    const user = auth?.user;
 
     const walkInSubmit = () => {
         setWalkInModalOpen(true);
@@ -14,8 +17,11 @@ const PopupInfo = (props) => {
 
     const walkInConfirm = async () => {
         try {
-            const response = await fetch(`/waiting/create?userId=1&storeId=${popup.store_id}`, {
-                method: "POST"
+            const response = await fetch(`/waiting/create?userId=${user?.user_id}&storeId=${popup.store_id}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`, // 필요하면 토큰 포함
+                },
             });
 
             const data = await response.json();

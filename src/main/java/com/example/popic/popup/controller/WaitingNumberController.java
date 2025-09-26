@@ -4,11 +4,9 @@ import com.example.popic.popup.dto.WaitingNumberDTO;
 import com.example.popic.popup.service.WaitingNumberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,4 +24,19 @@ public class WaitingNumberController {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserWaiting(@PathVariable Long userId) {
+        try {
+            List<WaitingNumberDTO> waitings = waitingNumberService
+                    .findByUserId(userId)
+                    .stream()
+                    .map(WaitingNumberDTO::fromEntity)
+                    .toList();
+            return ResponseEntity.ok(waitings);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
 }
