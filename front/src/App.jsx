@@ -30,6 +30,9 @@ import ReservationManage from "./pages/vendor/ReservationManage.jsx";
 import FieldWaiting from "./pages/vendor/FieldWaiting.jsx";
 import {AuthProvider} from "./context/AuthContext.jsx";
 import GoogleCallback from "./pages/user/GoogleCallback.jsx";
+import KakaoCallback from "./pages/user/KakaoCallback.jsx";
+import WelcomePage from "./pages/WelcomePage.jsx";
+import PopupList from "./pages/user/PopupList.jsx";
 
 
 function App() {
@@ -85,6 +88,8 @@ function App() {
     return (
         <AuthProvider>
             <Routes>
+                <Route path={"/"} element={<WelcomePage/>}></Route>
+
                 <Route element={<FooterLayout/>}>
 
                     {/* 회원가입 & 로그인(header 필요없음) */}
@@ -93,7 +98,8 @@ function App() {
 
                     {/*일반 유저 Layout */}
                     <Route element={<UserHeaderLayout/>}>
-                        <Route path={"/"} element={<Main/>}></Route>
+                        <Route path={"/main"} element={<Main/>}></Route>
+                        <Route path={"/popupList"} element={<PopupList/>}></Route>
                         <Route path={"/popupStore/detail/:id"} element={<PopupDetail/>}></Route>
                         <Route path={"/board"} element={<BoardList/>}></Route>
                         <Route path={"/board/new"} element={<BoardEditor/>}></Route>
@@ -130,6 +136,7 @@ function App() {
                 </Route>
                 <Route path={"/naver/callback"} element={<NaverCallback/>}></Route>
                 <Route path={"/google/callback"} element={<GoogleCallback/>}></Route>
+                <Route path={"/kakao/callback"} element={<KakaoCallback/>}></Route>
             </Routes>
         </AuthProvider>
     )

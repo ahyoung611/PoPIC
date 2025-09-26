@@ -6,6 +6,7 @@ import com.example.popic.popup.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,4 +60,9 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getSlotRemaining(slotId));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<List<PopupReservationDTO>> getMyReservations(@RequestParam Long userId) {
+        List<PopupReservationDTO> reservations = reservationService.getUserReservations(userId);
+        return ResponseEntity.ok(reservations);
+    }
 }

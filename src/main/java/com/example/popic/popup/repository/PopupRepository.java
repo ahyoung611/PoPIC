@@ -52,7 +52,7 @@ public interface PopupRepository extends JpaRepository<PopupStore, Long> {
 
     List<PopupStore> findAllByStatus(int status);
 
-    // young 카테고리 팝업 (수정된 부분)
+    // young 카테고리 팝업
     @Query("SELECT DISTINCT p FROM PopupStore p JOIN p.categories c LEFT JOIN FETCH p.images i WHERE p.status = :status AND c.category_id = :categoryId")
     List<PopupStore> findAllByStatusAndCategory(@Param("status") int status, @Param("categoryId") Long categoryId);
 

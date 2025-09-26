@@ -14,8 +14,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class InquiryDTO {
     private Long id;
-    private UserDTO user;    // 사용자 번호
-    private PopupDTO popup;   // 팝업스토어 번호
+    private UserDTO user;
+    private PopupDTO popup;
+    private Long userId;    // 사용자 번호
+    private Long popupId;   // 팝업스토어 번호
     private String subject; // 제목
     private String content; // 내용
     private Boolean isPrivate; // 비공개 여부
@@ -25,6 +27,8 @@ public class InquiryDTO {
         this.id = inquiry.getInquiry_id();
         this.user = new UserDTO(inquiry.getUser());
         this.popup = new PopupDTO(inquiry.getPopup_store());
+        this.userId = inquiry.getUser().getUser_id();
+        this.popupId = inquiry.getPopup_store().getStore_id();
         this.subject = inquiry.getTitle();
         this.content = inquiry.getContent();
         this.isPrivate = inquiry.getVisibility();

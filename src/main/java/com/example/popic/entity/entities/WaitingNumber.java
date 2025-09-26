@@ -7,6 +7,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(
+        name = "waiting_number",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"store_id", "queue_number"}),
+                @UniqueConstraint(columnNames = {"store_id", "user_id"})
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor

@@ -2,10 +2,12 @@ package com.example.popic.auth.controller;
 
 
 import com.example.popic.auth.dto.GoogleUserInfo;
+import com.example.popic.auth.dto.KakaoUserInfo;
 import com.example.popic.auth.dto.LoginResponse;
 import com.example.popic.auth.dto.NaverUserInfo;
 import com.example.popic.auth.service.AuthService;
 import com.example.popic.auth.service.GoogleLoginService;
+import com.example.popic.auth.service.KakaoLoginService;
 import com.example.popic.auth.service.NaverLoginService;
 import com.example.popic.entity.entities.User;
 import com.example.popic.security.JwtUtil;
@@ -32,14 +34,16 @@ import java.nio.charset.StandardCharsets;
 public class AuthController {
     private final NaverLoginService naverLoginService;
     private final GoogleLoginService googleLoginService;
+    private final KakaoLoginService kakaoLoginService;
     private final JwtUtil jwtUtil;
     private final UserService userService;
     private final AuthService authService;
 
     @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
-    @Value("${google.redirect-uri}")
-    private String googleRedirectUri;
+//    @Value("${google.redirect-uri}")
+//    private String googleRedirectUri;
+
 
 //    @GetMapping("/naver/callback")
 //    public ResponseEntity<?> callback(@RequestParam String code, @RequestParam String state, HttpServletResponse response) {
@@ -74,7 +78,7 @@ public class AuthController {
                               @RequestParam("state") String state,
                               HttpServletResponse response) throws Exception {
 
-        System.out.println("✅ 네이버 콜백 도착, code = " + code + ", state = " + state);
+        System.out.println("네이버 콜백 도착, code = " + code + ", state = " + state);
 
         // 1) 네이버 유저 정보
         NaverUserInfo info = naverLoginService.getUserInfo(code, state);
@@ -97,7 +101,8 @@ public class AuthController {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 리다이렉트 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/?social=naver"
+        String redirect = frontendBaseUrl + "/main"
+                + "?social=naver"
                 + "&token=" + URLEncoder.encode(access, java.nio.charset.StandardCharsets.UTF_8)
                 + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), java.nio.charset.StandardCharsets.UTF_8);
 
@@ -106,11 +111,11 @@ public class AuthController {
     }
 
 
-    @PostConstruct
-    public void printGoogleRedirectUri() {
-        System.out.println("프론트 base-url     = " + frontendBaseUrl);
-        System.out.println("구글 redirect-uri   = " + googleRedirectUri);
-    }
+//    @PostConstruct
+//    public void printGoogleRedirectUri() {
+//        System.out.println("프론트 base-url     = " + frontendBaseUrl);
+//        System.out.println("구글 redirect-uri   = " + googleRedirectUri);
+//    }
 
     @GetMapping("/google/callback")
     public void googleCallback(@RequestParam("code") String code,
@@ -139,7 +144,8 @@ public class AuthController {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 리다이렉트 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/?social=google"
+        String redirect = frontendBaseUrl + "/main"
+                + "?social=google"
                 + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
                 + "&name=" + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
 
@@ -147,18 +153,57 @@ public class AuthController {
         response.setHeader("Location", redirect);
     }
 
+    @GetMapping("/kakao/callback")
+    public void kakaoCallback(@RequestParam("code") String code,
+                              @RequestParam(value="state", required=false) String state,
+                              HttpServletResponse response) throws Exception {
+
+        System.out.println("카카오 콜백 도착, code = " + code + ", state = " + state);
+
+        // 1) 카카오 유저 정보
+        KakaoUserInfo info = kakaoLoginService.getUserInfo(code, state);
+        System.out.println("컨트롤러 내 서비스 왔다 갔다 : " + info);
+
+        // 2) 없으면 가입, 있으면 조회
+        User u = userService.registerOrLoginFromKakao(info);
+        System.out.println("user 서비스 다녀옴 : " + u);
+
+        // 3) JWT
+        String access  = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
+        String refresh = jwtUtil.createRefreshToken(u.getLogin_id());
+        System.out.println("컨트롤러 jwt : " + access + refresh);
+
+        // 4) refresh httpOnly 쿠키
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
+                .httpOnly(true)
+                .secure(false)   // HTTPS면 true
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(java.time.Duration.ofDays(14))
+                .build();
+        response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        // 5) 프론트로 302 (access는 쿼리로 전달)
+        String redirect = frontendBaseUrl + "/main"
+                + "?social=kakao"
+                + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
+                + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
+
+        System.out.println("컨트롤러 리다이렉트");
+
+        response.setStatus(302);
+        response.setHeader("Location", redirect);
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("리프레시 옴?");
         try {
             // 1. 쿠키에서 refreshToken 꺼내기
             String refreshToken = extractRefreshTokenFromCookies(request);
             System.out.println(refreshToken);
             if (refreshToken == null) {
-                System.out.println("리프레시 토큰 없음 수고");
                 return ResponseEntity.status(401).body(new LoginResponse(false, "리프레시 토큰 없음"));
             }
-
 
             // 2. refreshToken 검증 및 새로운 accessToken 발급
             LoginResponse loginResponse = authService.refreshAccessToken(refreshToken);
@@ -195,7 +240,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
-        System.out.println("로그아웃 하러옴");
         var cleared = org.springframework.http.ResponseCookie.from("refreshToken", "")
                 .httpOnly(true).secure(false).sameSite("Lax").path("/").maxAge(0).build();
         return ResponseEntity.ok().header(org.springframework.http.HttpHeaders.SET_COOKIE, cleared.toString()).build();

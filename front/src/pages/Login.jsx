@@ -71,7 +71,21 @@ const Login = () => {
                 login(data.token, data.user); // context에 저장
             }
 
-            navigate("/");
+            if (data.token && data.user) {
+                const vendorId = data?.vendor?.vendor_id ?? data?.user?.vendor_id ?? null;
+
+                const mergedUser = vendorId ? { ...data.user, vendor_id: vendorId } : data.user;
+                login(data.token, mergedUser);
+                
+                // 벤더일 경우 벤더 마이페이지로
+                if ((data?.user?.role || role) === "VENDOR") {
+                    if (vendorId) navigate(`/vendor/${vendorId}/popups`);
+                    else navigate("/vendor");
+                } else {
+                    navigate("/main");
+                }
+            }
+
         } catch (err) {
             console.error(err);
             alert("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
@@ -108,7 +122,7 @@ const Login = () => {
         console.log("GOOGLE_REDIRECT_URI", import.meta.env.VITE_GOOGLE_REDIRECT_URI);
 
         const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-        const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI; // 백엔드 콜백
+        const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI; 
 
         const scope = encodeURIComponent("openid email profile");
         const url =
@@ -118,6 +132,26 @@ const Login = () => {
             `&response_type=code` +
             `&scope=${scope}` +
             `&prompt=consent`;
+        window.location.href = url;
+    };
+
+    // 카카오 로그인
+    const kakaoLogin = () => {
+        const KAKAO_REST_KEY = import.meta.env.VITE_KAKAO_REST_KEY;
+        const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
+
+        const state = crypto.randomUUID(); 
+        localStorage.setItem("kakao_oauth_state", state); 
+
+        const url =
+            `https://kauth.kakao.com/oauth/authorize` +
+            `?client_id=${KAKAO_REST_KEY}` +
+            `&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}` +
+            `&response_type=code` +
+            `&state=${state}` +
+            `&scope=${encodeURIComponent("profile_nickname profile_image")}` +
+            `&prompt=select_account`; 
+
         window.location.href = url;
     };
 
@@ -224,7 +258,7 @@ const Login = () => {
 
                     {/* 소셜 로그인 */}
                     <div className="login-socials" aria-label="소셜 로그인">
-                        <button type="button" className="login-social-btn" title="카카오 로그인">
+                        <button type="button" className="login-social-btn" title="카카오 로그인" onClick={kakaoLogin}>
                             <img src={kakao} alt="kakao" />
                         </button>
                         <button type="button" className="login-social-btn" title="네이버 로그인"

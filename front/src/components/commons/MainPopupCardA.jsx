@@ -4,15 +4,17 @@ import "../../style/mainPopupCard.css";
 import MainPopupCardImg from "./MainPopupCardImg.jsx";
 
 export default function MainPopupCardA({
-                                           image, alt, category,
+                                           popupId, alt, category,
                                            title, periodText,
                                            bookmarked, onToggleBookmark,
-                                           onClick, href = "#"
+                                           onClick
                                        }) {
+//                                            console.log("popupId", popupId);
+
     return (
-        <a href={href} className="mpc-card mpc-card--typeA" onClick={onClick}>
+         <div className="mpc-card mpc-card--typeA" onClick={onClick}>
             <MainPopupCardImg
-                image={image}
+                popupId={popupId}
                 alt={alt}
                 category={category}
                 bookmarked={bookmarked}
@@ -24,6 +26,6 @@ export default function MainPopupCardA({
                 <hr className="mpc-card__divider" />
                 <h3 className="mpc-card__title">{title}</h3>
             </div>
-        </a>
+        </div>
     );
 }
