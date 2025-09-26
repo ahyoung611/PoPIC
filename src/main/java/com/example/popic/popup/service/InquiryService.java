@@ -54,9 +54,11 @@ public class InquiryService {
     public void saveReply(InquiryRepliyDTO reply) {
         PopupStore store = popupRepository.findById(reply.getPopup_id()).orElse(null);
         Vendor vendor = vendorRepository.findById(reply.getVendor().getVendor_id()).orElse(null);
+        Inquiry inquiry = inquiryRepository.findById(reply.getInquiry_id()).orElse(null);
 
 
         InquiryReply inquiryReply = InquiryReply.builder()
+                .inquiry(inquiry)
                 .content(reply.getContent())
                 .popup_store(store)
                 .vendor(vendor)
