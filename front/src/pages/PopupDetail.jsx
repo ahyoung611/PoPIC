@@ -72,11 +72,11 @@ const PopupDetail = () => {
 
                         <div className={"menu-tab"}>
                             {tabs.map((tab) => (
-                                <Button
+                                <button
                                     key={tab}
                                     className={activeTab === tab ? "tab active" : "tab"}
                                     onClick={() => loginMsg(tab)}
-                                >{tab}</Button>
+                                >{tab}</button>
                             ))}
                         </div>
 

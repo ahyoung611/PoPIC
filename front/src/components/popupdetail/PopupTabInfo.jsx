@@ -1,15 +1,17 @@
 import {useEffect, useState} from "react";
 import apiRequest from "../../utils/apiRequest.js";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const PopupTabInfo = (props)=>{
     const [popupSchedule, setPopupSchedule] = useState([]);
+    const token = useAuth().getToken();
 
     useEffect(()=>{
 
         const fetchPopupDetail = async () => {
             const response = await apiRequest(`/popupStore/popupSchedule?popupId=`+ props.popup.store_id, {
                 credentials: "include",
-            });
+            },token);
             setPopupSchedule(response);
             console.log(response);
         }
@@ -53,7 +55,7 @@ const PopupTabInfo = (props)=>{
                 window.kakao.maps.load(initKakaoMap);
             };
         }
-    },[props.popup])
+    },[props.popup, token])
 
     function copyLocation(){
         const textToCopy = props.popup.address + " " + props.popup.address_detail;
@@ -75,20 +77,20 @@ const PopupTabInfo = (props)=>{
     return(
         <div className={"popup-tab-info"}>
             <div className={"open-time"}>
-                <h3>운영시간</h3>
+                <h3 className={"title"}>운영시간</h3>
                 {uniqueSchedule.map((item,index)=>(
                     <p key={index}>{item}</p>
                 ))}
             </div>
             <div className={"popup-description"}>
-                <h3>팝업스토어 소개</h3>
+                <h3 className={"title"}>팝업스토어 소개</h3>
                 <div className={"content"}>
                     {props.popup.description}
                 </div>
             </div>
 
             <div className={"popup-location"}>
-                <h3>오시는 길</h3>
+                <h3 className={"title"}>오시는 길</h3>
                 <div id={"map"}></div>
                 <p className={"copyLocation"} onClick={copyLocation}>{props.popup.address + " " + props.popup.address_detail}</p>
             </div>
