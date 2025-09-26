@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import apiRequest from "../../utils/apiRequest.js";
 import Button from "../commons/Button.jsx";
 import ReviewModal from "./ReviewModal.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const PopupReview = (props)=>{
     const [review, setReview] = useState([]);
@@ -9,11 +10,12 @@ const PopupReview = (props)=>{
     const [isModalOpen, setIsModalOpen] = useState(false);
     const keywordRef = useRef("");
     const [idx, setIdx] = useState(0);
+    const token = useAuth().getToken();
 
     const fetchReview = async () => {
         const response = await apiRequest(`/popupStore/popupReview?popupId=` + props.popup.store_id , {
             credentials: "include",
-        });
+        },token);
         setReview(response);
     }
 
@@ -22,18 +24,18 @@ const PopupReview = (props)=>{
         const fetchReviewReply = async () => {
             const response = await apiRequest(`/popupStore/popupReviewReply?popupId=${props.popup.store_id}`, {
                 credentials: "include",
-            });
+            },token);
             setReviewReply(response);
         }
         fetchReviewReply();
-    },[])
+    },[token])
 
     const reviewSearchHandler = ()=>{
         const keyword = keywordRef.current.value;
         const fetchSearchReview = async () => {
             const response = await apiRequest(`/popupStore/popupReview?popupId=` + props.popup.store_id + "&keyword=" + keyword , {
                 credentials: "include",
-            });
+            },token);
             setReview(response);
         }
         fetchSearchReview();

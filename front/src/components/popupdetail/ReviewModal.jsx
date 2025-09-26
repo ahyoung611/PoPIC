@@ -1,11 +1,13 @@
 import { useState } from "react";
 import Button from "../commons/Button.jsx";
 import apiRequest from "../../utils/apiRequest.js";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const ReviewModal = ({ isOpen, onClose, popupId, onSubmitSuccess }) => {
     const [reviewTitle, setReviewTitle] = useState("");
     const [reviewContent, setReviewContent] = useState("");
     const [reviewFile, setReviewFile] = useState(null);
+    const token = useAuth().getToken();
 
     if (!isOpen) return null;
 
@@ -31,7 +33,7 @@ const ReviewModal = ({ isOpen, onClose, popupId, onSubmitSuccess }) => {
             await apiRequest(`/popupStore/popupReview`, {
                 method: "POST",
                 body: formData,
-            });
+            },token);
 
             alert("리뷰가 등록되었습니다.");
             onSubmitSuccess();
