@@ -1,5 +1,5 @@
 .popupStore-detail {
-    text-align: center;
+    /*text-align: center;*/
 }
 
 /* 이미지 슬라이더 */
@@ -14,7 +14,6 @@
 }
 
 .popupStore-detail .photo-slider img.popup-image {
-    width: 100%;
     height: 400px;
     object-fit: cover;
     transition: transform 0.5s ease, opacity 0.5s ease;
@@ -57,6 +56,51 @@
 .popupStore-detail .photo-slider .arrow.right {
     right: 10px;
 }
+
+/* 팝업 탭 css 시작 */
+.popupStore-detail .menu-tab {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 12px;
+}
+
+.popupStore-detail .tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--black-color);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.popupStore-detail .tab:hover {
+    font-weight: 600;
+}
+
+.popupStore-detail .tab.active {
+    font-weight: 600;
+}
+
+.popupStore-detail .tab.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 3.5px;
+    background-color: var(--main-color);
+    border-radius: 100px;
+}
+
+/* 팝업 탭 css 끝 */
+
 
 /* 팝업 상세 이미지 */
 .popupStore-detail .popup-image {
@@ -117,3 +161,145 @@
     min-height: 100px;
     resize: vertical;
 }
+
+/* 팝업 정보 표시 css 시작 */
+
+.popupStore-detail .popupInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 8px 0;
+}
+
+.popupStore-detail .popup-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.popupStore-detail .popup-title .title {
+    font-size: var(--font-subtitle);
+    font-weight: bold;
+    margin: 0;
+}
+
+.popupStore-detail .popup-date,
+.popupStore-detail .popup-address {
+    font-size: var(--font-small);
+    color: var(--black-color);
+}
+
+.popupStore-detail .popup-right {
+    flex-shrink: 0;
+}
+
+/* 팝업 정보 표시 css 끝 */
+
+/* 팝업 tab info  css 시작 */
+.popupStore-detail .popup-tab-info{
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.popupStore-detail .popup-tab-info .title{
+    font-size: var(--font-subtitle);
+}
+
+.popupStore-detail .popup-tab-info .open-time{
+    margin: 7px 0;
+}
+
+.popupStore-detail .popup-tab-info .open-time p{
+    margin: 5px 0;
+    font-size: var(--font-small);
+}
+
+.popupStore-detail .popup-tab-info .popup-description{
+    margin: 7px 0;
+}
+
+.popupStore-detail .popup-tab-info .popup-description .title{
+    margin-bottom: 7px;
+}
+
+.popupStore-detail .popup-tab-info .popup-description .content{
+    background-color: var(--bg-color);
+    padding: 13px;
+    border-radius: 4px;
+}
+
+.popupStore-detail .popup-tab-info .popup-location{
+    margin: 7px 0;
+}
+
+.popupStore-detail .popup-tab-info .popup-location .title{
+    margin-bottom: 12px;
+}
+
+.popupStore-detail .popup-tab-info .popup-location .copyLocation{
+    font-size: var(--font-small);
+    margin-top: 8px;
+}
+
+/* 팝업 tab info  css 끝 */
+
+/* 팝업 예약 컴포넌트 css 시작 */
+
+.popupStore-detail .popupReservation .reservation-number-input{
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-base);
+}
+
+.popupStore-detail .popupReservation .reservation-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 130px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--white-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.popupStore-detail .popupReservation .reservation-btn button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #616161;
+    cursor: pointer;
+    padding: 0 15px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.popupStore-detail .popupReservation .reservation-btn button:hover {
+    background-color: #f5f5f5;
+}
+
+.popupStore-detail .popupReservation .reservation-btn span {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    flex-grow: 1; /* Allows the span to take available space */
+    text-align: center;
+    padding: 0 5px; /* Adjust padding around the number */
+}
+
+.popupStore-detail .popupReservation .reservation-btn .minus {
+    border-right: 1px solid #e0e0e0;
+}
+
+.popupStore-detail .popupReservation .reservation-btn .plus {
+    border-left: 1px solid #e0e0e0;
+}
+
+
+/* 팝업 예약 컴포넌트 css 끝 */
