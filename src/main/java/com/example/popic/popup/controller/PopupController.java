@@ -102,13 +102,15 @@ public class PopupController {
     }
 
     @PostMapping("/inquiryReply")
-    public ResponseEntity<?> createReply( @RequestBody InquiryRepliyDTO reply, Authentication authentication) {
+    public ResponseEntity<?> createReply( @RequestBody InquiryRepliyDTO reply,
+                                          Authentication authentication) {
 
         // 로그인 벤더 정보 가져오기
         CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
         System.out.println("principal" + principal);
 
         reply.setVendor(new VendorDTO(vendorRepository.findById(principal.getId()).orElse(null)));
+
 
         inquiryService.saveReply(reply);
 
