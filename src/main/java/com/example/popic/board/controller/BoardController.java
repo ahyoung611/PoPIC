@@ -129,4 +129,24 @@ public class BoardController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Page<BoardDTO>> findByUserId(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "created_at") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
+        Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
+
+        Page<Board> result = boardService.findByUserId(userId, pageable);
+        return ResponseEntity.ok(result.map(BoardDTO::fromEntity));
+    }
+
+    @PostMapping("/{id:\\d+}/views")
+    public ResponseEntity<Void> increaseViewCount(@PathVariable Long id) {
+        boardService.increaseView(id);
+        return ResponseEntity.ok().build();
+    }
 }
