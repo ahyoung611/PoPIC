@@ -203,9 +203,9 @@ export default function PopupReservationCalendar({popup, value, onChange}) {
 
             {/* Time Slots */}
             <div>
-                <div className="mb-3" style={{fontWeight: 600}}>
-                    {selectedDate ? `${selectedDate} 예약 가능 시간` : "날짜를 먼저 선택하세요"}
-                </div>
+                {/*<div className="mb-3" style={{fontWeight: 600}}>*/}
+                {/*    {selectedDate ? `${selectedDate} 예약 가능 시간` : "날짜를 먼저 선택하세요"}*/}
+                {/*</div>*/}
 
                 {loadingSlots ? (
                     <div className="pr-note">시간 불러오는 중…</div>

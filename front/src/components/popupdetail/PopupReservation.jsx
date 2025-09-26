@@ -62,25 +62,27 @@ const PopupReservation = (props) => {
             </div>
 
             <div className={"reservation-number-input"}>
-                입장 예약{" "}
-                {selectedSlot ? `${selectedSlot.capacity}명 (남은 ${selectedSlot.capacity - selectedSlot.reserved_count}명)` : "슬롯을 선택하세요"}
-                <button className={"minus"} onClick={() => {
-                    if (reservationNumber > 1) {
-                        setReservationNumber(prev => prev - 1);
-                    } else {
-                        alert("최소 1명 이상 예약 가능합니다");
-                    }
-                }}>-
-                </button>
-                <span>{reservationNumber}명</span>
-                <button className={"plus"} onClick={() => {
-                    if (reservationNumber <= 1) {
-                        setReservationNumber(prev => prev + 1);
-                    } else {
-                        alert("최대 2명 까지 예약 가능합니다");
-                    }
-                }}>+
-                </button>
+                <span className={"title"}>입장 예약{" "}</span>
+                {selectedSlot ? `${selectedSlot.capacity}명` : "슬롯을 선택하세요"}
+                <div className={"reservation-btn"}>
+                    <button className={"minus"} onClick={() => {
+                        if (reservationNumber > 1) {
+                            setReservationNumber(prev => prev - 1);
+                        } else {
+                            alert("최소 1명 이상 예약 가능합니다");
+                        }
+                    }}>-
+                    </button>
+                    <span>{reservationNumber}명</span>
+                    <button className={"plus"} onClick={() => {
+                        if (reservationNumber <= 1) {
+                            setReservationNumber(prev => prev + 1);
+                        } else {
+                            alert("최대 2명 까지 예약 가능합니다");
+                        }
+                    }}>+
+                    </button>
+                </div>
             </div>
 
             <div className={"reservation-submit"}>
