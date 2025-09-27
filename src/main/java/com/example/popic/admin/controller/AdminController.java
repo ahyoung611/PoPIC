@@ -20,6 +20,7 @@ public class AdminController {
     @GetMapping("/popup")
     public ResponseEntity<List<PopupDTO>> getPopupStatus(@RequestParam(name="sort", defaultValue = "")String sort,
                                                          @RequestParam(name="keyword", defaultValue = "")String keyword){
+        System.out.println("adminPopup 진입");
         List<PopupDTO> list = adminService.getPopupStatus(sort, keyword);
         return ResponseEntity.ok(list);
     }
