@@ -8,6 +8,8 @@ import com.example.popic.popup.repository.PopupRepository;
 import com.example.popic.popup.repository.PopupReviewRepository;
 import com.example.popic.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.swing.*;
@@ -31,5 +33,10 @@ public class PopupReviewService {
                 .build();
 
         return popupReviewRepository.save(review);
+    }
+
+    public Page<PopupReviewDTO> findReviewsByUserId(Long userId, Pageable pageable) {
+        return popupReviewRepository.findByUserId(userId, pageable)
+                .map(PopupReviewDTO::new);
     }
 }

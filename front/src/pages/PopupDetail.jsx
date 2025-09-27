@@ -7,18 +7,19 @@ import PopupReservation from "../components/popupdetail/PopupReservation.jsx";
 import PopupReview from "../components/popupdetail/PopupReview.jsx";
 import PopupTabInfo from "../components/popupdetail/PopupTabInfo.jsx";
 import PopupInquiry from "../components/popupdetail/PopupInquiry.jsx";
-import Button from "../components/commons/Button.jsx";
 import QrCode from "../components/qr/QrCode.jsx";
 import {useAuth} from "../context/AuthContext.jsx"
-import {useParams} from "react-router-dom";
+import {useLocation, useParams} from "react-router-dom";
 import PopupReservationModal from "../components/popupdetail/PopupReservationModal.jsx";
 
 const PopupDetail = () => {
-    const { auth } = useAuth();
+    const {auth} = useAuth();
     const token = auth?.token;
     const user = auth?.user;
     const [popupDetail, setPopupDetail] = useState(null);
-    const [activeTab, setActiveTab] = useState("팝업 정보"); // 기본 탭
+    const location = useLocation();
+    const initTab = location.state?.tab || "팝업 정보";
+    const [activeTab, setActiveTab] = useState(initTab); // 기본 탭 | 리뷰에서 넘어올 때는 리뷰 탭으로 바로 갈 수 있게 설정
     const [tabs, setTabs] = useState(["팝업 정보", "예약", "리뷰", "문의"]);
     const {id} = useParams();
 

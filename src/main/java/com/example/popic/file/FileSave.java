@@ -31,7 +31,10 @@ public class FileSave {
             String originalName = file.getOriginalFilename();
             int dotIndex = originalName.lastIndexOf(".");
             String ext = (dotIndex != -1) ? originalName.substring(dotIndex) : "";
-            String savedName = UUID.randomUUID() + "_" + originalName + ext;
+            // 원본 이름에서 확장자 제거
+            String baseName = (dotIndex != -1) ? originalName.substring(0, dotIndex) : originalName;
+
+            String savedName = UUID.randomUUID() + "_" + baseName + ext;
 
             File destination = new File(uploadDir, savedName);
             file.transferTo(destination);

@@ -13,6 +13,10 @@ import com.example.popic.popup.service.PopupService;
 import com.example.popic.vendor.dto.VendorDTO;
 import com.example.popic.vendor.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -73,6 +77,26 @@ public class PopupController {
         return ResponseEntity.ok(new PopupReviewDTO());
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserReviews(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
+        // PageRequest 객체로 페이징 처리
+        Pageable pageable = PageRequest.of(page, size,
+                "desc".equalsIgnoreCase(direction)
+                        ? Sort.by(sortBy).descending()
+                        : Sort.by(sortBy).ascending());
+
+        Page<PopupReviewDTO> reviewPage = popupReviewService.findReviewsByUserId(userId, pageable);
+
+        return ResponseEntity.ok(reviewPage);
+    }
+
+
     @GetMapping("/popupReviewReply")
     public ResponseEntity<List<ReviewReplyDTO>> getReviewReply(@RequestParam(name = "popupId") Long id){
         List<ReviewReplyDTO> reviewReplies = popupService.getReviewReply(id);
@@ -127,21 +151,6 @@ public class PopupController {
         return ResponseEntity.ok(popupService.getSchedulesOfMonth(popupId, year, month));
     }
 
-//    @GetMapping("/{popupId}/slots")
-//    public ResponseEntity<List<PopupStoreSlot>> getSlotsOfDate(
-//            @PathVariable Long popupId,
-//            @RequestParam String date
-//    ) {
-//        return ResponseEntity.ok(popupService.getSlotsOfDate(popupId, date));
-//    }
-
-//    @PostMapping("/reservations")
-//    public ResponseEntity<PopupReservationDTO> createReservation(
-//            @RequestBody PopupReservationDTO req
-//    ) {
-//        return ResponseEntity.ok(popupService.reserve(req));
-//    }
-//
     @GetMapping("/slots")
     public ResponseEntity<List<SlotDTO>> getSlots(
             @RequestParam("popupId") Long popupId,
@@ -161,7 +170,6 @@ public class PopupController {
     @GetMapping("/category")
     public ResponseEntity<List<PopupDTO>> getPopupsByCategory(
             @RequestParam(name = "category", required = false) String categoryId) {
-        System.out.println("받은 categoryId = " + categoryId);
 
         List<PopupDTO> list;
         if (categoryId == null || categoryId.isEmpty() || "all".equals(categoryId)) {
