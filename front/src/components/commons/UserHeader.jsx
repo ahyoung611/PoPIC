@@ -21,7 +21,7 @@ export default function UserHeader() {
     const linkClass = ({ isActive }) => `header__link ${isActive ? "is-active" : ""}`;
     const onLogout = () => {
         logout?.();
-        nav("/", { replace: true });
+        nav("/main", { replace: true });
     };
 
     const myPagePath = myId ? `/userMyPage/${myId}` : "/login";

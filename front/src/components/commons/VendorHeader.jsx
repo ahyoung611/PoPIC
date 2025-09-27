@@ -24,7 +24,7 @@ export default function VendorHeader() {
 
     const onLogout = () => {
         logout?.();
-        nav("/", { replace: true }); // 로그아웃 후 홈으로
+        nav("/main", { replace: true }); // 로그아웃 후 홈으로
     };
 
     const loginPath        = "/login";

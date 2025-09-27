@@ -104,6 +104,16 @@ public class PopupController {
         return ResponseEntity.ok(reviewReplies);
     }
 
+    @PostMapping("/popupReviewReply")
+    public ResponseEntity<Void> createReviewReply(@RequestBody ReviewReplyDTO replyDTO,
+                                                  Authentication authentication){
+        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+        replyDTO.setVendor(customUserPrincipal.getId());
+        popupReviewService.saveReply(replyDTO);
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/inquiry")
     public ResponseEntity<List<InquiryDTO>> getInquiry(@RequestParam(name = "popupId")Long popupId){
         List<InquiryDTO> inquiryDTOList = inquiryService.findAllByPopupId(popupId);
