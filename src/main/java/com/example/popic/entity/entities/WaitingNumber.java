@@ -31,6 +31,11 @@ public class WaitingNumber {
     @JoinColumn(name = "store_id", nullable = false)
     private PopupStore store;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_waiting_number_schedule"))
+    private PopupStoreSchedule schedule;
+
     @Column(nullable = false)
     private Integer queue_number; // 순번 (1,2,3...)
 

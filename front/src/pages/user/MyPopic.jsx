@@ -66,6 +66,7 @@ const MyPopic = () => {
             .catch(err => console.error("대기 내역 조회 실패", err));
     }, [auth?.user?.user_id, token]);
 
+
     useEffect(() => setResPage(1), [reservations]);
     useEffect(() => setWalkPage(1), [walkIn]);
 

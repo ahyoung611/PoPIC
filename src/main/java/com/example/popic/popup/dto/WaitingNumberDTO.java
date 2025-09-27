@@ -21,26 +21,35 @@ public class WaitingNumberDTO {
     private int status;
     private LocalDateTime createdAt;
     private LocalDateTime callTime;
+    private PopupDTO popup;
 
-
-    public WaitingNumberDTO(Long id, Integer queueNumber, int status) {
+    public WaitingNumberDTO(Long id, Long userId, Long storeId, String storeName, String address, String addressDetail, Integer queueNumber, int status, LocalDateTime createdAt, LocalDateTime callTime) {
         this.id = id;
+        this.userId = userId;
+        this.storeId = storeId;
+        this.storeName = storeName;
+        this.address = address;
+        this.addressDetail = addressDetail;
         this.queueNumber = queueNumber;
         this.status = status;
+        this.createdAt = createdAt;
+        this.callTime = callTime;
     }
 
-    public static WaitingNumberDTO fromEntity(WaitingNumber waitingNumber) {
-        return new WaitingNumberDTO(
-                waitingNumber.getId(),
-                waitingNumber.getUser().getUser_id(),
-                waitingNumber.getStore().getStore_id(),
-                waitingNumber.getStore().getStore_name(),
-                waitingNumber.getStore().getAddress().getCity() + " " + waitingNumber.getStore().getAddress().getDistrict(),
-                waitingNumber.getStore().getAddress_detail(),
-                waitingNumber.getQueue_number(),
-                waitingNumber.getStatus(),
-                waitingNumber.getCreated_at(),
-                waitingNumber.getCall_time()
+    public static WaitingNumberDTO fromEntity(WaitingNumber w) {
+        var dto = new WaitingNumberDTO(
+                w.getId(),
+                w.getUser().getUser_id(),
+                w.getStore().getStore_id(),
+                w.getStore().getStore_name(),
+                w.getStore().getAddress().getCity() + " " + w.getStore().getAddress().getDistrict(),
+                w.getStore().getAddress_detail(),
+                w.getQueue_number(),
+                w.getStatus(),
+                w.getCreated_at(),
+                w.getCall_time()
         );
+        dto.setPopup(new PopupDTO(w.getStore()));
+        return dto;
     }
 }
