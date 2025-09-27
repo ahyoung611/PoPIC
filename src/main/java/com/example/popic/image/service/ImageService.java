@@ -14,8 +14,10 @@ public class ImageService {
     private  final ImageRepository imageRepository;
 
     public ImageDTO findById(Long imageId) {
+//        Optional<Image> image = imageRepository.findById(imageId);
+//
+//        return new ImageDTO(image);
         Optional<Image> image = imageRepository.findById(imageId);
-
-        return new ImageDTO(image);
+        return image.map(ImageDTO::new).orElse(null);
     }
 }

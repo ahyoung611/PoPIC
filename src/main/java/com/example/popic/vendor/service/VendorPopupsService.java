@@ -5,6 +5,7 @@ import com.example.popic.entity.entities.Image;
 import com.example.popic.entity.entities.PopupStore;
 import com.example.popic.entity.entities.Vendor;
 import com.example.popic.file.FileSave;
+import com.example.popic.image.dto.ImageDTO;
 import com.example.popic.image.repository.ImageRepository;
 import com.example.popic.popup.dto.PopupDTO;
 import com.example.popic.vendor.controller.VendorPopupsController;
@@ -179,6 +180,11 @@ public class VendorPopupsService {
 
         PopupDTO dto = new PopupDTO(store);
 
+        List<ImageDTO> images = store.getImages().stream()
+                .map(ImageDTO::new) // ImageDTO(Image entity) constructor 사용
+                .toList();
+        dto.setImages_detail(images);
+
         var schedules = repository.findSchedulesByStoreId(id);
         if (!schedules.isEmpty()) {
             Set<String> days = new LinkedHashSet<>();
@@ -294,30 +300,16 @@ public class VendorPopupsService {
         PopupStore store = repository.findStoreById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("popup not found: " + storeId));
         List<Image> images = new ArrayList<>();
-        Path folder = Paths.get(uploadPath, "popup");
-        try { Files.createDirectories(folder); } catch (Exception e) {
-            throw new RuntimeException("업로드 폴더 생성 실패: " + folder, e);
+        for (MultipartFile file : files) {
+            String savedName = FileSave.fileSave("popup", file);
+
+            Image img = Image.builder()
+                    .original_name(file.getOriginalFilename())
+                    .saved_name(savedName)
+                    .popupStore(store)
+                    .build();
+            imageRepository.save(img);
         }
-        for (MultipartFile mf : (files == null ? List.<MultipartFile>of() : files)) {
-            if (mf.isEmpty()) continue;
-            String ext = Optional.ofNullable(mf.getOriginalFilename())
-                    .filter(StringUtils::hasText)
-                    .map(fn -> { int i = fn.lastIndexOf('.'); return i >= 0 ? fn.substring(i + 1) : null; })
-                    .orElse(null);
-            String saved = UUID.randomUUID() + (ext != null ? "." + ext.toLowerCase() : "");
-            Path target = folder.resolve(saved);
-            try (InputStream in = mf.getInputStream()) {
-                Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
-            } catch (Exception e) {
-                throw new RuntimeException("파일 저장 실패: " + mf.getOriginalFilename(), e);
-            }
-            Image img = new Image();
-            img.setOriginal_name(mf.getOriginalFilename());
-            img.setSaved_name(saved);
-            img.setPopupStore(store);
-            images.add(img);
-        }
-        repository.saveImages(images);
         return images.stream().map(Image::getImage_id).toList();
     }
 

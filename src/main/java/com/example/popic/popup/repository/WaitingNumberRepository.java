@@ -8,11 +8,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface WaitingNumberRepository extends JpaRepository<WaitingNumber, Long> {
-    @Query("SELECT MAX(w.queue_number) FROM WaitingNumber w WHERE w.store = :store")
-    Optional<Integer> findMaxQueueNumberByStore(@Param("store") PopupStore store);
+    @Query("SELECT MAX(w.queue_number) FROM WaitingNumber w WHERE w.store.store_id = :storeId")
+    Optional<Integer> findMaxQueueNumberByStoreId(@Param("storeId") Long storeId);
 
     boolean existsByStoreAndUserAndStatus(PopupStore store, User user, int status);
+
+    List<WaitingNumber> findByUser(User user);
 }

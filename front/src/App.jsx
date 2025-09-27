@@ -28,14 +28,19 @@ import MyPopic from "./pages/user/MyPopic.jsx";
 import UserProfile from "./pages/user/UserProfile.jsx";
 import ReservationManage from "./pages/vendor/ReservationManage.jsx";
 import FieldWaiting from "./pages/vendor/FieldWaiting.jsx";
-import {AuthProvider} from "./context/AuthContext.jsx";
 import GoogleCallback from "./pages/user/GoogleCallback.jsx";
 import KakaoCallback from "./pages/user/KakaoCallback.jsx";
 import WelcomePage from "./pages/WelcomePage.jsx";
 import PopupList from "./pages/user/PopupList.jsx";
+import {useAuth} from "./context/AuthContext.jsx";
+import MyPosts from "./pages/user/MyPosts.jsx";
+import MyReviews from "./pages/user/MyReviews.jsx";
 
 
 function App() {
+    const { getUser } = useAuth();
+    const user = getUser();
+    const role = user?.role ?? "GUEST";
 
     function UserHeaderLayout() {
         return (
@@ -85,60 +90,63 @@ function App() {
         )
     }
 
+    let Layout;
+    if (role === "VENDOR") Layout = VendorHeaderLayout;
+    else if (role === "ADMIN") Layout = AdminHeaderLayout;
+    else Layout = UserHeaderLayout;
+
     return (
-        <AuthProvider>
-            <Routes>
-                <Route path={"/"} element={<WelcomePage/>}></Route>
+        <Routes>
+            <Route path={"/"} element={<WelcomePage/>}></Route>
 
-                <Route element={<FooterLayout/>}>
+            <Route element={<FooterLayout/>}>
 
-                    {/* 회원가입 & 로그인(header 필요없음) */}
-                    <Route path={"/join"} element={<Join/>}></Route>
-                    <Route path={"/login"} element={<Login/>}></Route>
+                {/* 회원가입 & 로그인(header 필요없음) */}
+                <Route path={"/join"} element={<Join/>}></Route>
+                <Route path={"/login"} element={<Login/>}></Route>
 
-                    {/*일반 유저 Layout */}
-                    <Route element={<UserHeaderLayout/>}>
-                        <Route path={"/main"} element={<Main/>}></Route>
-                        <Route path={"/popupList"} element={<PopupList/>}></Route>
-                        <Route path={"/popupStore/detail/:id"} element={<PopupDetail/>}></Route>
-                        <Route path={"/board"} element={<BoardList/>}></Route>
-                        <Route path={"/board/new"} element={<BoardEditor/>}></Route>
-                        <Route path={"/board/:id"} element={<BoardEditor/>}></Route>
-                        <Route path={"/board/edit/:id"} element={<BoardEditor/>}></Route>
-                        <Route path={"/userMyPage/:userId"} element={<UserMyPage/>} />
-                        <Route path={"/userMyPage/profile/:userId"} element={<UserProfile />} />
-                        <Route path={"/checkout"} element={<CheckoutPage/>}></Route>
-                        <Route path={"/success"} element={<SuccessPage />} />
-                        <Route path={"/fail"} element={<FailPage />} />
-                        <Route path={"/me/popic"} element={<MyPopic />} />
-                    </Route>
+                {/*일반 유저 Layout */}
+                <Route element={<Layout/>}>
+                    <Route path={"/main"} element={<Main/>}></Route>
+                    <Route path={"/popupList"} element={<PopupList/>}></Route>
+                    <Route path={"/popupStore/detail/:id"} element={<PopupDetail/>}></Route>
+                    <Route path={"/board"} element={<BoardList/>}></Route>
+                    <Route path={"/board/new"} element={<BoardEditor/>}></Route>
+                    <Route path={"/board/:id"} element={<BoardEditor/>}></Route>
+                    <Route path={"/board/edit/:id"} element={<BoardEditor/>}></Route>
+                    <Route path={"/userMyPage/:userId"} element={<UserMyPage/>} />
+                    <Route path={"/userMyPage/profile/:userId"} element={<UserProfile />} />
+                    <Route path={"/checkout"} element={<CheckoutPage/>}></Route>
+                    <Route path={"/success"} element={<SuccessPage />} />
+                    <Route path={"/fail"} element={<FailPage />} />
+                    <Route path={"/me/popic"} element={<MyPopic />} />
+                    <Route path={"/me/posts"} element={<MyPosts />} />
+                    <Route path={"/me/reviews"} element={<MyReviews />} />
 
-                    {/*벤더 유저 Layout */}
-                    <Route element={<VendorHeaderLayout/>}>
-                        <Route path={"/vendor/reservations"} element={<OperatorReservations/>}></Route>
-                        <Route path={"/vendor/onsite"} element={<OperatorOnsite/>}></Route>
-                        <Route path="/vendor/:vendorId/popups" element={<VendorMain/>} />
-                        <Route path="/vendor/:vendorId/popups/new" element={<VendorPopupForm/>} />
-                        <Route path={"/vendor/:vendorId/reservations"} element={<ReservationManage/>}></Route>
-                        <Route path={"/vendor/:vendorId/onsite"} element={<FieldWaiting/>}></Route>
-                        <Route path="/vendor/:vendorId/popups/edit/:popupId" element={<VendorPopupForm/>} />
-                        <Route path="/vendor/myPage/:vendorId" element={<VendorMyPage/>} />
-                    </Route>
+                {/*벤더 유저 Layout */}
+                    <Route path={"/vendor/reservations"} element={<OperatorReservations/>}></Route>
+                    <Route path={"/vendor/onsite"} element={<OperatorOnsite/>}></Route>
+                    <Route path="/vendor/:vendorId/popups" element={<VendorMain/>} />
+                    <Route path="/vendor/:vendorId/popups/new" element={<VendorPopupForm/>} />
+                    <Route path={"/vendor/:vendorId/reservations"} element={<ReservationManage/>}></Route>
+                    <Route path={"/vendor/:vendorId/onsite"} element={<FieldWaiting/>}></Route>
+                    <Route path="/vendor/:vendorId/popups/edit/:popupId" element={<VendorPopupForm/>} />
+                    <Route path="/vendor/myPage/:vendorId" element={<VendorMyPage/>} />
 
-                    {/*어드민 Layout */}
-                    <Route element={<AdminHeaderLayout/>}>
-                        <Route path="/admin" element={<AdminMain/>}></Route>
-                        <Route path="/admin/popupManage" element={<AdminPopup/>}></Route>
-                        <Route path="/admin/vendorManage" element={<AdminVendor/>}></Route>
-                        <Route path="/admin/userManage" element={<AdminUser/>}></Route>
-                    </Route>
-
+                {/*어드민 Layout */}
+                    <Route path="/admin" element={<AdminMain/>}></Route>
+                    <Route path="/admin/popupManage" element={<AdminPopup/>}></Route>
+                    <Route path="/admin/vendorManage" element={<AdminVendor/>}></Route>
+                    <Route path="/admin/userManage" element={<AdminUser/>}></Route>
                 </Route>
-                <Route path={"/naver/callback"} element={<NaverCallback/>}></Route>
-                <Route path={"/google/callback"} element={<GoogleCallback/>}></Route>
-                <Route path={"/kakao/callback"} element={<KakaoCallback/>}></Route>
-            </Routes>
-        </AuthProvider>
+
+            </Route>
+
+            {/*Callback 경로*/}
+            <Route path={"/naver/callback"} element={<NaverCallback/>}></Route>
+            <Route path={"/google/callback"} element={<GoogleCallback/>}></Route>
+            <Route path={"/kakao/callback"} element={<KakaoCallback/>}></Route>
+        </Routes>
     )
 }
 

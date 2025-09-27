@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class WaitingNumberService {
             throw new RuntimeException("이미 대기 중입니다.");
         }
 
-        Integer lastQueue = waitingNumberRepository.findMaxQueueNumberByStore(store).orElse(0);
+        Integer lastQueue = waitingNumberRepository.findMaxQueueNumberByStoreId(store.getStore_id()).orElse(0);
 
         WaitingNumber waitingNumber = new WaitingNumber();
         waitingNumber.setUser(user);
@@ -50,4 +51,11 @@ public class WaitingNumberService {
 
         return waitingNumberRepository.save(waitingNumber);
     }
+
+    public List<WaitingNumber> findByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return waitingNumberRepository.findByUser(user);
+    }
+
 }

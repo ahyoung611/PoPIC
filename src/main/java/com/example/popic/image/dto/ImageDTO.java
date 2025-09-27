@@ -15,8 +15,15 @@ public class ImageDTO {
     private String original_name;
     private String saved_name;
 
-    public ImageDTO(Optional<Image> entity) {
-        this.image_id = entity.get().getImage_id();
-        this.saved_name = entity.get().getSaved_name();
+//    public ImageDTO(Optional<Image> entity) {
+//        this.image_id = entity.get().getImage_id();
+//        this.saved_name = entity.get().getSaved_name();
+//        this.original_name = entity.get().getOriginal_name();
+//    }
+
+    public ImageDTO(Image entity) {
+        this.image_id = entity.getImage_id();
+        this.saved_name = entity.getSaved_name();
+        this.original_name = entity.getOriginal_name();
     }
 }
