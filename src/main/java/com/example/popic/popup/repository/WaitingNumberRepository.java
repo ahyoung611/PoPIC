@@ -12,10 +12,19 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WaitingNumberRepository extends JpaRepository<WaitingNumber, Long> {
-    @Query("SELECT MAX(w.queue_number) FROM WaitingNumber w WHERE w.store.store_id = :storeId")
-    Optional<Integer> findMaxQueueNumberByStoreId(@Param("storeId") Long storeId);
+    // 스케줄 단위 중복 확인
+    boolean existsByStoreAndUserAndScheduleAndStatus(
+            PopupStore store, User user, PopupStoreSchedule schedule, int status);
 
-    boolean existsByStoreAndUserAndStatus(PopupStore store, User user, int status);
+    // 스케줄 단위 최대 순번 조회
+    @Query("""
+    SELECT COALESCE(MAX(w.queue_number), 0)
+    FROM WaitingNumber w
+    WHERE w.store.store_id = :storeId
+      AND w.schedule.schedule_id = :scheduleId
+  """)
+    Integer findMaxQueueNumberByStoreIdAndScheduleId(
+            @Param("storeId") Long storeId, @Param("scheduleId") Long scheduleId);
 
     List<WaitingNumber> findByUser(User user);
 }
