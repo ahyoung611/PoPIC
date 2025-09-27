@@ -2,6 +2,16 @@ const host = (typeof window !== "undefined" && window.location?.hostname) || "lo
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
 const MyReservation = ({reservations}) => {
+    const formatStatus = (status) => {
+        if (status === 1) {
+            return "예약 완료";
+        } else if (status === -1) {
+            return "대기 취소";
+        } else if (status === 0) {
+            return "참여 완료";
+        }
+    }
+
     return (
         <div className="reservation-list">
             {reservations.map(r => {
@@ -19,7 +29,7 @@ const MyReservation = ({reservations}) => {
                             <p><strong>예약번호</strong> {r.reservationId}</p>
                             <p><strong>예매일</strong> {r.slot?.start_time}</p>
                             <p><strong>장소</strong> {r.popup?.address} {r.popup?.address_detail}</p>
-                            <p><strong>상태</strong> 예약완료</p>
+                            <p><strong>상태</strong> {formatStatus(r.status)}</p>
                         </div>
                     </div>
                 );
