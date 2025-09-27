@@ -321,8 +321,15 @@
 }
 
 .popupStore-detail .popupInquiry-list .inquiry-item{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
     border-bottom: 1px solid var(--border-color);
     padding: 5px;
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .item-1 {
+    display: flex;
 }
 
 .popupStore-detail .popupInquiry-list .inquiry-item .title{
@@ -455,6 +462,7 @@
 
 .popupStore-detail .popupReview-container .review-header {
     display: flex;
+    align-items: flex-start;
     gap: 12px;
 }
 
@@ -463,10 +471,15 @@
     height: 80px;
     object-fit: cover;
     border-radius: 6px;
-    display: inline-block;
 }
 
 .popupStore-detail .popupReview-container .review-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.popupStore-detail .popupReview-container .review-info .info-1{
     display: flex;
     justify-content: space-between;
 }
@@ -487,6 +500,8 @@
 .popupStore-detail .popupReview-container .review-content {
     margin: 8px 0;
     font-size: 14px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .popupStore-detail .popupReview-container .review-actions {
@@ -502,15 +517,27 @@
 }
 
 .popupStore-detail .popupReview-container .reply {
+    display: flex;
+    flex-direction: column;
     margin-top: 4px;
     border-left: 2px solid var(--border-color);
     padding-left: 8px;
 }
 
+.popupStore-detail .popupReview-container .reply .reply-1 {
+    display: flex;
+    justify-content: space-between;
+}
+
 .popupStore-detail .popupReview-container .reply-author {
     font-weight: bold;
-    font-size: 12px;
+    font-size: var(--font-small);
     color: var(--black-color);
+}
+
+.popupStore-detail .popupReview-container .reply-createdAt {
+    font-size: 12px;
+    color: var(--darkgray-color);
 }
 
 .popupStore-detail .popupReview-container .reply-content {
@@ -559,6 +586,38 @@
     border: 1px solid var(--border-color);
     border-radius: 3px;
     margin: 10px 0;
+}
+
+.btn-wrapper {
+    display: flex;
+    margin-left: auto;
+    gap: 10px;
+    color: var(--darkgray-color);
+}
+
+.btn-wrapper button {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.msg-container {
+    border: 1px solid var(--border-color);
+    text-align: center;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.msg-container:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.msg-container .no-login{
+    color: var(--black-color);
 }
 
 

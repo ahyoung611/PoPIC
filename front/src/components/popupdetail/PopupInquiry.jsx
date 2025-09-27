@@ -3,9 +3,10 @@ import InquiryModal from "../commons/InquiryModal.jsx";
 import apiRequest from "../../utils/apiRequest.js";
 import PopupInquiryList from "./PopupInquiryList.jsx";
 import {useAuth} from "../../context/AuthContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 const PopupInquiry = ({popup})=>{
-
+    const nav = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
     const [subject, setSubject] = useState(""); // 제목
     const [content, setContent] = useState(""); // 내용
@@ -47,6 +48,14 @@ const PopupInquiry = ({popup})=>{
             alert("문의 전송에 실패했습니다. 다시 시도해주세요.");
         }
     };
+
+    if(!user){
+        return(
+            <div className={"msg-container"} onClick={()=>{nav("/login")}}>
+                <p className={"no-login"}>로그인 후 이용 가능합니다.</p>
+            </div>
+        )
+    }
 
     return(
         <div className={"popupInquiry-container"}>
