@@ -161,7 +161,6 @@ public class PopupController {
     @GetMapping("/category")
     public ResponseEntity<List<PopupDTO>> getPopupsByCategory(
             @RequestParam(name = "category", required = false) String categoryId) {
-        System.out.println("받은 categoryId = " + categoryId);
 
         List<PopupDTO> list;
         if (categoryId == null || categoryId.isEmpty() || "all".equals(categoryId)) {

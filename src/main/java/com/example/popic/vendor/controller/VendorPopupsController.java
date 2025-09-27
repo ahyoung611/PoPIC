@@ -20,7 +20,6 @@ public class VendorPopupsController {
     // 해당 벤더 목록 조회
     @GetMapping
     public List<PopupDTO> list(@PathVariable Long vendorId) {
-        System.out.println("[HIT] GET /api/vendors/" + vendorId + "/popups");
         return service.listPopupsByVendor(vendorId);
     }
 
@@ -39,7 +38,6 @@ public class VendorPopupsController {
     // 카테고리 목록
     @GetMapping("/categories")
     public List<CategorySimple> categories() {
-        System.out.println("[HIT] GET /api/vendors/*/popups/categories");
         return service.getCategories();
     }
 

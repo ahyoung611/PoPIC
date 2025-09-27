@@ -12,18 +12,18 @@ const STATUS_META = {
 };
 
 export default function VendorPopupCard({
-                                      id,
-                                      title,
-                                      startDate,
-                                      endDate,
-                                      category_names = [],
-                                      status = 2,
-                                      thumb,
-                                      onEdit,
-                                      onView,
-                                      imageId,
-                                      canEdit = false,  // 수정 가능 여부(승인 대기/반려만 true)
-                                  }) {
+        id,
+        title,
+        startDate,
+        endDate,
+        category_names = [],
+        status = 2,
+        thumb,
+        onEdit,
+        onView,
+        imageId,
+        canEdit = false,  // 수정 가능 여부(승인 대기/반려만 true)
+    }) {
     const meta = STATUS_META[status] ?? { text: "상태 미정", color: "gray" };
 
     return (
