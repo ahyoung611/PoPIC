@@ -1,7 +1,8 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useAuth} from "../../context/AuthContext.jsx";
 import MyReservation from "../../components/mypage/MyReservation.jsx";
 import MyWalkIn from "../../components/mypage/MyWalkIn.jsx";
+import Pagination from "../../components/commons/Pagination.jsx";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
