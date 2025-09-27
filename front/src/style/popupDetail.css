@@ -301,5 +301,265 @@
     border-left: 1px solid #e0e0e0;
 }
 
-
 /* 팝업 예약 컴포넌트 css 끝 */
+
+/* 팝업 문의 컴포넌트 css 시작 */
+
+.popupStore-detail .popupInquiry-container .inquiry-btn{
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    padding: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.popupStore-detail .popupInquiry-container .inquiry-btn:hover {
+    background-color: rgba(0, 0, 0, 0.01); /* 배경 살짝 강조 */
+    transform: translateY(-2px); /* 살짝 위로 튀는 느낌 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item{
+    border-bottom: 1px solid var(--border-color);
+    padding: 5px;
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .title{
+    font-size: var(--font-subtitle);
+    font-weight: bold;
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .content{
+    font-size: var(--font-size-base);
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .user, .createdAt{
+    font-size: var(--font-small);
+    display: flex;
+    justify-content: space-between;
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .btn-reply-toggle{
+    border: none;
+    background: none;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+}
+
+/* 화살표 스타일 */
+.toggle-arrow {
+    display: inline-block;
+    transition: transform 0.3s;
+}
+
+/* 열림 상태에서 화살표 회전 */
+.toggle-arrow.open {
+    transform: rotate(180deg);
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    padding: 0; /* 닫혔을 때 padding 제거 */
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies.open {
+    max-height: 300px; /* 충분히 큰 값으로 설정 */
+    opacity: 1;
+    transform: translateY(0);
+    padding: 10px 0; /* 열릴 때 패딩 추가로 자연스럽게 */
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .no-content {
+    font-size: var(--font-small);
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .vendor-reply {
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .vendor-reply input {
+    padding: 10px 12px; /* 안쪽 여백 */
+    font-size: var(--font-small); /* 읽기 좋은 크기 */
+    border: 1px solid var(--border-color); /* 연한 테두리 */
+    border-radius: 3px; /* 둥근 모서리 */
+    outline: none; /* 기본 파란색 focus 제거 */
+    transition: all 0.2s ease; /* 부드러운 효과 */
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .vendor-reply .reply-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+/* 팝업 문의 컴포넌트 css 끝 */
+
+/* 팝업 리뷰 컴포넌트 css 시작 */
+
+.popupStore-detail .popupReview-container .review-search .review-search-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 7px;
+}
+
+.popupStore-detail .popupReview-container .review-search .review-search-header .point-color {
+    color: var(--main-color);
+}
+
+.popupStore-detail .popupReview-container .review-search .review-search-header .search-bar {
+    display: flex;
+    width: 50%;
+}
+
+.popupStore-detail .popupReview-container .review-search .review-search-header .search-bar input{
+    display: flex;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    padding: 5px;
+    margin-right: 5px;
+    flex: 1;
+}
+
+.popupStore-detail .popupReview-container .review-btn{
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    padding: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 10px 0;
+}
+
+.popupStore-detail .popupReview-container .review-btn:hover {
+    background-color: rgba(0, 0, 0, 0.01); /* 배경 살짝 강조 */
+    transform: translateY(-2px); /* 살짝 위로 튀는 느낌 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+}
+
+.popupStore-detail .popupReview-container .review-wrapper {
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px;
+    font-family: 'Arial', sans-serif;
+}
+
+.popupStore-detail .popupReview-container .review-header {
+    display: flex;
+    gap: 12px;
+}
+
+.popupStore-detail .popupReview-container .review-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.popupStore-detail .popupReview-container .review-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.popupStore-detail .popupReview-container .review-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.popupStore-detail .popupReview-container .review-user,
+.popupStore-detail .popupReview-container .review-date {
+    margin: 0;
+    font-size: 12px;
+    color: var(--darkgray-color);
+}
+
+.popupStore-detail .popupReview-container .review-content {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.popupStore-detail .popupReview-container .review-actions {
+    text-align: right;
+    font-size: 12px;
+    color: var(--black-color);
+    cursor: pointer;
+}
+
+.popupStore-detail .popupReview-container .review-replies {
+    margin-top: 8px;
+    padding-left: 16px;
+}
+
+.popupStore-detail .popupReview-container .reply {
+    margin-top: 4px;
+    border-left: 2px solid var(--border-color);
+    padding-left: 8px;
+}
+
+.popupStore-detail .popupReview-container .reply-author {
+    font-weight: bold;
+    font-size: 12px;
+    color: var(--black-color);
+}
+
+.popupStore-detail .popupReview-container .reply-content {
+    margin: 0;
+    font-size: 13px;
+    color: var(--darkgray-color);
+}
+
+.popupStore-detail .popupReview-container .no-reply {
+    font-size: 13px;
+    color: var(--gray-color);
+    font-style: italic;
+}
+
+.popupStore-detail .popupReview-container .reply-input {
+    width: calc(100% - 60px);
+    padding: 6px 8px;
+    margin-top: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.popupStore-detail .popupReview-container .reply-submit {
+    padding: 6px 12px;
+    margin-left: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--white-color);
+    color: var(--gray-color);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.popupStore-detail .popupReview-container .btn-reply-toggle {
+    background: none;
+    border: none;
+    color: var(--black-color);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+}
+
+.popupStore-detail .popupReview-container .review-wrapper{
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    margin: 10px 0;
+}
+
+
+/* 팝업 리뷰 컴포넌트 css 끝 */

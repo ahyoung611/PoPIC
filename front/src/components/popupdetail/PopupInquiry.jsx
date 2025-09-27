@@ -11,6 +11,7 @@ const PopupInquiry = ({popup})=>{
     const [content, setContent] = useState(""); // 내용
     const [isPrivate, setIsPrivate] = useState(false); // 비공개 체크 상태
     const token = useAuth().getToken();
+    const user = useAuth().getUser();
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
@@ -50,7 +51,7 @@ const PopupInquiry = ({popup})=>{
     return(
         <div className={"popupInquiry-container"}>
             <div className={"inquiry-btn"} onClick={handleOpenModal}>
-                <p>관리자에게 문의하기</p>
+                <p>판매자에게 문의하기</p>
             </div>
             <InquiryModal
                 open={isModalOpen}
