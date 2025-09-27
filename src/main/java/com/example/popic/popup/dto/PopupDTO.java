@@ -1,6 +1,7 @@
 package com.example.popic.popup.dto;
 
 import com.example.popic.entity.entities.*;
+import com.example.popic.image.dto.ImageDTO;
 import com.example.popic.vendor.dto.VendorDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,6 +39,9 @@ public class PopupDTO {
     private LocalDateTime update_date;
     private LocalDateTime delete_date;
     private int status = 2; //2: 승인 대기, 1: 운영 시작 전 (승인 완료), 2: 운영 중, -1: 운영 종료, 0: 정지
+
+    // young 팝업운영자 스토어 썸네일/삭제 상세목록
+    private List<ImageDTO> images_detail = new ArrayList<>();
 
     // young
     private String thumb; // 팝업운영자 팝업 카드에서 쓸 이미지
@@ -93,20 +97,21 @@ public class PopupDTO {
             Image firstImage = entity.getImages().get(0);
 
             // 썸네일 경로 설정
-            this.thumb = "/api/vendorPopups/images/" + entity.getStore_id() + "/" + firstImage.getSaved_name();
+            this.thumb = "/api/vendors/" + entity.getVendor().getVendor_id() + "/popups/images/"
+                    + entity.getStore_id() + "/" + firstImage.getSaved_name();
 
-            // images_detail 초기화 및 할당
+            // images_detail 초기화 (ImageDTO 사용)
             this.images_detail = entity.getImages().stream()
-                    .map(i -> new ImageDetail(i.getImage_id(), i.getSaved_name()))
+                    .map(ImageDTO::new) // ImageDTO(Image entity) 생성자 사용
                     .collect(Collectors.toList());
 
-            // images 필드 초기화 (이미지 ID만 담기)
+            // images 필드 초기화 (ID만)
             this.images = entity.getImages().stream()
                     .map(Image::getImage_id)
                     .collect(Collectors.toList());
         } else {
             this.thumb = null;
-            this.images_detail = new ArrayList<>(); // null 대신 빈 리스트로 초기화
+            this.images_detail = new ArrayList<>();
             this.images = new ArrayList<>();
         }
 
@@ -135,16 +140,6 @@ public class PopupDTO {
         }
     }
 
-    @lombok.Data
-    @lombok.NoArgsConstructor
-    @lombok.AllArgsConstructor
-    public static class ImageDetail {
-        private Long image_id;     // 삭제/식별용
-        private String saved_name; // URL 생성용
-    }
-
-    // young 팝업운영자 스토어 썸네일/삭제 상세목록
-    private List<ImageDetail> images_detail = new java.util.ArrayList<>();
 
 }
 

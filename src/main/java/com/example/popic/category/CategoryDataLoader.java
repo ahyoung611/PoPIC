@@ -34,9 +34,9 @@ public class CategoryDataLoader implements CommandLineRunner {
             }
         }
 
-        System.out.println("--- Current Categories in DB ---");
-        List<Category> allCategories = categoryRepository.findAll();
-        allCategories.forEach(category -> System.out.println("ID: " + category.getCategory_id() + ", Name: " + category.getName()));
-        System.out.println("--------------------------------");
+//        System.out.println("--- Current Categories in DB ---");
+//        List<Category> allCategories = categoryRepository.findAll();
+//        allCategories.forEach(category -> System.out.println("ID: " + category.getCategory_id() + ", Name: " + category.getName()));
+//        System.out.println("--------------------------------");
     }
 }
