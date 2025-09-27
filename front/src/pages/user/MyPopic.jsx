@@ -15,7 +15,6 @@ const MyPopic = () => {
     const [walkIn, setWalkIn] = useState([]);
     const {auth, getToken} = useAuth();
     const token = getToken();
-
     const [activeTab, setActiveTab] = useState("예약");
 
     const [resPage, setResPage] = useState(1);
