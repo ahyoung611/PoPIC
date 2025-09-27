@@ -41,10 +41,7 @@ public class VendorPopupsController {
         return service.getCategories();
     }
 
-    public record CategorySimple(Long id, String name) {
-    }
-
-
+    public record CategorySimple(Long id, String name) {}
 
     // 팝업 생성(소유자 = vendorId)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

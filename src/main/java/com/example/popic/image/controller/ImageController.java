@@ -75,7 +75,7 @@ public class ImageController {
             imagePath = Path.of("C:/" + type + "/", savedName);
         }else{
             imagePath = Path.of(home,type, savedName);
-            System.out.println(imagePath.toString());
+//            System.out.println(imagePath.toString());
         }
 
         try {
