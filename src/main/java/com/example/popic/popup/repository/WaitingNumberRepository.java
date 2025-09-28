@@ -4,7 +4,10 @@ import com.example.popic.entity.entities.PopupStore;
 import com.example.popic.entity.entities.PopupStoreSchedule;
 import com.example.popic.entity.entities.User;
 import com.example.popic.entity.entities.WaitingNumber;
+import com.example.popic.popup.dto.WaitingNumberDTO;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -38,4 +41,28 @@ public interface WaitingNumberRepository extends JpaRepository<WaitingNumber, Lo
             @Param("date") LocalDate date,
             @Param("myQueue") Integer myQueue
     );
+
+    @Query("SELECT w FROM WaitingNumber w WHERE w.store.vendor.vendor_id = :vendorId AND w.waitingDate = current date AND w.user.name LIKE CONCAT('%', :keyword, '%') AND w.status = 0")
+    List<WaitingNumber> findEntryByVendorId(Long vendorId, String keyword);
+
+    @Query("SELECT w FROM WaitingNumber w WHERE w.store.vendor.vendor_id = :vendorId AND w.waitingDate = current date AND w.user.name LIKE CONCAT('%',:keyword,'%') AND w.status = -1")
+    List<WaitingNumber> findCancelByVendorId(Long vendorId, String keyword);
+
+    @Query("SELECT w FROM WaitingNumber w WHERE w.store.vendor.vendor_id = :vendorId AND w.waitingDate = current date AND w.user.name LIKE CONCAT('%', :keyword, '%')")
+    List<WaitingNumber> findByVendorId(Long vendorId, String keyword);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE WaitingNumber w SET w.callTime = now() WHERE w.id = :id")
+    void waitingCall(Long id);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE WaitingNumber w SET w.status = 0 WHERE w.id = :id")
+    void waitingEntry(Long id);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE WaitingNumber w SET w.status = -1 WHERE w.id = :id")
+    void waitingCancel(Long id);
 }

@@ -1,0 +1,84 @@
+.field-waiting {
+    display: flex;
+    text-align: center;
+}
+
+.field-waiting .point-color {
+    color: var(--main-color);
+}
+
+.field-waiting .title {
+    font-size: var(--font-title);
+    font-weight: var(--font-bold);
+    margin: 20px 0;
+}
+
+.field-waiting .current-info {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+}
+
+.field-waiting .current-info .waiting-count, .entry-count {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 30px;
+    width: 300px;
+    height: 150px;
+    border: 1.4px solid var(--main-color);
+    border-radius: 6px;
+    font-size: var(--font-title);
+    font-weight: var(--font-bold);
+}
+
+.field-waiting .search-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.field-waiting .search-bar input {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    flex: 1;
+    padding: 7px;
+}
+
+.field-waiting .list-table {
+    display: flex;
+    justify-content: center;
+}
+
+.field-waiting .list-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.field-waiting .list-table table thead {
+    background-color: var(--bg-color);
+}
+
+.field-waiting .list-table table thead tr th{
+    padding: 10px;
+    border-radius: 4px;
+    font-size: var(--font-size-base);
+}
+
+.field-waiting .list-table table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+
+}
+
+.field-waiting .list-table table tbody tr td {
+    font-size: var(--font-small);
+    padding: 12px 0;
+}
+
+.field-waiting .list-table table .btn {
+    border: none;
+    background: none;
+    font-size: var(--font-small);
+}

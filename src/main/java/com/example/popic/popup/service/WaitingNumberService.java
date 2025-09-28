@@ -3,6 +3,7 @@ package com.example.popic.popup.service;
 import com.example.popic.entity.entities.PopupStore;
 import com.example.popic.entity.entities.User;
 import com.example.popic.entity.entities.WaitingNumber;
+import com.example.popic.popup.dto.WaitingNumberDTO;
 import com.example.popic.popup.repository.PopupRepository;
 import com.example.popic.popup.repository.WaitingNumberRepository;
 import com.example.popic.user.repository.UserRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,5 +67,33 @@ public class WaitingNumberService {
                 w.getWaitingDate(),
                 w.getQueueNumber()
         );
+    }
+
+    public List<WaitingNumberDTO> findByVendorId(Long vendorId, String sort, String keyword) {
+        switch (sort) {
+            case "entry":
+                return waitingNumberRepository.findEntryByVendorId(vendorId, keyword).stream()
+                        .map(WaitingNumberDTO::new)
+                        .collect(Collectors.toList());
+            case "cancel":
+                return waitingNumberRepository.findCancelByVendorId(vendorId, keyword).stream().map(WaitingNumberDTO::new)
+                        .collect(Collectors.toList());
+            default:
+                return waitingNumberRepository.findByVendorId(vendorId,keyword).stream()
+                        .map(WaitingNumberDTO::new)
+                        .collect(Collectors.toList());
+        }
+    }
+
+    public void waitingCall(Long id) {
+        waitingNumberRepository.waitingCall(id);
+    }
+
+    public void waitingEntry(Long id) {
+        waitingNumberRepository.waitingEntry(id);
+    }
+
+    public void waitingCancel(Long id) {
+        waitingNumberRepository.waitingCancel(id);
     }
 }

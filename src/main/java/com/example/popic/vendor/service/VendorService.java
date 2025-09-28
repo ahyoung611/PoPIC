@@ -35,7 +35,7 @@ public class VendorService {
         return vendorRepository.save(vendor).getVendor_id();
     }
 
-    public List<PopupReservationDTO> getReservationList(Long popupId, String sort) {
+    public List<PopupReservationDTO> getReservationList(Long vendorId, String sort, String keyword) {
         int sortNum;
         if(sort.contains("reservation")){
             sortNum = 1;
@@ -44,11 +44,11 @@ public class VendorService {
         }else if(sort.contains("cancel")){
             sortNum = -1;
         }else{
-            return reservationRepository.getReservationsByPopupId(popupId).stream()
+            return reservationRepository.getReservationsByVendorId(vendorId, keyword).stream()
                     .map(PopupReservationDTO::new)
                     .collect(Collectors.toList());
         }
-        return reservationRepository.getReservationsByPopupIdAndSortNum(popupId, sortNum).stream()
+        return reservationRepository.getReservationsByVendorIdAndSortNum(vendorId, sortNum, keyword).stream()
                 .map(PopupReservationDTO::new)
                 .collect(Collectors.toList());
     }

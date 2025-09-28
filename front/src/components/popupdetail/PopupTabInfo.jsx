@@ -28,6 +28,7 @@ const PopupTabInfo = (props)=>{
                 level: 3
             };
             const map = new window.kakao.maps.Map(container, options);
+            map.setZoomable(false);
             const markerPosition  = new kakao.maps.LatLng(props.popup.latitude, props.popup.longitude);
 
             const marker = new kakao.maps.Marker({
