@@ -1,30 +1,50 @@
-import { useState, useRef } from "react";
+// import { useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import "../style/join.css";
 import eye from "../../public/eye.png"
 import nonEye from "../../public/nonEye.png"
 import logo from "../../public/popic-logo.png"
 import apiRequest from "../utils/apiRequest.js" // ← 헬퍼 경로 맞게 수정
+import { useEffect, useMemo, useRef, useState } from "react";
 import $ from "jquery"
 
 const Join = () => {
     const [params] = useSearchParams();
-    const init = params.get("role") === "VENDOR" ? "VENDOR" : "USER";
+
+    // 소셜 로그인 부족한 정보
+    // const init = params.get("role") === "VENDOR" ? "VENDOR" : "USER";
+    const social = params.get("social");           // 'naver' | 'google' | 'kakao' | null
+    const need   = params.get("need") === "1";     // 부족 정보 플래그
+    const tokenFromQS = params.get("token") || ""; // 콜백에서 전달된 access token
+    const init = social ? "USER" : (params.get("role") === "VENDOR" ? "VENDOR" : "USER");
+
     const [role, setRole] = useState(init);
     const navigate = useNavigate();
     const [showPw, setShowPw] = useState(false);
     const [loading, setLoading] = useState(false);
+    // const [form, setForm] = useState({
+    //     // USER
+    //     login_id: "",
+    //     email: "",
+    //     password: "",
+    //     name: "",
+    //     phone_number: "",
+    //     // VENDOR
+    //     vendor_name: "",
+    //     manager_name: "",
+    //     brn: "",
+    // });
     const [form, setForm] = useState({
-        // USER
-        login_id: "",
-        email: "",
-        password: "",
-        name: "",
-        phone_number: "",
-        // VENDOR
-        vendor_name: "",
-        manager_name: "",
-        brn: "",
+            // USER
+            login_id: "",
+            email: params.get("email") || "",
+            password: "",
+            name: params.get("name") || "",
+            phone_number: params.get("phone") || "",
+            // VENDOR
+            vendor_name: "",
+            manager_name: "",
+            brn: "",
     });
 
     const [brnVerified, setBrnVerified] = useState(false);
@@ -121,6 +141,26 @@ const Join = () => {
     const onSubmit = async (e) => {
         e.preventDefault();
 
+        // 소셜 모드면 /user/social/complete 로 업데이트
+        if (social) {
+            const body = {
+                email: form.email,
+                name: form.name,
+                phone_number: form.phone_number,
+            };
+            try {
+                const res = await apiRequest("/user/social/complete", { method: "POST", body }, tokenFromQS);
+                if (!res?.result) { alert(res?.message || "처리 실패"); return; }
+                // 토큰/유저 갱신 후 메인으로
+                // (원하면 AuthContext.login(res.token, res.user) 호출)
+                alert("가입이 완료되었습니다.");
+                navigate("/main");
+            } catch (err) {
+                alert("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            }
+            return;
+        }
+
         // ★ VENDOR인데 인증이 안 되었으면 즉시 차단
         if (role === "VENDOR" && !brnVerified) {
             console.log("▶ VENDOR 미인증 상태 - 제출 차단");
@@ -193,7 +233,7 @@ const Join = () => {
 
                 <form className="join-form" onSubmit={onSubmit}>
                     {/* 아이디 */}
-                    <div className="join-field">
+{/*                    <div className="join-field">
                         <input
                             className="join-input"
                             name="login_id"
@@ -203,10 +243,25 @@ const Join = () => {
                             required
                             minLength={3}
                         />
-                    </div>
+                    </div>*/}
+                    {/* 아이디: 소셜 모드에서는 숨김(랜덤 PW/고정 login_id 사용) */}
+                    {!social && (
+                        <div className="join-field">
+                            <input
+                            className="join-input"
+                            name="login_id"
+                            placeholder="아이디"
+                            value={form.login_id}
+                            onChange={onChange}
+                            required
+                            minLength={3}
+                            />
+                        </div>
+                    )}
+
 
                     {/* 비밀번호 + 보기 토글 */}
-                    <div className="join-field join-field--password">
+                    {/*<div className="join-field join-field--password">
                         <input
                             className="join-input"
                             type={showPw ? "text" : "password"}
@@ -231,7 +286,31 @@ const Join = () => {
                                 alt={showPw ? "비밀번호 보임" : "비밀번호 숨김"}
                             />
                         </button>
-                    </div>
+                    </div>*/}
+                    {/* 비밀번호: 소셜 모드에서는 숨김 */}
+                    {!social && (
+                        <div className="join-field join-field--password">
+                            <input
+                            className="join-input"
+                            type={showPw ? "text" : "password"}
+                            name="password"
+                            pattern="(?=.{8,})(?=.*[A-Za-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).*"
+                            placeholder="비밀번호"
+                            title="비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다."
+                            value={form.password}
+                            onChange={handlePasswordChange}
+                            required
+                            />
+                            <button
+                            type="button"
+                            className="join-icon-btn"
+                            onClick={togglePassword}
+                            title="비밀번호 표시"
+                            >
+                            <img src={showPw ? eye : nonEye} alt="" />
+                            </button>
+                        </div>
+                    )}
 
                     {/* 전화번호 */}
                     <div className="join-field">
@@ -242,7 +321,9 @@ const Join = () => {
                             placeholder="핸드폰번호"
                             title="휴대폰(예: 010-1234-5678 또는 01012345678) 형식으로 입력하세요"
                             value={form.phone_number}
+                            // onChange={onChange}
                             onChange={onChange}
+                            required={!!social}
                         />
                     </div>
 
@@ -267,6 +348,7 @@ const Join = () => {
                                     placeholder="이름"
                                     value={form.name}
                                     onChange={onChange}
+                                    required={!!social}
                                 />
                             </div>
                         </>
@@ -319,8 +401,11 @@ const Join = () => {
                         </>
                     )}
 
-                    <button className="join-submit" type="submit" disabled={loading}>
+                    {/*<button className="join-submit" type="submit" disabled={loading}>
                         {loading ? "처리 중" : "회원가입"}
+                    </button>*/}
+                    <button className="join-submit" type="submit" disabled={loading}>
+                        {loading ? "처리 중" : (social ? "회원가입" : "회원가입")}
                     </button>
 
                 </form>

@@ -105,14 +105,39 @@ public class AuthController {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 리다이렉트 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/main"
-                + "?social=naver"
-                + "&token=" + URLEncoder.encode(access, java.nio.charset.StandardCharsets.UTF_8)
-                + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), java.nio.charset.StandardCharsets.UTF_8);
+//        String redirect = frontendBaseUrl + "/main"
+//                + "?social=naver"
+//                + "&token=" + URLEncoder.encode(access, java.nio.charset.StandardCharsets.UTF_8)
+//                + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), java.nio.charset.StandardCharsets.UTF_8);
+//
+//        response.setStatus(302);
+//        response.setHeader("Location", redirect);
 
+        // 소셜 정보 부족시 join 창으로 이동
+        boolean need = needsMoreInfo(u);
+        String base = need ? "/join" : "/main";
+        String redirect = frontendBaseUrl + base
+                        + "?role=USER"
+                        + "&social=naver"
+                        + "&need=" + (need ? "1" : "0")
+                        + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
+                        + "&name="  + URLEncoder.encode(nvl(u.getName()), StandardCharsets.UTF_8)
+                        + "&email=" + URLEncoder.encode(nvl(u.getEmail()), StandardCharsets.UTF_8)
+                        + "&phone=" + URLEncoder.encode(nvl(u.getPhone_number()), StandardCharsets.UTF_8);
         response.setStatus(302);
         response.setHeader("Location", redirect);
     }
+
+    private boolean needsMoreInfo(User u) {
+        return isBlank(u.getName()) || isBlank(u.getPhone_number()) || isPlaceholderEmail(u.getEmail());
+    }
+    private boolean isPlaceholderEmail(String email) {
+        if (email == null) return true;
+        String e = email.toLowerCase();
+        return e.endsWith("@naver.local") || e.endsWith("@google.local") || e.endsWith("@noemail.kakao");
+    }
+    private boolean isBlank(String s) { return s == null || s.isBlank(); }
+    private String nvl(String s) { return s == null ? "" : s; }
 
     @GetMapping("/google/callback")
     public void googleCallback(@RequestParam("code") String code,
@@ -144,11 +169,24 @@ public class AuthController {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 리다이렉트 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/main"
-                + "?social=google"
+//        String redirect = frontendBaseUrl + "/main"
+//                + "?social=google"
+//                + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
+//                + "&name=" + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
+//
+//        response.setStatus(302);
+//        response.setHeader("Location", redirect);
+        // 소셜 정보 부족시 join 창으로 이동
+        boolean need = needsMoreInfo(u);
+        String base = need ? "/join" : "/main";
+        String redirect = frontendBaseUrl + base
+                + "?role=USER"
+                + "&social=google"
+                + "&need=" + (need ? "1" : "0")
                 + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
-                + "&name=" + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
-
+                + "&name="  + URLEncoder.encode(nvl(u.getName()), StandardCharsets.UTF_8)
+                + "&email=" + URLEncoder.encode(nvl(u.getEmail()), StandardCharsets.UTF_8)
+                + "&phone=" + URLEncoder.encode(nvl(u.getPhone_number()), StandardCharsets.UTF_8);
         response.setStatus(302);
         response.setHeader("Location", redirect);
     }
@@ -182,11 +220,27 @@ public class AuthController {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/main"
-                + "?social=kakao"
-                + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
-                + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
-
+//        String redirect = frontendBaseUrl + "/main"
+//                + "?social=kakao"
+//                + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
+//                + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
+//
+//        response.setStatus(302);
+//        response.setHeader("Location", redirect);
+        // 소셜 정보 부족시 join 창으로 이동
+        boolean need = needsMoreInfo(u);
+        String base = need ? "/join" : "/main";
+//        String emailQS = (u.getEmail() != null && !u.getEmail().toLowerCase().endsWith("@noemail.kakao"))
+//                        ? u.getEmail() : "";
+        String redirect = frontendBaseUrl + base
+                        + "?role=USER"
+                        + "&social=kakao"
+                        + "&need=" + (need ? "1" : "0")
+                        + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
+                        + "&name="  + URLEncoder.encode(nvl(u.getName()), StandardCharsets.UTF_8)
+                        + "&email=" + URLEncoder.encode(nvl(u.getEmail()), StandardCharsets.UTF_8)
+//                        + "&email=" + URLEncoder.encode(emailQS, StandardCharsets.UTF_8)
+                        + "&phone=" + URLEncoder.encode(nvl(u.getPhone_number()), StandardCharsets.UTF_8);
         response.setStatus(302);
         response.setHeader("Location", redirect);
     }
