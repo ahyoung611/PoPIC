@@ -55,8 +55,6 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
 
                 <div className="reservationList">
                     <p><strong>팝업 이름 </strong> {reservationData.name}</p>
-                    <p><strong>팝업 아이디 </strong> {reservationData.popupId}</p>
-                    <p><strong>슬롯아이디 </strong> {reservationData.slot_id}</p>
                     <p><strong>예약 날짜 </strong> {reservationData.date}</p>
                     <p><strong>예약 시간 </strong> {reservationData.time}</p>
                     <p><strong>인원 </strong> {reservationData.reservationCount}명</p>

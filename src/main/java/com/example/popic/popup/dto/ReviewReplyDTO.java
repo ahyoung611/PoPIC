@@ -1,14 +1,9 @@
 package com.example.popic.popup.dto;
 
-import com.example.popic.entity.entities.Review;
 import com.example.popic.entity.entities.ReviewReply;
-import com.example.popic.entity.entities.Vendor;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 

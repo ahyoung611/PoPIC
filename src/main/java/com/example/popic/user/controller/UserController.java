@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 
@@ -46,7 +43,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiRes> login(@RequestBody User req, HttpServletResponse response) { // 요청은 엔티티(User)
+    public ResponseEntity<ApiRes> login(@RequestBody User req,
+                                        @RequestParam(name = "keep", defaultValue = "false") boolean keep,
+                                        HttpServletResponse response) { // 요청은 엔티티(User)
         try {
             if (req.getLogin_id() == null || req.getPassword() == null) {
                 return ResponseEntity.ok(ApiRes.fail("요청 형식이 올바르지 않습니다."));
@@ -70,12 +69,20 @@ public class UserController {
             Cookie refreshCookie = new Cookie("refreshToken", refresh);
             refreshCookie.setHttpOnly(true);
             refreshCookie.setPath("/");
-            refreshCookie.setMaxAge((int) Duration.ofDays(14).getSeconds());
+
+            // 로그인유지(true) = 리프레시 쿠키 만료 시간 그대로, 로그인유지x(false) 세션쿠키(브라우저 종료 시 삭제)
+            if (keep) {
+                refreshCookie.setMaxAge((int) java.time.Duration.ofDays(14).getSeconds()); // 수정
+            } else {
+                refreshCookie.setMaxAge(-1);
+            }
+//            refreshCookie.setMaxAge((int) Duration.ofDays(14).getSeconds()); 기존 코드
+
             response.addCookie(refreshCookie);
 
             // 프론트로 응답
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshCookie.toString()).body(ApiRes.okLogin("로그인 성공", access, dto));
-
+//            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshCookie.toString()).body(ApiRes.okLogin("로그인 성공", access, dto));
+            return ResponseEntity.ok(ApiRes.okLogin("로그인 성공", access, dto));
 
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.ok(ApiRes.fail(e.getMessage()));
@@ -98,5 +105,31 @@ public class UserController {
             return new ApiRes(false, m, null, null, null);
         }
     }
+
+        // === 소셜 추가정보 완료 ===
+    @PostMapping("/social/complete")
+    public ResponseEntity<ApiRes> completeSocial(
+            @RequestBody SocialCompleteReq req,
+            org.springframework.security.core.Authentication authentication) {
+                try {
+                        // JwtFilter에서 넣어준 CustomUserPrincipal 사용
+                        com.example.popic.CustomUserPrincipal principal =
+                                        (com.example.popic.CustomUserPrincipal) authentication.getPrincipal();
+                        Long userId = principal.getId();
+                        User u = userService.updateSocialFields(userId, req.email(), req.name(), req.phone_number());
+
+                        // 갱신된 정보로 새 access 토큰 발급(선택)
+                        String access = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
+                        UserDTO dto = new UserDTO(u);
+                        dto.setPassword(null);
+                        return ResponseEntity.ok(ApiRes.okLogin("완료", access, dto));
+                    } catch (IllegalArgumentException e) {
+                        return ResponseEntity.ok(ApiRes.fail(e.getMessage()));
+                    } catch (Exception e) {
+                        return ResponseEntity.ok(ApiRes.fail("처리 중 오류가 발생했습니다."));
+                    }
+            }
+
+            public record SocialCompleteReq(String email, String name, String phone_number) {}
 
 }

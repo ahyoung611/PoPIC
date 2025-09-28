@@ -3,14 +3,16 @@ import InquiryModal from "../commons/InquiryModal.jsx";
 import apiRequest from "../../utils/apiRequest.js";
 import PopupInquiryList from "./PopupInquiryList.jsx";
 import {useAuth} from "../../context/AuthContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 const PopupInquiry = ({popup})=>{
-
+    const nav = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
     const [subject, setSubject] = useState(""); // 제목
     const [content, setContent] = useState(""); // 내용
     const [isPrivate, setIsPrivate] = useState(false); // 비공개 체크 상태
     const token = useAuth().getToken();
+    const user = useAuth().getUser();
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
@@ -47,10 +49,18 @@ const PopupInquiry = ({popup})=>{
         }
     };
 
+    if(!user){
+        return(
+            <div className={"msg-container"} onClick={()=>{nav("/login")}}>
+                <p className={"no-login"}>로그인 후 이용 가능합니다.</p>
+            </div>
+        )
+    }
+
     return(
         <div className={"popupInquiry-container"}>
             <div className={"inquiry-btn"} onClick={handleOpenModal}>
-                <p>관리자에게 문의하기</p>
+                <p>판매자에게 문의하기</p>
             </div>
             <InquiryModal
                 open={isModalOpen}

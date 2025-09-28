@@ -43,6 +43,9 @@ public class UserDTO {
         this.user_id = user.getUser_id();
         this.password = user.getPassword();
 
+        this.status = user.getStatus();
+        this.role   = user.getRole();
+
         // young 프로필
         if(user.getUser_profile() != null){
             this.profileOriginalName = user.getUser_profile().getOriginal_name();

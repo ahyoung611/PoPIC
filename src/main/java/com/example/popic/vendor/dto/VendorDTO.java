@@ -41,7 +41,9 @@ public class VendorDTO {
         this.phone_number = vendor.getPhone_number();
         this.brn = vendor.getBrn();
         this.join_date = vendor.getJoin_date();
+
         this.status = vendor.getStatus();
+        this.role   = vendor.getRole();
 
         //  young 프로필
         if(vendor.getProfile() != null){

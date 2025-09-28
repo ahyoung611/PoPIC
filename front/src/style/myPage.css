@@ -255,76 +255,120 @@
 }
 
 .myposts-title {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: var(--font-subtitle);
+    font-weight: 700;
+    color: var(--black-color);
     margin-bottom: 16px;
 }
 
-.post-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
+.myposts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 카드 레이아웃 */
+.myposts-item {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 16px;
     padding: 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--white-color);
+    align-items: center;
     transition: box-shadow 0.2s ease-in-out;
 }
 
-.post-card:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.myposts-item:hover {
+    box-shadow: var(--shadow);
 }
 
-.post-header {
+/* 썸네일 */
+.myposts-item .thumb {
+    width: 120px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f3f4f6;
+    border: 1px solid var(--border-color);
+}
+
+.myposts-item .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 글 정보 */
+.myposts-item .info {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.post-title {
+.myposts-item .info .title {
+    font-weight: 700;
     font-size: 16px;
-    font-weight: bold;
+    color: var(--black-color);
 }
 
-.post-date {
-    font-size: 14px;
-    color: #6b7280;
+.myposts-item .info .meta {
+    font-size: var(--font-small);
+    color: var(--darkgray-color);
+    display: flex;
+    gap: 8px;
 }
 
-.post-content {
-    font-size: 14px;
+.myposts-item .info .content {
+    font-size: var(--font-small);
     color: #374151;
-    margin-bottom: 12px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;   /* 두 줄까지만 표시 */
+    -webkit-line-clamp: 2;   /* 2줄만 보이게 */
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.post-footer {
+/* 오른쪽 영역 (더보기 버튼 등) */
+.myposts-item .right {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: #6b7280;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
 }
 
-.post-more {
-    background: none;
-    border: none;
-    color: #3b82f6;
+.myposts-item .link {
+    color: var(--darkgray-color);
+    font-size: var(--font-small);
     cursor: pointer;
-    font-size: 13px;
+    border: none;
+    background: none;
+    padding: 6px 8px;
+    border-radius: 6px;
 }
 
-.post-more:hover {
-    text-decoration: underline;
+.myposts-item .link:hover {
+    background: var(--bg-color);
+    color: var(--main-color);
 }
 
-.no-posts {
-    text-align: center;
-    color: #9ca3af;
-    margin-top: 20px;
+/* 반응형 */
+@media (max-width: 480px) {
+    .myposts-item {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "thumb"
+          "info"
+          "right";
+    }
+    .myposts-item .thumb {
+        width: 100%;
+        height: 180px;
+    }
+    .myposts-item .right {
+        align-items: flex-start;
+    }
 }
 
 /* 나의 팝픽 */
@@ -417,3 +461,218 @@
 .reservation-card .link:hover {
     color: var(--main-color);
 }
+
+/*!* 내 글 보기 css *!*/
+/*.myposts-container {*/
+/*    max-width: 700px;*/
+/*    margin: 0 auto;*/
+/*    padding: 16px;*/
+/*}*/
+
+/*.myposts-title {*/
+/*    font-size: var(--font-subtitle);*/
+/*    font-weight: 700;*/
+/*    color: var(--black-color);*/
+/*    margin-bottom: 16px;*/
+/*}*/
+
+/*.myposts-list {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    gap: 16px;*/
+/*}*/
+
+/*!* 카드 레이아웃 *!*/
+/*.myposts-item {*/
+/*    display: grid;*/
+/*    grid-template-columns: 120px 1fr auto;*/
+/*    gap: 16px;*/
+/*    padding: 16px;*/
+/*    border: 1px solid var(--border-color);*/
+/*    border-radius: 12px;*/
+/*    background: var(--white-color);*/
+/*    align-items: center;*/
+/*    transition: box-shadow 0.2s ease-in-out;*/
+/*}*/
+
+/*.myposts-item:hover {*/
+/*    box-shadow: var(--shadow);*/
+/*}*/
+
+/*!* 썸네일 *!*/
+/*.myposts-item .thumb {*/
+/*    width: 120px;*/
+/*    height: 100px;*/
+/*    border-radius: 8px;*/
+/*    overflow: hidden;*/
+/*    background: #f3f4f6;*/
+/*    border: 1px solid var(--border-color);*/
+/*}*/
+
+/*.myposts-item .thumb img {*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    object-fit: cover;*/
+/*}*/
+
+/*!* 글 정보 *!*/
+/*.myposts-item .info {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    gap: 6px;*/
+/*}*/
+
+/*.myposts-item .info .title {*/
+/*    font-weight: 700;*/
+/*    font-size: 16px;*/
+/*    color: var(--black-color);*/
+/*}*/
+
+/*.myposts-item .info .meta {*/
+/*    font-size: var(--font-small);*/
+/*    color: var(--darkgray-color);*/
+/*    display: flex;*/
+/*    gap: 8px;*/
+/*}*/
+
+/*.myposts-item .info .content {*/
+/*    font-size: var(--font-small);*/
+/*    color: #374151;*/
+/*    display: -webkit-box;*/
+/*    -webkit-line-clamp: 2;   !* 2줄만 보이게 *!*/
+/*    -webkit-box-orient: vertical;*/
+/*    overflow: hidden;*/
+/*    text-overflow: ellipsis;*/
+/*}*/
+
+/*!* 오른쪽 영역 (더보기 버튼 등) *!*/
+/*.myposts-item .right {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: flex-end;*/
+/*    gap: 8px;*/
+/*}*/
+
+/*.myposts-item .link {*/
+/*    color: var(--darkgray-color);*/
+/*    font-size: var(--font-small);*/
+/*    cursor: pointer;*/
+/*    border: none;*/
+/*    background: none;*/
+/*    padding: 6px 8px;*/
+/*    border-radius: 6px;*/
+/*}*/
+
+/*.myposts-item .link:hover {*/
+/*    background: var(--bg-color);*/
+/*    color: var(--main-color);*/
+/*}*/
+
+/*!* 반응형 *!*/
+/*@media (max-width: 480px) {*/
+/*    .myposts-item {*/
+/*        grid-template-columns: 1fr;*/
+/*        grid-template-areas:*/
+/*          "thumb"*/
+/*          "info"*/
+/*          "right";*/
+/*    }*/
+/*    .myposts-item .thumb {*/
+/*        width: 100%;*/
+/*        height: 180px;*/
+/*    }*/
+/*    .myposts-item .right {*/
+/*        align-items: flex-start;*/
+/*    }*/
+/*}*/
+
+/*!* 나의 팝픽 *!*/
+/*!* 탭 메뉴 *!*/
+/*.tab-menu {*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    margin-bottom: 20px;*/
+/*    border-bottom: 1px solid var(--border-color);*/
+/*}*/
+
+/*.tab-menu button {*/
+/*    flex: 1;*/
+/*    padding: 12px 0;*/
+/*    font-size: var(--font-subtitle);*/
+/*    background: none;*/
+/*    border: none;*/
+/*    cursor: pointer;*/
+/*    color: var(--darkgray-color);*/
+/*    position: relative;*/
+/*}*/
+
+/*.tab-menu button.active {*/
+/*    color: var(--main-color);*/
+/*    font-weight: 600;*/
+/*}*/
+
+/*.tab-menu button.active::after {*/
+/*    content: "";*/
+/*    position: absolute;*/
+/*    bottom: -1px;*/
+/*    left: 0;*/
+/*    right: 0;*/
+/*    height: 2px;*/
+/*    background: var(--main-color);*/
+/*}*/
+
+/*!* 예약/대기 카드 *!*/
+/*.reservation-list {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    gap: 20px;*/
+/*}*/
+
+/*.reservation-card {*/
+/*    display: grid;*/
+/*    grid-template-columns: 120px 1fr auto;*/
+/*    gap: 16px;*/
+/*    padding: 16px;*/
+/*    border: 1px solid var(--border-color);*/
+/*    border-radius: 12px;*/
+/*    background: var(--white-color);*/
+/*    align-items: center;*/
+/*}*/
+
+/*.reservation-card .thumb {*/
+/*    width: 120px;*/
+/*    height: 100px;*/
+/*    border-radius: 8px;*/
+/*    overflow: hidden;*/
+/*    background: #f3f4f6;*/
+/*}*/
+
+/*.reservation-card .thumb img {*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    object-fit: cover;*/
+/*}*/
+
+/*.reservation-card .info {*/
+/*    font-size: var(--font-small);*/
+/*    color: var(--black-color);*/
+/*}*/
+
+/*.reservation-card .info p {*/
+/*    margin-bottom: 6px;*/
+/*}*/
+
+/*.reservation-card .right {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: flex-end;*/
+/*}*/
+
+/*.reservation-card .link {*/
+/*    font-size: var(--font-small);*/
+/*    color: var(--darkgray-color);*/
+/*    text-decoration: none;*/
+/*}*/
+/*.reservation-card .link:hover {*/
+/*    color: var(--main-color);*/
+/*}*/

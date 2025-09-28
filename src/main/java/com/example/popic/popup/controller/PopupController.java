@@ -1,19 +1,26 @@
 package com.example.popic.popup.controller;
 
 import com.example.popic.CustomUserPrincipal;
+import com.example.popic.entity.entities.Inquiry;
 import com.example.popic.entity.entities.PopupStoreSchedule;
 import com.example.popic.entity.entities.Review;
 import com.example.popic.file.FileSave;
 import com.example.popic.image.dto.ReviewImageDTO;
 import com.example.popic.image.service.ReviewImageService;
 import com.example.popic.popup.dto.*;
+import com.example.popic.popup.repository.InquiryRepository;
 import com.example.popic.popup.service.InquiryService;
 import com.example.popic.popup.service.PopupReviewService;
 import com.example.popic.popup.service.PopupService;
 import com.example.popic.vendor.dto.VendorDTO;
 import com.example.popic.vendor.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -73,11 +80,85 @@ public class PopupController {
         return ResponseEntity.ok(new PopupReviewDTO());
     }
 
+    @PostMapping("/popupReview/modify/{reviewId}")
+    public ResponseEntity<?> editReview(
+            @PathVariable Long reviewId,
+            @ModelAttribute PopupReviewDTO popupReviewDTO,
+            @RequestParam(name = "file", required = false) MultipartFile file,
+            @RequestParam(name = "type", required = false) String type
+    ) {
+        try {
+            popupReviewService.updateReview(reviewId, popupReviewDTO, file, popupReviewDTO.getExistingImage(), type);
+            return ResponseEntity.ok().body("리뷰 수정 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("리뷰 수정 실패: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deleteReview/{reviewId}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId,
+                                             Authentication authentication) {
+        CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
+        popupReviewService.deleteReview(reviewId, principal);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/inquiry/{id}")
+    public ResponseEntity<?> updateInquiry(
+            @PathVariable Long id,
+            @RequestBody InquiryDTO inquiryDTO
+    ) {
+        inquiryService.updateInquiry(id,inquiryDTO);
+
+        return ResponseEntity.ok().body("문의가 수정되었습니다.");
+    }
+
+    @DeleteMapping("/deleteInquiry/{inquiryId}")
+    public ResponseEntity<Void> deleteInquiry(@PathVariable Long inquiryId,
+                                             Authentication authentication) {
+        CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
+        inquiryService.deleteInquiry(inquiryId, principal);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserReviews(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
+        // PageRequest 객체로 페이징 처리
+        Pageable pageable = PageRequest.of(page, size,
+                "desc".equalsIgnoreCase(direction)
+                        ? Sort.by(sortBy).descending()
+                        : Sort.by(sortBy).ascending());
+
+        Page<PopupReviewDTO> reviewPage = popupReviewService.findReviewsByUserId(userId, pageable);
+
+        return ResponseEntity.ok(reviewPage);
+    }
+
+
     @GetMapping("/popupReviewReply")
     public ResponseEntity<List<ReviewReplyDTO>> getReviewReply(@RequestParam(name = "popupId") Long id){
         List<ReviewReplyDTO> reviewReplies = popupService.getReviewReply(id);
 
         return ResponseEntity.ok(reviewReplies);
+    }
+
+    @PostMapping("/popupReviewReply")
+    public ResponseEntity<Void> createReviewReply(@RequestBody ReviewReplyDTO replyDTO,
+                                                  Authentication authentication){
+        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+        replyDTO.setVendor(customUserPrincipal.getId());
+        popupReviewService.saveReply(replyDTO);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/inquiry")
@@ -127,21 +208,6 @@ public class PopupController {
         return ResponseEntity.ok(popupService.getSchedulesOfMonth(popupId, year, month));
     }
 
-//    @GetMapping("/{popupId}/slots")
-//    public ResponseEntity<List<PopupStoreSlot>> getSlotsOfDate(
-//            @PathVariable Long popupId,
-//            @RequestParam String date
-//    ) {
-//        return ResponseEntity.ok(popupService.getSlotsOfDate(popupId, date));
-//    }
-
-//    @PostMapping("/reservations")
-//    public ResponseEntity<PopupReservationDTO> createReservation(
-//            @RequestBody PopupReservationDTO req
-//    ) {
-//        return ResponseEntity.ok(popupService.reserve(req));
-//    }
-//
     @GetMapping("/slots")
     public ResponseEntity<List<SlotDTO>> getSlots(
             @RequestParam("popupId") Long popupId,

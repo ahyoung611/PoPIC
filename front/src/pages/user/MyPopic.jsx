@@ -1,10 +1,14 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useAuth} from "../../context/AuthContext.jsx";
 import MyReservation from "../../components/mypage/MyReservation.jsx";
 import MyWalkIn from "../../components/mypage/MyWalkIn.jsx";
+import Pagination from "../../components/commons/Pagination.jsx";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
+
+const RES_PAGE_SIZE = 5;
+const WALK_PAGE_SIZE = 5;
 
 const MyPopic = () => {
     const [reservations, setReservations] = useState([]);
@@ -12,6 +16,9 @@ const MyPopic = () => {
     const {auth, getToken} = useAuth();
     const token = getToken();
     const [activeTab, setActiveTab] = useState("예약");
+
+    const [resPage, setResPage] = useState(1);
+    const [walkPage, setWalkPage] = useState(1);
 
     useEffect(() => {
         const userId = auth?.user?.user_id;
@@ -24,7 +31,7 @@ const MyPopic = () => {
             }
         })
             .then(res => res.json())
-            .then(data => setReservations(data))
+            .then(data => setReservations(Array.isArray(data) ? data : (data?.content ?? [])))
             .catch(err => console.error("예약 내역 조회 실패", err));
 
         fetch(`${URL}/waiting/user/${userId}`, {
@@ -34,9 +41,29 @@ const MyPopic = () => {
             }
         })
             .then(res => res.json())
-            .then(data => setWalkIn(data))
+            .then(data => setWalkIn(Array.isArray(data) ? data : (data?.content ?? [])))
             .catch(err => console.error("대기 내역 조회 실패", err));
-    }, [token]);
+    }, [auth?.user?.user_id, token]);
+
+
+    useEffect(() => setResPage(1), [reservations]);
+    useEffect(() => setWalkPage(1), [walkIn]);
+
+    // 예약 페이징
+    const resTotal = reservations.length;
+    const resTotalPages = Math.max(1, Math.ceil(resTotal / RES_PAGE_SIZE));
+    const resPageData = useMemo(() => {
+        const start = (resPage - 1) * RES_PAGE_SIZE;
+        return reservations.slice(start, start + RES_PAGE_SIZE);
+    }, [reservations, resPage]);
+
+    // 대기 페이징
+    const walkTotal = walkIn.length;
+    const walkTotalPages = Math.max(1, Math.ceil(walkTotal / WALK_PAGE_SIZE));
+    const walkPageData = useMemo(() => {
+        const start = (walkPage - 1) * WALK_PAGE_SIZE;
+        return walkIn.slice(start, start + WALK_PAGE_SIZE);
+    }, [walkIn, walkPage]);
 
     return (
         <div className="userMyPage">
@@ -56,10 +83,25 @@ const MyPopic = () => {
             </div>
 
             {activeTab === "예약" && (
-                <MyReservation reservations={reservations}/>
+                <>
+                    <MyReservation reservations={resPageData}/>
+                    <Pagination
+                        currentPage={resPage}
+                        totalPages={resTotalPages}
+                        onPageChange={setResPage}
+                    />
+                </>
             )}
+
             {activeTab === "대기" && (
-                <MyWalkIn walkIn={walkIn}/>
+                <>
+                    <MyWalkIn walkIn={walkPageData}/>
+                    <Pagination
+                        currentPage={walkPage}
+                        totalPages={walkTotalPages}
+                        onPageChange={setWalkPage}
+                    />
+                </>
             )}
         </div>
     );
