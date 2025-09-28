@@ -95,16 +95,6 @@ const PopupDetail = () => {
                         {activeTab === "문의" && (
                             <PopupInquiry popup={popupDetail}></PopupInquiry>
                         )}
-                        <button
-                            onClick={() => {
-                                setShowQr(true)
-                            }}
-                        >
-                            QR 코드 생성
-                        </button>
-                        {showQr ? (<QrCode/>) : (
-                            <></>
-                        )}
                         {/* 모달 컴포넌트 추가 */}
                         <PopupReservationModal
                             isOpen={modalOpen}
