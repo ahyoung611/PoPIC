@@ -8,14 +8,12 @@ const MyWalkIn = ({walkIn = []}) => {
 
     const goWalkInPage = (w) => {
         const popupName = w.popup?.name ?? w.storeName ?? "팝업";
-        navigate("/me/walkInPage", {
-            state: { storeId: w.storeId, waitingId: w.id, popupName },
-        });
+        navigate(`/me/walkIn/${w.id}?storeId=${w.storeId}&popupName=${popupName}`);
     };
 
     const formatStatus = (status) => {
         if (status === 1) {
-            return "대기 완료";
+            return "대기 중";
         } else if (status === -1) {
             return "대기 취소";
         } else if (status === 0) {
