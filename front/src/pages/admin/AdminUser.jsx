@@ -9,6 +9,7 @@ import {
     filterOptionsUser,
     manageOptions,
 } from "../../utils/statusUtil.js";
+import Pagination from "../../components/commons/Pagination.jsx";
 
 const AdminUser = () => {
     const token = useAuth().getToken();
@@ -16,13 +17,20 @@ const AdminUser = () => {
     const [keyword, setKeyword] = useState("");
     const [list, setList] = useState([]);
 
-    const fetchUsers = async () => {
+    // 페이징
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const pageSize = 5;
+
+    const fetchUsers = async (page = currentPage) => {
         const res = await apiRequest(
-            `/admin/users?sort=${sort}&keyword=${encodeURIComponent(keyword)}`,
+            `/admin/users?sort=${sort}&keyword=${encodeURIComponent(keyword)}&page=${page - 1}&size=${pageSize}`,
             { credentials: "include" },
             token
         );
-        setList(res ?? []);
+        setList(res?.content ?? []);
+        setTotalPages(res?.totalPages ?? 1);
+        setCurrentPage((res?.number ?? 0) + 1);
     };
 
     const changeStatus = async (id, newLabel) => {
@@ -39,7 +47,7 @@ const AdminUser = () => {
     };
 
     useEffect(() => {
-        fetchUsers();
+        fetchUsers(1); // 수정: sort/token 바뀔 때 1페이지부터
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sort, token]);
 
@@ -55,11 +63,11 @@ const AdminUser = () => {
                         onChange={(e) => setKeyword(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
-                                fetchUsers();   // 엔터 입력 시 검색 실행
+                                fetchUsers(1);   // 엔터 입력 시 검색 실행
                             }
                         }}
                     />
-                    <Button onClick={fetchUsers}>검색</Button>
+                    <Button onClick={() => fetchUsers(1)}>검색</Button>
                 </div>
 
                 <div className="list-table">
@@ -104,6 +112,13 @@ const AdminUser = () => {
                         </tbody>
                     </table>
                 </div>
+
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(p) => fetchUsers(p)}
+                />
+
             </div>
         </div>
     );

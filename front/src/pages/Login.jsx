@@ -60,10 +60,24 @@ const Login = () => {
 //                 method: "POST",
 //                 headers:{"Content-Type": "application/json" },
 //                 body: JSON.stringify(form)
-            const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "http://localhost:8080/vendor/login";
-            const endpointWithKeep = `${endpoint}?keep=${keep ? "true" : "false"}`;
 
-            const res = await fetch(endpointWithKeep, {
+//             const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "http://localhost:8080/vendor/login";
+//             const endpointWithKeep = `${endpoint}?keep=${keep ? "true" : "false"}`;
+
+
+            // 'admin' 로그인 조건 추가(user/vendor 탭 관계없이 admin 이면 관리자로 로그인)
+            const isAdminLogin = form.login_id.trim().toLowerCase() === "admin";
+            let endpoint;
+            if (isAdminLogin) {
+                endpoint = "http://localhost:8080/admin/login";
+            } else {
+                const base = role === "USER"
+                    ? "http://localhost:8080/user/login"
+                    : "http://localhost:8080/vendor/login";
+                endpoint = `${base}?keep=${keep ? "true" : "false"}`;
+            }
+
+            const res = await fetch(endpoint, {
                 method: "POST",
                 headers:{"Content-Type": "application/json" },
                 body: JSON.stringify(form),
@@ -78,16 +92,22 @@ const Login = () => {
             }
             console.log("data",data);
 
-            if (data.token && data.user) {
-                login(data.token, data.user); // context에 저장
-            }
+            // if (data.token && data.user) {
+            //     login(data.token, data.user); // context에 저장
+            // }
 
             if (data.token && data.user) {
                 const vendorId = data?.vendor?.vendor_id ?? data?.user?.vendor_id ?? null;
 
                 const mergedUser = vendorId ? { ...data.user, vendor_id: vendorId } : data.user;
                 login(data.token, mergedUser);
-                
+
+                // 관리자면 관리자 메인으로
+                if (mergedUser?.role === "ADMIN") {
+                    navigate("/admin");
+                    return;
+                }
+
                 // 벤더일 경우 벤더 마이페이지로
                 if ((data?.user?.role || role) === "VENDOR") {
                     if (vendorId) navigate(`/vendor/${vendorId}/popups`);
@@ -288,19 +308,20 @@ const Login = () => {
                         {loading ? "처리 중" : "로그인"}
                     </button>
 
-                    {/* 소셜 로그인 */}
-                    <div className="login-socials" aria-label="소셜 로그인">
-                        <button type="button" className="login-social-btn" title="카카오 로그인" onClick={kakaoLogin}>
-                            <img src={kakao} alt="kakao" />
-                        </button>
-                        <button type="button" className="login-social-btn" title="네이버 로그인"
-                                onClick={naverLogin}>
-                            <img src={naver} alt="naver" />
-                        </button>
-                        <button type="button" className="login-social-btn" title="구글 로그인" onClick={googleLogin}>
-                            <img src={google} alt="google" />
-                        </button>
-                    </div>
+                   {/* 소셜 로그인: 벤더 탭에서는 표시 안 함 */}
+                   {role !== "VENDOR" && (
+                     <div className="login-socials" aria-label="소셜 로그인">
+                           <button type="button" className="login-social-btn" title="카카오 로그인" onClick={kakaoLogin}>
+                             <img src={kakao} alt="kakao" />
+                           </button>
+                           <button type="button" className="login-social-btn" title="네이버 로그인" onClick={naverLogin}>
+                             <img src={naver} alt="naver" />
+                           </button>
+                           <button type="button" className="login-social-btn" title="구글 로그인" onClick={googleLogin}>
+                             <img src={google} alt="google" />
+                           </button>
+                         </div>
+                   )}
                 </form>
 
                 {/* 푸터 - 회원가입 링크 */}

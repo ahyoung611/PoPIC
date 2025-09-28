@@ -8,9 +8,19 @@ const AdminMain = () => {
     const token = useAuth().getToken();
     const user = useAuth().getUser();
 
+    // useEffect(() => {
+    //     console.log(user);
+    // },[token, user])
+
+    // 주소창 admin 진입 방지
     useEffect(() => {
+        if (!user || user.role !== "ADMIN") {
+            nav("/login", { replace: true });
+        }
         console.log(user);
-    },[token, user])
+    }, [token, user, nav]);
+
+    if (!user || user.role !== "ADMIN") return null;
 
     return (
         <div className={"container"}>
