@@ -4,14 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(
         name = "waiting_number",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"store_id", "queue_number"}),
-                @UniqueConstraint(columnNames = {"store_id", "user_id"})
+                @UniqueConstraint(name = "uk_wait_day_queue", columnNames = {"store_id", "waiting_date", "queue_number"}),
+                @UniqueConstraint(name = "uk_wait_day_user",  columnNames = {"store_id", "waiting_date", "user_id"})
         }
 )
 @Getter
@@ -23,7 +24,7 @@ public class WaitingNumber {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",  nullable = false)
     private User user;
 
@@ -46,4 +47,7 @@ public class WaitingNumber {
     private LocalDateTime created_at; // 대기 신청 시각
 
     private LocalDateTime call_time; // 호출 시간
+
+    @Column(name = "waiting_date", nullable = false)
+    private LocalDate waiting_date;
 }

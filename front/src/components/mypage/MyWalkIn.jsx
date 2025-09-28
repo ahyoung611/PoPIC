@@ -6,8 +6,11 @@ const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:808
 const MyWalkIn = ({walkIn = []}) => {
     const navigate = useNavigate();
 
-    const goWalkInPage = () => {
-        navigate("/me/walkInPage");
+    const goWalkInPage = (w) => {
+        const popupName = w.popup?.name ?? w.storeName ?? "팝업";
+        navigate("/me/walkInPage", {
+            state: { storeId: w.storeId, waitingId: w.id, popupName },
+        });
     };
 
     const formatStatus = (status) => {
@@ -31,7 +34,7 @@ const MyWalkIn = ({walkIn = []}) => {
                     <div
                         key={w.id}
                         className="reservation-card"
-                        onClick={goWalkInPage}
+                        onClick={() => goWalkInPage(w)}
                         role="button"
                     >
                         <div className="thumb">

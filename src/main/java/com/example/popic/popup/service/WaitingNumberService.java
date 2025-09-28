@@ -38,7 +38,7 @@ public class WaitingNumberService {
             throw new RuntimeException("현재는 운영 시간이 아닙니다.");
         }
 
-        // 스케줄 단위 중복 체크(대기중 status=1)
+        // 스케줄 단위 중복 체크
         if (waitingNumberRepository.existsByStoreAndUserAndScheduleAndStatus(store, user, todaySchedule, 1)) {
             throw new RuntimeException("이미 대기 중입니다.");
         }
@@ -62,5 +62,22 @@ public class WaitingNumberService {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return waitingNumberRepository.findByUser(user);
+    }
+
+    public WaitingNumber updateStatus(Long waitingId, int newStatus) {
+        var w = waitingNumberRepository.findById(waitingId)
+                .orElseThrow(() -> new RuntimeException("Waiting not found"));
+        w.setStatus(newStatus);        // 사용자 요청: 취소 시 -1 사용
+        return waitingNumberRepository.save(w);
+    }
+
+    public long countAheadTeams(Long waitingId) {
+        var w = waitingNumberRepository.findById(waitingId)
+                .orElseThrow(() -> new RuntimeException("Waiting not found"));
+        return waitingNumberRepository.countAheadTeams(
+                w.getStore().getStore_id(),
+                w.getSchedule().getSchedule_id(),
+                w.getQueue_number()
+        );
     }
 }

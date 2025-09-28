@@ -50,7 +50,9 @@ public class VendorController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiRes> login(@RequestBody Vendor req, HttpServletResponse response) {
+    public ResponseEntity<ApiRes> login(@RequestBody Vendor req,
+                                        @RequestParam(name = "keep", defaultValue = "false") boolean keep,
+                                        HttpServletResponse response) {
         try {
             if (req.getLogin_id() == null || req.getPassword() == null) { // ★
                 return ResponseEntity.ok(ApiRes.fail("요청 형식이 올바르지 않습니다."));
@@ -72,12 +74,21 @@ public class VendorController {
             Cookie refreshCookie = new Cookie("refreshToken", refresh);
             refreshCookie.setHttpOnly(true);
             refreshCookie.setPath("/");
-            refreshCookie.setMaxAge((int) Duration.ofDays(14).getSeconds());
+
+            // 로그인유지(true) = 리프레시 쿠키 만료 시간 그대로, 로그인유지x(false) 세션쿠키(브라우저 종료 시 삭제)
+//            refreshCookie.setMaxAge((int) Duration.ofDays(14).getSeconds()); 기존 코드
+            if (keep) {
+                refreshCookie.setMaxAge((int) java.time.Duration.ofDays(14).getSeconds()); // 수정
+            } else {
+                refreshCookie.setMaxAge(-1);
+            }
+
             response.addCookie(refreshCookie);
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                    .body(ApiRes.okLogin("로그인 성공", access, dto));
+//            return ResponseEntity.ok()
+//                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+//                    .body(ApiRes.okLogin("로그인 성공", access, dto));
+            return ResponseEntity.ok(ApiRes.okLogin("로그인 성공", access, dto));
 
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.ok(ApiRes.fail(e.getMessage()));

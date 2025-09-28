@@ -76,7 +76,15 @@ const PopupInquiryList = ({ popup }) => {
 
                     return (
                         <div key={item.id} className="inquiry-item">
-                            <p className={"title"}>{item.subject}</p>
+                            <div className={"item-1"}>
+                                <p className={"title"}>{item.subject}</p>
+                                {item.user.user_id === user.user_id && (
+                                    <div className={"btn-wrapper"}>
+                                        <button>수정하기</button> |
+                                        <button>삭제하기</button>
+                                    </div>
+                                )}
+                            </div>
                             <p className={"content"}>{item.isPrivate ? "비공개 문의입니다." : item.content}</p>
                             <p className={"user createdAt"}>{item.user.name} | {new Date(item.created_at).toLocaleDateString()}
                                 <button
