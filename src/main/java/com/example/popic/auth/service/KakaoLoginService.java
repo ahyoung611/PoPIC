@@ -24,7 +24,6 @@ public class KakaoLoginService {
     private String redirectUri;
 
     public KakaoUserInfo getUserInfo(String code, String state) {
-        System.out.println("KakaoLoginService 진입?");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
