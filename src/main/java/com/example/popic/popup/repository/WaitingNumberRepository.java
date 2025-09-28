@@ -27,4 +27,19 @@ public interface WaitingNumberRepository extends JpaRepository<WaitingNumber, Lo
             @Param("storeId") Long storeId, @Param("scheduleId") Long scheduleId);
 
     List<WaitingNumber> findByUser(User user);
+
+    // 앞에 몇 팀 있는지
+    @Query("""
+    SELECT COUNT(w)
+    FROM WaitingNumber w
+    WHERE w.store.store_id = :storeId
+      AND w.schedule.schedule_id = :scheduleId
+      AND w.status = 1
+      AND w.queue_number < :myQueue
+""")
+    long countAheadTeams(
+            @Param("storeId") Long storeId,
+            @Param("scheduleId") Long scheduleId,
+            @Param("myQueue") Integer myQueue
+    );
 }
