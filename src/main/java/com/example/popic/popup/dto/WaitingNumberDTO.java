@@ -1,6 +1,7 @@
 package com.example.popic.popup.dto;
 
 import com.example.popic.entity.entities.WaitingNumber;
+import com.example.popic.user.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 public class WaitingNumberDTO {
     private Long id;
     private Long userId;
+    private UserDTO user;
     private Long storeId;
     private String storeName;
     private String address;
@@ -24,6 +26,22 @@ public class WaitingNumberDTO {
     private LocalDateTime createdAt;
     private LocalDateTime callTime;
     private PopupDTO popup;
+
+    public WaitingNumberDTO(WaitingNumber w) {
+        this.id = w.getId();
+        this.user = new UserDTO(w.getUser());
+        this.storeId = w.getStore().getStore_id();
+        this.storeName = w.getStore().getStore_name();
+        this.address = w.getStore().getAddress().toString();
+        this.addressDetail = w.getStore().getAddress_detail();
+        this.waitingDate = w.getWaitingDate();
+        this.queueNumber = w.getQueueNumber();
+        this.status = w.getStatus();
+        this.createdAt = w.getCreatedAt();
+        this.callTime = w.getCallTime();
+        this.popup = new PopupDTO(w.getStore());
+
+    }
 
     public static WaitingNumberDTO fromEntity(WaitingNumber w) {
         var dto = new WaitingNumberDTO();

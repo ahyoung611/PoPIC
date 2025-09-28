@@ -1,5 +1,6 @@
 import React from "react";
 import "../../style/MyReservationModal.css";
+import QrCode from "../qr/QrCode.jsx";
 
 const MyReservationModal = ({ open, onClose, reservation }) => {
 
@@ -19,9 +20,10 @@ const MyReservationModal = ({ open, onClose, reservation }) => {
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <h2>{reservation.popup?.store_name}</h2>
-                {/*큐알 부분 나중에 css 수정하기*/}
                 <div className="onsite-qr-right">
-                    <div className="onsite-qr-placeholder">QR</div>
+                    <div className="onsite-qr-placeholder">
+                        <QrCode reservationId={reservation.reservationId}/>
+                    </div>
                 </div>
                 <p><strong>예약번호:</strong> {reservation.reservationId}</p>
                 <p><strong>예약일시:</strong> {reservation.slot?.schedule.date} {reservation.slot?.start_time}</p>

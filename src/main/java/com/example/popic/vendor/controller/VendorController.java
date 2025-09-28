@@ -2,7 +2,10 @@ package com.example.popic.vendor.controller;
 
 
 import com.example.popic.entity.entities.Vendor;
+import com.example.popic.popup.dto.CurrentWaitingDTO;
 import com.example.popic.popup.dto.PopupReservationDTO;
+import com.example.popic.popup.dto.WaitingNumberDTO;
+import com.example.popic.popup.service.WaitingNumberService;
 import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.vendor.dto.VendorDTO;
 import com.example.popic.vendor.repository.VendorRepository;
@@ -34,6 +37,7 @@ public class VendorController {
     private final JwtUtil jwtUtil;
     private final VendorRepository vendorRepository;
     private final PasswordEncoder passwordEncoder;
+    private final WaitingNumberService  waitingNumberService;
 
     @PostMapping("/join")
     public ResponseEntity<ApiRes> join(@RequestBody Vendor vendor) {
@@ -98,12 +102,42 @@ public class VendorController {
     }
 
     @GetMapping("/reservationList")
-    public ResponseEntity<List<PopupReservationDTO>> getReservationList(@RequestParam(name = "popupId")Long popupId,
-                                                                        @RequestParam(name="sort", defaultValue = "")String sort) {
+    public ResponseEntity<List<PopupReservationDTO>> getReservationList(@RequestParam(name = "vendorId")Long vendorId,
+                                                                        @RequestParam(name="sort", defaultValue = "")String sort,
+                                                                        @RequestParam(name = "keyword", defaultValue = "")String keyword) {
 
-        List<PopupReservationDTO> reservationList = vendorService.getReservationList(popupId, sort);
+        List<PopupReservationDTO> reservationList = vendorService.getReservationList(vendorId, sort, keyword);
 
         return ResponseEntity.ok(reservationList);
+    }
+
+    @PutMapping("/waitingCall")
+    public ResponseEntity<Void> waitingCall(@RequestParam(name = "id")Long id){
+        waitingNumberService.waitingCall(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/waitingEntry")
+    public ResponseEntity<Void> waitingEntry(@RequestParam(name = "id")Long id){
+        waitingNumberService.waitingEntry(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/waitingCancel")
+    public ResponseEntity<Void> waitingCancel(@RequestParam(name = "id")Long id){
+        waitingNumberService.waitingCancel(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/fieldWaitingList")
+    public ResponseEntity<List<WaitingNumberDTO>> getWaitingList(@RequestParam(name = "vendorId")Long vendorId,
+                                                                 @RequestParam(name = "sort", defaultValue = "")String sort,
+                                                                 @RequestParam(name = "keyword", defaultValue = "")String keyword) {
+        List<WaitingNumberDTO> waitingList = waitingNumberService.findByVendorId(vendorId, sort, keyword);
+        return ResponseEntity.ok(waitingList);
+
     }
 
     @PutMapping("/vendors/{id}")
