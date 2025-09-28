@@ -39,4 +39,27 @@ public class WaitingNumberController {
         }
     }
 
+    @PatchMapping("/{waitingId}/status")
+    public ResponseEntity<?> updateStatus(
+            @PathVariable Long waitingId,
+            @RequestParam("value") int value) {
+        try {
+            var updated = WaitingNumberDTO.fromEntity(
+                    waitingNumberService.updateStatus(waitingId, value)
+            );
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{waitingId}/ahead")
+    public ResponseEntity<?> getAheadCount(@PathVariable Long waitingId) {
+        try {
+            long ahead = waitingNumberService.countAheadTeams(waitingId);
+            return ResponseEntity.ok(Map.of("aheadTeams", ahead));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
 }
