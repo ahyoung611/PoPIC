@@ -8,38 +8,34 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface WaitingNumberRepository extends JpaRepository<WaitingNumber, Long> {
-    // 스케줄 단위 중복 확인
-    boolean existsByStoreAndUserAndScheduleAndStatus(
-            PopupStore store, User user, PopupStoreSchedule schedule, int status);
+    boolean existsByStoreAndUserAndWaitingDateAndStatus(PopupStore store, User user, LocalDate date, int status);
 
-    // 스케줄 단위 최대 순번 조회
     @Query("""
-    SELECT COALESCE(MAX(w.queue_number), 0)
-    FROM WaitingNumber w
-    WHERE w.store.store_id = :storeId
-      AND w.schedule.schedule_id = :scheduleId
-  """)
-    Integer findMaxQueueNumberByStoreIdAndScheduleId(
-            @Param("storeId") Long storeId, @Param("scheduleId") Long scheduleId);
+        SELECT COALESCE(MAX(w.queueNumber), 0)
+        FROM WaitingNumber w
+        WHERE w.store.store_id = :storeId
+          AND w.waitingDate = :date
+    """)
+    int findMaxQueueNumberByStoreIdAndDate(@Param("storeId") Long storeId, @Param("date") LocalDate date);
 
     List<WaitingNumber> findByUser(User user);
 
-    // 앞에 몇 팀 있는지
     @Query("""
-    SELECT COUNT(w)
-    FROM WaitingNumber w
-    WHERE w.store.store_id = :storeId
-      AND w.schedule.schedule_id = :scheduleId
-      AND w.status = 1
-      AND w.queue_number < :myQueue
-""")
+        SELECT COUNT(w)
+        FROM WaitingNumber w
+        WHERE w.store.store_id = :storeId
+          AND w.waitingDate = :date
+          AND w.status = 1
+          AND w.queueNumber < :myQueue
+    """)
     long countAheadTeams(
             @Param("storeId") Long storeId,
-            @Param("scheduleId") Long scheduleId,
+            @Param("date") LocalDate date,
             @Param("myQueue") Integer myQueue
     );
 }
