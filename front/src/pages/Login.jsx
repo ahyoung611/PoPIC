@@ -39,6 +39,15 @@ const Login = () => {
         setForm((f) => ({ ...f, [name]: value }));
     };
 
+    // keep 토글 시 로컬스토리지에 저장 (로그인 유지 true false 사용)
+    const toggleKeep = () => {
+        setKeep((k) => {
+            const next = !k;
+            localStorage.setItem("keep_login", next ? "1" : "0");
+            return next;
+        });
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
         if (!form.login_id || !form.password) return;
@@ -52,7 +61,9 @@ const Login = () => {
 //                 headers:{"Content-Type": "application/json" },
 //                 body: JSON.stringify(form)
             const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "http://localhost:8080/vendor/login";
-            const res = await fetch(endpoint, {
+            const endpointWithKeep = `${endpoint}?keep=${keep ? "true" : "false"}`;
+
+            const res = await fetch(endpointWithKeep, {
                 method: "POST",
                 headers:{"Content-Type": "application/json" },
                 body: JSON.stringify(form),
@@ -104,12 +115,23 @@ const Login = () => {
         console.log("NAVER_REDIRECT_URI: ", NAVER_REDIRECT_URI);
 
         const handleNaverLogin = () => {
-            const state = crypto.randomUUID(); // CSRF 방지용 state
+            // const state = crypto.randomUUID(); // CSRF 방지용 state
+            // keep 추가
+            const state = `${crypto.randomUUID()}:${keep ? "1" : "0"}`;
+
             localStorage.setItem("naver_oauth_state", state);
 
             // const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${NAVER_REDIRECT_URI}&state=${state}`;
-            // 인코딩 버전
-            const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_REDIRECT_URI)}&state=${state}`;
+            // 인코딩 버전 -> 기존코드
+            // const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_REDIRECT_URI)}&state=${state}`;
+
+            // 로그인 유지 여부 전달용
+            const naverAuthUrl =
+                `https://nid.naver.com/oauth2.0/authorize` +
+                `?response_type=code` +
+                `&client_id=${NAVER_CLIENT_ID}` +
+                `&redirect_uri=${encodeURIComponent(NAVER_REDIRECT_URI)}` +
+                `&state=${encodeURIComponent(state)}`;
 
             window.location.href = naverAuthUrl;
         };
@@ -125,13 +147,19 @@ const Login = () => {
         const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI; 
 
         const scope = encodeURIComponent("openid email profile");
+
+        // keep 추가
+        const googleState = `${crypto.randomUUID()}:${keep ? "1" : "0"}`;
+        localStorage.setItem("google_oauth_state", googleState);
+
         const url =
             `https://accounts.google.com/o/oauth2/v2/auth` +
             `?client_id=${GOOGLE_CLIENT_ID}` +
             `&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_URI)}` +
             `&response_type=code` +
             `&scope=${scope}` +
-            `&prompt=consent`;
+            `&prompt=consent` +
+            `&state=${encodeURIComponent(googleState)}`;
         window.location.href = url;
     };
 
@@ -140,17 +168,20 @@ const Login = () => {
         const KAKAO_REST_KEY = import.meta.env.VITE_KAKAO_REST_KEY;
         const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
 
-        const state = crypto.randomUUID(); 
-        localStorage.setItem("kakao_oauth_state", state); 
+        // const state = crypto.randomUUID();
+        // keep 추가
+        const state = `${crypto.randomUUID()}:${keep ? "1" : "0"}`;
+        localStorage.setItem("kakao_oauth_state", state);
 
         const url =
             `https://kauth.kakao.com/oauth/authorize` +
             `?client_id=${KAKAO_REST_KEY}` +
             `&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}` +
             `&response_type=code` +
-            `&state=${state}` +
+            `&state=${encodeURIComponent(state)}` +
             `&scope=${encodeURIComponent("profile_nickname profile_image")}` +
-            `&prompt=select_account`; 
+            `&prompt=select_account` ;
+            // `&keep=${keep ? "true" : "false"}`;
 
         window.location.href = url;
     };
@@ -237,7 +268,8 @@ const Login = () => {
                     <button
                         type="button"
                         className="login-keep-toggle"
-                        onClick={() => setKeep((k) => !k)}
+                        // onClick={() => setKeep((k) => !k)}
+                        onClick={toggleKeep}
                         aria-pressed={keep}
                     >
                         <img
