@@ -106,4 +106,30 @@ public class UserController {
         }
     }
 
+        // === 소셜 추가정보 완료 ===
+    @PostMapping("/social/complete")
+    public ResponseEntity<ApiRes> completeSocial(
+            @RequestBody SocialCompleteReq req,
+            org.springframework.security.core.Authentication authentication) {
+                try {
+                        // JwtFilter에서 넣어준 CustomUserPrincipal 사용
+                        com.example.popic.CustomUserPrincipal principal =
+                                        (com.example.popic.CustomUserPrincipal) authentication.getPrincipal();
+                        Long userId = principal.getId();
+                        User u = userService.updateSocialFields(userId, req.email(), req.name(), req.phone_number());
+
+                        // 갱신된 정보로 새 access 토큰 발급(선택)
+                        String access = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
+                        UserDTO dto = new UserDTO(u);
+                        dto.setPassword(null);
+                        return ResponseEntity.ok(ApiRes.okLogin("완료", access, dto));
+                    } catch (IllegalArgumentException e) {
+                        return ResponseEntity.ok(ApiRes.fail(e.getMessage()));
+                    } catch (Exception e) {
+                        return ResponseEntity.ok(ApiRes.fail("처리 중 오류가 발생했습니다."));
+                    }
+            }
+
+            public record SocialCompleteReq(String email, String name, String phone_number) {}
+
 }

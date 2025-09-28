@@ -84,17 +84,39 @@ const Login = () => {
                 credentials: "include",
             });
 
-            const data = await res.json();
-
-            if (!data?.result) {
-                alert(data?.message || "로그인에 실패했습니다.");
-                return;
-            }
-            console.log("data",data);
+            // const data = await res.json();
+            //
+            // if (!data?.result) {
+            //     alert(data?.message || "로그인에 실패했습니다.");
+            //     return;
+            // }
+            // console.log("data",data);
 
             // if (data.token && data.user) {
             //     login(data.token, data.user); // context에 저장
             // }
+
+            // 안전 파싱: 빈 바디/텍스트 바디/JSON 모두 커버
+            const text = await res.text();
+            let data = null;
+            try {
+                    data = text ? JSON.parse(text) : null;
+                } catch (e) {
+                    data = null;
+                }
+
+                // 실패 처리 (상태 코드 또는 result 기준)
+                    if (!res.ok || !data?.result) {
+                    const backendMsg = data?.message;
+                    const isCredErr = res.status === 400 || res.status === 401 || res.status === 403;
+                    const msg =
+                            (isCredErr && "아이디 또는 비밀번호가 올바르지 않습니다.") ||
+                            backendMsg ||
+                            "로그인에 실패했습니다.";
+                    alert(msg);
+                    return;
+                }
+            console.log("data", data);
 
             if (data.token && data.user) {
                 const vendorId = data?.vendor?.vendor_id ?? data?.user?.vendor_id ?? null;

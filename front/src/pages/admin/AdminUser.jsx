@@ -10,6 +10,7 @@ import {
     manageOptions,
 } from "../../utils/statusUtil.js";
 import Pagination from "../../components/commons/Pagination.jsx";
+import ConfirmModal from "../../components/commons/ConfirmModal.jsx";
 
 const AdminUser = () => {
     const token = useAuth().getToken();
@@ -17,34 +18,52 @@ const AdminUser = () => {
     const [keyword, setKeyword] = useState("");
     const [list, setList] = useState([]);
 
+    // 상태 변경 모달
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [pendingChange, setPendingChange] = useState(null); // { id, newLabel }
+
     // 페이징
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 5;
 
     const fetchUsers = async (page = currentPage) => {
-        const res = await apiRequest(
-            `/admin/users?sort=${sort}&keyword=${encodeURIComponent(keyword)}&page=${page - 1}&size=${pageSize}`,
-            { credentials: "include" },
-            token
-        );
-        setList(res?.content ?? []);
-        setTotalPages(res?.totalPages ?? 1);
-        setCurrentPage((res?.number ?? 0) + 1);
-    };
+            const res = await apiRequest(
+                    `/admin/users?sort=${sort}&keyword=${encodeURIComponent(keyword)}&page=${page - 1}&size=${pageSize}`,
+                    { credentials: "include" },
+                    token
+                );
+            const isArray = Array.isArray(res);
+            setList(isArray ? res : (res?.content ?? []));
+            setTotalPages(isArray ? 1 : (res?.totalPages ?? 1));
+            setCurrentPage(isArray ? 1 : ((res?.number ?? 0) + 1));
+        };
 
-    const changeStatus = async (id, newLabel) => {
-        if (!newLabel) return;
-        if (window.confirm(`${newLabel} 상태로 변경하시겠습니까?`)) {
-            const code = statusCodeFromLabel(newLabel);
-            await apiRequest(
-                `/admin/user/status?id=${id}&status=${code}`,
-                { method: "POST", credentials: "include" },
-                token
-            );
-            fetchUsers();
-        }
-    };
+    // const changeStatus = async (id, newLabel) => {
+    //     if (!newLabel) return;
+    //     if (window.confirm(`${newLabel} 상태로 변경하시겠습니까?`)) {
+    //         const code = statusCodeFromLabel(newLabel);
+    //         await apiRequest(
+    //             `/admin/user/status?id=${id}&status=${code}`,
+    //             { method: "POST", credentials: "include" },
+    //             token
+    //         );
+    //         fetchUsers();
+    //     }
+    // };
+    const changeStatus = (id, newLabel) => {
+            if (!newLabel) return;
+            setPendingChange({ id, newLabel });
+            setConfirmOpen(true);
+        };
+
+        const getConfirmTitle = (label) => {
+            if (!label) return "상태를 변경하시겠습니까?";
+            if (label.includes("정지")) return "정지하시겠습니까?";
+            if (label.includes("비활성")) return "비활성화 하시겠습니까?";
+            if (label.includes("활성")) return "활성화 하시겠습니까?";
+            return `${label} 상태로 변경하시겠습니까?`;
+        };
 
     useEffect(() => {
         fetchUsers(1); // 수정: sort/token 바뀔 때 1페이지부터
@@ -112,6 +131,31 @@ const AdminUser = () => {
                         </tbody>
                     </table>
                 </div>
+
+                {/* 상태 선택 모달 */}
+                <ConfirmModal
+                    open={confirmOpen}
+                    title={getConfirmTitle(pendingChange?.newLabel)}
+                    okText="네"
+                    cancelText="아니오"
+                    danger={/정지|비활성/.test(pendingChange?.newLabel || "")}
+                    onConfirm={async () => {
+                        if (!pendingChange) return;
+                        const code = statusCodeFromLabel(pendingChange.newLabel);
+                        await apiRequest(
+                                `/admin/user/status?id=${pendingChange.id}&status=${code}`,
+                                { method: "POST", credentials: "include" },
+                                token
+                            );
+                        setConfirmOpen(false);
+                        setPendingChange(null);
+                        fetchUsers();
+                    }}
+                    onCancel={() => {
+                        setConfirmOpen(false);
+                        setPendingChange(null);
+                    }}
+                />
 
                 <Pagination
                     currentPage={currentPage}
