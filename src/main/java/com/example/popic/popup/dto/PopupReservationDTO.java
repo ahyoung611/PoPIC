@@ -11,17 +11,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class PopupReservationDTO {
-    private Long reservationId;        // 예약번호 (PK)
+    private Long reservationId;         // 예약번호 (PK)
     private UserDTO user;               // 사용자 ID
-    private PopupDTO popup;              // 팝업스토어 ID
+    private PopupDTO popup;             // 팝업스토어 ID
     private SlotDTO slot;               // 슬롯 ID
 
-    private int reservationCount;      // 예약자 수(최대 2명)
-    private LocalDateTime createdAt;   // 예약 생성 시각
-    private int status;                // 1: 예약, -1: 취소, 0: 참여완료
-    private BigDecimal depositAmount;  // 예약금
-    private String paymentKey;         // PG사 키
-    private LocalDateTime canceledAt;  // 취소 시각
+    private int reservationCount;       // 예약자 수(최대 2명)
+    private LocalDateTime createdAt;    // 예약 생성 시각
+    private int status;                 // 1: 예약, -1: 취소, 0: 참여완료
+    private BigDecimal depositAmount;   // 예약금
+    private String paymentKey;          // PG사 키
+    private LocalDateTime canceledAt;   // 취소 시각
 
     public PopupReservationDTO(Reservation reservation) {
         this.reservationId = reservation.getReservation_id();
