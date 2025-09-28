@@ -33,7 +33,7 @@ public class SecurityConfig {
                                 "/vendor/login", "/vendor/join", "/admin/login",
                                 "/auth/**", "/images", "/scan-qr", "/", "/login",
                                 "/board/file/**", "/popupStore/monthly",
-                                "/popupStore/popupDetail/**","/qr-stream","/reservations/confirm", "/api/vendorPopups/**","/popupStore/category", "/popupStore/category/**").permitAll() // 로그인/회원가입/토큰 갱신은 허용
+                                "/popupStore/popupDetail/**","/qr-stream","/reservations/confirm", "/api/vendorPopups/**","/popupStore/category", "/popupStore/category/**", "/userBookmark/**").permitAll() // 로그인/회원가입/토큰 갱신은 허용
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

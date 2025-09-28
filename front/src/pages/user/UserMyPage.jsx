@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {useParams, useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 
 import "../../style/myPage.css";
@@ -12,94 +12,86 @@ export default function UserMyPage() {
     const { auth } = useAuth();
     const token = auth.token;
 
-    // 라우팅 & 네비게이션 훅
-    const {userId} = useParams();
+    const { userId } = useParams();
     const navigate = useNavigate();
-    // 로컬 상태
+
     const [me, setMe] = useState(null);
-    const [favs, setFavs] = useState([]);
+    const [popups, setPopups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sort, setSort] = useState("latest");
     const [error, setError] = useState("");
 
-    // 프로필 편집 화면으로 이동
     const goProfileEdit = () => navigate(`/userMyPage/profile/${userId}`);
-
-    // 상세 페이지로 이동
     const handleOpenDetail = (id) => navigate(`/popupStore/detail/${id}`);
 
-    const [popups, setPopups] = useState([]);
+    useEffect(() => {
+        if (!userId || !token) return;
 
-   useEffect(() => {
-       if (!userId || !token) return;
+        const fetchAllData = async () => {
+            setLoading(true);
+            try {
+                // 1. 유저 프로필
+                const user = await apiRequest(`/api/users/${userId}`, {}, token);
+                let avatarUrl = "";
+                if (user.avatarExists) {
+                    const photoResponse = await fetch(`/api/users/${userId}/photo`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (photoResponse.ok) {
+                        const blob = await photoResponse.blob();
+                        avatarUrl = URL.createObjectURL(blob);
+                    }
+                }
+                setMe({
+                    name: user.name,
+                    avatarUrl,
+                    email: user.email ?? "",
+                    phone_number: user.phone_number ?? "",
+                    login_id: user.login_id ?? ""
+                });
 
-       const fetchAllData = async () => {
-           setLoading(true);
-           try {
-               // 유저 프로필
-               const user = await apiRequest(`/api/users/${userId}`, {}, token);
-               let avatarUrl = "";
-               if (user.avatarExists) {
-                   const photoResponse = await fetch(`/api/users/${userId}/photo`, {
-                       headers: { 'Authorization': `Bearer ${token}` }
-                   });
-                   if (photoResponse.ok) {
-                       const blob = await photoResponse.blob();
-                       avatarUrl = URL.createObjectURL(blob);
-                   }
-               }
-               setMe({ name: user.name, avatarUrl, email: user.email ?? "", phone_number: user.phone_number ?? "", login_id: user.login_id ?? "" });
+                // 북마크된 팝업 목록만 가져오기
+                const bookmarkedPopupList = await apiRequest("/userBookmark/popupList", {}, token);
+                const bookmarkedPopupArray = Array.isArray(bookmarkedPopupList) ? bookmarkedPopupList : [];
 
-               // 북마크
-               const favList = await apiRequest(`/api/users/${userId}/favorites?sort=${sort}`, {}, token);
-               const favsArray = Array.isArray(favList) ? favList : [];
-               setFavs(favsArray);
+                const processedPopups = bookmarkedPopupArray.map(p => ({
+                    id: Number(p.store_id),
+                    liked: true, // 북마크 목록이므로 항상 true
+                    title: p.store_name,
+                    thumbnailUrl: p.thumb,
+                    periodText: p.start_date && p.end_date ? `${p.start_date} ~ ${p.end_date}` : null,
+                    tag: p.category_names?.[0] || null
+                }));
 
-               // 전체 팝업 리스트
-               const popupList = await apiRequest("/popupStore/list", {}, token);
-               const popupArray = Array.isArray(popupList) ? popupList : [];
+                setPopups(processedPopups);
 
-               // 북마크 상태 합치기
-               const merged = popupArray.map(p => ({
-                   ...p,
-                   liked: favsArray.some(f => f.id === p.id)
-               }));
+            } catch (err) {
+                console.error("데이터를 불러오지 못했습니다.:", err);
+                setError("데이터를 불러오지 못했습니다.");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-               setPopups(merged);
+        fetchAllData();
+    }, [userId, sort, token]);
 
-           } catch (err) {
-               console.error("데이터를 불러오지 못했습니다.:", err);
-               setError("데이터를 불러오지 못했습니다.");
-           } finally {
-               setLoading(false);
-           }
-       };
-
-       fetchAllData();
-   }, [userId, sort, token]);
-
-    // 북마크 토글
     const handleToggleLike = async (popupId) => {
         try {
-            const result = await apiRequest(
-                `/userBookmark/toggle?userId=${userId}&storeId=${popupId}`,
-                { method: "POST" },
-                token
-            );
-            setPopups(prev => prev.map(p => p.id === popupId ? { ...p, liked: result } : p));
-        } catch (err) {
-            console.error("북마크 변경 실패:", err);
+            const result = await apiRequest(`/userBookmark/toggle?userId=${userId}&storeId=${popupId}`, { method: "POST" }, token);
+            // 북마크 해제 시 목록에서 제거
+            setPopups(prev => prev.filter(p => p.id !== popupId));
+        } catch {
+            console.error("북마크 변경 실패");
         }
     };
 
-    if (loading) {
-        return <div>로딩 중...</div>;
-    }
+    if (loading) return <div>로딩 중...</div>;
 
     return (
         <div className="container">
-            <div className={"inner"}>
-                <div className={"userMyPage"}>
+            <div className="inner">
+                <div className="userMyPage">
                     <ProfileHeader
                         userId={userId}
                         name={me?.name ?? "사용자"}
@@ -113,14 +105,14 @@ export default function UserMyPage() {
                         onClickMyPosts={() => console.log("나의 글")}
                     />
 
-                   <BookMarkList
-                       items={popups}
-                       loading={loading}
-                       sort={sort}
-                       onSortChange={setSort}
-                       onToggleLike={handleToggleLike}
-                       onOpenDetail={handleOpenDetail}
-                   />
+                    <BookMarkList
+                        items={popups}
+                        loading={loading}
+                        sort={sort}
+                        onSortChange={setSort}
+                        onToggleLike={handleToggleLike}
+                        onOpenDetail={handleOpenDetail}
+                    />
                 </div>
             </div>
         </div>

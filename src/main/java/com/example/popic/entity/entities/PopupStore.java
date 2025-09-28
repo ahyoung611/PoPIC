@@ -79,5 +79,4 @@ public class PopupStore {
     public static final int STATUS_PENDING   = 2;   // 승인 대기
     public static final int STATUS_REJECTED  = 3;   // 승인 반려
     public static final int STATUS_ENDED     = -1;  // 운영 종료
-
 }

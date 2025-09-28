@@ -1,12 +1,16 @@
-import Banner from "../components/commons/Banner.jsx";
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import Banner from "../components/commons/Banner.jsx";
 import MainPopupCardSlide from "../components/commons/MainPopupCardSilde.jsx";
 import apiRequest from "../utils/apiRequest.js";
 import { useAuth } from "../context/AuthContext.jsx";
 
+// API 서버 베이스 URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+// 상대 경로를 절대경로로 바꿔주는 유틸
+const toAbs = (u) => (u?.startsWith("http") ? u : `${API_BASE_URL}${u?.startsWith("/") ? "" : "/"}${u || ""}`);
 
+// 카테고리
 const CATEGORY_JSON = [
   { category_id: "1", name: "패션" },
   { category_id: "2", name: "뷰티" },
@@ -23,42 +27,13 @@ const CATEGORY_TABS = [
   ...CATEGORY_JSON.map((c) => ({ key: String(c.category_id), label: c.name })),
 ];
 
+// 상단 배너 슬라이드 데이터
 const slides = [
-  {
-    bg: "/banner/slide1.png",
-    bgMd: "/banner/slide1-tablet.png",
-    bgSm: "/banner/page1.png",
-    thumb: "/banner/page1.png",
-    alt: "배너 1",
-  },
-  {
-    bg: "/banner/slide2.png",
-    bgMd: "/banner/slide2-tablet.png",
-    bgSm: "/banner/page2.png",
-    thumb: "/banner/page2.png",
-    alt: "배너 2",
-  },
-  {
-    bg: "/banner/slide3.png",
-    bgMd: "/banner/slide3-tablet.png",
-    bgSm: "/banner/page3.png",
-    thumb: "/banner/page3.png",
-    alt: "배너 3",
-  },
-  {
-    bg: "/banner/slide4.png",
-    bgMd: "/banner/slide4-tablet.png",
-    bgSm: "/banner/page4.png",
-    thumb: "/banner/page4.png",
-    alt: "배너 4",
-  },
-  {
-    bg: "/banner/slide5.png",
-    bgMd: "/banner/slide5-tablet.png",
-    bgSm: "/banner/page5.png",
-    thumb: "/banner/page5.png",
-    alt: "배너 5",
-  },
+  { bg: "/banner/slide1.png", bgMd: "/banner/slide1-tablet.png", bgSm: "/banner/page1.png", thumb: "/banner/page1.png", alt: "배너 1" },
+  { bg: "/banner/slide2.png", bgMd: "/banner/slide2-tablet.png", bgSm: "/banner/page2.png", thumb: "/banner/page2.png", alt: "배너 2" },
+  { bg: "/banner/slide3.png", bgMd: "/banner/slide3-tablet.png", bgSm: "/banner/page3.png", thumb: "/banner/page3.png", alt: "배너 3" },
+  { bg: "/banner/slide4.png", bgMd: "/banner/slide4-tablet.png", bgSm: "/banner/page4.png", thumb: "/banner/page4.png", alt: "배너 4" },
+  { bg: "/banner/slide5.png", bgMd: "/banner/slide5-tablet.png", bgSm: "/banner/page5.png", thumb: "/banner/page5.png", alt: "배너 5" },
 ];
 
 const Main = () => {
@@ -67,171 +42,129 @@ const Main = () => {
   const userId = auth?.user?.user_id;
   const token = auth?.token;
 
+  // 사용자의 북마크된 팝업 ID를 보관(Set)
   const [bookmarkedPopups, setBookmarkedPopups] = useState(new Set());
+  // 초기 로딩 스피너 표시용
   const [isLoading, setIsLoading] = useState(true);
 
-  const [monthlyPopups, setMonthlyPopups] = useState([]);
-  const [closingPopups, setClosingPopups] = useState([]);
-  const [categoryPopups, setCategoryPopups] = useState([]);
-
-  // DB에서 북마크 가져오기
- const fetchBookmarks = useCallback(async () => {
-   if (!userId || !token) return;
-
-   try {
-      const data = await apiRequest(`/userBookmark?userId=${userId}`, {}, token);
-      const ids = Array.isArray(data) ? data.map(Number) : [];
+  // 내 북마크 목록(스토어 ID 리스트) 불러오기
+  const fetchBookmarks = useCallback(async () => {
+    if (!userId || !token) {
+      setBookmarkedPopups(new Set());
+      return;
+    }
+    try {
+      const data = await apiRequest(`/userBookmark/popupList`, {}, token);
+      const ids = Array.isArray(data) ? data.map((item) => Number(item.store_id)) : [];
       setBookmarkedPopups(new Set(ids));
-      
-     } catch (err) {
-       console.error("북마크 가져오기 실패", err);
-       setBookmarkedPopups(new Set());
-     }
-   }, [userId, token]);
+    } catch (err) {
+      console.error("북마크 가져오기 실패", err);
+      setBookmarkedPopups(new Set());
+    }
+  }, [userId, token]);
 
+ // 최초 진입 시 내 북마크 목록을 1회 로딩
   useEffect(() => {
-    const fetchInitialData = async () => {
+    (async () => {
       setIsLoading(true);
       try {
-        await fetchBookmarks(); // 북마크 먼저 가져오기
-        const [monthlyData, closingData, categoryData] = await Promise.all([
-          fetchByMonthlyOpen(),
-          fetchByClosingSoon(),
-          fetchByCategory({ categoryKey: CATEGORY_TABS[0].key }),
-        ]);
-        setMonthlyPopups(monthlyData);
-        setClosingPopups(closingData);
-        setCategoryPopups(categoryData);
-      } catch (error) {
-        console.error("초기 데이터 로딩 오류:", error);
+        await fetchBookmarks();
       } finally {
         setIsLoading(false);
       }
-    };
-
-    fetchInitialData();
+    })();
   }, [fetchBookmarks]);
 
-  // 북마크 토글
+  // 북마크 토글(업데이트 + 실패 시 롤백)
   const handleToggleBookmark = useCallback(
-    async (popupId, isBookmarked) => {
+    async (popupId, nextState) => {
       const idNum = Number(popupId);
 
-      setBookmarkedPopups(prev => {
-          const newSet = new Set(prev);
-          if (isBookmarked) newSet.add(idNum);
-          else newSet.delete(idNum);
-          return newSet;
+      // 낙관적 UI 갱신
+      setBookmarkedPopups((prev) => {
+        const s = new Set(prev);
+        if (nextState) s.add(idNum);
+        else s.delete(idNum);
+        return s;
+      });
+
+      // 비로그인은 UI만 반영
+      if (!token || !userId) return;
+
+      try {
+        await apiRequest(
+          `/userBookmark/toggle?userId=${userId}&storeId=${idNum}`,
+          { method: "POST" },
+          token
+        );
+      } catch (err) {
+        console.error("북마크 저장 실패", err);
+        // 실패시 롤백
+        setBookmarkedPopups((prev) => {
+          const s = new Set(prev);
+          if (nextState) s.delete(idNum);
+          else s.add(idNum);
+          return s;
         });
-
-      if (token) {
-          console.log(token)
-          console.log(userId)
-        try {
-          await apiRequest(
-             `/userBookmark/toggle?userId=${userId}&storeId=${idNum}`,
-              { method: "POST" },
-              token);
-        } catch (err) {
-          console.error("북마크 저장 실패", err);
-          setBookmarkedPopups(prev => {
-            const newSet = new Set(prev);
-            if (isBookmarked) newSet.delete(idNum);
-            else newSet.add(idNum);
-            return newSet;
-          });
-        }
       }
-
-      // 화면 즉시 반영
-      setMonthlyPopups(prev => prev.map(p => p.id === idNum ? { ...p, isBookmarked } : p));
-      setClosingPopups(prev => prev.map(p => p.id === idNum ? { ...p, isBookmarked } : p));
-      setCategoryPopups(prev => prev.map(p => p.id === idNum ? { ...p, isBookmarked } : p));
     },
-    [token]
+    [userId, token]
   );
 
-
-  // 이달의 팝업
-const fetchByMonthlyOpen = async () => {
-  try {
+  // 이달의 팝업 목록
+  const fetchByMonthlyOpen = useCallback(async () => {
     const data = await apiRequest("/popupStore/monthly", {});
-    if (!Array.isArray(data)) return [];
-
-    return data.map((item) => ({
+    return (Array.isArray(data) ? data : []).map((item) => ({
       id: Number(item.store_id),
-      image: item.thumb,
+      image: toAbs(item.thumb),
       title: item.store_name,
       periodText: `${item.start_date} - ${item.end_date}`,
-      isBookmarked: !!bookmarkedPopups && bookmarkedPopups.has(Number(item.store_id)),
+      categoryLabel: item.category_names?.[0] || "",
     }));
-  } catch (error) {
-    console.error("월간 팝업 데이터를 가져오는 중 오류 발생:", error);
-    return [];
-  }
-};
+  }, []);
 
-  // 곧 종료되는 팝업
- const fetchByClosingSoon = async () => {
-   try {
-     const data = await apiRequest("/popupStore/monthly");
-     if (!Array.isArray(data)) return [];
+  // 곧 종료되는 팝업 목록(10일 이내 마감)
+  const fetchByClosingSoon = useCallback(async () => {
+    const data = await apiRequest("/popupStore/monthly");
+    const today = new Date();
+    return (Array.isArray(data) ? data : [])
+      .filter((item) => {
+        const diffDays = Math.ceil((new Date(item.end_date) - today) / 86400000);
+        return diffDays >= 0 && diffDays <= 10;
+      })
+      .map((item) => ({
+        id: Number(item.store_id),
+        image: toAbs(item.thumb),
+        title: item.store_name,
+        periodText: `${item.start_date} - ${item.end_date}`,
+        categoryLabel: item.category_names?.[0] || "",
+      }));
+  }, []);
 
-     const today = new Date();
-     return data
-       .filter((item) => {
-         const endDate = new Date(item.end_date);
-         const diffDays = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
-         return diffDays >= 0 && diffDays <= 10;
-       })
-       .map((item) => ({
-         id: Number(item.store_id),
-         image: `${API_BASE_URL}${item.thumb}`,
-         title: item.store_name,
-         periodText: `${item.start_date} - ${item.end_date}`,
-       }));
-   } catch (error) {
-     console.error("CLOSING SOON 데이터를 가져오는 중 오류 발생:", error);
-     return [];
-   }
- };
-
-  // 카테고리별 팝업
-const fetchByCategory = async ({ categoryKey }) => {
-  try {
+  // 카테고리별 팝업 목록
+  const fetchByCategory = useCallback(async ({ categoryKey }) => {
     const endpoint =
       categoryKey && categoryKey !== "all"
         ? `/popupStore/category?category=${categoryKey}`
         : "/popupStore/monthly";
-
     const data = await apiRequest(endpoint);
-    if (!Array.isArray(data)) return [];
-
-    return data.map((item) => ({
+    return (Array.isArray(data) ? data : []).map((item) => ({
       id: Number(item.store_id),
-      image: item.thumb,
+      image: toAbs(item.thumb),
       title: item.store_name,
       periodText: `${item.start_date} - ${item.end_date}`,
-      categoryLabel:
-        item.category_names && item.category_names.length > 0
-          ? item.category_names[0]
-          : "",
+      categoryLabel: item.category_names?.[0] || "",
     }));
-  } catch (error) {
-    console.error("카테고리별 팝업 데이터를 가져오는 중 오류 발생:", error);
-    return [];
-  }
-};
+  }, []);
 
+  // 카드 클릭 시 상세 페이지로 이동
   const handleCardClick = (popupId) => {
     navigate(`/popupStore/detail/${popupId}`);
   };
 
   return (
     <>
-      <div>
-        <Banner slides={slides} height={600} autoDelay={3000} />
-      </div>
+      <Banner slides={slides} height={600} autoDelay={3000} />
 
       {isLoading ? (
         <p className="loading-message">데이터를 불러오는 중입니다...</p>
