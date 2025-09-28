@@ -4,6 +4,7 @@
     align-items: center;
     min-height: calc(100vh - 60px - 44px); /* header, footer 제외 */
     background-color: var(--bg-color);
+
 }
 
 .onsite-card {
@@ -12,30 +13,48 @@
     background: var(--white-color);
     border-radius: 16px;
     box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--main-color);
     padding: 24px;
     text-align: center;
 }
 
+/* 일러스트 */
 .onsite-illust {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: auto;
     margin: 0 auto 16px auto;
 }
 
+/* 안내 문구 */
 .onsite-message {
-    color: var(--darkgray-color);
     font-size: var(--font-small);
     margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--darkgray-color);
 }
 
+.onsite-message.active {
+    color: var(--main-color); /* 호출 후 강조 */
+    font-weight: 600;
+}
+
+/* 팝업 이름 */
 .onsite-title {
     font-size: var(--font-subtitle);
     font-weight: 600;
     color: var(--black-color);
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
+/* 유효시간 */
+.onsite-time {
+    font-size: var(--font-small);
+    color: var(--main-color);
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* 대기 현황 (호출 전) */
 .onsite-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -67,3 +86,55 @@
     font-weight: bold;
     color: var(--blue-color);
 }
+/* QR 박스 전체 */
+.onsite-qr-box {
+    display: flex;
+    justify-content: space-around; /* 가운데 배치 */
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    background: var(--white-color);
+    gap: 24px; /* 번호와 QR 사이 간격 */
+}
+
+/* 왼쪽: 라벨 + 번호를 세로로 묶어서 중앙정렬 */
+.onsite-qr-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 가운데 정렬 */
+    justify-content: center;
+    margin-left: 17px;
+}
+
+.onsite-qr-left .onsite-label {
+    font-size: var(--font-caption);
+    color: var(--darkgray-color);
+    margin-bottom: 6px;
+}
+
+.onsite-qr-left .onsite-value-red {
+    font-size: 34px; /* 더 크게 */
+    font-weight: bold;
+    color: var(--main-color);
+    line-height: 1.2;
+}
+
+/* 오른쪽: QR */
+.onsite-qr-right {
+    flex-shrink: 0;
+}
+
+.onsite-qr-placeholder {
+    width: 120px;
+    height: 120px;
+    background: var(--gray-hover-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--darkgray-color);
+    font-size: var(--font-caption);
+    border-radius: 8px;
+}
+

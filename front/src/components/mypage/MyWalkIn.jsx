@@ -8,9 +8,7 @@ const MyWalkIn = ({walkIn = []}) => {
 
     const goWalkInPage = (w) => {
         const popupName = w.popup?.name ?? w.storeName ?? "팝업";
-        navigate("/me/walkInPage", {
-            state: { storeId: w.storeId, waitingId: w.id, popupName },
-        });
+        navigate(`/me/walkIn/${w.id}?storeId=${w.storeId}&popupName=${popupName}`);
     };
 
     const formatStatus = (status) => {

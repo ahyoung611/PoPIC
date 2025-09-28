@@ -1,34 +1,28 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { useLocation } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import Button from "../../components/commons/Button.jsx";
 import "../../style/OnsiteTicket.css";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
-const OnsiteTicket = ({ userId: propUserId, storeId: propStoreId }) => {
+const OnsiteTicket = () => {
     const { auth, getToken } = useAuth();
     const token = getToken?.();
+
+    const { waitingId } = useParams();
     const location = useLocation();
+    const query = new URLSearchParams(location.search);
 
-    const stateStoreId = location?.state?.storeId ?? null;
-    const stateWaitingId = location?.state?.waitingId ?? null;
-    const statePopupName = location?.state?.popupName ?? null;
+    const storeId = Number(query.get("storeId"));
+    const statePopupName = query.get("popupName");
 
-    const userId = useMemo(() => propUserId ?? auth?.user?.user_id ?? null, [propUserId, auth]);
-    const storeId = useMemo(() => {
-        const v = propStoreId ?? stateStoreId ?? Number.NaN;
-        const n = Number(v);
-        return Number.isFinite(n) ? n : Number.NaN;
-    }, [propStoreId, stateStoreId]);
+    const userId = auth?.user?.user_id;
 
     const [loading, setLoading] = useState(true);
-    const [err, setErr] = useState("");
-    const [waiting, setWaiting] = useState(null);
-    const [ahead, setAhead] = useState(0);
-
-    const waitingId = waiting?.id;
+    const [waiting, setWaiting] = useState(null); // 내 번호
+    const [ahead, setAhead] = useState(0); // 앞 팀 계산
 
     const headers = useMemo(() => {
         const h = { "Content-Type": "application/json" };
@@ -46,54 +40,39 @@ const OnsiteTicket = ({ userId: propUserId, storeId: propStoreId }) => {
         return ct.includes("application/json") ? res.json() : res.text();
     };
 
-    const loadOrCreate = async (signal) => {
-        setErr("");
+    // 내 대기표 불러오기 (userId로 가져온 뒤 waitingId 필터링)
+    const loadWaiting = async (signal) => {
         setLoading(true);
         try {
             if (!userId || !Number.isFinite(storeId) || !token) return;
 
             const list = await fetchJSON(`/waiting/user/${userId}`, { signal });
             const arr = Array.isArray(list) ? list : list?.content ?? [];
+            const my = arr.find((w) => w.id === Number(waitingId));
 
-            let my =
-                arr.find((w) => w.id === stateWaitingId) ||
-                arr.find((w) => Number(w.storeId) === Number(storeId) && Number(w.status) === 1);
-
-            if (!my) {
-                try {
-                    const created = await fetchJSON(
-                        `/waiting/create?userId=${userId}&storeId=${storeId}`,
-                        { method: "POST", signal }
-                    );
-                    my = created;
-                } catch (ce) {
-                    my = arr
-                        .filter((w) => Number(w.storeId) === Number(storeId))
-                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
-                    if (!my) throw ce;
-                }
-            }
-
-            setWaiting(my);
+            setWaiting(my || null);
         } catch (e) {
-            setErr(e.message || "오류가 발생했습니다.");
+            console.log(e);
         } finally {
             setLoading(false);
         }
     };
 
+    // 내 앞에 몇 팀 있는지
     const fetchAhead = async (id, signal) => {
         const data = await fetchJSON(`/waiting/${id}/ahead`, { signal });
         if (data) setAhead(data?.aheadTeams ?? 0);
     };
 
+    // 첫 로딩 시 대기 정보 불러오기
     useEffect(() => {
-        if (!userId || !Number.isFinite(storeId) || !token) return;
+        if (!userId || !Number.isFinite(storeId) || !token || !waitingId) return;
         const c = new AbortController();
-        loadOrCreate(c.signal);
+        loadWaiting(c.signal);
         return () => c.abort();
-    }, [userId, storeId, token]);
+    }, [userId, storeId, token, waitingId]);
 
+    // 10초마다 내 앞팀 수 확인(갱신)
     useEffect(() => {
         if (!waitingId || !token) return;
         const first = new AbortController();
@@ -110,6 +89,7 @@ const OnsiteTicket = ({ userId: propUserId, storeId: propStoreId }) => {
         };
     }, [waitingId, token]);
 
+    // 대기 취소
     const onCancel = async () => {
         if (!waitingId) return;
         try {
@@ -123,7 +103,6 @@ const OnsiteTicket = ({ userId: propUserId, storeId: propStoreId }) => {
     if (!userId || !Number.isFinite(storeId)) return <div>필수값이 없습니다.</div>;
     if (!token) return <div>인증 준비 중…</div>;
     if (loading) return <div>불러오는 중…</div>;
-    if (err) return <div>{err}</div>;
     if (!waiting) return <div>대기 정보가 없습니다.</div>;
 
     const isCanceled = waiting.status === -1;
@@ -132,30 +111,44 @@ const OnsiteTicket = ({ userId: propUserId, storeId: propStoreId }) => {
     return (
         <main className="onsite-container">
             <div className="onsite-card">
-                <img src="/BeforeOnsite.png" alt="대기 일러스트" className="onsite-illust" />
+                <img
+                    src={waiting.callTime ? "/AfterOnsite.png" : "/BeforeOnsite.png"}
+                    alt="대기 일러스트"
+                    className="onsite-illust"
+                />
 
-                <p className="onsite-message">잠시만 기다려주세요!</p>
+                <p className="onsite-message">
+                    {waiting.callTime ? "지금 입장해주세요!" : "잠시만 기다려주세요!"}
+                </p>
                 <h2 className="onsite-title">{title}</h2>
 
-                <div className="onsite-grid">
-                    <div className="onsite-grid-item">
-                        <span className="onsite-label">대기 번호</span>
-                        <span className="onsite-value-red">{waiting.queueNumber}</span>
+                {waiting.callTime ? (
+                    <div className="onsite-qr-box">
+                        <div className="onsite-qr-left">
+                            <div className="onsite-label">대기 번호</div>
+                            <div className="onsite-value-red">{waiting.queueNumber}</div>
+                        </div>
+                        <div className="onsite-qr-right">
+                            <div className="onsite-qr-placeholder">QR</div>
+                        </div>
                     </div>
+                ) : (
                     <div className="onsite-grid-item">
                         <span className="onsite-label">현재 대기 팀</span>
                         <span className="onsite-value-blue">{ahead}</span>
                     </div>
-                </div>
+                )}
 
-                <Button
-                    variant="primary"
-                    color={isCanceled ? "gray" : "red"}
-                    disabled={isCanceled}
-                    onClick={onCancel}
-                >
-                    {isCanceled ? "취소됨" : "대기 취소"}
-                </Button>
+                {!waiting.callTime && (
+                    <Button
+                        variant="primary"
+                        color={isCanceled ? "gray" : "red"}
+                        disabled={isCanceled}
+                        onClick={onCancel}
+                    >
+                        {isCanceled ? "취소됨" : "대기 취소"}
+                    </Button>
+                )}
             </div>
         </main>
     );
