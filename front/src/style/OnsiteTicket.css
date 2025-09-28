@@ -1,0 +1,69 @@
+.onsite-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 60px - 44px); /* header, footer 제외 */
+    background-color: var(--bg-color);
+}
+
+.onsite-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--white-color);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    text-align: center;
+}
+
+.onsite-illust {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px auto;
+}
+
+.onsite-message {
+    color: var(--darkgray-color);
+    font-size: var(--font-small);
+    margin-bottom: 8px;
+}
+
+.onsite-title {
+    font-size: var(--font-subtitle);
+    font-weight: 600;
+    color: var(--black-color);
+    margin-bottom: 24px;
+}
+
+.onsite-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.onsite-grid-item {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px 0;
+}
+
+.onsite-label {
+    font-size: var(--font-caption);
+    color: var(--darkgray-color);
+    margin-bottom: 4px;
+    display: block;
+}
+
+.onsite-value-red {
+    font-size: var(--font-title);
+    font-weight: bold;
+    color: var(--main-color);
+}
+
+.onsite-value-blue {
+    font-size: var(--font-title);
+    font-weight: bold;
+    color: var(--blue-color);
+}

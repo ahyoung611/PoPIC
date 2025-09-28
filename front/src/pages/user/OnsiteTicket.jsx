@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useLocation } from "react-router-dom";
+import Button from "../../components/commons/Button.jsx";
+import "../../style/OnsiteTicket.css";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
@@ -35,18 +37,13 @@ const OnsiteTicket = ({ userId: propUserId, storeId: propStoreId }) => {
     }, [token]);
 
     const fetchJSON = async (path, init = {}) => {
-        try {
-            const res = await fetch(`${URL}${path}`, { headers, ...init });
-            const ct = res.headers.get("content-type") || "";
-            if (!res.ok) {
-                const msg = (await res.text().catch(() => "")) || `HTTP ${res.status}`;
-                throw new Error(msg);
-            }
-            return ct.includes("application/json") ? res.json() : res.text();
-        } catch (e) {
-            if (e?.name === "AbortError") return;
-            throw e;
+        const res = await fetch(`${URL}${path}`, { headers, ...init });
+        const ct = res.headers.get("content-type") || "";
+        if (!res.ok) {
+            const msg = (await res.text().catch(() => "")) || `HTTP ${res.status}`;
+            throw new Error(msg);
         }
+        return ct.includes("application/json") ? res.json() : res.text();
     };
 
     const loadOrCreate = async (signal) => {
@@ -90,16 +87,13 @@ const OnsiteTicket = ({ userId: propUserId, storeId: propStoreId }) => {
         if (data) setAhead(data?.aheadTeams ?? 0);
     };
 
-    // 초기 로딩
     useEffect(() => {
         if (!userId || !Number.isFinite(storeId) || !token) return;
         const c = new AbortController();
         loadOrCreate(c.signal);
         return () => c.abort();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId, storeId, token]);
 
-    // 앞팀 수 폴링
     useEffect(() => {
         if (!waitingId || !token) return;
         const first = new AbortController();
@@ -136,16 +130,34 @@ const OnsiteTicket = ({ userId: propUserId, storeId: propStoreId }) => {
     const title = waiting.storeName || waiting.popup?.name || statePopupName || "팝업 스토어";
 
     return (
-        <div>
-            <h1>{title}</h1>
-            <div>
-                <div>대기 번호: {waiting.queueNumber}</div>
-                <div>현재 대기 팀: {ahead}</div>
+        <main className="onsite-container">
+            <div className="onsite-card">
+                <img src="/BeforeOnsite.png" alt="대기 일러스트" className="onsite-illust" />
+
+                <p className="onsite-message">잠시만 기다려주세요!</p>
+                <h2 className="onsite-title">{title}</h2>
+
+                <div className="onsite-grid">
+                    <div className="onsite-grid-item">
+                        <span className="onsite-label">대기 번호</span>
+                        <span className="onsite-value-red">{waiting.queueNumber}</span>
+                    </div>
+                    <div className="onsite-grid-item">
+                        <span className="onsite-label">현재 대기 팀</span>
+                        <span className="onsite-value-blue">{ahead}</span>
+                    </div>
+                </div>
+
+                <Button
+                    variant="primary"
+                    color={isCanceled ? "gray" : "red"}
+                    disabled={isCanceled}
+                    onClick={onCancel}
+                >
+                    {isCanceled ? "취소됨" : "대기 취소"}
+                </Button>
             </div>
-            <button onClick={onCancel} disabled={isCanceled}>
-                {isCanceled ? "취소됨" : "대기 취소"}
-            </button>
-        </div>
+        </main>
     );
 };
 

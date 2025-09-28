@@ -15,7 +15,7 @@ const MyWalkIn = ({walkIn = []}) => {
 
     const formatStatus = (status) => {
         if (status === 1) {
-            return "대기 완료";
+            return "대기 중";
         } else if (status === -1) {
             return "대기 취소";
         } else if (status === 0) {
