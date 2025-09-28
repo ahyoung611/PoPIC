@@ -1,12 +1,14 @@
 package com.example.popic.popup.controller;
 
 import com.example.popic.CustomUserPrincipal;
+import com.example.popic.entity.entities.Inquiry;
 import com.example.popic.entity.entities.PopupStoreSchedule;
 import com.example.popic.entity.entities.Review;
 import com.example.popic.file.FileSave;
 import com.example.popic.image.dto.ReviewImageDTO;
 import com.example.popic.image.service.ReviewImageService;
 import com.example.popic.popup.dto.*;
+import com.example.popic.popup.repository.InquiryRepository;
 import com.example.popic.popup.service.InquiryService;
 import com.example.popic.popup.service.PopupReviewService;
 import com.example.popic.popup.service.PopupService;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -75,6 +78,50 @@ public class PopupController {
         reviewImageService.saveReviewImage(reviewImageDTO);
 
         return ResponseEntity.ok(new PopupReviewDTO());
+    }
+
+    @PostMapping("/popupReview/modify/{reviewId}")
+    public ResponseEntity<?> editReview(
+            @PathVariable Long reviewId,
+            @ModelAttribute PopupReviewDTO popupReviewDTO,
+            @RequestParam(name = "file", required = false) MultipartFile file,
+            @RequestParam(name = "type", required = false) String type
+    ) {
+        try {
+            popupReviewService.updateReview(reviewId, popupReviewDTO, file, popupReviewDTO.getExistingImage(), type);
+            return ResponseEntity.ok().body("리뷰 수정 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("리뷰 수정 실패: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deleteReview/{reviewId}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId,
+                                             Authentication authentication) {
+        CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
+        popupReviewService.deleteReview(reviewId, principal);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/inquiry/{id}")
+    public ResponseEntity<?> updateInquiry(
+            @PathVariable Long id,
+            @RequestBody InquiryDTO inquiryDTO
+    ) {
+        inquiryService.updateInquiry(id,inquiryDTO);
+
+        return ResponseEntity.ok().body("문의가 수정되었습니다.");
+    }
+
+    @DeleteMapping("/deleteInquiry/{inquiryId}")
+    public ResponseEntity<Void> deleteInquiry(@PathVariable Long inquiryId,
+                                             Authentication authentication) {
+        CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
+        inquiryService.deleteInquiry(inquiryId, principal);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/user/{userId}")

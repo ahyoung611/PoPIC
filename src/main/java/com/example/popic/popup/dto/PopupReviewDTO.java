@@ -24,7 +24,7 @@ public class PopupReviewDTO {
     private LocalDateTime createdAt; // 작성일
     private LocalDateTime updatedAt; // 수정일
     private List<Long> images = new ArrayList<>(); // 리뷰 이미지 리스트
-
+    private Long existingImage;
     // review 매핑용
     private Long popupId;
     private Long userId;

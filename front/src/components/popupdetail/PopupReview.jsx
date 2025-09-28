@@ -13,6 +13,7 @@ const PopupReview = (props)=>{
     const token = useAuth().getToken();
     const [openReplies, setOpenReplies] = useState({});
     const [replyInputs, setReplyInputs] = useState({});
+    const [editReview, setEditReview] = useState(null);
     const user = useAuth().getUser();
     const nav = useNavigate();
 
@@ -78,6 +79,23 @@ const PopupReview = (props)=>{
         }));
     };
 
+    const modifyReview = (review)=>{
+        setEditReview(review);
+        setIsModalOpen(true);
+    }
+
+    const deleteReview = async (review) => {
+        if(!window.confirm("리뷰를 삭제 하시겠습니까?")) return;
+        const fetchDeleteReview = async () => {
+            const response = await apiRequest(`/popupStore/deleteReview/${review.review_id}`,{
+                method: "DELETE",
+            },token)
+            alert("글이 삭제되었습니다.");
+        }
+        await fetchDeleteReview();
+        fetchReview();
+    }
+
     if(!user){
         return(
             <div className={"msg-container"} onClick={()=>{nav("/login")}}>
@@ -106,6 +124,7 @@ const PopupReview = (props)=>{
                     onClose={() => setIsModalOpen(false)}
                     popupId={props.popup.store_id}
                     onSubmitSuccess={fetchReview}
+                    editData={editReview}
                 />
 
                 {review.map((item, idx) => {
@@ -138,6 +157,12 @@ const PopupReview = (props)=>{
                                             </button>
                                         </div>
                                     </div>
+                                    {item.user.user_id === user.user_id && (
+                                        <div className={"btn-wrapper"}>
+                                            <button onClick={()=>modifyReview(item)}>수정하기</button> |
+                                            <button onClick={()=>deleteReview(item)}>삭제하기</button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
