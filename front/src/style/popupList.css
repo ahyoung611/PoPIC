@@ -1,0 +1,112 @@
+.popup-list {
+  --pl-gap: 20px;
+  width: 100%;
+  height:890px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 제목 */
+.popup-list .list-title {
+  text-align: center;
+  font-weight: var(--font-bold);
+  font-size: var(--font-title-l);
+  color: var(--black-color);
+  margin: 30px;
+}
+
+/* 카드 그리드 */
+.popup-list .popup-grid {
+  display: grid;
+  gap: var(--pl-gap);
+  width: 100%;
+  grid-auto-rows: minmax(150px, auto);
+}
+
+/* 카드 셀 */
+.popup-list .popup-grid__cell {
+  display: flex;
+}
+
+/* 카드 확장 */
+.popup-list .popup-grid__cell .mpc-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 이미지 비율/높이 조정 */
+.popup-list .popup-grid__cell .mpc-media {
+  aspect-ratio: 3 / 4;
+  max-height: 380px;
+}
+
+/* TypeB 카드 스타일 */
+.popup-list .popup-grid__cell .mpc-card.mpc-card--typeB .mpc-card__body {
+  padding: 12px 14px 16px;
+}
+.popup-list .popup-grid__cell .mpc-card.mpc-card--typeB .mpc-card__title {
+  margin-bottom: 6px;
+}
+.popup-list .popup-grid__cell .mpc-card.mpc-card--typeB .mpc-card__period {
+  font-size: var(--font-small);
+  color: var(--darkgray-color);
+  font-weight: 600;
+}
+
+/* 로딩 스켈레톤 */
+.popup-list .popup-card--skeleton {
+  height: 360px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--bg-color) 25%,
+    #f1f1f1 37%,
+    var(--bg-color) 63%
+  );
+  background-size: 400% 100%;
+  animation: pl-skeleton 1.2s ease-in-out infinite;
+}
+@keyframes pl-skeleton {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 검색 결과 없음 */
+.popup-list .nonList {
+  padding: 40px 0;
+  color: var(--darkgray-color);
+  font-size: var(--font-body);
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+/* 페이지네이션 하단 고정 */
+.popup-list .inner { display: flex; flex-direction: column; min-height: calc(100vh - 120px); }
+.list-pagination { margin-top: auto; display: flex; justify-content: center; padding: 20px 0; }
+
+/* 모바일 */
+@media (max-width: 560px) {
+  .popup-list .popup-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+/* 태블릿 */
+@media  (min-width: 561px) and (max-width: 1024px)  {
+  .popup-list .popup-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+}
+
+/* PC */
+@media (min-width: 1025px) {
+  .popup-list .popup-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+}
+

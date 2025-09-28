@@ -27,7 +27,7 @@ const CATEGORY_TABS = [
   ...CATEGORY_JSON.map((c) => ({ key: String(c.category_id), label: c.name })),
 ];
 
-// 상단 배너 슬라이드 데이터
+// 배너 슬라이드 데이터
 const slides = [
   { bg: "/banner/slide1.png", bgMd: "/banner/slide1-tablet.png", bgSm: "/banner/page1.png", thumb: "/banner/page1.png", alt: "배너 1" },
   { bg: "/banner/slide2.png", bgMd: "/banner/slide2-tablet.png", bgSm: "/banner/page2.png", thumb: "/banner/page2.png", alt: "배너 2" },
@@ -42,12 +42,18 @@ const Main = () => {
   const userId = auth?.user?.user_id;
   const token = auth?.token;
 
-  // 사용자의 북마크된 팝업 ID를 보관(Set)
+  // 사용자의 북마크된 팝업 ID Set
   const [bookmarkedPopups, setBookmarkedPopups] = useState(new Set());
-  // 초기 로딩 스피너 표시용
   const [isLoading, setIsLoading] = useState(true);
 
-  // 내 북마크 목록(스토어 ID 리스트) 불러오기
+  // 날자 포맷팅
+  const formatYmdDots = (s) => {
+    if (!s) return "";
+    const ymd = String(s).slice(0, 10);       // 'YYYY-MM-DD'
+    return ymd.replaceAll("-", ".");          // 'YYYY.MM.DD'
+  };
+
+  // 내 북마크 목록 불러오기
   const fetchBookmarks = useCallback(async () => {
     if (!userId || !token) {
       setBookmarkedPopups(new Set());
@@ -63,7 +69,6 @@ const Main = () => {
     }
   }, [userId, token]);
 
- // 최초 진입 시 내 북마크 목록을 1회 로딩
   useEffect(() => {
     (async () => {
       setIsLoading(true);
@@ -75,12 +80,12 @@ const Main = () => {
     })();
   }, [fetchBookmarks]);
 
-  // 북마크 토글(업데이트 + 실패 시 롤백)
+  // 북마크 토글
   const handleToggleBookmark = useCallback(
     async (popupId, nextState) => {
       const idNum = Number(popupId);
 
-      // 낙관적 UI 갱신
+      // 낙관적 UI
       setBookmarkedPopups((prev) => {
         const s = new Set(prev);
         if (nextState) s.add(idNum);
@@ -88,8 +93,7 @@ const Main = () => {
         return s;
       });
 
-      // 비로그인은 UI만 반영
-      if (!token || !userId) return;
+      if (!token || !userId) return; // 비로그인 시 API 호출 생략
 
       try {
         await apiRequest(
@@ -99,7 +103,7 @@ const Main = () => {
         );
       } catch (err) {
         console.error("북마크 저장 실패", err);
-        // 실패시 롤백
+        // 롤백
         setBookmarkedPopups((prev) => {
           const s = new Set(prev);
           if (nextState) s.delete(idNum);
@@ -111,19 +115,19 @@ const Main = () => {
     [userId, token]
   );
 
-  // 이달의 팝업 목록
+  // 이달의 팝업
   const fetchByMonthlyOpen = useCallback(async () => {
     const data = await apiRequest("/popupStore/monthly", {});
     return (Array.isArray(data) ? data : []).map((item) => ({
       id: Number(item.store_id),
       image: toAbs(item.thumb),
       title: item.store_name,
-      periodText: `${item.start_date} - ${item.end_date}`,
-      categoryLabel: item.category_names?.[0] || "",
+      periodText: `${formatYmdDots(item.start_date)} - ${formatYmdDots(item.end_date)}`,
+      categoryLabel: item.category_names?.[0] || "", // 카드 배지는 섹션에서 숨김 가능
     }));
   }, []);
 
-  // 곧 종료되는 팝업 목록(10일 이내 마감)
+  // 곧 종료되는 팝업 (10일 이내)
   const fetchByClosingSoon = useCallback(async () => {
     const data = await apiRequest("/popupStore/monthly");
     const today = new Date();
@@ -136,12 +140,12 @@ const Main = () => {
         id: Number(item.store_id),
         image: toAbs(item.thumb),
         title: item.store_name,
-        periodText: `${item.start_date} - ${item.end_date}`,
+       periodText: `${formatYmdDots(item.start_date)} - ${formatYmdDots(item.end_date)}`,
         categoryLabel: item.category_names?.[0] || "",
       }));
   }, []);
 
-  // 카테고리별 팝업 목록
+  // 카테고리별 팝업
   const fetchByCategory = useCallback(async ({ categoryKey }) => {
     const endpoint =
       categoryKey && categoryKey !== "all"
@@ -152,24 +156,25 @@ const Main = () => {
       id: Number(item.store_id),
       image: toAbs(item.thumb),
       title: item.store_name,
-      periodText: `${item.start_date} - ${item.end_date}`,
+     periodText: `${formatYmdDots(item.start_date)} - ${formatYmdDots(item.end_date)}`,
       categoryLabel: item.category_names?.[0] || "",
     }));
   }, []);
 
-  // 카드 클릭 시 상세 페이지로 이동
+  // 카드 클릭 시 상세 페이지로
   const handleCardClick = (popupId) => {
     navigate(`/popupStore/detail/${popupId}`);
   };
 
   return (
-    <>
+    <div className="container">
       <Banner slides={slides} height={600} autoDelay={3000} />
 
       {isLoading ? (
         <p className="loading-message">데이터를 불러오는 중입니다...</p>
       ) : (
         <>
+          {/* 섹션 1: 탭/배지 숨김 */}
           <div>
             <MainPopupCardSlide
               title="MONTHLY PICK"
@@ -179,9 +184,12 @@ const Main = () => {
               onCardClick={handleCardClick}
               bookmarkedPopups={bookmarkedPopups}
               onToggleBookmark={handleToggleBookmark}
+              showTabs={false}
+              showCategory={false}
             />
           </div>
 
+          {/* 섹션 2: 탭/배지 숨김 + 배경 효과 */}
           <div className="mpc-section--bgcolor">
             <MainPopupCardSlide
               title="CLOSING SOON"
@@ -192,14 +200,17 @@ const Main = () => {
               onCardClick={handleCardClick}
               bookmarkedPopups={bookmarkedPopups}
               onToggleBookmark={handleToggleBookmark}
+              showTabs={false}
+              showCategory={false}
             />
           </div>
 
+          {/* 섹션 3: 카테고리 탭/배지 표시 */}
           <div>
             <MainPopupCardSlide
               title="CATEGORY PICK"
               fetcher={fetchByCategory}
-              categories={CATEGORY_TABS}
+              categories={CATEGORY_TABS}   // 카테고리 사용
               limit={8}
               slidesPerView={4}
               showMore
@@ -207,11 +218,13 @@ const Main = () => {
               onCardClick={handleCardClick}
               bookmarkedPopups={bookmarkedPopups}
               onToggleBookmark={handleToggleBookmark}
+              showTabs={true}
+              showCategory={true}
             />
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };
 

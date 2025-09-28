@@ -14,15 +14,17 @@ export default function MainPopupCardSlide({
   fetcher,
   limit = 8,
   slidesPerView = 4,
-  categories = null,
-  variant = "default",
+  categories = null,      // 탭용 카테고리 목록
+  variant = "default",    // "default" | "bg"
   showMore = false,
   onCardClick,
   bookmarkedPopups,
   onToggleBookmark,
-}) {
 
-  const currentIndexRef = useRef(0)
+  showTabs = true,        // 탭 노출 여부 (기본 true)
+  showCategory = true,    // 카드 배지(categoryLabel) 노출 여부 (기본 true)
+}) {
+  const currentIndexRef = useRef(0);
   const [activeCategory, setActiveCategory] = useState(categories?.[0]?.key ?? null);
   const [loading, setLoading] = useState(true);
 
@@ -44,8 +46,12 @@ export default function MainPopupCardSlide({
     const fetchData = async () => {
       setLoading(true);
       try {
-        const data = await fetcher?.({ categoryKey: activeCategory ?? undefined });
+        const hasCategories = Array.isArray(categories) && categories.length > 0;
+        // ★ 카테고리가 있을 때만 categoryKey 전달
+        const arg = hasCategories ? { categoryKey: activeCategory ?? undefined } : undefined;
+        const data = await (arg ? fetcher?.(arg) : fetcher?.());
         if (!mounted) return;
+
         const sliced = Array.isArray(data) ? data.slice(0, limit) : [];
         setRawItems(sliced);
       } catch (e) {
@@ -57,33 +63,34 @@ export default function MainPopupCardSlide({
     };
 
     fetchData();
-
-    return () => {
-      mounted = false;
-    };
-  }, [fetcher, activeCategory, limit]);
+    return () => { mounted = false; };
+  }, [fetcher, activeCategory, limit, categories]);
 
   // 북마크 적용
   const items = useMemo(() => {
     return rawItems.map((it) => ({
       ...it,
-      bookmarked: bookmarkedPopups.has(Number(it.id)),
+      bookmarked: bookmarkedPopups?.has?.(Number(it.id)) ?? false,
     }));
   }, [rawItems, bookmarkedPopups]);
 
   // 카테고리 초기화
   useEffect(() => {
-    if (categories && categories.length > 0) {
-      setActiveCategory(categories[0].key);
+    if (Array.isArray(categories) && categories.length > 0) {
+      setActiveCategory((prev) => prev ?? categories[0].key);
+    } else {
+      setActiveCategory(null);
     }
   }, [categories]);
 
   // 카테고리 바뀔 때만 0으로 리셋
   useEffect(() => {
     if (!swiperInstance) return;
-    swiperInstance.slideTo(0, 0);
-    currentIndexRef.current = 0;
-  }, [swiperInstance, activeCategory]);
+    if (Array.isArray(categories) && categories.length > 0) {
+      swiperInstance.slideTo(0, 0);
+      currentIndexRef.current = 0;
+    }
+  }, [swiperInstance, activeCategory, categories]);
 
   // 데이터/크기 변경 시엔 현재 인덱스 유지 업데이트만
   useEffect(() => {
@@ -102,7 +109,7 @@ export default function MainPopupCardSlide({
 
   // 슬라이드 변경 시 배경
   const handleSlideChange = (swiper) => {
-      currentIndexRef.current = swiper.activeIndex ?? 0;
+    currentIndexRef.current = swiper.activeIndex ?? 0;
     if (!isBgFx || !sectionRef.current) return;
     const idx = swiper.activeIndex ?? 0;
     const img = items[idx]?.image;
@@ -118,7 +125,8 @@ export default function MainPopupCardSlide({
     >
       <h2 className="mpc-section__title">{title}</h2>
 
-      {Array.isArray(categories) && categories.length > 0 && (
+      {/* 탭은 showTabs=true && categories 있을 때 */}
+      {showTabs && Array.isArray(categories) && categories.length > 0 && (
         <ul className="mpc-section__tabs">
           {categories.map((c) => (
             <li key={c.key}>
@@ -175,7 +183,8 @@ export default function MainPopupCardSlide({
                   <MainPopupCardA
                     popupId={item.id}
                     alt={item.title}
-                    category={item.categoryLabel}
+                    // showCategory=false면 배지 숨김
+                    category={showCategory ? item.categoryLabel : undefined}
                     bookmarked={item.bookmarked}
                     onToggleBookmark={onToggleBookmark}
                     periodText={item.periodText}

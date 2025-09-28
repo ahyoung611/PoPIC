@@ -166,53 +166,57 @@ export default function AddressSelector({
     }, [value]);
 
     // 상세주소 → 좌표 변환
-    const handleGeocode = useCallback(() => {
-        if (!kakaoReady || !window.kakao?.maps) {
-            alert("카카오 지도 SDK가 아직 준비되지 않았습니다.");
-            return;
-        }
+   const handleGeocode = useCallback(() => {
+       if (
+           !kakaoReady ||
+           !window.kakao?.maps ||
+           !window.kakao.maps.services
+       ) {
+           alert("카카오 지도 SDK가 아직 준비되지 않았습니다.");
+           return;
+       }
 
-        if (!city || !district || !detail.trim()) {
-            alert("시/구/상세주소를 모두 입력하세요.");
-            return;
-        }
+       if (!city || !district || !detail.trim()) {
+           alert("시/구/상세주소를 모두 입력하세요.");
+           return;
+       }
 
-        const full = `${city} ${district} ${detail.trim()}`;
-        const geocoder = new window.kakao.maps.services.Geocoder();
+       const full = `${city} ${district} ${detail.trim()}`;
+       const geocoder = new window.kakao.maps.services.Geocoder(); // 안전하게 접근
 
-        geocoder.addressSearch(full, (results, status) => {
-            if (status === window.kakao.maps.services.Status.OK && results.length > 0) {
-                const result = results[0];
+       geocoder.addressSearch(full, (results, status) => {
+           if (status === window.kakao.maps.services.Status.OK && results.length > 0) {
+               const result = results[0];
 
-                const hasDong = result.address?.region_3depth_name?.trim();
-                const hasJibun = result.address?.main_address_no?.trim();
-                const hasRoadAddr = result.road_address;
+               const hasDong = result.address?.region_3depth_name?.trim();
+               const hasJibun = result.address?.main_address_no?.trim();
+               const hasRoadAddr = result.road_address;
 
-                if (!hasDong || (!hasJibun && !hasRoadAddr)) {
-                    alert("상세 주소를 입력하세요 (동/지번/도로명 포함).");
-                    return;
-                }
+               if (!hasDong || (!hasJibun && !hasRoadAddr)) {
+                   alert("상세 주소를 입력하세요 (동/지번/도로명 포함).");
+                   return;
+               }
 
-                const nextLat = parseFloat(result.y);
-                const nextLng = parseFloat(result.x);
-                setLat(nextLat);
-                setLng(nextLng);
+               const nextLat = parseFloat(result.y);
+               const nextLng = parseFloat(result.x);
+               setLat(nextLat);
+               setLng(nextLng);
 
-                onChangeRef.current?.({
-                    city,
-                    district,
-                    detail: detail.trim(),
-                    latitude: nextLat,
-                    longitude: nextLng,
-                    addressString: [city, district].filter(Boolean).join(" "),
-                });
+               onChangeRef.current?.({
+                   city,
+                   district,
+                   detail: detail.trim(),
+                   latitude: nextLat,
+                   longitude: nextLng,
+                   addressString: [city, district].filter(Boolean).join(" "),
+               });
 
-                alert("주소 확인 완료");
-            } else {
-                alert("주소를 다시 확인하세요.");
-            }
-        });
-    }, [city, district, detail, kakaoReady]);
+               alert("주소 확인 완료");
+           } else {
+               alert("주소를 다시 확인하세요.");
+           }
+       });
+   }, [city, district, detail, kakaoReady]);
 
     const triggerParentUpdate = () => {
         onChangeRef.current?.({

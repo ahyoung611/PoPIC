@@ -4,7 +4,7 @@ import Select from "../commons/Select.jsx";
 import Pagination from '../commons/Pagination.jsx';
 
 export default function BookMarkList({ items, loading, sort, onSortChange, onToggleLike, onOpenDetail }) {
-    const ITEMS_PER_PAGE = 5; // 한 페이지당 보여줄 아이템 수
+    const ITEMS_PER_PAGE = 4; // 한 페이지당 보여줄 아이템 수
     const [currentPage, setCurrentPage] = useState(1);
 
     // 정렬된 아이템
@@ -16,13 +16,14 @@ export default function BookMarkList({ items, loading, sort, onSortChange, onTog
         }
     }, [items, sort]);
 
-    // 현재 페이지에 보여줄 아이템
+    // 현재 페이지 아이템
     const currentItems = useMemo(() => {
         const start = (currentPage - 1) * ITEMS_PER_PAGE;
         const end = start + ITEMS_PER_PAGE;
         return sortedItems.slice(start, end);
     }, [sortedItems, currentPage]);
 
+    // 총 페이지
     const totalPages = Math.ceil(sortedItems.length / ITEMS_PER_PAGE);
 
     return (
