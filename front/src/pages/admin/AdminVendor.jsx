@@ -9,6 +9,7 @@ import {
     filterOptionsVendor,
     manageOptions,
 } from "../../utils/statusUtil.js";
+import Pagination from "../../components/commons/Pagination.jsx";
 
 const AdminVendor = () => {
     const token = useAuth().getToken();
@@ -16,13 +17,20 @@ const AdminVendor = () => {
     const [keyword, setKeyword] = useState("");
     const [list, setList] = useState([]);
 
-    const fetchVendors = async () => {
+    // 페이징
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const pageSize = 5;
+
+    const fetchVendors = async (page = currentPage) => {
         const res = await apiRequest(
-            `/admin/vendors?sort=${sort}&keyword=${encodeURIComponent(keyword)}`,
+            `/admin/vendors?sort=${sort}&keyword=${encodeURIComponent(keyword)}&page=${page - 1}&size=${pageSize}`,
             { credentials: "include" },
             token
         );
-        setList(res ?? []);
+        setList(res?.content ?? []);
+        setTotalPages(res?.totalPages ?? 1);
+        setCurrentPage((res?.number ?? 0) + 1);
     };
 
     const changeStatus = async (id, newLabel) => {
@@ -39,7 +47,7 @@ const AdminVendor = () => {
     };
 
     useEffect(() => {
-        fetchVendors();
+        fetchVendors(1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sort, token]);
 
@@ -55,11 +63,11 @@ const AdminVendor = () => {
                         onChange={(e) => setKeyword(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
-                                fetchUsers();   // 엔터 입력 시 검색 실행
+                                fetchUsers(1);   // 엔터 입력 시 검색 실행
                             }
                         }}
                     />
-                    <Button onClick={fetchVendors}>검색</Button>
+                    <Button onClick={() => fetchVendors(1)}>검색</Button>
                 </div>
 
                 <div className="list-table">
@@ -106,6 +114,13 @@ const AdminVendor = () => {
                         </tbody>
                     </table>
                 </div>
+
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(p) => fetchVendors(p)}
+                />
+
             </div>
         </div>
     );

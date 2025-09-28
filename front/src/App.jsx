@@ -36,6 +36,7 @@ import {useAuth} from "./context/AuthContext.jsx";
 import MyPosts from "./pages/user/MyPosts.jsx";
 import MyReviews from "./pages/user/MyReviews.jsx";
 import OnsiteTicket from "./pages/user/OnsiteTicket.jsx";
+import RequireAdmin from "./components/commons/RequireAdmin.jsx";
 
 
 function App() {
@@ -136,10 +137,23 @@ function App() {
                     <Route path="/vendor/myPage/:vendorId" element={<VendorMyPage/>} />
 
                 {/*어드민 Layout */}
-                    <Route path="/admin" element={<AdminMain/>}></Route>
-                    <Route path="/admin/popupManage" element={<AdminPopup/>}></Route>
-                    <Route path="/admin/vendorManage" element={<AdminVendor/>}></Route>
-                    <Route path="/admin/userManage" element={<AdminUser/>}></Route>
+                {/*    <Route path="/admin" element={<AdminMain/>}></Route>*/}
+                {/*    <Route path="/admin/popupManage" element={<AdminPopup/>}></Route>*/}
+                {/*    <Route path="/admin/vendorManage" element={<AdminVendor/>}></Route>*/}
+                {/*    <Route path="/admin/userManage" element={<AdminUser/>}></Route>*/}
+                    {/* 어드민 주소창 직접 입력 진입 방지 */}
+                    <Route
+                      element={
+                        <RequireAdmin>
+                              <Outlet />
+                            </RequireAdmin>
+                      }
+                    >
+                      <Route path="/admin" element={<AdminMain/>} />
+                      <Route path="/admin/popupManage" element={<AdminPopup/>} />
+                      <Route path="/admin/vendorManage" element={<AdminVendor/>} />
+                      <Route path="/admin/userManage" element={<AdminUser/>} />
+                    </Route>
                 </Route>
 
             </Route>
