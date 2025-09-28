@@ -31,7 +31,7 @@ import FieldWaiting from "./pages/vendor/FieldWaiting.jsx";
 import GoogleCallback from "./pages/user/GoogleCallback.jsx";
 import KakaoCallback from "./pages/user/KakaoCallback.jsx";
 import WelcomePage from "./pages/WelcomePage.jsx";
-import PopupList from "./pages/user/PopupList.jsx";
+import PopupList from "./pages/PopupList.jsx";
 import {useAuth} from "./context/AuthContext.jsx";
 import MyPosts from "./pages/user/MyPosts.jsx";
 import MyReviews from "./pages/user/MyReviews.jsx";
@@ -48,9 +48,6 @@ function App() {
         return (
             <>
                 <UserHeader>
-                    <Route path="/" element={<Main/>}/>
-                    <Route path="/popups" element={<Main/>}/>
-                    <Route path="/community" element={<Main/>}/>
                 </UserHeader>
                 <Outlet></Outlet>
             </>
@@ -61,11 +58,6 @@ function App() {
         return (
             <>
                 <VendorHeader>
-                    <Route path="/vendorPopups" element={<VendorMain/>}/>
-                    <Route path="/vendorPopups/new" element={<VendorMain/>}/>
-                    <Route path="/vendor/popups/edit" element={<VendorMain/>}/>
-                    <Route path="/vendor/reservations" element={<VendorMain/>}/>
-                    <Route path="/vendor/onsite" element={<VendorMain/>}/>
                 </VendorHeader>
                 <Outlet></Outlet>
             </>
@@ -76,7 +68,6 @@ function App() {
         return (
             <>
                 <AdminHeader>
-                    <Route path="/" element={<AdminMain/>}/>
                 </AdminHeader>
                 <Outlet></Outlet>
             </>

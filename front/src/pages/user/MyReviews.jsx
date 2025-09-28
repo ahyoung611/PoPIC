@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useAuth} from "../../context/AuthContext.jsx";
-import "../../style/myPage.css";
+import "../../style/myPosts.css";
 import {useNavigate} from "react-router-dom"; // 동일 스타일 활용
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";

@@ -318,7 +318,7 @@ export default function UserProfile() {
                                     {!edit ? (
                                         <>
                                             <Button color="red" onClick={() => setEdit(true)}>수정하기</Button>
-                                            <Button variant="outline" color="black"
+                                            <Button variant="outline" color="gray"
                                                     onClick={handleWithdrawal}>탈퇴하기</Button>
                                         </>
                                     ) : (
@@ -367,7 +367,7 @@ export default function UserProfile() {
 
                                 {pwErr && <div className="vp-help" style={{color: "red"}}>{pwErr}</div>}
 
-                                <div style={{display: "flex", gap: 8, marginTop: 8}}>
+                                <div className="btn-box">
                                     <Button color="red" disabled={pwLoading} onClick={handleChangePassword}>변경</Button>
                                     <Button variant="outline" color="gray" onClick={() => {
                                         setPwOpen(false);

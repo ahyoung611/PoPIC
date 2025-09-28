@@ -67,7 +67,6 @@ li {
 .container{
     width: 100%;
     height: auto;
-    min-height: calc(100vh - 60px - 44px);
 }
 
 .container100{
@@ -104,7 +103,7 @@ li {
 /*  PC : 1025px 이상 */
 @media (min-width: 1025px) {
     .inner {
-        max-width: 900px;
+        max-width: 1000px;
         padding: 20px;
     }
 }
