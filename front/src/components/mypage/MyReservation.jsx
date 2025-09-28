@@ -33,7 +33,7 @@ const MyReservation = ({reservations}) => {
                         </div>
                         <div className="info">
                             <p><strong>예약번호</strong> {r.reservationId}</p>
-                            <p><strong>예매일</strong>{r.slot?.start_time}</p>
+                            <p><strong>예약일시</strong>{r.slot?.schedule.date} {r.slot?.start_time}</p>
                             <p><strong>장소</strong> {r.popup?.address} {r.popup?.address_detail}</p>
                             <p><strong>상태</strong> {formatStatus(r.status)}</p>
                         </div>

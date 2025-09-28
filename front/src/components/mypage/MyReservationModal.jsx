@@ -24,7 +24,7 @@ const MyReservationModal = ({ open, onClose, reservation }) => {
                     <div className="onsite-qr-placeholder">QR</div>
                 </div>
                 <p><strong>예약번호:</strong> {reservation.reservationId}</p>
-                <p><strong>시간:</strong> {reservation.slot?.start_time}</p>
+                <p><strong>예약일시:</strong> {reservation.slot?.schedule.date} {reservation.slot?.start_time}</p>
                 <p><strong>장소:</strong> {reservation.popup?.address} {reservation.popup?.address_detail}</p>
                 <p><strong>결제금액:</strong>{(reservation.depositAmount).toLocaleString()}원</p>
                 <p><strong>상태:</strong> {formatStatus(reservation.status)}</p>
