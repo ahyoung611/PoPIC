@@ -3,7 +3,9 @@ package com.example.popic.popup.repository;
 import com.example.popic.entity.entities.Inquiry;
 import com.example.popic.popup.dto.InquiryDTO;
 import com.example.popic.popup.dto.InquiryRepliyDTO;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -13,4 +15,8 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
     List<Inquiry> findAllByPopupId(Long popupId);
 
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE Inquiry i SET i.title = :title, i.content = :content, i.visibility = :isPrivate WHERE i.inquiry_id = :id")
+    void updateInquiry(Long id, String title, String content, Boolean isPrivate);
 }

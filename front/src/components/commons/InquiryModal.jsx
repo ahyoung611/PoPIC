@@ -3,18 +3,19 @@ import "../../style/modal.css";
 import Button from "./Button.jsx"; // 주신 CSS 파일 import (파일명 변경 가능)
 
 export default function InquiryModal({
-                                         open,            // 모달 열림 여부
-                                         title,           // 모달 제목
-                                         subject,         // 제목 입력값
-                                         onSubjectChange, // 제목 변경 핸들러
-                                         content,         // 내용 입력값
-                                         onContentChange, // 내용 변경 핸들러
-                                         onSubmit,        // 제출 버튼 클릭 시 실행
-                                         onClose,         // 취소 버튼 클릭 시 실행
-                                         submitText = "문의 완료", // 확인 버튼 텍스트
-                                         cancelText = "취소",      // 취소 버튼 텍스트
-                                         privateChecked,
-                                         onPrivateChange
+                                        open,            // 모달 열림 여부
+                                        title,           // 모달 제목
+                                        subject,         // 제목 입력값
+                                        onSubjectChange, // 제목 변경 핸들러
+                                        content,         // 내용 입력값
+                                        onContentChange, // 내용 변경 핸들러
+                                        onSubmit,        // 제출 버튼 클릭 시 실행
+                                        onClose,         // 취소 버튼 클릭 시 실행
+                                        submitText = "문의 완료", // 확인 버튼 텍스트
+                                        cancelText = "취소",      // 취소 버튼 텍스트
+                                        privateChecked,
+                                        onPrivateChange,
+                                        editData
                                      }) {
     if (!open) return null;
 

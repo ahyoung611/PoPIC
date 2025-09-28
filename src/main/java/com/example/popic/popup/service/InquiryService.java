@@ -1,5 +1,6 @@
 package com.example.popic.popup.service;
 
+import com.example.popic.CustomUserPrincipal;
 import com.example.popic.entity.entities.*;
 import com.example.popic.popup.dto.InquiryDTO;
 import com.example.popic.popup.dto.InquiryRepliyDTO;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,4 +69,23 @@ public class InquiryService {
         inquiryReplyRepository.save(inquiryReply);
     }
 
+    public Optional<Inquiry> findById(Long id) {
+        return inquiryRepository.findById(id);
+    }
+
+    public void updateInquiry(Long id, InquiryDTO inquiryDTO) {
+        Inquiry inquiry = inquiryRepository.findById(id).orElse(null);
+        if(inquiry == null) throw new RuntimeException("삭제 중 오류가 발생했습니다.");
+
+        inquiryRepository.updateInquiry(id, inquiryDTO.getSubject(), inquiryDTO.getContent(), inquiryDTO.getIsPrivate());
+
+    }
+
+    public void deleteInquiry(Long inquiryId, CustomUserPrincipal principal) {
+        Inquiry inquiry = inquiryRepository.findById(inquiryId).orElse(null);
+
+        if(inquiry == null ||!inquiry.getUser().getUser_id().equals(principal.getId())) throw new RuntimeException("삭제 중 오류가 발생했습니다.");
+
+        inquiryRepository.deleteById(inquiryId);
+    }
 }
