@@ -33,7 +33,7 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
             const json = await res.json();
             if (json.exists) {
                 alert("이미 예약이 있습니다.");
-                return; // 여기서 끝내버림 → checkout으로 안 넘어감
+                return;
             }
 
             // 중복 예약이 없을 때만 checkout 페이지로 이동

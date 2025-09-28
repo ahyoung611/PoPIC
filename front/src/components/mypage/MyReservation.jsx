@@ -1,7 +1,13 @@
+import {useState} from "react";
+import MyReservationModal from "./MyReservationModal.jsx";
+
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
 const MyReservation = ({reservations}) => {
+
+    const [selected, setSelected] = useState(null);
+
     const formatStatus = (status) => {
         if (status === 1) {
             return "예약 완료";
@@ -27,13 +33,24 @@ const MyReservation = ({reservations}) => {
                         </div>
                         <div className="info">
                             <p><strong>예약번호</strong> {r.reservationId}</p>
-                            <p><strong>예매일</strong> {r.slot?.start_time}</p>
+                            <p><strong>예약일시</strong>{r.slot?.schedule.date} {r.slot?.start_time}</p>
                             <p><strong>장소</strong> {r.popup?.address} {r.popup?.address_detail}</p>
                             <p><strong>상태</strong> {formatStatus(r.status)}</p>
                         </div>
+                        <button
+                            className="detail-btn"
+                            onClick={() => setSelected(r)}
+                        >
+                            주문상세 →
+                        </button>
                     </div>
                 );
             })}
+            <MyReservationModal
+                open={!!selected}
+                reservation={selected}
+                onClose={() => setSelected(null)}
+            />
         </div>
     );
 };
