@@ -97,8 +97,9 @@ public class PopupDTO {
             Image firstImage = entity.getImages().get(0);
 
             // 썸네일 경로 설정
-            this.thumb = "/api/vendors/" + entity.getVendor().getVendor_id() + "/popups/images/"
-                    + entity.getStore_id() + "/" + firstImage.getSaved_name();
+//            this.thumb = "/api/vendors/" + entity.getVendor().getVendor_id() + "/popups/images/"
+//                    + entity.getStore_id() + "/" + firstImage.getSaved_name();
+            this.thumb = "http://localhost:8080/images?type=popup&id=" + firstImage.getImage_id();
 
             // images_detail 초기화 (ImageDTO 사용)
             this.images_detail = entity.getImages().stream()

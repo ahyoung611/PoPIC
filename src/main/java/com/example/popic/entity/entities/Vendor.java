@@ -20,11 +20,6 @@ public class Vendor {
     @Column(nullable = false, unique = true, length = 50)
     private String login_id;
 
-    // young
-    public void setLoginId(String loginId) {
-        this.login_id = loginId;
-    }
-
     @Column(nullable = false)
     private String password;
 

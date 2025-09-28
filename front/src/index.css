@@ -44,6 +44,7 @@ li {
 
     /* Font Sizes */
     --font-title-l: 34px;
+    --font-title-m: 28px;
     --font-title: 22px;
     --font-subtitle: 18px;
 
@@ -52,6 +53,11 @@ li {
     --font-small: 14px;
     --font-caption: 12px;
     --font-button: 14px;
+
+    /* Font Weights  */
+      --font-regular: 400;
+      --font-semibold: 600;
+      --font-bold: 700;
 
     /* shadow  */
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);

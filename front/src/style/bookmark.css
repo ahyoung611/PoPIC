@@ -1,0 +1,155 @@
+/* 북마크 아이템 */
+.bookmark-item{
+  width:100%;
+  display: grid;
+  grid-template-columns: var(--thumb-w) 1fr var(--action-w);
+  align-items: center;
+  column-gap: 24px;
+  row-gap: 12px;
+  padding: 15px;
+  background: var(--white-color);
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+/* 썸네일 열 이미지 */
+.bookmark-item__thumb{
+  width: 100%;
+  aspect-ratio: var(--thumb-ratio, 4.5 / 5);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-color);
+}
+.bookmark-item__img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 본문 */
+.bookmark-item__body{
+  min-width: 0;
+}
+
+.bookmark-item__title{
+  font-size: var(--font-title);
+  font-weight: var(--font-bold);
+  color: var(--black-color);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   margin-bottom:10px;
+}
+
+.bookmark-item__period{
+  font-size: var(--font-body);
+  font-weight: var(--font-regular);
+  color: var(--darkgray-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom:15px;
+}
+
+.bookmark-item__meta{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.bookmark-item__badge{
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  font-size: var(--font-small);
+  font-weight: var(--fw-regular);
+  color: var(--black-color);
+  background: var(--white-color);
+}
+
+/* 액션 버튼 */
+.bookmark-item__actions{
+  width: var(--action-w);
+  justify-self: end;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+/* 상세 보기 버튼 */
+.bookmark-item__link{
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--darkgray-color);
+  font-size: var(--font-small);
+  font-weight: var(--fw-regular);
+  padding: 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color .15s ease;
+}
+.bookmark-item__link:hover{
+  color: var(--black-color);
+  text-decoration: underline;
+}
+
+/* 하트 버튼 */
+.bookmark-item__heart{
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  line-height: 0;
+}
+.bookmark-item__heart-icon{
+  width: 28px;
+  height: 28px;
+  user-select: none;
+  pointer-events: none;
+  transition: transform .08s ease, filter .08s ease;
+}
+.bookmark-item__heart.is-active .bookmark-item__heart-icon{
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.10));
+  transform: scale(1.02);
+}
+
+.favorite-list{
+  --thumb-w: 140px;
+  --action-w: 104px;
+  --col-gap: 20px;
+}
+
+.favorite-list .nonList{
+   color: var(--darkgray-color);
+   flex-direction: column;
+   margin: 50px auto;
+}
+
+/* 태블릿(≤1024px) */
+@media (max-width: 1024px){
+  .favorite-list{
+    --thumb-w: 132px;
+    --action-w: 96px;
+    --col-gap: 18px;
+  }
+}
+
+/* 모바일(≤640px) */
+@media (max-width: 640px){
+  .favorite-list{
+    --thumb-w: 108px;
+    --action-w: 84px;
+    --col-gap: 14px;
+  }
+}

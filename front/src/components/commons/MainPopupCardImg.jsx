@@ -19,6 +19,12 @@ export default function MainPopupCardImg({
     const userId = auth?.user?.user_id;
     const token = auth?.token;
 
+    const [isBookmarked, setIsBookmarked] = useState(bookmarked);
+
+    useEffect(() => {
+        setIsBookmarked(bookmarked);
+      }, [bookmarked]);
+
    const handleBookmarkClick = async (e) => {
        e.preventDefault();
        e.stopPropagation();
@@ -52,7 +58,7 @@ export default function MainPopupCardImg({
         <div className="mpc-media" style={{ aspectRatio: aspect }}>
             <img
                 className="mpc-media__img"
-                src={"http://localhost:8080/images?type=popup&id=" + id }
+               src={popup?.thumb }
                 alt={alt}
                 loading="lazy"
             />

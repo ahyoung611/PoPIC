@@ -11,6 +11,10 @@ import lombok.*;
 @AllArgsConstructor
 public class UserBookmark {
     @EmbeddedId
+    @AttributeOverrides({
+            @AttributeOverride(name = "user_id", column = @Column(name = "user_id")),
+            @AttributeOverride(name = "store_id", column = @Column(name = "store_id"))
+    })
     private UserBookmarkId id;
 
     @ManyToOne(fetch = FetchType.LAZY)

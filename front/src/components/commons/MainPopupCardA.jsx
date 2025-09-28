@@ -11,7 +11,7 @@ export default function MainPopupCardA({
 
 
     return (
-         <div className="mpc-card mpc-card--typeA" onClick={onClick}>
+         <div className="mpc-card mpc-card--typeA" role="button" onClick={onClick}>
             <MainPopupCardImg
                 popupId={popupId}
                 alt={alt}
