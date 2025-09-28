@@ -13,8 +13,6 @@ const PopupReservation = (props) => {
         setReservationTime(start);
         setSelectedSlot(slot || null);
     };
-    console.log(selectedSlot?.capacity);
-    console.log(selectedSlot?.slot_id);
 
     function reservationSubmit() {
         if (reservationDate == "") {
