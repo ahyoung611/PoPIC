@@ -83,4 +83,24 @@ public class ReservationService {
     public void entryReservationById(Long reservationId) {
         reservationRepository.entryReservationById(reservationId);
     }
+
+    @Transactional
+    public void cancelReservation(Long reservationId, Long userId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+
+        // 본인 예약인지 확인
+        if (!reservation.getUser().getUser_id().equals(userId)) {
+            throw new IllegalStateException("본인의 예약만 취소할 수 있습니다.");
+        }
+
+        // 이미 취소된 경우
+        if (reservation.getStatus() == -1) {
+            throw new IllegalStateException("이미 취소된 예약입니다.");
+        }
+
+        // 상태 변경
+        reservation.setStatus(-1);
+        reservationRepository.save(reservation);
+    }
 }

@@ -12,7 +12,7 @@ const MyReservation = ({reservations}) => {
         if (status === 1) {
             return "예약 완료";
         } else if (status === -1) {
-            return "대기 취소";
+            return "예약 취소";
         } else if (status === 0) {
             return "참여 완료";
         }
