@@ -28,61 +28,67 @@ export default function UserMyPage() {
     // 상세 페이지로 이동
     const handleOpenDetail = (id) => navigate(`/popupStore/detail/${id}`);
 
-    useEffect(() => {
-        if (!userId || !token) {
-            setLoading(false);
-            return;
-        }
+    const [popups, setPopups] = useState([]);
 
-        const fetchAllData = async () => {
-            setLoading(true);
-            try {
-                // 1. 프로필 정보 조회
-                const user = await apiRequest(`/api/users/${userId}`, {}, token);
-                let avatarUrl = "";
-                if (user.avatarExists) {
-                    const photoResponse = await fetch(`/api/users/${userId}/photo`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (photoResponse.ok) {
-                        const blob = await photoResponse.blob();
-                        avatarUrl = URL.createObjectURL(blob);
-                    }
-                }
-                setMe({
-                    name: user.name,
-                    avatarUrl: avatarUrl,
-                    email: user.email ?? "",
-                    phone_number: user.phone_number ?? "",
-                    login_id: user.login_id ?? "",
-                });
+   useEffect(() => {
+       if (!userId || !token) return;
 
-                // 2. 즐겨찾기 목록 조회
-                const list = await apiRequest(`/api/users/${userId}/favorites?sort=${sort}`, {}, token);
-                setFavs(Array.isArray(list) ? list : []);
+       const fetchAllData = async () => {
+           setLoading(true);
+           try {
+               // 유저 프로필
+               const user = await apiRequest(`/api/users/${userId}`, {}, token);
+               let avatarUrl = "";
+               if (user.avatarExists) {
+                   const photoResponse = await fetch(`/api/users/${userId}/photo`, {
+                       headers: { 'Authorization': `Bearer ${token}` }
+                   });
+                   if (photoResponse.ok) {
+                       const blob = await photoResponse.blob();
+                       avatarUrl = URL.createObjectURL(blob);
+                   }
+               }
+               setMe({ name: user.name, avatarUrl, email: user.email ?? "", phone_number: user.phone_number ?? "", login_id: user.login_id ?? "" });
 
-                setError("");
-            } catch (err) {
-                console.error("데이터를 불러오지 못했습니다.:", err);
-                setError("데이터를 불러오지 못했습니다.");
-            } finally {
-                setLoading(false);
-            }
-        };
+               // 북마크
+               const favList = await apiRequest(`/api/users/${userId}/favorites?sort=${sort}`, {}, token);
+               const favsArray = Array.isArray(favList) ? favList : [];
+               setFavs(favsArray);
 
-        fetchAllData();
-    },  [userId, sort, token]);
+               // 전체 팝업 리스트
+               const popupList = await apiRequest("/popupStore/list", {}, token);
+               const popupArray = Array.isArray(popupList) ? popupList : [];
 
-    // 좋아요 토글
+               // 북마크 상태 합치기
+               const merged = popupArray.map(p => ({
+                   ...p,
+                   liked: favsArray.some(f => f.id === p.id)
+               }));
+
+               setPopups(merged);
+
+           } catch (err) {
+               console.error("데이터를 불러오지 못했습니다.:", err);
+               setError("데이터를 불러오지 못했습니다.");
+           } finally {
+               setLoading(false);
+           }
+       };
+
+       fetchAllData();
+   }, [userId, sort, token]);
+
+    // 북마크 토글
     const handleToggleLike = async (popupId) => {
-        // UI를 즉시 업데이트
-        setFavs((prev) => prev.map((it) => (it.id === popupId ? {...it, liked: !it.liked} : it)));
         try {
-            await apiRequest(`/api/users/${userId}/favorites/${popupId}`, { method: "POST" }, token);
-        } catch {
-            // 요청 실패 시 UI 롤백
-            setFavs((prev) => prev.map((it) => (it.id === popupId ? {...it, liked: !it.liked} : it)));
-            console.error("좋아요 변경에 실패했습니다.");
+            const result = await apiRequest(
+                `/userBookmark/toggle?userId=${userId}&storeId=${popupId}`,
+                { method: "POST" },
+                token
+            );
+            setPopups(prev => prev.map(p => p.id === popupId ? { ...p, liked: result } : p));
+        } catch (err) {
+            console.error("북마크 변경 실패:", err);
         }
     };
 
@@ -107,13 +113,14 @@ export default function UserMyPage() {
                         onClickMyPosts={() => console.log("나의 글")}
                     />
 
-                    <BookMarkList
-                        items={favs}
-                        loading={loading}
-                        onSortChange={setSort}
-                        onToggleLike={handleToggleLike}
-                        onOpenDetail={handleOpenDetail}
-                    />
+                   <BookMarkList
+                       items={popups}
+                       loading={loading}
+                       sort={sort}
+                       onSortChange={setSort}
+                       onToggleLike={handleToggleLike}
+                       onOpenDetail={handleOpenDetail}
+                   />
                 </div>
             </div>
         </div>

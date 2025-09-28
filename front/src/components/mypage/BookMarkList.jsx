@@ -1,5 +1,5 @@
 import React from 'react';
-import FavoriteItem from './BookMarkItem.jsx';
+import BookMarkItem from './BookMarkItem.jsx';
 import Select from "../commons/Select.jsx";
 
 export default function BookMarkList({ items, loading, sort, onSortChange, onToggleLike, onOpenDetail }) {
@@ -35,7 +35,7 @@ export default function BookMarkList({ items, loading, sort, onSortChange, onTog
                         <div style={{ color:'#888' }}>찜한 팝업이 없습니다.</div>
                     ) : (
                         items.map((it) => (
-                            <FavoriteItem
+                            <BookMarkItem
                                 key={it.id}
                                 item={it}
                                 onToggleLike={onToggleLike}
