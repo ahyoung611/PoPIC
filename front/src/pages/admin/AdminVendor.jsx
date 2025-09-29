@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import Pagination from "../../components/commons/Pagination.jsx";
 import ConfirmModal from "../../components/commons/ConfirmModal.jsx";
 import { filterOptionsVendor } from "../../utils/statusUtil.js";
+import SearchHeader from "../../components/commons/SearchHeader.jsx";
 
 const VENDOR_STATUS_OPTIONS = [ // 코드: 2(승인대기), 1(정상), 0(정지), 3(가입 반려)
     { code: 2, label: "승인대기" },
@@ -68,17 +69,13 @@ const AdminVendor = () => {
                 <h1>운영자 관리</h1>
                 <div className="search-bar">
                     <Select value={sort} onChange={setSort} options={filterOptionsVendor} />
-                    <input
-                        type="text"
+                    <SearchHeader
+                        searchValue={keyword}
+                        onSearchChange={setKeyword}
+                        onSearchClick={() => fetchVendors(1)}
                         placeholder="업체명/담당자/아이디/사업자등록번호"
-                        onChange={(e) => setKeyword(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                fetchVendors(1);   // 엔터 입력 시 검색 실행
-                            }
-                        }}
+                        className=""
                     />
-                    <Button onClick={() => fetchVendors(1)}>검색</Button>
                 </div>
 
                 <div className="list-table">
