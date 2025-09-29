@@ -1,18 +1,52 @@
+/* 카드 & 폼 */
 .boardEditContainer .be-card {
   background: var(--white-color);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 10px;
   box-shadow: var(--shadow);
-  padding: 16px;
+  padding: 15px;
+  min-height:380px;
 }
 
-.boardEditContainer .be-form { display: grid; gap: 14px; }
+.boardEditContainer .be-form {
+  display: grid;
+  gap: 10px;
+}
 
-/* 제목 */
+/* 상단 메타(작성자/날짜/조회수) */
+.boardEditContainer .be-meta--top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:0 10px 8px;
+  font-size:var(--font-small);
+  color: var(--darkgray-color);
+}
+
+.boardEditContainer .be-meta__left{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+.boardEditContainer .be-meta__right{ opacity:.9; }
+.boardEditContainer .be-author{ font-weight:var(--font-semibold); color: var(--black-color); }
+.boardEditContainer .be-sep{ opacity:.4; }
+
+/* 헤더: 제목 + 우측 고스트 버튼 */
+.boardEditContainer .be-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+}
+
+/* 제목 인풋 */
 .boardEditContainer .be-title {
   width: 100%;
   height: 48px;
-  padding: 0 14px;
+  padding: 0 10px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
   background: var(--white-color);
@@ -20,27 +54,56 @@
   font-weight: var(--font-bold);
   color: var(--black-color);
 }
+
 .boardEditContainer .be-title[readonly] {
   border-color: transparent;
   background: transparent;
   padding-left: 0;
 }
 
-/* 메타(작성자/일시/조회수) */
+/* 헤더 액션(고스트 버튼들) */
+.boardEditContainer .be-head__actions {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.boardEditContainer .be-head__actions .btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* 구분선이 필요한 버튼에 .borderBar 사용 */
+.boardEditContainer .be-head__actions .borderBar { position: relative; }
+.boardEditContainer .be-head__actions .borderBar::before,
+.boardEditContainer .be-head__actions .borderBar::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 1px;
+  height: 16px;
+  background: var(--border-color);
+  transform: translateY(-50%);
+}
+.boardEditContainer .be-head__actions .borderBar::before { left: -5px; }
+.boardEditContainer .be-head__actions .borderBar::after  { right: -5px; }
+
+/* 보조 메타 라인 */
 .boardEditContainer .be-meta {
   display: flex;
   gap: 10px;
   align-items: center;
   color: var(--darkgray-color);
   font-size: var(--font-small);
-  border-top: 1px solid var(--border-color);
-  padding-top: 10px;
-  margin-top: -6px;
+  margin-top: -2px;
 }
 .boardEditContainer .be-meta .be-right {
   margin-left: auto;
   display: inline-flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 /* 라벨/빈 상태 */
@@ -48,20 +111,15 @@
   font-size: var(--font-small);
   color: var(--darkgray-color);
 }
+
 .boardEditContainer .be-empty {
-  height: 180px;
-  border: 1px dashed var(--border-color);
-  border-radius: 10px;
-  background: #fafafa;
+  padding: 20px;
+  text-align: center;
   color: var(--darkgray-color);
-  display: grid;
-  place-items: center;
+  border-radius: 10px;
 }
 
-/* =========================================================
-   Swiper (이미지)
-   ========================================================= */
-
+/* 스와이퍼(이미지) */
 .boardEditContainer .be-swiper { display: grid; gap: 10px; }
 
 /* 메인 슬라이더 */
@@ -70,9 +128,11 @@
   overflow: hidden;
   background: #fff;
 }
+
+/* 메인 이미지 */
 .boardEditContainer .be-mainimg {
   width: 100%;
-  height: 350px;
+  height: 320px;
   object-fit: cover;
   display: block;
   user-select: none;
@@ -82,7 +142,7 @@
 /* 썸네일 */
 .boardEditContainer .be-swiper__thumbs { width: 100%; }
 .boardEditContainer .be-swiper__thumb {
-  width: 92px !important;   /* slidesPerView="auto" 대응 */
+  width: 92px !important;
   height: 64px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -100,7 +160,7 @@
   display: block;
 }
 
-/* 네비게이션/페이지네이션 톤 맞춤 */
+/* 이전/다음 버튼 */
 .boardEditContainer .be-swiper .swiper-button-prev,
 .boardEditContainer .be-swiper .swiper-button-next {
   width: 35px;
@@ -108,105 +168,106 @@
   color: var(--white-color);
 }
 
-/* =========================================================
-   액션 버튼 (공통 Button.jsx와 병행 사용 가능)
-   ========================================================= */
+/* 본문(읽기 전용 박스) */
+.boardEditContainer .be-content {
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 250px;
+  color: var(--black-color);
+  line-height: 1.65;
+  word-break: break-word;
+}
 
+/* 하단 액션(작성/수정 모드) */
 .boardEditContainer .be-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   justify-content: flex-end;
   padding-top: 4px;
   border-top: 1px solid var(--border-color);
 }
 
-/* 페이지 로컬 버튼(필요 시 사용; 공통 Button.jsx 사용 중이면 생략 가능) */
-.boardEditContainer .be-btn {
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 10px;
-  font-size: var(--font-button);
-  font-weight: var(--font-semibold);
-  border: 1px solid transparent;
-  cursor: pointer;
-  background: #f3f4f6;
-  color: var(--black-color);
-  transition: background .2s ease, border-color .2s ease, opacity .2s ease;
-}
-.boardEditContainer .be-btn:disabled { opacity: .45; cursor: not-allowed; }
-
-.boardEditContainer .be-btn-primary {
-  background: var(--main-color);
-  color: #fff;
-}
-.boardEditContainer .be-btn-primary:hover { background: var(--main-hover-color); }
-
-.boardEditContainer .be-btn-danger {
-  background: #fff0f0;
-  color: #a30000;
-  border-color: #ffd6d6;
-}
-.boardEditContainer .be-btn-danger:hover { background: #ffe8e8; }
-
-.boardEditContainer .be-btn-ghost {
-  background: transparent;
-  color: var(--darkgray-color);
-  border-color: var(--border-color);
-}
-.boardEditContainer .be-btn-ghost:hover { background: rgba(0,0,0,.04); }
-
 /* 카드 간격 */
 .boardEditContainer .be-card + .be-card { margin-top: 16px; }
 
-/* =========================================================
-   반응형
-   ========================================================= */
-@media (max-width: 600px) {
-  .boardEditContainer .inner { padding: 16px; }
-  .boardEditContainer .be-card { padding: 12px; }
-  .boardEditContainer .be-mainimg { height: 350px; }
-  .boardEditContainer .be-meta { flex-wrap: wrap; gap: 6px; }
-  .boardEditContainer .be-meta .be-right { width: 100%; justify-content: flex-start; }
+/* 토글 카렛(▾) */
+.boardEditContainer .btn-caret .caret{
+  display:inline-block;
+  width:1em; height:1em;
+  line-height:1;
+  vertical-align:-0.1em;
+}
+.boardEditContainer .btn-caret .caret::before{
+  content:"▾";
+  display:inline-block;
+  transition: transform .2s ease;
+}
+.boardEditContainer .btn-caret[aria-expanded="true"] .caret::before{
+  transform: rotate(180deg);
 }
 
-@media (min-width: 601px) and (max-width: 1024px) {
-  .boardEditContainer .be-mainimg { height: 350px; }
-}
-
-/* =========================================================
-   Comments (.be-comments*) — scoped under .boardEditContainer
-   ========================================================= */
-.boardEditContainer .be-comments { display: grid; gap: 12px; }
+/* 댓글 래퍼 */
+.boardEditContainer .be-comments { display: grid; gap: 10px; }
 .boardEditContainer .be-comments-title {
   font-size: var(--font-subtitle);
   font-weight: var(--font-bold);
   color: var(--black-color);
+  line-height:40px;
 }
 
-/* 입력 폼 */
+/* 댓글 헤더(제목/등록 버튼) */
+.boardEditContainer .be-comments-head{
+  display: flex;
+  justify-content: space-between;
+  padding:10px;
+}
+
+/* 댓글 좌측 버튼 영역 */
+.boardEditContainer .be-comments .be-ops-left{
+  display:flex;
+  justify-content:space-between;
+}
+
+/* 댓글 입력 폼(에디터+버튼) */
 .boardEditContainer .be-comment-form {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 8px;
-  align-items: center;
-}
-.boardEditContainer .be-input.be-comment-input {
-  width: 100%;
-  height: 42px;
-  padding: 0 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  background: #fff;
-  font-size: var(--font-size-base);
-  color: var(--black-color);
-  outline: none;
-}
-.boardEditContainer .be-input.be-comment-input:focus {
-  border-color: var(--blue-color);
-  box-shadow: 0 0 0 3px rgba(40,126,216,.12);
+  gap: 10px;
+  align-items: start;
 }
 
-/* 리스트 */
+/* CKEditor(댓글/답글 공용) */
+.boardEditContainer .be-ck .ck.ck-editor { width: 100%; margin: 0; }
+.boardEditContainer .be-ck .ck-editor__main { margin: 0; }
+.boardEditContainer .be-ck .ck-editor__editable_inline {
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px !important;
+  padding: 10px 12px;
+  min-height: 76px;
+  line-height: 1.5;
+  color: var(--black-color);
+  box-shadow: none;
+  overflow-y: auto;
+}
+.boardEditContainer .be-ck .ck-editor__editable_inline:focus {
+  border-color: var(--main-color);
+  outline: none;
+}
+
+/* CKEditor 플레이스홀더/툴바 */
+.boardEditContainer .be-ck .ck.ck-placeholder { margin: 0 !important; opacity: .6; }
+.boardEditContainer .be-ck .ck.ck-toolbar { display: none !important; }
+
+/* 콤팩트(답글 등) */
+.boardEditContainer .be-ck--compact .ck-editor__editable_inline {
+  min-height: 56px;
+  padding: 8px 10px;
+}
+
+/* 댓글 리스트/아이템 */
 .boardEditContainer .be-comment-list {
   list-style: none;
   margin: 0;
@@ -214,80 +275,151 @@
   display: grid;
   gap: 10px;
 }
-.boardEditContainer .be-empty {
-  padding: 24px 12px;
-  text-align: center;
-  color: var(--darkgray-color);
-  border: 1px dashed var(--border-color);
-  border-radius: 10px;
-  background: #fafafa;
-}
-
-/* 아이템 */
 .boardEditContainer .be-comment-item {
   display: grid;
-  gap: 6px;
+  gap: 10px;
   padding: 12px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
   background: var(--white-color);
 }
-.boardEditContainer .be-comment-children { margin-top: 8px; display: grid; gap: 8px; }
 
-.boardEditContainer .be-comment-meta {
-  display: flex;
+/* 대댓글 아이템(상단 보더만) */
+.boardEditContainer .be-comment-item.is-reply {
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border-color);
+  padding: 10px 0;
+  margin-left: 10px;
+  border-radius: 0;
+}
+
+/* 대댓글 컨테이너 */
+.boardEditContainer .be-comment-children {
+  margin-top: 8px;
+  display: grid;
   gap: 8px;
+}
+
+/* 댓글 메타(좌:작성자/날짜, 우:삭제) */
+.boardEditContainer .be-comment-meta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
   align-items: center;
   font-size: 13px;
   color: var(--darkgray-color);
+  padding: 0 10px;
 }
-.boardEditContainer .be-comment-author {
-  color: var(--black-color);
-  font-weight: var(--font-semibold);
+.boardEditContainer .be-comment-meta .be-meta-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
-.boardEditContainer .be-comment-date { font-size: var(--font-caption); }
+.boardEditContainer .be-comment-meta .be-meta-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.boardEditContainer .be-comment-author { color: var(--black-color); font-weight: var(--font-semibold); }
+.boardEditContainer .be-comment-date   { font-size: var(--font-caption); }
 
+/* 댓글 본문 */
 .boardEditContainer .be-comment-content {
   font-size: 14px;
   color: #374151;
   line-height: 1.55;
   word-break: break-word;
-}
-
-/* ops 버튼 줄 */
-.boardEditContainer .be-comment-ops {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-/* 댓글 내부 버튼 크기 통일 (공통 Button.jsx 기반) */
-.boardEditContainer .be-comment-form .btn,
-.boardEditContainer .be-reply-actions .btn,
-.boardEditContainer .be-comment-ops .btn {
-  height: 32px;
   padding: 0 10px;
-  border-radius: 8px;
-  font-size: 13px;
-  line-height: 1;
 }
 
-/* 인라인 답글 폼 */
-.boardEditContainer .be-reply-form {
-  display: grid;
-  gap: 8px;
-  margin-top: 8px;
-}
-.boardEditContainer .be-reply-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
+/* 인라인 답글 폼/액션 */
+.boardEditContainer .be-reply-form { display: grid; gap: 8px; margin-top: 8px; }
+.boardEditContainer .be-reply-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
 /* 반응형 */
 @media (max-width: 600px) {
-  .boardEditContainer .be-comment-form {
-    grid-template-columns: 1fr;
-  }
+  .boardEditContainer .be-card { padding: 12px; }
+  .boardEditContainer .be-mainimg { height: 320px; }
+  .boardEditContainer .be-comment-form { grid-template-columns: 1fr; }
+  .boardEditContainer .be-content { padding: 12px; border-radius: 10px; }
+}
+@media (min-width: 640px)  { .boardEditContainer .be-mainimg { height: 280px; } }
+@media (min-width: 1024px) { .boardEditContainer .be-mainimg { height: 300px; } }
+
+/* CKEditor 상단 sticky 패널 테두리 제거 */
+.boardEditContainer .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content{ border: none; }
+
+/* CKEditor 앞/뒤 요소 여백 보정 */
+.boardEditContainer .ck.ck-editor__editable_inline>:last-child,
+.boardEditContainer .ck.ck-editor__editable_inline>:first-child  {
+  margin:5px 0;
 }
 
+/* 등록/수정 전용 카드 */
+.boardEditContainer .be-formCard {
+  width:100%;
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 36px 28px;
+  display: grid;
+  gap: 22px;
+}
+
+.boardEditContainer .be-formCard__title {
+  font-size: var(--font-title-l);
+  font-weight: 600;
+  text-align: center;
+  margin: 0 0 8px;
+  color: var(--black-color);
+}
+
+/* 필드 공통 */
+.boardEditContainer .be-field { display: grid; gap: 12px; }
+
+.boardEditContainer .be-field__label {
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--black-color);
+}
+.boardEditContainer .be-field__label.required::after {
+  content: " *";
+  color: var(--main-color);
+}
+
+/* 텍스트 인풋 */
+.boardEditContainer .be-input {
+  width: 100%;
+  height: 54px;
+  padding: 0 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+  background: #fff;
+}
+.boardEditContainer .be-input:focus { border-color: var(--main-color); }
+
+/* CKEditor(등록/수정 본문) */
+.boardEditContainer .be-ck.be-ck--article .ck.ck-editor { width: 100%; }
+.boardEditContainer .be-ck.be-ck--article .ck-editor__editable_inline {
+  min-height: 260px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px !important;
+  padding: 14px 16px;
+  background: #fff;
+}
+.boardEditContainer .be-ck.be-ck--article .ck-editor__editable_inline.ck-focused {
+  border-color: var(--main-color);
+  box-shadow: none;
+}
+
+/* 하단 버튼 2열 */
+.boardEditContainer .be-formCard__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}

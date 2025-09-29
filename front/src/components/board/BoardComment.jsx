@@ -1,18 +1,16 @@
-// src/components/board/BoardComment.jsx
 import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
+  memo, useCallback, useEffect, useMemo, useRef, useState,
 } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import Button from "../commons/Button.jsx"; // ✅ 공통 버튼
+import Button from "../commons/Button.jsx";
+import Pagination from "../commons/Pagination.jsx";
+
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import DOMPurify from "dompurify";
 
 const host = window.location.hostname || "localhost";
-const API =
-  import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`;
+const API = import.meta?.env?.VITE_API_BASE_URL?.trim() || `http://${host}:8080`;
 
 function BoardComment({ boardId }) {
   const { auth } = useAuth();
@@ -22,21 +20,26 @@ function BoardComment({ boardId }) {
   const [loading, setLoading] = useState(false);
   const [posting, setPosting] = useState(false);
 
-  const [rootValue, setRootValue] = useState("");
-  const rootInputRef = useRef(null);
+  // CKEditor
+  const [rootHtml, setRootHtml] = useState("");
+  const rootEditorRef = useRef(null);
 
-  // 어느 댓글 밑에 답글 폼이 열려있는지 (루트만 허용)
+  // 열려있는 답글 폼
   const [replyingId, setReplyingId] = useState(null);
-  const replyInputRef = useRef(null);
+  const replyEditorRef = useRef(null);
+  const replySubmitRef = useRef(null);
+
+  // 루트 댓글별 대댓글 보기/숨기기 토글 상태
+  const [openThreads, setOpenThreads] = useState(() => new Set());
+
+  // 페이지네이션 상태
+  const PAGE_SIZE = 5;
+  const [currentPage, setCurrentPage] = useState(1);
 
   const normalize = (dto) => {
     const rawPid = dto.parentId ?? dto.parent_id ?? dto.parent;
     const parentId =
-      rawPid === undefined ||
-      rawPid === null ||
-      rawPid === "" ||
-      rawPid === 0 ||
-      rawPid === "0"
+      rawPid === undefined || rawPid === null || rawPid === "" || rawPid === 0 || rawPid === "0"
         ? null
         : String(rawPid);
     return {
@@ -73,6 +76,8 @@ function BoardComment({ boardId }) {
   useEffect(() => {
     fetchComments();
     setReplyingId(null);
+    setOpenThreads(new Set());
+    setCurrentPage(1);
   }, [boardId, fetchComments, token]);
 
   const { roots, childrenByParent } = useMemo(() => {
@@ -84,16 +89,28 @@ function BoardComment({ boardId }) {
       if (!byParent.has(key)) byParent.set(key, []);
       byParent.get(key).push(c);
     }
-    // 정렬: 루트는 작성순, 자식은 최신순
     for (const [key, arr] of byParent.entries()) {
       if (key === null) {
-        arr.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1));
+          arr.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
       } else {
-        arr.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
+      arr.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
       }
     }
     return { roots, childrenByParent: byParent };
   }, [items]);
+
+  // 댓글 페이지네이션
+  const totalPages = Math.max(1, Math.ceil(roots.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pageStart = (safePage - 1) * PAGE_SIZE;
+  const pageSlice = roots.slice(pageStart, pageStart + PAGE_SIZE);
+
+  const isEmptyHtml = (html) => {
+    const text = DOMPurify.sanitize(html || "", { ALLOWED_TAGS: [] })
+      .replace(/&nbsp;/g, " ")
+      .trim();
+    return text.length === 0;
+  };
 
   const postComment = useCallback(
     async ({ content, parentId = null }) => {
@@ -111,35 +128,42 @@ function BoardComment({ boardId }) {
         const created = await res.json();
         if (created && (created.commentId ?? created.id)) {
           const nc = normalize(created);
-          setItems((prev) => [...prev, nc]);
-          return;
+          setItems((prev) => {
+            const next = [nc, ...prev];
+           if (!nc.parentId) {
+               setCurrentPage(1);
+           } else {
+               setOpenThreads((prevOpen) => {
+               const s = new Set(prevOpen);
+               s.add(String(nc.parentId));
+               return s;
+          });
         }
-      } catch (_) {}
+              return next;
+         });
+          return ;
+        }
+     } catch (_) {}
       await fetchComments();
     },
     [boardId, token, fetchComments]
   );
 
-  const onSubmitRoot = useCallback(
-    async (e) => {
-      e.preventDefault();
-      if (posting) return;
-      const content = rootValue.trim();
-      if (!content) return;
-      setPosting(true);
-      try {
-        await postComment({ content, parentId: null });
-        setRootValue("");
-        rootInputRef.current?.focus();
-      } catch (e) {
-        console.error(e);
-        alert(e.message || "댓글 등록 실패");
-      } finally {
-        setPosting(false);
-      }
-    },
-    [posting, rootValue, postComment]
-  );
+  const onSubmitRoot = useCallback(async () => {
+    if (posting) return;
+    if (isEmptyHtml(rootHtml)) return;
+    setPosting(true);
+    try {
+      await postComment({ content: rootHtml, parentId: null });
+      setRootHtml("");
+      rootEditorRef.current?.editing?.view?.focus();
+    } catch (e) {
+      console.error(e);
+      alert(e.message || "댓글 등록 실패");
+    } finally {
+      setPosting(false);
+    }
+  }, [posting, rootHtml, postComment]);
 
   const onDelete = useCallback(
     async (commentId) => {
@@ -147,17 +171,14 @@ function BoardComment({ boardId }) {
       const backup = items;
       setItems((prev) => prev.filter((c) => c.commentId !== commentId));
       try {
-        const res = await fetch(
-          `${API}/board/${boardId}/comments/${commentId}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          }
-        );
+        const res = await fetch(`${API}/board/${boardId}/comments/${commentId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
         if (!res.ok) throw new Error("삭제 실패");
       } catch (e) {
         console.error(e);
@@ -169,62 +190,99 @@ function BoardComment({ boardId }) {
   );
 
   const toggleReplyForm = useCallback((commentId, depth) => {
-    if (depth > 0) return; // 대댓글 금지
+    if (depth > 0) return;
     setReplyingId((cur) => (cur === commentId ? null : commentId));
-    setTimeout(() => replyInputRef.current?.focus(), 0);
   }, []);
+
+  // 루트별 대댓글 토글
+  const toggleThread = useCallback((rootId) => {
+    setOpenThreads((prev) => {
+      const next = new Set(prev);
+      if (next.has(rootId)) {
+        next.delete(rootId);
+        setReplyingId((cur) => (cur === rootId ? null : cur)); // 닫을 때 답글 폼도 닫기
+      } else {
+        next.add(rootId);
+      }
+      return next;
+    });
+  }, []);
+
+  const isThreadOpen = useCallback((rootId) => openThreads.has(rootId), [openThreads]);
 
   return (
     <div className="be-comments">
-      <h3 className="be-comments-title">댓글</h3>
-
-      <form className="be-comment-form" onSubmit={onSubmitRoot}>
-        <input
-          ref={rootInputRef}
-          className="be-input be-comment-input"
-          placeholder="댓글을 남겨보세요"
-          value={rootValue}
-          onChange={(e) => setRootValue(e.target.value)}
-          disabled={posting}
-        />
+      <div className="be-comments-head">
+        <h3 className="be-comments-title">댓글</h3>
         <Button
-          type="submit"
-          variant="primary"
+          type="button"
+          variant="ghost"
           color="red"
+          onClick={onSubmitRoot}
           disabled={posting}
           aria-label="댓글 등록"
         >
           {posting ? "등록 중..." : "등록"}
         </Button>
+      </div>
+
+      <form className="be-comment-form" onSubmit={(e)=>{e.preventDefault();}}>
+        <div className="be-ck be-ck--compact" style={{gridColumn:'1 / -1'}}>
+          <CKEditor
+            editor={ClassicEditor}
+            data={rootHtml}
+            onReady={(editor) => { rootEditorRef.current = editor; }}
+            onChange={(_, editor) => setRootHtml(editor.getData())}
+            disabled={posting}
+            config={{ toolbar: [], placeholder: "댓글을 남겨보세요" }}
+          />
+        </div>
       </form>
 
       {loading ? (
         <div className="be-empty">불러오는 중…</div>
       ) : (
-        <ul className="be-comment-list">
-          {roots.length === 0 ? (
-            <div className="be-empty">첫 댓글을 남겨보세요.</div>
-          ) : (
-            roots.map((c) => (
-              <MemoCommentNode
-                key={c.commentId}
-                c={c}
-                depth={0}
-                maxDepth={1}
-                childrenByParent={childrenByParent}
-                replyingId={replyingId}
-                onToggleReply={toggleReplyForm}
-                onDelete={onDelete}
-                posting={posting}
-                postComment={postComment}
-                setReplyingId={setReplyingId}
-                replyInputRef={replyInputRef}
-                token={token}
-                auth={auth}
+        <>
+          <ul className="be-comment-list">
+            {roots.length === 0 ? (
+              <div className="be-empty">첫 댓글을 남겨보세요.</div>
+            ) : (
+              pageSlice.map((c) => (
+                <MemoCommentNode
+                  key={c.commentId}
+                  c={c}
+                  depth={0}
+                  maxDepth={1}
+                  childrenByParent={childrenByParent}
+                  replyingId={replyingId}
+                  onToggleReply={toggleReplyForm}
+                  onDelete={onDelete}
+                  posting={posting}
+                  postComment={postComment}
+                  setReplyingId={setReplyingId}
+                  replyEditorRef={replyEditorRef}
+                  replySubmitRef={replySubmitRef}
+                  token={token}
+                  auth={auth}
+
+                  isOpen={isThreadOpen(c.commentId)}
+                  onToggleThread={() => toggleThread(c.commentId)}
+                />
+              ))
+            )}
+          </ul>
+
+          {/* 페이지네이션 */}
+          {totalPages > 1 && (
+            <div style={{marginTop: 8, display:"flex", justifyContent:"center"}}>
+              <Pagination
+                currentPage={safePage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
               />
-            ))
+            </div>
           )}
-        </ul>
+        </>
       )}
     </div>
   );
@@ -235,132 +293,154 @@ const ReplyInlineForm = ({
   posting,
   postComment,
   onClose,
-  inputRef,
+  replyEditorRef,
+  replySubmitRef,
 }) => {
-  const [value, setValue] = useState("");
+  const [html, setHtml] = useState("");
+
+  const isEmptyHtml = (h) => {
+    const text = DOMPurify.sanitize(h || "", { ALLOWED_TAGS: [] })
+      .replace(/&nbsp;/g, " ")
+      .trim();
+    return text.length === 0;
+  };
 
   const onSubmitReply = useCallback(
     async (e) => {
       e.preventDefault();
       if (posting) return;
-      const content = value.trim();
-      if (!content) return;
+      if (isEmptyHtml(html)) return;
       try {
-        await postComment({ content, parentId });
-        setValue("");
+        await postComment({ content: html, parentId });
+        setHtml("");
         onClose();
       } catch (e) {
         console.error(e);
         alert(e.message || "답글 등록 실패");
       }
     },
-    [posting, value, parentId, postComment, onClose]
+    [posting, html, parentId, postComment, onClose]
   );
 
   return (
     <form className="be-reply-form" onSubmit={onSubmitReply}>
-      <input
-        ref={inputRef}
-        className="be-input be-comment-input"
-        placeholder="답글을 남겨보세요"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        disabled={posting}
-      />
-      <div className="be-reply-actions">
-        <Button
-          type="button"
-          variant="ghost"
-          color="gray"
-          onClick={onClose}
-          aria-label="답글 취소"
-        >
-          취소
-        </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          color="red"
+      <div className="be-ck be-ck--compact">
+        <CKEditor
+          editor={ClassicEditor}
+          data={html}
+          onReady={(editor) => {
+            replyEditorRef.current = editor;
+            setTimeout(() => editor.editing.view.focus(), 0);
+          }}
+          onChange={(_, editor) => setHtml(editor.getData())}
           disabled={posting}
-          aria-label="답글 등록"
-        >
-          {posting ? "등록 중..." : "등록"}
-        </Button>
+          config={{ toolbar: [], placeholder: "답글을 남겨보세요" }}
+        />
       </div>
+      <button type="submit" ref={replySubmitRef} style={{ display: "none" }} />
     </form>
   );
 };
 
 const CommentNode = ({
-  c,
-  depth,
-  maxDepth = 1,
-  childrenByParent,
-  replyingId,
-  onToggleReply,
-  onDelete,
-  posting,
-  postComment,
-  setReplyingId,
-  replyInputRef,
-  token,
-  auth,
+  c, depth, maxDepth = 1, childrenByParent, replyingId,
+  onToggleReply, onDelete, posting, postComment, setReplyingId,
+  replyEditorRef, replySubmitRef, token, auth,
+  isOpen = false, onToggleThread,
 }) => {
   const children = childrenByParent.get(c.commentId) || [];
   const isReplyingHere = replyingId === c.commentId;
-  const allowReplyHere = depth === 0; // ✨ 루트만 답글 허용
+  const allowReplyHere = depth === 0;
 
   return (
-    <li className="be-comment-item" data-depth={depth}>
+    <li className={`be-comment-item ${depth > 0 ? "is-reply" : ""}`} data-depth={depth}>
       <div className="be-comment-meta">
-        <span className="be-comment-author">{c.writerName}</span>
-        <span className="be-comment-date">
-          {String(c.createdAt ?? "").slice(0, 16).replace("T", " ")}
-        </span>
+        <div className="be-meta-left">
+          <span className="be-comment-author">{c.writerName}</span>
+          <span className="be-comment-date">
+            {String(c.createdAt ?? "").slice(0, 16).replace("T", " ")}
+          </span>
+        </div>
+        <div className="be-meta-right">
+          {token && c.writerId === auth?.user?.login_id && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => onDelete(c.commentId)}
+              aria-label="댓글 삭제"
+            >
+              삭제
+            </Button>
+          )}
+        </div>
       </div>
 
-      <div className="be-comment-content">{c.content}</div>
+      <div
+        className="be-comment-content"
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(c.content || "") }}
+      />
 
-      <div className="be-comment-ops">
-        {allowReplyHere && (
-          <Button
-            type="button"
-            variant="ghost"   // 링크 톤
-            color="gray"
-            onClick={() => onToggleReply(c.commentId, depth)}
-            aria-label="답글쓰기"
-          >
-            답글쓰기{(children?.length ?? 0) > 0 ? ` (${children.length})` : ""}
-          </Button>
-        )}
-        {token && c.writerId === auth?.user?.login_id && (
-          <Button
-            type="button"
-            variant="outline"
-            color="red"
-            onClick={() => onDelete(c.commentId)}
-            aria-label="댓글 삭제"
-          >
-            삭제
-          </Button>
-        )}
+      <div className="be-comment-ops" style={{display:'grid', gridTemplateColumns:'1fr auto', alignItems:'center', gap:'8px'}}>
+        <div className="be-ops-left">
+          {allowReplyHere && (
+            <>
+              <Button
+                type="button"
+                variant="ghost"
+                color="gray"
+                onClick={() => onToggleReply(c.commentId, depth)}
+                aria-label="답글쓰기"
+              >
+                답글쓰기{(children?.length ?? 0) > 0 ? ` (${children.length})` : ""}
+              </Button>
+
+              {children.length > 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  color="gray"
+                  onClick={onToggleThread}
+                  aria-label="대댓글 토글"
+                  aria-expanded={isOpen}
+                  className="btn-caret"
+                >
+                  {isOpen ? "댓글 숨기기" : "댓글 보기"}{" "}
+                  <span className="caret" aria-hidden="true" />
+                </Button>
+              )}
+            </>
+          )}
+        </div>
+
+        <div className="be-ops-right" style={{display:'inline-flex', gap:6}}>
+          {isReplyingHere && (
+            <>
+              <Button
+                type="button"
+                variant="ghost"
+                color="red"
+                onClick={() => setReplyingId(null)}
+                aria-label="답글 취소"
+              >
+                취소
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                color="red"
+                onClick={() => replySubmitRef.current?.click()}
+                aria-label="답글 등록"
+                disabled={posting}
+              >
+                {posting ? "등록 중..." : "등록"}
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
-      {isReplyingHere && allowReplyHere && (
-        <ReplyInlineForm
-          parentId={c.commentId}
-          posting={posting}
-          postComment={postComment}
-          onClose={() => setReplyingId(null)}
-          inputRef={replyInputRef}
-        />
-      )}
-
-      {children.length > 0 && depth < maxDepth && (
-        <ul
-          className="be-comment-children"
-          style={{ display: "block", marginLeft: 16, paddingLeft: 0 }}
-        >
+      {allowReplyHere && children.length > 0 && isOpen && (
+        <ul className="be-comment-children">
           {children.map((cc) => (
             <MemoCommentNode
               key={cc.commentId}
@@ -374,12 +454,24 @@ const CommentNode = ({
               posting={posting}
               postComment={postComment}
               setReplyingId={setReplyingId}
-              replyInputRef={replyInputRef}
+              replyEditorRef={replyEditorRef}
+              replySubmitRef={replySubmitRef}
               token={token}
               auth={auth}
             />
           ))}
         </ul>
+      )}
+
+      {isReplyingHere && allowReplyHere && (
+        <ReplyInlineForm
+          parentId={c.commentId}
+          posting={posting}
+          postComment={postComment}
+          onClose={() => setReplyingId(null)}
+          replyEditorRef={replyEditorRef}
+          replySubmitRef={replySubmitRef}
+        />
       )}
     </li>
   );

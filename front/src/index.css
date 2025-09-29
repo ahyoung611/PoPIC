@@ -1,120 +1,102 @@
-/* 폰트 */
+/*  Font */
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
-body {
-    font-family: 'Pretendard', sans-serif;
-    margin: 0;
-    background-color: var(--white-color);
-    overflow-x: hidden;
-    overflow-y: auto;
-    user-select: none; /* 대부분 브라우저 */
-    -webkit-user-select: none; /* 사파리 */
-    -moz-user-select: none; /* 파이어폭스 */
-    -ms-user-select: none; /* IE/Edge */
-}
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ul, li { list-style: none; }
+a { color: var(--black-color); text-decoration: none; }
+img { -webkit-user-drag: none; user-drag: none; }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-a{
-    color: var(--black-color);
-    text-decoration: none; /* 밑줄 표시 */
-}
-
-ul,
-li {
-    list-style: none;
-}
-
-img {
-    -webkit-user-drag: none; /* 크롬, 사파리 */
-     user-drag: none; /* 표준 */
-}
-
+/* Root */
 :root {
-    --main-color: #FF5148;
-    --main-hover-color: #E0443C;
-    --black-color: #333333;
-    --white-color: #ffffff;
-    --gray-color: #B0B0B0;
-    --darkgray-color: #666666;
-    --gray-hover-color: #d9d9d9;
-    --blue-color: #287ED8;
-    --blue-hover-color: #0056b3;
-    --border-color: #E0E0E0;
-    --bg-color: #F5F5F7;
+  --main-color: #FF5148;
+  --main-hover-color: #E0443C;
+  --main-color-rgb: 255, 81, 72; /* rgba() 사용 편의를 위해 추가 */
 
-    /* Font Sizes */
-    --font-title-l: 34px;
-    --font-title-m: 28px;
-    --font-title: 22px;
-    --font-subtitle: 18px;
+  --black-color: #333333;
+  --white-color: #ffffff;
+  --gray-color: #B0B0B0;
+  --darkgray-color: #666666;
+  --gray-hover-color: #d9d9d9;
+  --blue-color: #287ED8;
+  --blue-hover-color: #0056b3;
+  --border-color: #E0E0E0;
+  --bg-color: #F5F5F7;
 
-    --font-body: 18px;
-    --font-size-base: 16px;
-    --font-small: 14px;
-    --font-caption: 12px;
-    --font-button: 14px;
+  /* Font Sizes */
+  --font-title-l: 34px;
+  --font-title-m: 28px;
+  --font-title: 22px;
+  --font-subtitle: 18px;
 
-    /* Font Weights  */
-      --font-regular: 400;
-      --font-semibold: 600;
-      --font-bold: 700;
+  --font-body: 18px;
+  --font-size-base: 16px;
+  --font-small: 14px;
+  --font-caption: 12px;
+  --font-button: 14px;
 
-    /* shadow  */
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  /* Font Weights */
+  --font-regular: 400;
+  --font-semibold: 600;
+  --font-bold: 700;
 
+  /* Shadow */
+  --shadow: 0 4px 6px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
 }
 
-.container{
-    width: 100%;
-    height: auto;
+/*  Body */
+body {
+  font-family: 'Pretendard', sans-serif;
+  margin: 0;
+  background-color: var(--white-color);
+  overflow-x: hidden;
+  overflow-y: auto;
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE/Edge (old) */
 }
 
-.container100{
-    width: 100%;
-    height: calc(100vh - 60px - 44px);
-}
+/*  Layout Containers  */
+.container { width: 100%; height: auto; }
+.container100 { width: 100%; height: calc(100vh - 60px - 44px); }
 
 .inner {
-    position: relative;
-    margin: 0 auto;
-    padding: 16px;
-    height: 100%;
-    min-height: calc(100vh - 60px - 44px);
-    display: flex;
-    flex-direction: column;
+  position: relative;
+  margin: 0 auto;
+  padding: 16px;
+  height: 100%;
+  min-height: calc(100vh - 60px - 44px);
+  display: flex;
+  flex-direction: column;
 }
 
-/* 글작성 에디터 사용 --------------------------------------------------------------------------------------------------------
-   npm install @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic
-   npm i dompurify
+/*  CKEditor (글작성 에디터)
+    npm install @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic
+    npm i dompurify
 */
 
-/* 에디터 본문 스타일 */
+/* 에디터 본문 */
 .ck-editor__editable_inline {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color) !important;
   border-radius: 10px;
   font-size: 16px;
-  height: 220px;
+  min-height: 220px;
   overflow-y: auto;
   resize: none;
   outline: none;
   background: #fff;
 }
 
-/* 포커스 시 테두리 색상 변경 */
+/* 포커스 라인 */
 .ck.ck-editor__editable.ck-focused {
   border: 1px solid var(--main-color) !important;
   box-shadow: none !important;
 }
 
-/* 툴바 버튼 클릭/포커스 색상 변경 */
+/* 툴바 버튼 포커스/액티브 */
 .ck.ck-button:focus,
 .ck.ck-button:active {
   outline: none !important;
@@ -122,25 +104,30 @@ img {
   border-radius: 6px;
 }
 
-/* 드롭다운 패널 테두리 색상 */
+/* 드롭다운 패널 */
 .ck.ck-dropdown__panel {
   border: 1px solid var(--main-color) !important;
   box-shadow: 0 4px 8px rgba(0,0,0,0.08);
 }
 
-/* 드롭다운 내부 항목 hover 색상 */
+/* 드롭다운 아이템 hover/선택 */
 .ck.ck-list__item .ck-button:hover {
-  background: rgba(var(--main-color-rgb), 0.1) !important;
+  background: rgba(var(--white-color-rgb), 0.1) !important;
   color: var(--main-color) !important;
 }
-
-/* 드롭다운 내부 항목 선택 상태 */
 .ck.ck-list__item .ck-button.ck-on {
   background: rgba(var(--main-color-rgb), 0.15) !important;
   color: var(--main-color) !important;
 }
 
-/* 툴바 버튼 클릭/포커스 강제 변경 */
+/* 툴바 활성화 상태 */
+.ck.ck-toolbar .ck.ck-button.ck-on {
+   background: rgba(var(--white-color-rgb), 0.1) !important;
+  color: var(--main-color) !important;
+  box-shadow: none !important;
+}
+
+/* 툴바 포커스 */
 .ck.ck-toolbar .ck.ck-button:focus,
 .ck.ck-toolbar .ck.ck-button:focus-visible,
 .ck.ck-toolbar .ck.ck-button:active {
@@ -149,35 +136,21 @@ img {
   border-radius: 6px;
 }
 
-/* 버튼 활성화 상태 */
-.ck.ck-toolbar .ck.ck-button.ck-on {
-  background: rgba(var(--main-color-rgb), 0.15) !important;
-  color: var(--main-color) !important;
-  box-shadow: none !important;
+/* CKEditor 상단 sticky panel 경계선 제거 */
+.ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content {
+  border: none;
 }
 
-/* 반응형 ------------------------------------------------------------------------------------------- */
-
-/* 모바일 : 600px */
+/* 반응형 */
+/* 모바일(≤600px) */
 @media (max-width: 600px) {
-    .inner {
-        max-width: 100%;
-        padding: 16px;
-    }
+  .inner { max-width: 100%; padding: 16px; }
 }
-
-/* 태블릿 : 601px ~ 1024px */
+/* 태블릿(601~1024px) */
 @media (min-width: 601px) and (max-width: 1024px) {
-    .inner {
-        max-width: 90%; /* 좌우 여백 조금 */
-        padding: 18px;
-    }
+  .inner { max-width: 90%; padding: 18px; }
 }
-
-/* PC : 1025px */
+/* 데스크톱(≥1025px) */
 @media (min-width: 1025px) {
-    .inner {
-        max-width: 1000px;
-        padding: 20px;
-    }
+  .inner { max-width: 1000px; padding: 20px; }
 }
