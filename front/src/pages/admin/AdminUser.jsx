@@ -70,6 +70,13 @@ const AdminUser = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sort, token]);
 
+    const manageOptionsNoSelect = manageOptions.filter((o) => o.value !== "선택"); // 수정
+
+    const allowedUserCodes = new Set([0, 1]); // 정지, 정상만
+    const userManageOptions = manageOptionsNoSelect.filter(
+        (o) => allowedUserCodes.has(statusCodeFromLabel(o.value)) // 수정
+    );
+
     return (
         <div className="container">
             <div className="inner admin-popup">
@@ -116,8 +123,10 @@ const AdminUser = () => {
                                         value={statusLabelFromCode(u.status)}
                                         onChange={(e) => changeStatus(u.user_id, e.target.value)}
                                     >
-                                        {manageOptions.map((o) => (
-                                            <option key={o.value} value={o.value}>{o.label}</option>
+                                        {userManageOptions.map((o) => ( // 수정: 필터링된 옵션 사용
+                                            <option key={o.value} value={o.value}>
+                                                {o.label}
+                                            </option>
                                         ))}
                                     </select>
                                 </td>

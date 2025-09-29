@@ -3,14 +3,16 @@ import Select from "../../components/commons/Select.jsx";
 import Button from "../../components/commons/Button.jsx";
 import apiRequest from "../../utils/apiRequest.js";
 import { useAuth } from "../../context/AuthContext.jsx";
-import {
-    statusLabelFromCode,
-    statusCodeFromLabel,
-    filterOptionsVendor,
-    manageOptions,
-} from "../../utils/statusUtil.js";
 import Pagination from "../../components/commons/Pagination.jsx";
 import ConfirmModal from "../../components/commons/ConfirmModal.jsx";
+import { filterOptionsVendor } from "../../utils/statusUtil.js";
+
+const VENDOR_STATUS_OPTIONS = [ // 코드: 2(승인대기), 1(정상), 0(정지), 3(가입 반려)
+    { code: 2, label: "승인대기" },
+    { code: 1, label: "정상" },
+    { code: 0, label: "정지" },
+    { code: 3, label: "가입 반려" },
+];
 
 const AdminVendor = () => {
     const token = useAuth().getToken();
@@ -20,7 +22,7 @@ const AdminVendor = () => {
 
     // 상태 변경 모달
     const [confirmOpen, setConfirmOpen] = useState(false);
-    const [pendingChange, setPendingChange] = useState(null); // { id, newLabel }
+    const [pendingChange, setPendingChange] = useState(null);
 
     // 페이징
     const [currentPage, setCurrentPage] = useState(1);
@@ -39,32 +41,21 @@ const AdminVendor = () => {
             setCurrentPage(isArray ? 1 : ((res?.number ?? 0) + 1));
         };
 
-    // const changeStatus = async (id, newLabel) => {
-    //     if (!newLabel) return;
-    //     if (window.confirm(`${newLabel} 상태로 변경하시겠습니까?`)) {
-    //         const code = statusCodeFromLabel(newLabel);
-    //         await apiRequest(
-    //             `/admin/vendor/status?id=${id}&status=${code}`,
-    //             { method: "POST", credentials: "include" },
-    //             token
-    //         );
-    //         fetchVendors();
-    //     }
-    // };
+    const changeStatus = (id, code) => {
+        if (code === undefined || code === null) return;
+        setPendingChange({ id, code }); // 수정
+        setConfirmOpen(true);
+    };
 
-    const changeStatus = (id, newLabel) => {
-            if (!newLabel) return;
-            setPendingChange({ id, newLabel });
-            setConfirmOpen(true);
-        };
-
-        const getConfirmTitle = (label) => {
-            if (!label) return "상태를 변경하시겠습니까?";
-            if (label.includes("정지")) return "정지하시겠습니까?";
-            if (label.includes("비활성")) return "비활성화 하시겠습니까?";
-            if (label.includes("활성")) return "활성화 하시겠습니까?";
-            return `${label} 상태로 변경하시겠습니까?`;
-        };
+    const getConfirmTitle = (code) => {
+        switch (Number(code)) {
+            case 0: return "정지하시겠습니까?";
+            case 1: return "정상으로 변경하시겠습니까?";
+            case 2: return "승인대기로 변경하시겠습니까?";
+            case 3: return "가입을 반려하시겠습니까?";
+            default: return "상태를 변경하시겠습니까?";
+        }
+    };
 
     useEffect(() => {
         fetchVendors(1);
@@ -116,11 +107,16 @@ const AdminVendor = () => {
                                 <td>{v.join_date && new Date(v.join_date).toLocaleDateString()}</td>
                                 <td>
                                     <select
-                                        value={statusLabelFromCode(v.status)}
-                                        onChange={(e) => changeStatus(v.vendor_id, e.target.value)}
+                                        value={String(v.status)}
+                                        onChange={(e) => changeStatus(
+                                            v.vendor_id,
+                                            Number(e.target.value)
+                                        )}
                                     >
-                                        {manageOptions.map((o) => (
-                                            <option key={o.value} value={o.value}>{o.label}</option>
+                                        {VENDOR_STATUS_OPTIONS.map((o) => (
+                                            <option key={o.code} value={String(o.code)}>
+                                                {o.label}
+                                            </option>
                                         ))}
                                     </select>
                                 </td>
@@ -138,18 +134,19 @@ const AdminVendor = () => {
                 {/* 선택 확인 모달창 */}
                 <ConfirmModal
                     open={confirmOpen}
-                    title={getConfirmTitle(pendingChange?.newLabel)}
+                    // title={getConfirmTitle(pendingChange?.newLabel)}
+                    title={getConfirmTitle(pendingChange?.code)}
                     okText="네"
                     cancelText="아니오"
-                    danger={/정지|비활성/.test(pendingChange?.newLabel || "")}
+                    // danger={/정지|비활성|반려/.test(pendingChange?.newLabel || "")}
+                    danger={[0, 3].includes(Number(pendingChange?.code || -999))}
                     onConfirm={async () => {
                         if (!pendingChange) return;
-                        const code = statusCodeFromLabel(pendingChange.newLabel);
                         await apiRequest(
-                                `/admin/vendor/status?id=${pendingChange.id}&status=${code}`,
-                                { method: "POST", credentials: "include" },
-                                token
-                            );
+                            `/admin/vendor/status?id=${pendingChange.id}&status=${pendingChange.code}`,
+                            { method: "POST", credentials: "include" },
+                            token
+                        );
                         setConfirmOpen(false);
                         setPendingChange(null);
                         fetchVendors();
