@@ -29,6 +29,12 @@ li {
     list-style: none;
 }
 
+img {
+    -webkit-user-drag: none; /* 크롬, 사파리 */
+    user-drag: none; /* 표준 */
+    pointer-events: none; /* 클릭 불가 (선택적) */
+}
+
 :root {
     --main-color: #FF5148;
     --main-hover-color: #E0443C;
