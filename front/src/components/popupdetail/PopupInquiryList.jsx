@@ -127,6 +127,13 @@ const PopupInquiryList = ({ popup, refreshFlag }) => {
         }
     };
 
+    const maskName = (name)=>{
+        if (!name) return "";
+        if (name.length === 1) return name; // 한 글자 이름은 그대로
+        if (name.length === 2) return name[0] + "*"; // 두 글자는 마지막 글자만 가리기
+        return name[0] + "*" + name.slice(-1);
+    }
+
     if (loading) return <p>문의 목록을 불러오는 중...</p>;
 
     return (
@@ -187,7 +194,7 @@ const PopupInquiryList = ({ popup, refreshFlag }) => {
                                 {item.isPrivate ? "비공개 문의입니다." : item.content}
                             </p>
                             <p className="user createdAt">
-                                {item.user.name} | {new Date(item.created_at).toLocaleDateString()}
+                                {maskName(item.user.name)} | {new Date(item.created_at).toLocaleDateString()}
                                 <button
                                     onClick={() => toggleReplyHandler(item.id)}
                                     className="btn-reply-toggle"

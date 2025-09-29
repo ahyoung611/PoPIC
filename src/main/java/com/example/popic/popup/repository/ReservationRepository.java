@@ -55,4 +55,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     boolean existsDuplicateReservation(@Param("userId") Long userId,
                                        @Param("storeId") Long storeId,
                                        @Param("slotId") Long slotId);
+
+
+    @Query("""
+        SELECT COUNT(r) > 0 
+        FROM Reservation r 
+        WHERE r.user.user_id = :userId 
+          AND r.store.store_id = :popupId 
+          AND r.status = 0
+    """)
+    boolean existsByUserIdAndPopupId(Long userId, Long popupId);
 }
