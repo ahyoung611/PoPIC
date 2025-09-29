@@ -5,6 +5,7 @@ import apiRequest from "../../utils/apiRequest.js";
 import PopupDetailModal from "./PopupDetailModal.jsx";
 import '../../style/adminPopup.css';
 import {useAuth} from "../../context/AuthContext.jsx";
+import SearchHeader from "../../components/commons/SearchHeader.jsx";
 
 const AdminPopup = () => {
     const [popupList, setPopupList] = useState([]);
@@ -71,8 +72,15 @@ const AdminPopup = () => {
                             { label: "반려", value: "rejected" },
                         ]}
                     />
-                    <input type={"text"} onChange={(e)=>{setKeyword(e.target.value)}} placeholder={"팝업명 검색"}/>
-                    <Button onClick={fetchPopup}>검색</Button>
+                    <SearchHeader
+                        searchValue={keyword}
+                        onSearchChange={setKeyword}
+                        onSearchClick={fetchPopup}
+                        placeholder="팝업명 검색"
+                        className=""
+                    />
+                    {/*<input type={"text"} onChange={(e)=>{setKeyword(e.target.value)}} placeholder={"팝업명 검색"}/>*/}
+                    {/*<Button onClick={fetchPopup}>검색</Button>*/}
                 </div>
                 <div className={"list-table"}>
                     <table>

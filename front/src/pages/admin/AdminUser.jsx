@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Select from "../../components/commons/Select.jsx";
-import Button from "../../components/commons/Button.jsx";
 import apiRequest from "../../utils/apiRequest.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import {
@@ -11,6 +10,7 @@ import {
 } from "../../utils/statusUtil.js";
 import Pagination from "../../components/commons/Pagination.jsx";
 import ConfirmModal from "../../components/commons/ConfirmModal.jsx";
+import SearchHeader from "../../components/commons/SearchHeader.jsx";
 
 const AdminUser = () => {
     const token = useAuth().getToken();
@@ -83,17 +83,14 @@ const AdminUser = () => {
                 <h1>회원 관리</h1>
                 <div className="search-bar">
                     <Select value={sort} onChange={setSort} options={filterOptionsUser} />
-                    <input
-                        type="text"
-                        placeholder="이름/아이디/이메일"
-                        onChange={(e) => setKeyword(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                fetchUsers(1);   // 엔터 입력 시 검색 실행
-                            }
-                        }}
-                    />
-                    <Button onClick={() => fetchUsers(1)}>검색</Button>
+                        <SearchHeader
+                            searchValue={keyword}
+                            onSearchChange={setKeyword}
+                            onSearchClick={() => fetchUsers(1)}
+                            placeholder="이름/아이디/이메일"
+                            className=""
+                            // showRegister={false}                       // 옵션
+                        />
                 </div>
 
                 <div className="list-table">
