@@ -116,7 +116,9 @@
 }
 
 .popupStore-detail .popup-tab-info .copyLocation {
-    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* 모달 */

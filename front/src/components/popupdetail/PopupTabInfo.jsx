@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import apiRequest from "../../utils/apiRequest.js";
 import {useAuth} from "../../context/AuthContext.jsx";
+import Button from "../commons/Button.jsx";
 
 const PopupTabInfo = (props)=>{
     const [popupSchedule, setPopupSchedule] = useState([]);
@@ -93,7 +94,10 @@ const PopupTabInfo = (props)=>{
             <div className={"popup-location"}>
                 <h3 className={"title"}>오시는 길</h3>
                 <div id={"map"}></div>
-                <p className={"copyLocation"} onClick={copyLocation}>{props.popup.address + " " + props.popup.address_detail}</p>
+                <div className={"copyLocation"}>
+                    <p>{props.popup.address + " " + props.popup.address_detail}</p>
+                    <Button variant={"ghost"} color={"red"} onClick={copyLocation}>복사</Button>
+                </div>
             </div>
         </div>
     )
