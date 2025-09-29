@@ -1,5 +1,6 @@
 package com.example.popic.popup.service;
 
+import com.example.popic.CustomUserPrincipal;
 import com.example.popic.entity.entities.PopupStoreSlot;
 import com.example.popic.entity.entities.Reservation;
 import com.example.popic.popup.dto.PopupReservationDTO;
@@ -102,5 +103,9 @@ public class ReservationService {
         // 상태 변경
         reservation.setStatus(-1);
         reservationRepository.save(reservation);
+    }
+
+    public boolean isJoin(Long popupId, CustomUserPrincipal principal) {
+        return reservationRepository.existsByUserIdAndPopupId(principal.getId(), popupId);
     }
 }

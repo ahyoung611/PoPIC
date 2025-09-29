@@ -21,11 +21,11 @@ const PopupReview = (props)=>{
     const nav = useNavigate();
 
 
+
     const fetchReview = async (page = 1) => {
         const response = await apiRequest(`/popupStore/popupReview?popupId=${props.popup.store_id}&page=${page-1}`, {
             credentials: "include",
         },token);
-        console.log("res: ",response);
         setReview(response.content);
         setTotalPages(response.totalPages);
         setCurrentPage(page);
@@ -101,6 +101,17 @@ const PopupReview = (props)=>{
         fetchReview();
     }
 
+    const isJoin = async ()=>{
+        return await apiRequest(`/reservations/isJoin?popupId=${props.popup.store_id}`,{},token);
+    }
+
+    const maskName = (name)=>{
+        if (!name) return "";
+        if (name.length === 1) return name; // 한 글자 이름은 그대로
+        if (name.length === 2) return name[0] + "*"; // 두 글자는 마지막 글자만 가리기
+        return name[0] + "*" + name.slice(-1);
+    }
+
     if(!user){
         return(
             <div className={"msg-container"} onClick={()=>{nav("/login")}}>
@@ -120,13 +131,23 @@ const PopupReview = (props)=>{
                     </div>
                 </div>
 
-                <div className={"review-btn"} onClick={()=>{setIsModalOpen(true)}}>
+                <div className={"review-btn"} onClick={async ()=>{
+                    const joined = await isJoin();
+                    if(!joined){
+                        alert("팝업스토어 참여 후 리뷰 등록이 가능합니다!");
+                    }else{
+                        setIsModalOpen(true)
+                    }
+                }}>
                     <p>리뷰 작성하기</p>
                 </div>
 
                 <ReviewModal
                     isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
+                    onClose={() => {
+                        setIsModalOpen(false);
+                        setEditReview(null);
+                    }}
                     popupId={props.popup.store_id}
                     onSubmitSuccess={fetchReview}
                     editData={editReview}
@@ -150,7 +171,7 @@ const PopupReview = (props)=>{
                                 <div className="review-info">
                                     <div className={"info-1"}>
                                         <h2 className="review-title">{item.title}</h2>
-                                        <span className="review-user, review-date">{item.user.name} | {new Date(item.createdAt).toLocaleDateString()}</span>
+                                        <span className="review-user, review-date">{maskName(item.user.name)} | {new Date(item.createdAt).toLocaleDateString()}</span>
                                     </div>
                                     <div className={"review-content"}>
                                         <p>{item.content}</p>

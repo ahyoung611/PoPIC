@@ -7,6 +7,7 @@ import com.example.popic.popup.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -83,6 +84,13 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("message", e.getMessage()));
         }
+    }
+
+    @GetMapping("/isJoin")
+    public ResponseEntity<Boolean> isJoin (@RequestParam Long popupId,
+                                           @AuthenticationPrincipal CustomUserPrincipal principal) {
+        boolean isJoin = reservationService.isJoin(popupId,principal);
+        return ResponseEntity.ok(isJoin);
     }
 
 }
