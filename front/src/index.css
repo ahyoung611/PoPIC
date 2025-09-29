@@ -89,6 +89,75 @@ img {
     flex-direction: column;
 }
 
+/* 글작성 에디터 사용 --------------------------------------------------------------------------------------------------------
+   npm install @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic
+   npm i dompurify
+*/
+
+/* 에디터 본문 스타일 */
+.ck-editor__editable_inline {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 16px;
+  height: 220px;
+  overflow-y: auto;
+  resize: none;
+  outline: none;
+  background: #fff;
+}
+
+/* 포커스 시 테두리 색상 변경 */
+.ck.ck-editor__editable.ck-focused {
+  border: 1px solid var(--main-color) !important;
+  box-shadow: none !important;
+}
+
+/* 툴바 버튼 클릭/포커스 색상 변경 */
+.ck.ck-button:focus,
+.ck.ck-button:active {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(var(--main-color-rgb), 0.3) !important;
+  border-radius: 6px;
+}
+
+/* 드롭다운 패널 테두리 색상 */
+.ck.ck-dropdown__panel {
+  border: 1px solid var(--main-color) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+/* 드롭다운 내부 항목 hover 색상 */
+.ck.ck-list__item .ck-button:hover {
+  background: rgba(var(--main-color-rgb), 0.1) !important;
+  color: var(--main-color) !important;
+}
+
+/* 드롭다운 내부 항목 선택 상태 */
+.ck.ck-list__item .ck-button.ck-on {
+  background: rgba(var(--main-color-rgb), 0.15) !important;
+  color: var(--main-color) !important;
+}
+
+/* 툴바 버튼 클릭/포커스 강제 변경 */
+.ck.ck-toolbar .ck.ck-button:focus,
+.ck.ck-toolbar .ck.ck-button:focus-visible,
+.ck.ck-toolbar .ck.ck-button:active {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(var(--main-color-rgb), 0.3) !important;
+  border-radius: 6px;
+}
+
+/* 버튼 활성화 상태 */
+.ck.ck-toolbar .ck.ck-button.ck-on {
+  background: rgba(var(--main-color-rgb), 0.15) !important;
+  color: var(--main-color) !important;
+  box-shadow: none !important;
+}
+
+/* 반응형 ------------------------------------------------------------------------------------------- */
+
 /* 모바일 : 600px */
 @media (max-width: 600px) {
     .inner {
@@ -105,7 +174,7 @@ img {
     }
 }
 
-/*  PC : 1025px 이상 */
+/* PC : 1025px */
 @media (min-width: 1025px) {
     .inner {
         max-width: 1000px;

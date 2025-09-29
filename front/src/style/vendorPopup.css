@@ -1,4 +1,4 @@
-.vp-card {
+.vendorPopupFrom .vp-card {
     background: var(--white-color);
     border: 1px solid var(--border-color);
     border-radius: 20px;
@@ -6,7 +6,7 @@
     padding: 36px 28px;
 }
 
-.vp-title {
+.vendorPopupFrom .vp-title {
     font-size: var(--font-title-l);
     font-weight: 600;
     text-align: center;
@@ -40,9 +40,9 @@
     outline: none;
     background: #fff;
 }
+
 .vp-input:focus,
-.vp-select:focus,
-.vp-textarea:focus {
+.vp-select:focus,{
     border-color: var(--main-color);
 }
 
@@ -50,18 +50,6 @@
     outline: none !important;
     border-color: var(--border-color) !important;
     box-shadow: none !important;
-}
-
-.vp-textarea {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    font-size: 16px;
-    resize: vertical;
-    min-height: 220px;
-    outline: none;
-    background: #fff;
 }
 
 .vp-grid-2 {
@@ -72,17 +60,21 @@
 
 .vp-days {
     display: flex;
-    gap: 12px;
+    justify-content: space-between;
     flex-wrap: wrap;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.vendorPopupFrom .btn--filter{
+    width: calc(100% / 7.2);
 }
 
 .vp-time-row {
-    display: grid;
-    grid-template-columns: 1fr 40px 1fr;
-    gap: 16px;
+    display: flex;
+    gap: 10px;
     align-items: center;
 }
+
 .vp-tilde {
     display: inline-block;
     text-align: center;
@@ -102,7 +94,7 @@
     margin-top: 18px;
 }
 
-.vp-actions .btn{
+vp-actions .btn{
     flex: 1;
 }
 
@@ -113,15 +105,18 @@
     cursor: pointer;
     color: #8e8e8e;
 }
+
 .vp-filebox input[type="file"] {
     display: none;
 }
+
 .vp-file-list {
     margin-top: 8px;
     padding-left: 12px;
     color: var(--darkgray-color);
     font-size: 14px;
 }
+
 .vp-file-list li {
     white-space: nowrap;
     overflow: hidden;
@@ -134,6 +129,7 @@
     gap: 8px;
     margin-top: 12px;
 }
+
 .vp-link {
     width: 80px;
     height: 54px;
@@ -165,10 +161,11 @@
     cursor: pointer;
     color: var(--darkgray-color);
 }
+
 .vp-link:hover { background: var(--bg-color); }
 
 /* 반응형 */
 @media (max-width: 600px) {
-    .vp-grid-2 { grid-template-columns: 1fr; }
-    .vp-time-row { grid-template-columns: 1fr 30px 1fr; }
+   .vp-grid-2 { grid-template-columns: 1fr; }
+   .vp-time-row { grid-template-columns: 1fr 30px 1fr; }
 }

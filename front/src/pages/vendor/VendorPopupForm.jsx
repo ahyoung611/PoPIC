@@ -5,6 +5,8 @@ import "../../style/vendorPopup.css";
 import Button from "../../components/commons/Button.jsx";
 import apiRequest from "../../utils/apiRequest.js";
 import {useAuth} from "../../context/AuthContext.jsx"
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 // 상수/헬퍼
 const KAKAO_JS_API_KEY = import.meta.env.VITE_KAKAO_JS_API_KEY;
@@ -243,7 +245,7 @@ const handleSubmit = async(e)=>{
 
     // 렌더
     return (
-        <div className="container">
+        <div className="container vendorPopupFrom">
             <div className="inner">
                 <form className="vp-card" onSubmit={handleSubmit}>
                     <h1 className="vp-title">{pageTitle}</h1>
@@ -262,7 +264,7 @@ const handleSubmit = async(e)=>{
 
                     {/* 이미지 추가 */}
                      <div className="vp-field">
-                        <label className="vp-label">이미지 추가</label>
+                        <label className="vp-label required">이미지 추가</label>
                         <label className="vp-input vp-filebox">
                             <input type="file" multiple accept="image/*" onChange={handleFiles}/>
                             {imageFiles.length===0?"파일을 선택하세요":`${imageFiles.length}개 선택됨`}
@@ -291,7 +293,7 @@ const handleSubmit = async(e)=>{
 
                     {/* 카테고리 */}
                     <div className="vp-field">
-                        <label className="vp-label">카테고리</label>
+                        <label className="vp-label required">카테고리</label>
                         <select
                             className="vp-select"
                             value={categorySelect}
@@ -333,7 +335,7 @@ const handleSubmit = async(e)=>{
 
                     {/* 시간당 인원 수 */}
                     <div className="vp-field">
-                        <label className="vp-label">시간당 인원 수</label>
+                        <label className="vp-label required">시간당 인원 수</label>
                         <input
                             className="vp-input"
                             inputMode="numeric"
@@ -345,7 +347,7 @@ const handleSubmit = async(e)=>{
 
                     {/* 장소 */}
                     <div className="vp-field">
-                        <label className="vp-label">장소</label>
+                        <label className="vp-label required">장소</label>
                         <AddressSelector
                             kakaoAppKey={KAKAO_JS_API_KEY}
                             basePath={`/api/vendors/${vendorId}/popups`}
@@ -365,7 +367,7 @@ const handleSubmit = async(e)=>{
 
                     {/* 운영 시간 */}
                     <div className="vp-field">
-                        <label className="vp-label">운영 시간</label>
+                        <label className="vp-label required">운영 시간</label>
                         <div className="vp-days">
                             {DAYS.map((d) => (
                                 <Button
@@ -398,7 +400,7 @@ const handleSubmit = async(e)=>{
 
                     {/* 가격 */}
                     <div className="vp-field">
-                        <label className="vp-label">가격(원)</label>
+                        <label className="vp-label required">가격(원)</label>
                         <input
                             className="vp-input"
                             inputMode="decimal"
@@ -410,14 +412,23 @@ const handleSubmit = async(e)=>{
 
                     {/* 팝업 소개 */}
                     <div className="vp-field">
-                        <label className="vp-label">팝업 소개</label>
-                        <textarea
-                            className="vp-textarea"
-                            rows={8}
-                            value={form.description ?? ""}
-                            onChange={(e) => update("description", e.target.value)}
-                            placeholder="간단한 소개를 입력하세요"
-                        />
+                      <label className="vp-label required">팝업 소개</label>
+                      <CKEditor
+                        editor={ClassicEditor}
+                        data={form.description ?? ""}
+                        onChange={(event, editor) => {
+                          const data = editor.getData();
+                          update("description", data);
+                        }}
+                        config={{
+                          placeholder: "간단한 소개를 입력하세요",
+                          toolbar: [
+                            "heading", "|",
+                            "bold", "italic", "|",
+                            "undo", "redo"
+                          ]
+                        }}
+                      />
                     </div>
 
                     {/* 버튼 */}
