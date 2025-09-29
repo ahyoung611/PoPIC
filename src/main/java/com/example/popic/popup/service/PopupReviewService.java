@@ -81,12 +81,10 @@ public class PopupReviewService {
 
         // 이미지 처리
         if (newFile != null && !newFile.isEmpty()) {
-            System.out.println("reviewId: " + review.getReview_id());
-            System.out.println("type: " + type);
+            // 새 파일이 있으면 기존 이미지 삭제 후 새 이미지 저장
             reviewImageService.deleteImage(review.getReview_id());
 
             String savedImageId = FileSave.fileSave(type, newFile);
-
 
             ReviewImageDTO reviewImageDTO = new ReviewImageDTO();
             reviewImageDTO.setReview(reviewId);
@@ -94,11 +92,16 @@ public class PopupReviewService {
             reviewImageDTO.setSaved_name(savedImageId);
             reviewImageService.saveReviewImage(reviewImageDTO);
 
-        } else if (existingImageId == null) {
-            if (!review.getImages().isEmpty()) {
+        } else if (existingImageId != null) {
+            // 기존 이미지 유지 → 아무것도 하지 않음
+
+        } else {
+            // 새 파일도 없고 기존 이미지도 없으면 기존 이미지 삭제
+            if (review.getImages() != null && !review.getImages().isEmpty()) {
                 reviewImageService.deleteImage(review.getReview_id());
             }
         }
+
         popupReviewRepository.save(review);
     }
 
@@ -112,4 +115,6 @@ public class PopupReviewService {
         popupReviewRepository.delete(review);
 
     }
+
+
 }

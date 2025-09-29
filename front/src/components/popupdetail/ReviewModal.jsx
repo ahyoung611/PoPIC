@@ -47,6 +47,8 @@ const ReviewModal = ({ isOpen, onClose, popupId, onSubmitSuccess, editData }) =>
         } else if (existingImage) {
             formData.append("existingImage", existingImage);
             // 서버에서 "기존 이미지 유지" 로직 처리
+        } else {
+            formData.append("existingImage", "");
         }
 
         try {

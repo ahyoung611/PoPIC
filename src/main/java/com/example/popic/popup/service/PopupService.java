@@ -2,13 +2,12 @@ package com.example.popic.popup.service;
 
 import com.example.popic.entity.entities.*;
 import com.example.popic.popup.dto.*;
-import com.example.popic.popup.repository.PopupRepository;
-import com.example.popic.popup.repository.PopupStoreScheduleRepository;
-import com.example.popic.popup.repository.PopupStoreSlotRepository;
-import com.example.popic.popup.repository.ReservationRepository;
+import com.example.popic.popup.repository.*;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,6 +24,7 @@ public class PopupService {
     private final PopupStoreScheduleRepository scheduleRepository;
     private final PopupStoreSlotRepository storeSlotRepository;
     private final ReservationRepository reservationRepository;
+    private final PopupReviewRepository popupReviewRepository;
 
     public PopupStore findById(Long id) {
         return popupRepository.findById(id).orElse(null);
@@ -42,11 +42,9 @@ public class PopupService {
                .toList();
     }
 
-    public List<PopupReviewDTO> getReviewByIdAndKeyword(Long id, String keyword) {
-        System.out.println("keyword: " + keyword);
-        return popupRepository.getReviewByStoreIdAndKeyword(id, keyword).stream()
-                .map(PopupReviewDTO::new)
-                .toList();
+    public Page<PopupReviewDTO> getReviewByIdAndKeyword(Long popupId, String keyword, Pageable pageable) {
+        return popupReviewRepository.findByPopupIdAndKeyword(popupId, keyword, pageable)
+                .map(PopupReviewDTO::new);
     }
 
     public List<ReviewReplyDTO> getReviewReply(Long id) {

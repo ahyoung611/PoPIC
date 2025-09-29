@@ -8,11 +8,12 @@ import com.example.popic.popup.repository.PopupRepository;
 import com.example.popic.popup.repository.WaitingNumberRepository;
 import com.example.popic.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -69,20 +70,22 @@ public class WaitingNumberService {
         );
     }
 
-    public List<WaitingNumberDTO> findByVendorId(Long vendorId, String sort, String keyword) {
-        switch (sort) {
+    public Page<WaitingNumberDTO> findByVendorId(Long vendorId, String sort, String keyword, Pageable pageable) {
+        Page<WaitingNumber> pageResult;
+
+        switch (sort.toLowerCase()) {
             case "entry":
-                return waitingNumberRepository.findEntryByVendorId(vendorId, keyword).stream()
-                        .map(WaitingNumberDTO::new)
-                        .collect(Collectors.toList());
+                pageResult = waitingNumberRepository.findEntryByVendorId(vendorId, keyword, pageable);
+                break;
             case "cancel":
-                return waitingNumberRepository.findCancelByVendorId(vendorId, keyword).stream().map(WaitingNumberDTO::new)
-                        .collect(Collectors.toList());
+                pageResult = waitingNumberRepository.findCancelByVendorId(vendorId, keyword, pageable);
+                break;
             default:
-                return waitingNumberRepository.findByVendorId(vendorId,keyword).stream()
-                        .map(WaitingNumberDTO::new)
-                        .collect(Collectors.toList());
+                pageResult = waitingNumberRepository.findByVendorId(vendorId, keyword, pageable);
+                break;
         }
+
+        return pageResult.map(WaitingNumberDTO::new);
     }
 
     public void waitingCall(Long id) {
@@ -96,4 +99,5 @@ public class WaitingNumberService {
     public void waitingCancel(Long id) {
         waitingNumberRepository.waitingCancel(id);
     }
+
 }
