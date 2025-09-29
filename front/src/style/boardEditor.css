@@ -1,0 +1,293 @@
+.boardEditContainer .be-card {
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.boardEditContainer .be-form { display: grid; gap: 14px; }
+
+/* 제목 */
+.boardEditContainer .be-title {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--white-color);
+  font-size: var(--font-title);
+  font-weight: var(--font-bold);
+  color: var(--black-color);
+}
+.boardEditContainer .be-title[readonly] {
+  border-color: transparent;
+  background: transparent;
+  padding-left: 0;
+}
+
+/* 메타(작성자/일시/조회수) */
+.boardEditContainer .be-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--darkgray-color);
+  font-size: var(--font-small);
+  border-top: 1px solid var(--border-color);
+  padding-top: 10px;
+  margin-top: -6px;
+}
+.boardEditContainer .be-meta .be-right {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 12px;
+}
+
+/* 라벨/빈 상태 */
+.boardEditContainer .be-label {
+  font-size: var(--font-small);
+  color: var(--darkgray-color);
+}
+.boardEditContainer .be-empty {
+  height: 180px;
+  border: 1px dashed var(--border-color);
+  border-radius: 10px;
+  background: #fafafa;
+  color: var(--darkgray-color);
+  display: grid;
+  place-items: center;
+}
+
+/* =========================================================
+   Swiper (이미지)
+   ========================================================= */
+
+.boardEditContainer .be-swiper { display: grid; gap: 10px; }
+
+/* 메인 슬라이더 */
+.boardEditContainer .be-swiper__main {
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+}
+.boardEditContainer .be-mainimg {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  border-radius: 10px;
+}
+
+/* 썸네일 */
+.boardEditContainer .be-swiper__thumbs { width: 100%; }
+.boardEditContainer .be-swiper__thumb {
+  width: 92px !important;   /* slidesPerView="auto" 대응 */
+  height: 64px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  opacity: .7;
+}
+.boardEditContainer .be-swiper__thumb.swiper-slide-thumb-active {
+  opacity: 1;
+  border-color: var(--main-color);
+}
+.boardEditContainer .be-swiper__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 네비게이션/페이지네이션 톤 맞춤 */
+.boardEditContainer .be-swiper .swiper-button-prev,
+.boardEditContainer .be-swiper .swiper-button-next {
+  width: 35px;
+  height: 35px;
+  color: var(--white-color);
+}
+
+/* =========================================================
+   액션 버튼 (공통 Button.jsx와 병행 사용 가능)
+   ========================================================= */
+
+.boardEditContainer .be-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* 페이지 로컬 버튼(필요 시 사용; 공통 Button.jsx 사용 중이면 생략 가능) */
+.boardEditContainer .be-btn {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-size: var(--font-button);
+  font-weight: var(--font-semibold);
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: #f3f4f6;
+  color: var(--black-color);
+  transition: background .2s ease, border-color .2s ease, opacity .2s ease;
+}
+.boardEditContainer .be-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.boardEditContainer .be-btn-primary {
+  background: var(--main-color);
+  color: #fff;
+}
+.boardEditContainer .be-btn-primary:hover { background: var(--main-hover-color); }
+
+.boardEditContainer .be-btn-danger {
+  background: #fff0f0;
+  color: #a30000;
+  border-color: #ffd6d6;
+}
+.boardEditContainer .be-btn-danger:hover { background: #ffe8e8; }
+
+.boardEditContainer .be-btn-ghost {
+  background: transparent;
+  color: var(--darkgray-color);
+  border-color: var(--border-color);
+}
+.boardEditContainer .be-btn-ghost:hover { background: rgba(0,0,0,.04); }
+
+/* 카드 간격 */
+.boardEditContainer .be-card + .be-card { margin-top: 16px; }
+
+/* =========================================================
+   반응형
+   ========================================================= */
+@media (max-width: 600px) {
+  .boardEditContainer .inner { padding: 16px; }
+  .boardEditContainer .be-card { padding: 12px; }
+  .boardEditContainer .be-mainimg { height: 350px; }
+  .boardEditContainer .be-meta { flex-wrap: wrap; gap: 6px; }
+  .boardEditContainer .be-meta .be-right { width: 100%; justify-content: flex-start; }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  .boardEditContainer .be-mainimg { height: 350px; }
+}
+
+/* =========================================================
+   Comments (.be-comments*) — scoped under .boardEditContainer
+   ========================================================= */
+.boardEditContainer .be-comments { display: grid; gap: 12px; }
+.boardEditContainer .be-comments-title {
+  font-size: var(--font-subtitle);
+  font-weight: var(--font-bold);
+  color: var(--black-color);
+}
+
+/* 입력 폼 */
+.boardEditContainer .be-comment-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+.boardEditContainer .be-input.be-comment-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  font-size: var(--font-size-base);
+  color: var(--black-color);
+  outline: none;
+}
+.boardEditContainer .be-input.be-comment-input:focus {
+  border-color: var(--blue-color);
+  box-shadow: 0 0 0 3px rgba(40,126,216,.12);
+}
+
+/* 리스트 */
+.boardEditContainer .be-comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.boardEditContainer .be-empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--darkgray-color);
+  border: 1px dashed var(--border-color);
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+/* 아이템 */
+.boardEditContainer .be-comment-item {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--white-color);
+}
+.boardEditContainer .be-comment-children { margin-top: 8px; display: grid; gap: 8px; }
+
+.boardEditContainer .be-comment-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--darkgray-color);
+}
+.boardEditContainer .be-comment-author {
+  color: var(--black-color);
+  font-weight: var(--font-semibold);
+}
+.boardEditContainer .be-comment-date { font-size: var(--font-caption); }
+
+.boardEditContainer .be-comment-content {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+/* ops 버튼 줄 */
+.boardEditContainer .be-comment-ops {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* 댓글 내부 버튼 크기 통일 (공통 Button.jsx 기반) */
+.boardEditContainer .be-comment-form .btn,
+.boardEditContainer .be-reply-actions .btn,
+.boardEditContainer .be-comment-ops .btn {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* 인라인 답글 폼 */
+.boardEditContainer .be-reply-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+.boardEditContainer .be-reply-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+  .boardEditContainer .be-comment-form {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -388,7 +388,7 @@ export default function VendorMyPage() {
 
                                 {pwErr && <div className="vp-help" style={{color: "red"}}>{pwErr}</div>}
 
-                                <div style={{display: "flex", gap: 8, marginTop: 8}}>
+                                <div className="btn-box">
                                     <Button color="red" disabled={pwLoading} type="submit">변경</Button>
                                     <Button
                                         variant="outline"
