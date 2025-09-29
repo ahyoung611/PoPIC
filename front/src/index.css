@@ -31,8 +31,7 @@ li {
 
 img {
     -webkit-user-drag: none; /* 크롬, 사파리 */
-    user-drag: none; /* 표준 */
-    pointer-events: none; /* 클릭 불가 (선택적) */
+     user-drag: none; /* 표준 */
 }
 
 :root {
