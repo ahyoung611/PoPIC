@@ -55,14 +55,6 @@ public class UserProfileService {
         return new UserDTO(user);
     }
 
-
-    // 프로필 사진 조회
-//     public String getProfilePhotoUrl(Long userId) {
-//         return userProfileRepository.findByUser_Id(userId)
-//                 .map(p -> "/images?id=" + p.getId() + "&type=userProfile")
-//                 .orElse(null);
-//     }
-
     // 프로필 사진 업로드/교체
     @Transactional
     public UserDTO uploadProfilePhoto(Long userId, MultipartFile file) {
@@ -144,6 +136,12 @@ public class UserProfileService {
                     Path basePath = os.contains("win") ? Paths.get("C:", directory) : Paths.get(home, directory);
                     return basePath.resolve(profile.getSaved_name());
                 })
+                .orElse(null);
+    }
+
+    public UserDTO getUserByLoginId(String loginId) {
+        return userRepository.findByLoginId(loginId)
+                .map(UserDTO::new)
                 .orElse(null);
     }
 }
