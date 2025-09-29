@@ -13,6 +13,7 @@ const PopupInquiry = ({popup})=>{
     const [isPrivate, setIsPrivate] = useState(false); // 비공개 체크 상태
     const token = useAuth().getToken();
     const user = useAuth().getUser();
+    const [refreshFlag, setRefreshFlag] = useState(false);
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
@@ -43,6 +44,7 @@ const PopupInquiry = ({popup})=>{
             setContent("");
             setIsPrivate(false);
             setIsModalOpen(false);
+            setRefreshFlag(prev => !prev);
         } catch (error) {
             console.error("문의 전송 실패:", error);
             alert("문의 전송에 실패했습니다. 다시 시도해주세요.");
@@ -74,7 +76,7 @@ const PopupInquiry = ({popup})=>{
                 privateChecked={isPrivate}
                 onPrivateChange={setIsPrivate}
             />
-            <PopupInquiryList popup={popup}/>
+            <PopupInquiryList popup={popup} refreshFlag={refreshFlag}/>
         </div>
     )
 }

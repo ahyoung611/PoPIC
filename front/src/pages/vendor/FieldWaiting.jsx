@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import '../../style/fieldWaiting.css';
 import apiRequest from "../../utils/apiRequest.js";
 import {useAuth} from "../../context/AuthContext.jsx";
+import Pagination from "../../components/commons/Pagination.jsx";
 
 const FieldWaiting = ()=>{
     const [sort, setSort] = useState("");
@@ -13,15 +14,19 @@ const FieldWaiting = ()=>{
     const user = useAuth().getUser();
     const token = useAuth().getToken();
 
-    const fetchList = async () => {
-        const response = await apiRequest(`/vendor/fieldWaitingList?vendorId=${user.vendor_id}&sort=${sort}&keyword=${keyword}`,{},token);
-        setFiledWaitingList(response);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const fetchList = async (page = currentPage) => {
+        const response = await apiRequest(`/vendor/fieldWaitingList?vendorId=${user.vendor_id}&sort=${sort}&keyword=${keyword}&page=${page}`,{},token);
+        setFiledWaitingList(response.content);
+        setTotalPages(response.totalPages || 1);
     }
 
     const fetchCurrentWaiting = async () => {
         const response = await apiRequest(`/vendor/fieldWaitingList?vendorId=${user.vendor_id}`, {}, token);
-        const waitingNum = response.filter(item => item.status === 1).length;
-        const entryNum = response.filter(item => item.status === 0).length;
+        const waitingNum = response.content.filter(item => item.status === 1).length;
+        const entryNum = response.content.filter(item => item.status === 0).length;
         setCurrentWaiting({ waitingNum, entryNum });
     }
 
@@ -69,7 +74,7 @@ const FieldWaiting = ()=>{
     useEffect(() => {
         fetchList();
         fetchCurrentWaiting();
-    },[token, sort])
+    },[token, sort, currentPage])
 
 
     return(
@@ -130,7 +135,7 @@ const FieldWaiting = ()=>{
                                 </td>
                                 <td>
                                     {item.callTime ? (
-                                        item.status !== -1 && (
+                                        item.status === 1 && (
                                             <>
                                                 <button className={"btn"} onClick={()=>{waitingEntry(item)}}>입장 완료</button>|
                                                 <button className={"btn"} onClick={()=>{waitingCancel(item)}}>취소</button>
@@ -141,13 +146,17 @@ const FieldWaiting = ()=>{
                                             호출하기
                                         </button>
                                     )}
-
                                 </td>
                             </tr>
                         ))}
                         </tbody>
                     </table>
                 </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page)=>setCurrentPage(page)}
+                />
             </div>
         </div>
     )

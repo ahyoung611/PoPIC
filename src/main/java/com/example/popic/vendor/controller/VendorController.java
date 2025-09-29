@@ -2,7 +2,6 @@ package com.example.popic.vendor.controller;
 
 
 import com.example.popic.entity.entities.Vendor;
-import com.example.popic.popup.dto.CurrentWaitingDTO;
 import com.example.popic.popup.dto.PopupReservationDTO;
 import com.example.popic.popup.dto.WaitingNumberDTO;
 import com.example.popic.popup.service.WaitingNumberService;
@@ -14,18 +13,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.example.popic.security.JwtUtil;
 
-// 토큰용 import
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import java.time.Duration;
-
-
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -102,13 +97,18 @@ public class VendorController {
     }
 
     @GetMapping("/reservationList")
-    public ResponseEntity<List<PopupReservationDTO>> getReservationList(@RequestParam(name = "vendorId")Long vendorId,
-                                                                        @RequestParam(name="sort", defaultValue = "")String sort,
-                                                                        @RequestParam(name = "keyword", defaultValue = "")String keyword) {
+    public ResponseEntity<Page<PopupReservationDTO>> getReservationList(
+            @RequestParam(name = "vendorId") Long vendorId,
+            @RequestParam(name = "sort", defaultValue = "") String sort,
+            @RequestParam(name = "keyword", defaultValue = "") String keyword,
+            @RequestParam(name = "page", defaultValue = "1") int page, // 1-based
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        // Spring Pageable은 0-based page index 사용
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<PopupReservationDTO> reservationPage = vendorService.getReservationList(vendorId, sort, keyword, pageable);
 
-        List<PopupReservationDTO> reservationList = vendorService.getReservationList(vendorId, sort, keyword);
-
-        return ResponseEntity.ok(reservationList);
+        return ResponseEntity.ok(reservationPage);
     }
 
     @PutMapping("/waitingCall")
@@ -132,12 +132,20 @@ public class VendorController {
     }
 
     @GetMapping("/fieldWaitingList")
-    public ResponseEntity<List<WaitingNumberDTO>> getWaitingList(@RequestParam(name = "vendorId")Long vendorId,
-                                                                 @RequestParam(name = "sort", defaultValue = "")String sort,
-                                                                 @RequestParam(name = "keyword", defaultValue = "")String keyword) {
-        List<WaitingNumberDTO> waitingList = waitingNumberService.findByVendorId(vendorId, sort, keyword);
-        return ResponseEntity.ok(waitingList);
+    public ResponseEntity<Page<WaitingNumberDTO>> getWaitingList(
+            @RequestParam(name = "vendorId") Long vendorId,
+            @RequestParam(name = "sort", defaultValue = "") String sort,
+            @RequestParam(name = "keyword", defaultValue = "") String keyword,
+            @RequestParam(name = "page", defaultValue = "1") int page, // 1-based
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        // Spring Pageable은 0-based page index 사용
+        Pageable pageable = PageRequest.of(page - 1, size);
 
+        // 서비스에서 페이지 단위로 데이터를 가져오도록 수정
+        Page<WaitingNumberDTO> waitingPage = waitingNumberService.findByVendorId(vendorId, sort, keyword, pageable);
+
+        return ResponseEntity.ok(waitingPage);
     }
 
     @PutMapping("/vendors/{id}")

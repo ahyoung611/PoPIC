@@ -6,6 +6,8 @@ import com.example.popic.entity.entities.User;
 import com.example.popic.entity.entities.WaitingNumber;
 import com.example.popic.popup.dto.WaitingNumberDTO;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -42,14 +44,40 @@ public interface WaitingNumberRepository extends JpaRepository<WaitingNumber, Lo
             @Param("myQueue") Integer myQueue
     );
 
-    @Query("SELECT w FROM WaitingNumber w WHERE w.store.vendor.vendor_id = :vendorId AND w.waitingDate = current date AND w.user.name LIKE CONCAT('%', :keyword, '%') AND w.status = 0")
-    List<WaitingNumber> findEntryByVendorId(Long vendorId, String keyword);
+    // entry
+    @Query("""
+        SELECT w FROM WaitingNumber w
+        WHERE w.store.vendor.vendor_id = :vendorId
+          AND w.waitingDate = CURRENT_DATE
+          AND w.user.name LIKE CONCAT('%', :keyword, '%')
+      AND w.status = 0
+    """)
+    Page<WaitingNumber> findEntryByVendorId(@Param("vendorId") Long vendorId,
+                                            @Param("keyword") String keyword,
+                                            Pageable pageable);
 
-    @Query("SELECT w FROM WaitingNumber w WHERE w.store.vendor.vendor_id = :vendorId AND w.waitingDate = current date AND w.user.name LIKE CONCAT('%',:keyword,'%') AND w.status = -1")
-    List<WaitingNumber> findCancelByVendorId(Long vendorId, String keyword);
+    // cancel
+    @Query("""
+        SELECT w FROM WaitingNumber w
+        WHERE w.store.vendor.vendor_id = :vendorId
+          AND w.waitingDate = CURRENT_DATE
+          AND w.user.name LIKE CONCAT('%', :keyword, '%')
+          AND w.status = -1
+    """)
+    Page<WaitingNumber> findCancelByVendorId(@Param("vendorId") Long vendorId,
+                                             @Param("keyword") String keyword,
+                                             Pageable pageable);
 
-    @Query("SELECT w FROM WaitingNumber w WHERE w.store.vendor.vendor_id = :vendorId AND w.waitingDate = current date AND w.user.name LIKE CONCAT('%', :keyword, '%')")
-    List<WaitingNumber> findByVendorId(Long vendorId, String keyword);
+    // 전체
+    @Query("""
+        SELECT w FROM WaitingNumber w
+        WHERE w.store.vendor.vendor_id = :vendorId
+          AND w.waitingDate = CURRENT_DATE
+          AND w.user.name LIKE CONCAT('%', :keyword, '%')
+    """)
+    Page<WaitingNumber> findByVendorId(@Param("vendorId") Long vendorId,
+                                       @Param("keyword") String keyword,
+                                       Pageable pageable);
 
     @Modifying
     @Transactional

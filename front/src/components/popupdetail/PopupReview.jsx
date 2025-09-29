@@ -4,12 +4,15 @@ import Button from "../commons/Button.jsx";
 import ReviewModal from "./ReviewModal.jsx";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {useNavigate} from "react-router-dom";
+import Pagination from "../commons/Pagination.jsx";
 
 const PopupReview = (props)=>{
     const [review, setReview] = useState([]);
     const [reviewReply, setReviewReply] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const keywordRef = useRef("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const token = useAuth().getToken();
     const [openReplies, setOpenReplies] = useState({});
     const [replyInputs, setReplyInputs] = useState({});
@@ -18,12 +21,14 @@ const PopupReview = (props)=>{
     const nav = useNavigate();
 
 
-    const fetchReview = async () => {
-        const response = await apiRequest(`/popupStore/popupReview?popupId=` + props.popup.store_id , {
+    const fetchReview = async (page = 1) => {
+        const response = await apiRequest(`/popupStore/popupReview?popupId=${props.popup.store_id}&page=${page-1}`, {
             credentials: "include",
         },token);
-        console.log(response);
-        setReview(response);
+        console.log("res: ",response);
+        setReview(response.content);
+        setTotalPages(response.totalPages);
+        setCurrentPage(page);
     }
 
     const fetchReviewReply = async () => {
@@ -64,7 +69,7 @@ const PopupReview = (props)=>{
     const reviewSearchHandler = ()=>{
         const keyword = keywordRef.current.value;
         const fetchSearchReview = async () => {
-            const response = await apiRequest(`/popupStore/popupReview?popupId=` + props.popup.store_id + "&keyword=" + keyword , {
+            const response = await apiRequest(`/popupStore/popupReview?popupId=${props.popup.store_id}&keyword=${keyword}`, {
                 credentials: "include",
             },token);
             setReview(response);
@@ -135,11 +140,13 @@ const PopupReview = (props)=>{
                     return (
                         <div key={idx} className="review-wrapper">
                             <div className="review-header">
-                                <img
-                                    className="review-image"
-                                    src={`http://localhost:8080/images?type=review&id=${item.images[0]}`}
-                                    alt="review"
-                                />
+                                {item.images && item.images.length > 0 && (
+                                    <img
+                                        className="review-image"
+                                        src={`http://localhost:8080/images?type=review&id=${item.images[0]}`}
+                                        alt="review"
+                                    />
+                                )}
                                 <div className="review-info">
                                     <div className={"info-1"}>
                                         <h2 className="review-title">{item.title}</h2>
@@ -209,7 +216,11 @@ const PopupReview = (props)=>{
                         </div>
                     );
                 })}
-
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page)=>fetchReview(page)}
+                />
             </div>
         </div>
     );
