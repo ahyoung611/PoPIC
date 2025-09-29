@@ -127,6 +127,23 @@
     color: var(--main-color);
 }
 
+/* 본문 스크롤 잠금용 */
+.body--lock {
+    overflow: hidden;
+}
+
+/* 어드민 헤더 뒤로가기 버튼 */
+.header__left { width: 40px; display: flex; align-items: center; }
+.header__back {
+  background: transparent;
+  border: 0;
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  line-height: 1;
+  transition.35s;
+}
+.header__back:hover { color:var(--main-color); }
+
 /* 모바일 */
 @media (max-width: 768px) {
     .header__inner {
@@ -149,9 +166,4 @@
     .header__hamburger {
         display: inline-flex;
     }
-}
-
-/* 본문 스크롤 잠금용 */
-.body--lock {
-    overflow: hidden;
 }
