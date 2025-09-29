@@ -34,7 +34,6 @@ const PopupDetail = () => {
         const fetchPopupDetail = async () => {
 
             const response = await apiRequest(`/popupStore/popupDetail?id=` + id, {}, token);
-            console.log(response);
             setPopupDetail(response);
             if (response?.end_date) {
                 const endDate = new Date(response.end_date);
