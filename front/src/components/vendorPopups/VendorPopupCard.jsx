@@ -79,7 +79,7 @@ export default function VendorPopupCard({
                         </Button>
                     )}
                     <Button variant="ghost" color="gray" onClick={() => onView?.(id)}>
-                        상세 보기 &#8594;
+                        상세 보기
                     </Button>
                 </div>
             </div>

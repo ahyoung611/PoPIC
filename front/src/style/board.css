@@ -1,12 +1,13 @@
 /* 제목 */
 .board__title {
-  font-size: var(--font-title);
+  text-align: center;
   font-weight: var(--font-bold);
+  font-size: var(--font-title-l);
   color: var(--black-color);
-  margin: 8px 0 16px;
+  margin: 30px;
 }
 
-/* 상단 툴바 (좌: Select / 우: SearchHeader) */
+/* 상단 툴바  */
 .board__toolbar {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -14,52 +15,35 @@
   align-items: center;
   margin-bottom: 16px;
 }
-
 .board__scope { min-width: 140px; }
 .board__search-header { width: 100%; }
 
-/* 리스트 */
+/* 게시글 리스트 */
 .board-list {
-  display: grid;
+  height: 560px;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/* 빈 상태 */
+/* 빈 상태 박스  */
 .board-empty {
-  padding: 28px 16px;
+  padding: 20px;
   text-align: center;
   color: var(--darkgray-color);
-  border: 1px dashed var(--border-color);
-  border-radius: 12px;
-  background: #fafafa;
+  border-radius: 10px;
 }
 
-/* 반응형 */
-@media (max-width: 600px) {
-  .inner { max-width: 100%; padding: 16px; }
-  .board__toolbar { grid-template-columns: 1fr; }
-}
-@media (min-width: 601px) and (max-width: 1024px) {
-  .inner { max-width: 90%; padding: 18px; }
-}
-@media (min-width: 1025px) {
-  .inner { max-width: 1000px; padding: 20px; }
-}
-
-/* =========================================================
-   BoardListItem Card (요청한 컴포넌트 전용)
-   ========================================================= */
-
+/* BoardListItem 카드 스타일 */
 .board-card {
   display: block;
   background: var(--white-color);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: var(--shadow);
-  padding: 16px;
+  padding: 15px;
 }
 
 .board-card__head {
@@ -69,10 +53,7 @@
   align-items: start;
 }
 
-.board-card__main {
-  min-width: 0;
-}
-
+.board-card__main { min-width: 0; }
 .board-card__title {
   font-size: 16px;
   font-weight: var(--font-bold);
@@ -88,38 +69,78 @@
   font-size: 13px;
   color: var(--darkgray-color);
 }
-
-/* 본문: HTML이 들어와도 기본 태그는 보기 좋게.
-   리스트에서는 3줄 요약(라인 클램프) */
+/* 본문 요약 */
 .board-card__desc {
   margin-top: 8px;
   color: #374151;
   font-size: 14px;
   line-height: 1.55;
-
   display: -webkit-box;
-  -webkit-line-clamp: 3;   /* 요약 줄 수 */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* 본문 내부 허용 태그의 기본 스타일 (렌더링 시 가독성) */
-.board-card__desc p { margin: 0 0 .6em; }
-.board-card__desc ul,
-.board-card__desc ol { margin: .25em 0 .6em 1.25em; }
-.board-card__desc li { margin: .2em 0; }
-.board-card__desc a { color: var(--blue-color); text-decoration: underline; }
-.board-card__desc strong { font-weight: var(--font-bold); }
-
-/* 카드 내 버튼(상세 보기 →) */
-.board-card .btn {
-  align-self: start;
-  height: 32px;
+/* 업로드 드롭 */
+.be-drop {
+  width: 100%;
+  height: 50px;
+  line-height: 50px;            
   padding: 0 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+  background: #fff;
+  position: relative;           
+  cursor: pointer;
 }
 
-/* Hover 효과(선택) */
-.board-card:hover {
-  border-color: var(--gray-hover-color);
-  box-shadow: 0 6px 12px rgba(0,0,0,.08);
+/* 네이티브 파일 input 숨김 */
+.be-drop__input {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 플레이스홀더(문구) */
+.be-drop__placeholder {
+  width: 100%;
+  font-size: 16px;
+  color: var(--darkgray-color);
+}
+
+/* 업로드된 파일 리스트 */
+.be-filelist {
+  margin-top: 10px;
+  display: grid;
+}
+.be-filelist__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+  font-size: var(--font-small);
+}
+.be-filelist__name {
+  color: var(--black-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.be-filelist__remove {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--darkgray-color);
+  padding: 2px 6px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.be-filelist__remove:hover {
+  background: rgba(0,0,0,.04);
 }

@@ -276,7 +276,7 @@ const handleSubmit = async(e)=>{
                                    const deletable = typeof img.id==="number";
                                    return (
                                        <li key={`exist-${img.id}`} className="vp-file-item">
-                                           <span className="vp-file-name">{img.displayName}</span>  {/* displayName 사용 */}
+                                           <span className="vp-file-name">{img.displayName}</span>
                                            <button type="button" className="file-delete" disabled={!deletable} title={deletable?"삭제":"삭제 불가"} onClick={()=>deletable&&removeExistingImage(img.id)}>&times;</button>
                                        </li>
                                    );
@@ -432,7 +432,7 @@ const handleSubmit = async(e)=>{
                     </div>
 
                     {/* 버튼 */}
-                    <div className="vp-actions">
+                    <div className="vp-actions ">
                         <Button type="submit" variant="primary" color="red">
                             {isEdit ? "수정" : "등록"}
                         </Button>
