@@ -119,10 +119,10 @@ const OnsiteTicket = () => {
                         className="onsite-illust"
                     />
 
-                    <h2 className="onsite-title">{title}</h2>
                     <p className="onsite-message">
                         {waiting.callTime ? "지금 입장해주세요!" : "잠시만 기다려주세요!"}
                     </p>
+                    <h2 className="onsite-title">{title}</h2>
                     <div className="onsite-msg">
                         {waiting.callTime ?
                             <div>

@@ -54,14 +54,6 @@ const PopupDetail = () => {
         setModalOpen(true); // 모달 열기
     };
 
-    const loginMsg = (t) => {
-        if (t === "예약" && !user) {
-            alert("로그인 후 예약 가능합니다.");
-            return;
-        }
-        setActiveTab(t);
-    }
-
     return (
         <div className={"container"}>
             <div className={"popupStore-detail inner"}>
@@ -75,7 +67,7 @@ const PopupDetail = () => {
                                 <button
                                     key={tab}
                                     className={activeTab === tab ? "tab active" : "tab"}
-                                    onClick={() => loginMsg(tab)}
+                                    onClick={() => setActiveTab(tab)}
                                 >{tab}</button>
                             ))}
                         </div>
