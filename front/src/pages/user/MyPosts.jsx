@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 import Button from "../../components/commons/Button.jsx";
 import Pagination from "../../components/commons/Pagination.jsx";
 import Select from "../../components/commons/Select.jsx";
+import DOMPurify from "dompurify";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
@@ -92,7 +93,10 @@ const MyPosts = () => {
                                         <span>{p.writerName || "익명"}</span>
                                         <span>{new Date(p.createdAt).toLocaleDateString("ko-KR")}</span>
                                     </div>
-                                    <div className="content">{p.content}</div>
+                                    <div
+                                        className="content ck-content"
+                                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(p.content || "") }}
+                                    />
                                 </div>
 
                                 {/* 오른쪽 버튼 */}
