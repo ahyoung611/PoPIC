@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import "../../style/qrCode.css";
 
-const QrCode = ({reservationId}) => {
+const QrCode = ({ reservationId }) => {
     const [qrData, setQrData] = useState(null);
     const [timeLeft, setTimeLeft] = useState(0);
     const [error, setError] = useState(null);
     const token = useAuth().getToken();
 
+    // QR 생성
     useEffect(() => {
         const fetchQr = async () => {
             try {
@@ -23,8 +23,6 @@ const QrCode = ({reservationId}) => {
                 if (!res.ok) throw new Error(`QR 요청 실패: ${res.status}`);
 
                 const data = await res.json();
-                console.log("QR 생성:", data);
-
                 setQrData(data);
                 setTimeLeft(5 * 60); // 타이머 5분 초기화
                 setError(null);
@@ -36,7 +34,7 @@ const QrCode = ({reservationId}) => {
         };
 
         fetchQr();
-    }, [token]);
+    }, [reservationId, token]);
 
     // SSE 연결
     useEffect(() => {
@@ -49,12 +47,12 @@ const QrCode = ({reservationId}) => {
         evtSource.onmessage = (event) => {
             console.log("QR 상태 업데이트:", event.data);
 
-            if (event.data === "USED") {
-                setQrData((prev) => ({
-                    ...prev,
-                    status: "USED",
-                }));
+            if (event.data === "USED" || event.data === "CANCELED") {
+                setQrData((prev) => ({ ...prev, status: event.data }));
+                setTimeLeft(0); // 타이머 0으로 초기화
                 evtSource.close();
+            } else if (event.data === "OK") {
+                setQrData((prev) => ({ ...prev, status: "OK" }));
             }
         };
 
@@ -63,6 +61,7 @@ const QrCode = ({reservationId}) => {
         return () => evtSource.close(); // 언마운트 시 종료
     }, [qrData?.token]);
 
+    // 타이머 감소
     useEffect(() => {
         if (timeLeft <= 0) return;
         const interval = setInterval(() => {
@@ -70,13 +69,6 @@ const QrCode = ({reservationId}) => {
         }, 1000);
         return () => clearInterval(interval);
     }, [timeLeft]);
-
-
-
-    useEffect(() => {
-        if (!qrData) return;
-        if(qrData.status === "USED") setTimeLeft(0);
-    }, [qrData]);
 
     const formatTime = (seconds) => {
         const m = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -90,18 +82,17 @@ const QrCode = ({reservationId}) => {
     return (
         <div className="qr-container">
             <img
-                className={`qr-image ${qrData.status === "USED" ? "qr-used" : ""}`}
+                className={`qr-image ${qrData.status === "USED" || qrData.status === "CANCELED" ? "qr-used" : ""}`}
                 src={qrData.qrImage}
                 alt="예약 QR 코드"
             />
-
-            {qrData.status === "USED" && (
-                <div className="qr-overlay">사용 완료</div>
-            )}
-
+            {qrData.status === "USED" && <div className="qr-overlay">사용 완료</div>}
+            {qrData.status === "CANCELED" && <div className="qr-overlay">예약 취소됨</div>}
             {qrData.status === "OK" && (
                 timeLeft > 0 ? (
-                    <p className="qr-timer">유효시간: {formatTime(timeLeft)}</p>
+                    <p className="qr-timer">
+                        유효시간: <span className="point-color">{formatTime(timeLeft)}</span>
+                    </p>
                 ) : (
                     <p className="qr-expired">QR 코드가 만료되었습니다.</p>
                 )

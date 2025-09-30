@@ -4,10 +4,12 @@ import com.example.popic.CustomUserPrincipal;
 import com.example.popic.popup.dto.PopupReservationDTO;
 import com.example.popic.popup.repository.ReservationRepository;
 import com.example.popic.popup.service.ReservationService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +20,7 @@ import java.util.Map;
 @RequestMapping("/reservations")
 @RequiredArgsConstructor
 public class ReservationController {
-
+    private final StringRedisTemplate stringRedisTemplate;
     private final ReservationService reservationService;
     private final ReservationRepository reservationRepository;
 
@@ -71,10 +73,14 @@ public class ReservationController {
     public ResponseEntity<?> cancelReservation(
             @PathVariable Long reservationId,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
         try {
             Long userId = principal.getId(); // 내부 user 엔티티 접근
             reservationService.cancelReservation(reservationId, userId);
+
+
             return ResponseEntity.ok(Map.of("message", "예약이 취소되었습니다."));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

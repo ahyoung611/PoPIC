@@ -24,7 +24,7 @@ export default function BoardList() {
 
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const size = 5;
+  const size = 6;
 
   const isEmpty = useMemo(() => !loading && boards.length === 0, [loading, boards]);
 

@@ -4,6 +4,7 @@ import com.example.popic.CustomUserPrincipal;
 import com.example.popic.popup.dto.PopupReservationDTO;
 import com.example.popic.popup.service.ReservationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.zxing.BarcodeFormat;
@@ -108,29 +109,58 @@ public class QrCodeController {
     @GetMapping(value = "/qr-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamQrStatus(@RequestParam String token) {
         SseEmitter emitter = new SseEmitter(0L); // 타임아웃 없음
+        ObjectMapper objectMapper = new ObjectMapper();
+
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
+                String lastStatusStr = null;
+
                 while (true) {
                     String reservationData = redisTemplate.opsForValue().get(token);
-                    String status = (reservationData == null) ? "USED" : "OK";
-                    emitter.send(status);
+                    String statusStr;
 
                     if (reservationData == null) {
-                        status = "USED"; // 이미 스캔됨
-                        emitter.send(status);
-                        break;
+                        statusStr = "USED"; // 이미 스캔됨
                     } else {
-                        status = "OK"; // 아직 사용 안됨
-                        emitter.send(status);
+                        // JSON 파싱
+                        JsonNode rootNode = objectMapper.readTree(reservationData);
+                        int status = rootNode.path("status").asInt();
+
+                        switch (status) {
+                            case 0:
+                                statusStr = "USED";
+                                break;
+                            case 1:
+                                statusStr = "OK";
+                                break;
+                            case -1:
+                                statusStr = "CANCELED";
+                                break;
+                            default:
+                                statusStr = "UNKNOWN";
+                        }
+                    }
+
+                    // 상태가 변했을 때만 전송
+                    if (!statusStr.equals(lastStatusStr)) {
+                        emitter.send(statusStr);
+                        lastStatusStr = statusStr;
+                    }
+
+                    // 이미 사용됐거나 취소됐으면 종료
+                    if ("USED".equals(statusStr) || "CANCELED".equals(statusStr)) {
+                        break;
                     }
 
                     Thread.sleep(2000); // 2초마다 상태 체크
                 }
+
                 emitter.complete();
             } catch (Exception e) {
                 emitter.completeWithError(e);
             }
         });
+
         return emitter;
     }
 
