@@ -52,11 +52,11 @@ const Join = () => {
 
 
     // 핸드폰 패턴
-    const PHONE_PATTERN = String.raw`^(?:01[0-9]-?\d{3,4}-?\d{4}|01[0-9]\d{7,8})$`;
+    const PHONE_PATTERN = String.raw`^(?:01[0-9]-?\d{4}-?\d{4}|01[0-9]\d{8})$`;
     // 사업자등록번호 패턴
     const BRN_PATTERN = String.raw`^\d{3}-?\d{2}-?\d{5}$`;
 
-    // 비밀번호 onChange 핸들러 기도메타타타ㅏ타타타ㅏ
+    // 비밀번호 onChange 핸들러
     const handlePasswordChange = (e) => {
         const value = e.target.value;
         setForm((f) => ({ ...f, password: value }));
