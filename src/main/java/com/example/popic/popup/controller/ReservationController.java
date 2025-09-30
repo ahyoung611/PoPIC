@@ -92,4 +92,22 @@ public class ReservationController {
         return ResponseEntity.ok(isJoin);
     }
 
+    @PostMapping("/free")
+    public ResponseEntity<?> reserveFree(
+            @RequestBody Map<String, Object> body,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        try {
+            Long userId  = principal.getId();
+            Long slotId  = ((Number) body.get("slotId")).longValue();
+            Long storeId = ((Number) body.get("storeId")).longValue();
+            Integer count = ((Number) body.get("reservationCount")).intValue();
+
+            PopupReservationDTO saved = reservationService.reserveFreeSlot(slotId, userId, storeId, count);
+            return ResponseEntity.ok(saved);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "잘못된 요청입니다."));
+        }
+    }
 }
