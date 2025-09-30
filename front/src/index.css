@@ -58,7 +58,7 @@ body {
 }
 
 /*  Layout Containers  */
-.container { width: 100%; height: auto; }
+.container { width: 100%; height: auto; background-color: #FAFAFA; }
 
 .inner {
   position: relative;

@@ -66,6 +66,7 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
                     }
                     setStatus(1);
                     alert("예약이 완료되었습니다.");
+                    navigate(`/userMyPage/${user.user_id}`)
                     onClose?.();
                 } catch (e) {
                     console.error(e);
