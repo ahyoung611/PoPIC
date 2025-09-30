@@ -4,6 +4,7 @@ import MyReservation from "../../components/mypage/MyReservation.jsx";
 import MyWalkIn from "../../components/mypage/MyWalkIn.jsx";
 import Pagination from "../../components/commons/Pagination.jsx";
 import '../../style/myPopic.css';
+import {useLocation} from "react-router-dom";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
@@ -16,7 +17,11 @@ const MyPopic = () => {
     const [walkIn, setWalkIn] = useState([]);
     const {auth, getToken} = useAuth();
     const token = getToken();
-    const [activeTab, setActiveTab] = useState("예약");
+
+    const location = useLocation();
+    const query = new URLSearchParams(location.search);
+    const initialTab = query.get("tab") || "예약";
+    const [activeTab, setActiveTab] = useState(initialTab);
 
     const [resPage, setResPage] = useState(1);
     const [walkPage, setWalkPage] = useState(1);
