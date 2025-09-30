@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../../style/header.css";
+import ConfirmModal from "./ConfirmModal.jsx";
 
 export default function UserHeader() {
     const nav = useNavigate();
@@ -12,6 +13,8 @@ export default function UserHeader() {
     const myId = auth?.user?.user_id ?? null;
 
     const [open, setOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+
     useEffect(() => {
         document.body.classList.toggle("body--lock", open);
         return () => document.body.classList.remove("body--lock");
@@ -25,6 +28,13 @@ export default function UserHeader() {
     };
 
     const myPagePath = myId ? `/userMyPage/${myId}` : "/login";
+
+    const goBoard = (e) => {
+        if(!isLoggedIn) {
+            e.preventDefault();
+            setModalOpen(true);
+        }
+    }
 
     return (
         <>
@@ -43,7 +53,7 @@ export default function UserHeader() {
                     <nav className="header__nav">
                         <NavLink to="/main" end className={linkClass}>홈</NavLink>
                         <NavLink to="/popupList" className={linkClass}>팝업 예약</NavLink>
-                        <NavLink to="/board" className={linkClass}>게시판</NavLink>
+                        <NavLink to="/board" onClick={goBoard} className={linkClass}>게시판</NavLink>
                     </nav>
 
                     <div className="header__right">
@@ -79,6 +89,19 @@ export default function UserHeader() {
                     )}
                 </div>
             </aside>
+
+            <ConfirmModal
+                open={modalOpen}
+                title="로그인이 필요합니다"
+                description="게시판을 이용하려면 로그인 해주세요."
+                okText="로그인 하러가기"
+                cancelText="취소"
+                onConfirm={() => {
+                    setModalOpen(false);
+                    nav("/login");
+                }}
+                onCancel={() => setModalOpen(false)}
+            />
         </>
     );
 }
