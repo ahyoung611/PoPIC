@@ -14,7 +14,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,18 +58,45 @@ public class BoardService {
         return BoardDTO.fromEntity(saved);
     }
 
+    @Transactional
     public BoardDTO update(Long id, BoardDTO dto, String loginId) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Board not found"));
 
-        // 작성자 확인
         if (!board.getUser().getLogin_id().equals(loginId)) {
             throw new AccessDeniedException("수정 권한 없음");
         }
 
         board.setTitle(dto.getTitle());
         board.setContent(dto.getContent());
-        return BoardDTO.fromEntity(boardRepository.save(board));
+
+        Set<String> prev = (dto.getFiles()==null)
+                ? Collections.emptySet()
+                : dto.getFiles().stream()
+                .map(f -> f.getSavedName())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        board.getFiles().removeIf(img -> !prev.contains(img.getSaved_name()));
+
+        Set<String> current = board.getFiles().stream()
+                .map(BoardImage::getSaved_name)
+                .collect(Collectors.toSet());
+
+        if (dto.getFiles()!=null) {
+            for (var f : dto.getFiles()) {
+                String currentImg = f.getSavedName();
+                if (currentImg == null || current.contains(currentImg)) continue;
+
+                BoardImage img = new BoardImage();
+                img.setOriginal_name(f.getOriginalName());
+                img.setSaved_name(currentImg);
+                img.setBoard(board);
+                board.getFiles().add(img);
+            }
+        }
+
+        return BoardDTO.fromEntity(board);
     }
 
     @Transactional(readOnly = true)
@@ -80,14 +111,6 @@ public class BoardService {
             case "content", "c" -> boardRepository.searchByContent(k, pageable);
             default -> boardRepository.searchByTitleOrContent(k, pageable);
         };
-    }
-
-    @Transactional(readOnly = true)
-    public List<BoardDTO> boards() {
-        return boardRepository.findAll()
-                .stream()
-                .map(BoardDTO::fromEntity)
-                .toList();
     }
 
     @Transactional(readOnly = true)

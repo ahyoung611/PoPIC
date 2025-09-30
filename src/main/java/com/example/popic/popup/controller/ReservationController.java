@@ -24,7 +24,6 @@ public class ReservationController {
 
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmPayment(@RequestBody PopupReservationDTO dto) {
-        System.out.println(">>> 예약 요청 인원 = " + dto.getReservationCount());
         try {
             PopupReservationDTO saved = reservationService.reserveSlot(
                     dto.getSlot().getSlot_id(),

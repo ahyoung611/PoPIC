@@ -10,8 +10,7 @@ const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:808
 const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
     if (!isOpen) return null; // 모달이 열리지 않으면 아무것도 반환하지 않음
     const navigate = useNavigate();
-    const {auth, getToken} = useAuth();
-    const token = getToken();
+    const {auth} = useAuth();
     const user = auth?.user;
 
     const goCheckout = async () => {
