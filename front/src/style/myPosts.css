@@ -1,52 +1,46 @@
 .myposts-container {
-    width: 100%;
-    max-width: 760px;
-    margin: 0 auto;
-    background: var(--white-color);
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.06);
-    padding: 35px;
-    border: 1px solid var(--border-color);
-}
-
-.myposts-title {
-    font-size: var(--font-title-m);
-    font-weight: var(--font-bold);
-    color: var(--black-color);
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
-}
-
-.myposts-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    min-height: 200px;
+}
+
+/* 헤더 영역 (제목 + 정렬) */
+.myposts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.myposts-title {
+    font-size: var(--font-title);
+    font-weight: var(--font-bold);
+    color: var(--black-color);
+}
+
+/* 리스트 영역 */
+.myposts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .myposts-item {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: 16px;
+    display: flex;
     align-items: flex-start;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-color);
-    transition: background 0.2s;
-}
-
-.myposts-item:hover {
-    background: var(--bg-color);
+    padding: 16px;
+    border: 1px solid var(--border-color);
     border-radius: 12px;
+    background: var(--white-color);
+    box-shadow: var(--shadow);
 }
 
+/* 썸네일 */
 .myposts-item .thumb {
-    width: 120px;
-    height: 90px;
+    flex: 0 0 120px;
+    height: 120px;
     border-radius: 8px;
     overflow: hidden;
-    background: #f3f4f6;
-    border: 1px solid var(--border-color);
+    margin-right: 16px;
 }
 
 .myposts-item .thumb img {
@@ -55,72 +49,64 @@
     object-fit: cover;
 }
 
+/* 정보 */
 .myposts-item .info {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
 .myposts-item .title {
-    font-weight: 700;
-    font-size: 16px;
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-semibold);
     color: var(--black-color);
 }
 
 .myposts-item .meta {
     font-size: var(--font-small);
-    color: var(--darkgray-color);
-    display: flex;
-    gap: 8px;
+    color: var(--gray-color);
 }
 
 .myposts-item .content {
-    font-size: var(--font-body);
-    color: var(--black-color);
+    font-size: var(--font-size-base);
+    color: var(--darkgray-color);
     line-height: 1.4;
-    max-height: 3.5em;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.no-posts {
-    text-align: center;
-    color: var(--darkgray-color);
-    padding: 40px 0;
+/* 오른쪽 버튼 (더보기) */
+.myposts-item .right {
+    align-self: center;
+    margin-left: auto;
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 20px;
-}
-
-.page-btn {
-    border: 1px solid var(--border-color);
-    background: var(--white-color);
-    padding: 6px 12px;
-    border-radius: 8px;
-    cursor: pointer;
+.myposts-item .right button {
+    background: none;
+    border: none;
     font-size: var(--font-small);
+    font-weight: var(--font-semibold);
+    color: var(--darkgray-color);
+    cursor: pointer;
+    transition: color 0.2s;
 }
 
-.page-btn.active {
-    background: var(--main-color);
-    color: var(--white-color);
-    border-color: var(--main-color);
+.myposts-item .right button:hover {
+    color: var(--main-color);
 }
 
-.page-btn:hover {
-    background: var(--bg-color);
-}
-
-@media (max-width: 480px) {
-    .myposts-item {
-        grid-template-columns: 1fr;
-    }
-    .myposts-item .thumb {
-        width: 100%;
-        height: 180px;
-    }
+/* 정렬 Select (최신순) */
+.myposts-sort select {
+    border: none;
+    background: transparent;
+    font-size: var(--font-small);
+    font-weight: var(--font-regular);
+    color: var(--darkgray-color);
+    cursor: pointer;
+    appearance: none;
+    padding-right: 20px;
+    background: url("data:image/svg+xml;utf8,<svg fill='%23666666' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right center;
+    background-size: 12px;
 }
