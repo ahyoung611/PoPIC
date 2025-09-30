@@ -1,6 +1,6 @@
-import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import {loadTossPayments} from "@tosspayments/tosspayments-sdk";
+import {useEffect, useState} from "react";
+import {useSearchParams} from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
 
 const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
@@ -15,7 +15,7 @@ export default function CheckoutPage() {
     });
     const [ready, setReady] = useState(false);
     const [widgets, setWidgets] = useState(null);
-    const { auth } = useAuth();
+    const {auth} = useAuth();
     const user = auth?.user;
     const popupId = searchParams.get("popupId");
     const slotId = searchParams.get("slotId");
@@ -24,9 +24,10 @@ export default function CheckoutPage() {
     useEffect(() => {
         async function fetchPaymentWidgets() {
             const tossPayments = await loadTossPayments(clientKey);
-            const widgets = tossPayments.widgets({ customerKey });
+            const widgets = tossPayments.widgets({customerKey});
             setWidgets(widgets);
         }
+
         fetchPaymentWidgets();
     }, []);
 
@@ -44,6 +45,7 @@ export default function CheckoutPage() {
             });
             setReady(true);
         }
+
         renderPaymentWidgets();
     }, [widgets, amount]);
 
@@ -56,20 +58,20 @@ export default function CheckoutPage() {
         <div className="wrapper">
             <div className="box_section">
                 {/* 결제 UI */}
-                <div id="payment-method" />
+                <div id="payment-method"/>
                 {/* 약관 UI */}
-                <div id="agreement" />
+                <div id="agreement"/>
 
                 {/* 결제하기 버튼 */}
                 <button
                     className="button"
-                    style={{ marginTop: "30px" }}
+                    style={{marginTop: "30px"}}
                     disabled={!ready}
                     onClick={async () => {
                         await widgets.requestPayment({
                             orderId: generateRandomString(),
                             orderName: `${searchParams.get("name")} 예약`,
-                            successUrl: window.location.origin + `/success?people=${searchParams.get("people")}&popupId=${popupId}&slotId=${slotId}&amount=${amount.value}`,
+                            successUrl: window.location.origin + `/success?people=${searchParams.get("people")}&popupId=${popupId}&slotId=${slotId}&amount=${amount.value}&date=${searchParams.get("date")}`,
                             failUrl: window.location.origin + "/fail",
                             customerName: user.name,
                             customerEmail: user.email,
