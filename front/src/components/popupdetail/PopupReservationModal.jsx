@@ -33,7 +33,7 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
 
             const json = await res.json();
             if (json.exists) {
-                alert("이미 예약이 있습니다.");
+                alert("이미 예약이 되어있습니다.");
                 return;
             }
 
@@ -61,7 +61,7 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
                     });
                     const json = await res.json();
                     if (!res.ok) {
-                        alert(json?.message || "무료 예약 처리에 실패했어요.");
+                        alert(json?.message || "예약 실패했습니다.");
                         return;
                     }
                     setStatus(1);

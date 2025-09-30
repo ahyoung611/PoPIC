@@ -26,13 +26,6 @@ const PopupReservation = (props) => {
             return;
         }
 
-        // const depositPerPerson = 10000;
-        // const basePrice = Number(props.popup?.price) || 0;
-        //
-        // const finalPrice = basePrice === 0
-        //     ? depositPerPerson
-        //     : basePrice;
-
         const reservationData = {
             name: props.popup.store_name,
             date: reservationDate,
