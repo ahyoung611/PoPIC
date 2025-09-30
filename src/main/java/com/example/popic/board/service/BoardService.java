@@ -70,14 +70,14 @@ public class BoardService {
         board.setTitle(dto.getTitle());
         board.setContent(dto.getContent());
 
-        Set<String> incoming = (dto.getFiles()==null)
+        Set<String> prev = (dto.getFiles()==null)
                 ? Collections.emptySet()
                 : dto.getFiles().stream()
                 .map(f -> f.getSavedName())
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        board.getFiles().removeIf(img -> !incoming.contains(img.getSaved_name()));
+        board.getFiles().removeIf(img -> !prev.contains(img.getSaved_name()));
 
         Set<String> current = board.getFiles().stream()
                 .map(BoardImage::getSaved_name)
@@ -85,12 +85,12 @@ public class BoardService {
 
         if (dto.getFiles()!=null) {
             for (var f : dto.getFiles()) {
-                String sn = f.getSavedName();
-                if (sn==null || current.contains(sn)) continue;
+                String currentImg = f.getSavedName();
+                if (currentImg == null || current.contains(currentImg)) continue;
 
                 BoardImage img = new BoardImage();
                 img.setOriginal_name(f.getOriginalName());
-                img.setSaved_name(sn);
+                img.setSaved_name(currentImg);
                 img.setBoard(board);
                 board.getFiles().add(img);
             }
