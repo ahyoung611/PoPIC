@@ -76,6 +76,7 @@ public class AuthController {
     @GetMapping("/naver/callback")
     public void naverCallback(@RequestParam("code") String code,
                               @RequestParam("state") String state,
+                              @RequestParam(value="keep", required=false, defaultValue="false") boolean keep,
                               HttpServletResponse response) throws Exception {
 
         System.out.println("네이버 콜백 도착, code = " + code + ", state = " + state);
@@ -90,35 +91,57 @@ public class AuthController {
         String access  = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
         String refresh = jwtUtil.createRefreshToken(u.getLogin_id());
 
+        // 로그인 유지 여부 param
+        long maxAge = keep ? java.time.Duration.ofDays(14).getSeconds() : -1;
+
         // 4) refresh 토큰 httpOnly 쿠키로 심기
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
                 .httpOnly(true)
                 .secure(false)      // 배포 HTTPS면 true
                 .sameSite("Lax")
                 .path("/")
-                .maxAge(java.time.Duration.ofDays(14))
+                .maxAge(maxAge)
                 .build();
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 리다이렉트 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/main"
-                + "?social=naver"
-                + "&token=" + URLEncoder.encode(access, java.nio.charset.StandardCharsets.UTF_8)
-                + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), java.nio.charset.StandardCharsets.UTF_8);
+//        String redirect = frontendBaseUrl + "/main"
+//                + "?social=naver"
+//                + "&token=" + URLEncoder.encode(access, java.nio.charset.StandardCharsets.UTF_8)
+//                + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), java.nio.charset.StandardCharsets.UTF_8);
+//
+//        response.setStatus(302);
+//        response.setHeader("Location", redirect);
 
+        // 소셜 정보 부족시 join 창으로 이동
+        boolean need = needsMoreInfo(u);
+        String base = need ? "/join" : "/main";
+        String redirect = frontendBaseUrl + base
+                        + "?role=USER"
+                        + "&social=naver"
+                        + "&need=" + (need ? "1" : "0")
+                        + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
+                        + "&name="  + URLEncoder.encode(nvl(u.getName()), StandardCharsets.UTF_8)
+                        + "&email=" + URLEncoder.encode(nvl(u.getEmail()), StandardCharsets.UTF_8)
+                        + "&phone=" + URLEncoder.encode(nvl(u.getPhone_number()), StandardCharsets.UTF_8);
         response.setStatus(302);
         response.setHeader("Location", redirect);
     }
 
-
-//    @PostConstruct
-//    public void printGoogleRedirectUri() {
-//        System.out.println("프론트 base-url     = " + frontendBaseUrl);
-//        System.out.println("구글 redirect-uri   = " + googleRedirectUri);
-//    }
+    private boolean needsMoreInfo(User u) {
+        return isBlank(u.getName()) || isBlank(u.getPhone_number()) || isPlaceholderEmail(u.getEmail());
+    }
+    private boolean isPlaceholderEmail(String email) {
+        if (email == null) return true;
+        String e = email.toLowerCase();
+        return e.endsWith("@naver.local") || e.endsWith("@google.local") || e.endsWith("@noemail.kakao");
+    }
+    private boolean isBlank(String s) { return s == null || s.isBlank(); }
+    private String nvl(String s) { return s == null ? "" : s; }
 
     @GetMapping("/google/callback")
     public void googleCallback(@RequestParam("code") String code,
+                               @RequestParam(value="keep", required=false, defaultValue="false") boolean keep,
                                HttpServletResponse response) throws Exception {
 
         System.out.println("구글 콜백 도착, code = " + code);
@@ -133,22 +156,37 @@ public class AuthController {
         String access = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
         String refresh = jwtUtil.createRefreshToken(u.getLogin_id());
 
+        long maxAge = keep ? java.time.Duration.ofDays(14).getSeconds() : -1;
+
         // 4) refresh 토큰 httpOnly 쿠키
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
                 .httpOnly(true)
                 .secure(false)     // 배포 HTTPS면 true
                 .sameSite("Lax")
                 .path("/")
-                .maxAge(java.time.Duration.ofDays(14))
+                .maxAge(maxAge)
                 .build();
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 리다이렉트 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/main"
-                + "?social=google"
+//        String redirect = frontendBaseUrl + "/main"
+//                + "?social=google"
+//                + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
+//                + "&name=" + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
+//
+//        response.setStatus(302);
+//        response.setHeader("Location", redirect);
+        // 소셜 정보 부족시 join 창으로 이동
+        boolean need = needsMoreInfo(u);
+        String base = need ? "/join" : "/main";
+        String redirect = frontendBaseUrl + base
+                + "?role=USER"
+                + "&social=google"
+                + "&need=" + (need ? "1" : "0")
                 + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
-                + "&name=" + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
-
+                + "&name="  + URLEncoder.encode(nvl(u.getName()), StandardCharsets.UTF_8)
+                + "&email=" + URLEncoder.encode(nvl(u.getEmail()), StandardCharsets.UTF_8)
+                + "&phone=" + URLEncoder.encode(nvl(u.getPhone_number()), StandardCharsets.UTF_8);
         response.setStatus(302);
         response.setHeader("Location", redirect);
     }
@@ -156,22 +194,20 @@ public class AuthController {
     @GetMapping("/kakao/callback")
     public void kakaoCallback(@RequestParam("code") String code,
                               @RequestParam(value="state", required=false) String state,
+                              @RequestParam(value="keep", required=false, defaultValue="false") boolean keep,
                               HttpServletResponse response) throws Exception {
-
-        System.out.println("카카오 콜백 도착, code = " + code + ", state = " + state);
 
         // 1) 카카오 유저 정보
         KakaoUserInfo info = kakaoLoginService.getUserInfo(code, state);
-        System.out.println("컨트롤러 내 서비스 왔다 갔다 : " + info);
 
         // 2) 없으면 가입, 있으면 조회
         User u = userService.registerOrLoginFromKakao(info);
-        System.out.println("user 서비스 다녀옴 : " + u);
 
         // 3) JWT
         String access  = jwtUtil.createAccessToken(u.getLogin_id(), String.valueOf(u.getRole()), u.getUser_id());
         String refresh = jwtUtil.createRefreshToken(u.getLogin_id());
-        System.out.println("컨트롤러 jwt : " + access + refresh);
+
+        long maxAge = keep ? java.time.Duration.ofDays(14).getSeconds() : -1;
 
         // 4) refresh httpOnly 쿠키
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
@@ -179,18 +215,32 @@ public class AuthController {
                 .secure(false)   // HTTPS면 true
                 .sameSite("Lax")
                 .path("/")
-                .maxAge(java.time.Duration.ofDays(14))
+                .maxAge(maxAge)
                 .build();
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // 5) 프론트로 302 (access는 쿼리로 전달)
-        String redirect = frontendBaseUrl + "/main"
-                + "?social=kakao"
-                + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
-                + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
-
-        System.out.println("컨트롤러 리다이렉트");
-
+//        String redirect = frontendBaseUrl + "/main"
+//                + "?social=kakao"
+//                + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
+//                + "&name="  + URLEncoder.encode(u.getName() == null ? "" : u.getName(), StandardCharsets.UTF_8);
+//
+//        response.setStatus(302);
+//        response.setHeader("Location", redirect);
+        // 소셜 정보 부족시 join 창으로 이동
+        boolean need = needsMoreInfo(u);
+        String base = need ? "/join" : "/main";
+//        String emailQS = (u.getEmail() != null && !u.getEmail().toLowerCase().endsWith("@noemail.kakao"))
+//                        ? u.getEmail() : "";
+        String redirect = frontendBaseUrl + base
+                        + "?role=USER"
+                        + "&social=kakao"
+                        + "&need=" + (need ? "1" : "0")
+                        + "&token=" + URLEncoder.encode(access, StandardCharsets.UTF_8)
+                        + "&name="  + URLEncoder.encode(nvl(u.getName()), StandardCharsets.UTF_8)
+                        + "&email=" + URLEncoder.encode(nvl(u.getEmail()), StandardCharsets.UTF_8)
+//                        + "&email=" + URLEncoder.encode(emailQS, StandardCharsets.UTF_8)
+                        + "&phone=" + URLEncoder.encode(nvl(u.getPhone_number()), StandardCharsets.UTF_8);
         response.setStatus(302);
         response.setHeader("Location", redirect);
     }
@@ -244,6 +294,5 @@ public class AuthController {
                 .httpOnly(true).secure(false).sameSite("Lax").path("/").maxAge(0).build();
         return ResponseEntity.ok().header(org.springframework.http.HttpHeaders.SET_COOKIE, cleared.toString()).build();
     }
-
 
 }

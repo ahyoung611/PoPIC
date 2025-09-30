@@ -1,27 +1,38 @@
-export default function BoardListItem({ item, onClick }) {
-    const { boardId, title, writerName, createdAt, viewCount, content } = item;
-    const dateText = createdAt
-        ? new Date(createdAt).toISOString().slice(0, 10).replaceAll("-", ".")
-        : "";
+import { useMemo } from "react";
+import DOMPurify from "dompurify";
+import Button from "../commons/Button.jsx";
+import "../../style/board.css";
 
-    return (
-        <li className="board-card">
-            <div className="board-card__head">
-                <div className="board-card__main">
-                    <div className="board-card__title">{title}</div>
-                    <div className="board-card__meta">
-                        {writerName || "user"} | {dateText} | 조회 {viewCount ?? 0}
-                    </div>
-                    <div className="board-card__desc">{content}</div>
-                </div>
-                <button
-                    type="button"
-                    className="board-card__more"
-                    onClick={() => onClick?.(boardId)}
-                >
-                    상세보기 &gt;
-                </button>
-            </div>
-        </li>
-    );
+export default function BoardListItem({ item, onClick }) {
+  const { boardId, title, writerName, createdAt, viewCount, content } = item;
+  const dateText = createdAt
+    ? new Date(createdAt).toISOString().slice(0, 10).replaceAll("-", ".")
+    : "";
+
+  const previewText = useMemo(() => {
+    const plain = DOMPurify.sanitize(content ?? "", {
+      ALLOWED_TAGS: [],
+      ALLOWED_ATTR: [],
+    });
+
+    return plain.replace(/\s+/g, " ").trim();
+  }, [content]);
+
+  return (
+    <li className="board-card">
+      <div className="board-card__head">
+        <div className="board-card__main">
+          <div className="board-card__title">{title}</div>
+          <div className="board-card__meta">
+            {writerName || "user"} | {dateText} | 조회 {viewCount ?? 0}
+          </div>
+          <div className="board-card__desc">{previewText}</div>
+        </div>
+
+        <Button variant="ghost" color="gray" onClick={() => onClick?.(boardId)}>
+          상세 보기 &#8594;
+        </Button>
+      </div>
+    </li>
+  );
 }

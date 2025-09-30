@@ -39,6 +39,15 @@ const Login = () => {
         setForm((f) => ({ ...f, [name]: value }));
     };
 
+    // keep 토글 시 로컬스토리지에 저장 (로그인 유지 true false 사용)
+    const toggleKeep = () => {
+        setKeep((k) => {
+            const next = !k;
+            localStorage.setItem("keep_login", next ? "1" : "0");
+            return next;
+        });
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
         if (!form.login_id || !form.password) return;
@@ -51,7 +60,23 @@ const Login = () => {
 //                 method: "POST",
 //                 headers:{"Content-Type": "application/json" },
 //                 body: JSON.stringify(form)
-            const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "http://localhost:8080/vendor/login";
+
+//             const endpoint = role === "USER" ? "http://localhost:8080/user/login" : "http://localhost:8080/vendor/login";
+//             const endpointWithKeep = `${endpoint}?keep=${keep ? "true" : "false"}`;
+
+
+            // 'admin' 로그인 조건 추가(user/vendor 탭 관계없이 admin 이면 관리자로 로그인)
+            const isAdminLogin = form.login_id.trim().toLowerCase() === "admin";
+            let endpoint;
+            if (isAdminLogin) {
+                endpoint = "http://localhost:8080/admin/login";
+            } else {
+                const base = role === "USER"
+                    ? "http://localhost:8080/user/login"
+                    : "http://localhost:8080/vendor/login";
+                endpoint = `${base}?keep=${keep ? "true" : "false"}`;
+            }
+
             const res = await fetch(endpoint, {
                 method: "POST",
                 headers:{"Content-Type": "application/json" },
@@ -59,24 +84,52 @@ const Login = () => {
                 credentials: "include",
             });
 
-            const data = await res.json();
+            // const data = await res.json();
+            //
+            // if (!data?.result) {
+            //     alert(data?.message || "로그인에 실패했습니다.");
+            //     return;
+            // }
+            // console.log("data",data);
 
-            if (!data?.result) {
-                alert(data?.message || "로그인에 실패했습니다.");
-                return;
-            }
-            console.log("data",data);
+            // if (data.token && data.user) {
+            //     login(data.token, data.user); // context에 저장
+            // }
 
-            if (data.token && data.user) {
-                login(data.token, data.user); // context에 저장
-            }
+            // 안전 파싱: 빈 바디/텍스트 바디/JSON 모두 커버
+            const text = await res.text();
+            let data = null;
+            try {
+                    data = text ? JSON.parse(text) : null;
+                } catch (e) {
+                    data = null;
+                }
+
+                // 실패 처리 (상태 코드 또는 result 기준)
+                    if (!res.ok || !data?.result) {
+                    const backendMsg = data?.message;
+                    const isCredErr = res.status === 400 || res.status === 401 || res.status === 403;
+                    const msg =
+                            (isCredErr && "아이디 또는 비밀번호가 올바르지 않습니다.") ||
+                            backendMsg ||
+                            "로그인에 실패했습니다.";
+                    alert(msg);
+                    return;
+                }
+            console.log("data", data);
 
             if (data.token && data.user) {
                 const vendorId = data?.vendor?.vendor_id ?? data?.user?.vendor_id ?? null;
 
                 const mergedUser = vendorId ? { ...data.user, vendor_id: vendorId } : data.user;
                 login(data.token, mergedUser);
-                
+
+                // 관리자면 관리자 메인으로
+                if (mergedUser?.role === "ADMIN") {
+                    navigate("/admin");
+                    return;
+                }
+
                 // 벤더일 경우 벤더 마이페이지로
                 if ((data?.user?.role || role) === "VENDOR") {
                     if (vendorId) navigate(`/vendor/${vendorId}/popups`);
@@ -104,12 +157,23 @@ const Login = () => {
         console.log("NAVER_REDIRECT_URI: ", NAVER_REDIRECT_URI);
 
         const handleNaverLogin = () => {
-            const state = crypto.randomUUID(); // CSRF 방지용 state
+            // const state = crypto.randomUUID(); // CSRF 방지용 state
+            // keep 추가
+            const state = `${crypto.randomUUID()}:${keep ? "1" : "0"}`;
+
             localStorage.setItem("naver_oauth_state", state);
 
             // const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${NAVER_REDIRECT_URI}&state=${state}`;
-            // 인코딩 버전
-            const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_REDIRECT_URI)}&state=${state}`;
+            // 인코딩 버전 -> 기존코드
+            // const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_REDIRECT_URI)}&state=${state}`;
+
+            // 로그인 유지 여부 전달용
+            const naverAuthUrl =
+                `https://nid.naver.com/oauth2.0/authorize` +
+                `?response_type=code` +
+                `&client_id=${NAVER_CLIENT_ID}` +
+                `&redirect_uri=${encodeURIComponent(NAVER_REDIRECT_URI)}` +
+                `&state=${encodeURIComponent(state)}`;
 
             window.location.href = naverAuthUrl;
         };
@@ -125,13 +189,19 @@ const Login = () => {
         const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI; 
 
         const scope = encodeURIComponent("openid email profile");
+
+        // keep 추가
+        const googleState = `${crypto.randomUUID()}:${keep ? "1" : "0"}`;
+        localStorage.setItem("google_oauth_state", googleState);
+
         const url =
             `https://accounts.google.com/o/oauth2/v2/auth` +
             `?client_id=${GOOGLE_CLIENT_ID}` +
             `&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_URI)}` +
             `&response_type=code` +
             `&scope=${scope}` +
-            `&prompt=consent`;
+            `&prompt=consent` +
+            `&state=${encodeURIComponent(googleState)}`;
         window.location.href = url;
     };
 
@@ -140,17 +210,20 @@ const Login = () => {
         const KAKAO_REST_KEY = import.meta.env.VITE_KAKAO_REST_KEY;
         const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
 
-        const state = crypto.randomUUID(); 
-        localStorage.setItem("kakao_oauth_state", state); 
+        // const state = crypto.randomUUID();
+        // keep 추가
+        const state = `${crypto.randomUUID()}:${keep ? "1" : "0"}`;
+        localStorage.setItem("kakao_oauth_state", state);
 
         const url =
             `https://kauth.kakao.com/oauth/authorize` +
             `?client_id=${KAKAO_REST_KEY}` +
             `&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}` +
             `&response_type=code` +
-            `&state=${state}` +
+            `&state=${encodeURIComponent(state)}` +
             `&scope=${encodeURIComponent("profile_nickname profile_image")}` +
-            `&prompt=select_account`; 
+            `&prompt=select_account` ;
+            // `&keep=${keep ? "true" : "false"}`;
 
         window.location.href = url;
     };
@@ -237,7 +310,8 @@ const Login = () => {
                     <button
                         type="button"
                         className="login-keep-toggle"
-                        onClick={() => setKeep((k) => !k)}
+                        // onClick={() => setKeep((k) => !k)}
+                        onClick={toggleKeep}
                         aria-pressed={keep}
                     >
                         <img
@@ -256,19 +330,20 @@ const Login = () => {
                         {loading ? "처리 중" : "로그인"}
                     </button>
 
-                    {/* 소셜 로그인 */}
-                    <div className="login-socials" aria-label="소셜 로그인">
-                        <button type="button" className="login-social-btn" title="카카오 로그인" onClick={kakaoLogin}>
-                            <img src={kakao} alt="kakao" />
-                        </button>
-                        <button type="button" className="login-social-btn" title="네이버 로그인"
-                                onClick={naverLogin}>
-                            <img src={naver} alt="naver" />
-                        </button>
-                        <button type="button" className="login-social-btn" title="구글 로그인" onClick={googleLogin}>
-                            <img src={google} alt="google" />
-                        </button>
-                    </div>
+                   {/* 소셜 로그인: 벤더 탭에서는 표시 안 함 */}
+                   {role !== "VENDOR" && (
+                     <div className="login-socials" aria-label="소셜 로그인">
+                           <button type="button" className="login-social-btn" title="카카오 로그인" onClick={kakaoLogin}>
+                             <img src={kakao} alt="kakao" />
+                           </button>
+                           <button type="button" className="login-social-btn" title="네이버 로그인" onClick={naverLogin}>
+                             <img src={naver} alt="naver" />
+                           </button>
+                           <button type="button" className="login-social-btn" title="구글 로그인" onClick={googleLogin}>
+                             <img src={google} alt="google" />
+                           </button>
+                         </div>
+                   )}
                 </form>
 
                 {/* 푸터 - 회원가입 링크 */}

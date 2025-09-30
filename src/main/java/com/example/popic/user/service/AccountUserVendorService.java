@@ -47,7 +47,7 @@ public class AccountUserVendorService {
         if (u.getPassword() == null || !passwordEncoder.matches(rawPassword, u.getPassword())) {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
-        if (u.getStatus() == 0)  throw new IllegalStateException("정지된 계정입니다.");
+        if (u.getStatus() == 0)  throw new IllegalStateException("정지된 계정입니다.\n관리자에게 문의 부탁드립니다.\n문의 번호: 02) 321-4567");
         if (u.getStatus() == -1) throw new IllegalStateException("탈퇴 처리된 계정입니다.");
         return u;
     }
@@ -61,7 +61,7 @@ public class AccountUserVendorService {
         }
         // 2: 승인대기, 1: 정상, 0: 정지, -1: 탈퇴, 3: 가입 반려
 //        if (v.getStatus() == 2)  throw new IllegalStateException("승인 대기 중인 계정입니다.");
-        if (v.getStatus() == 0)  throw new IllegalStateException("정지된 계정입니다.");
+        if (v.getStatus() == 0)  throw new IllegalStateException("정지된 계정입니다.\n관리자에게 문의 부탁드립니다.\n문의 번호: 02) 321-4567");
         if (v.getStatus() == -1) throw new IllegalStateException("탈퇴 처리된 계정입니다.");
 //        if (v.getStatus() == 3)  throw new IllegalStateException("가입이 반려된 계정입니다.");
         return v;

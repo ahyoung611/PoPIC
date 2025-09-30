@@ -1,33 +1,13 @@
-import React, {useEffect, useRef, useState} from "react";
-import {loadKakaoMaps} from "../../utils/kakaoLoader.js";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { loadKakaoMaps } from "../../utils/kakaoLoader.js";
 import apiRequest from "../../utils/apiRequest.js";
 
-
-// JSON GET 유틸(getJson) : fetch + content-type 검증 + JSON 파싱
-async function getJson(url, {signal, token} = {}) {
-    const res = await fetch(url, {
-        signal,
-        headers: {
-            Accept: "application/json",
-            ...(token ? {Authorization: `Bearer ${token}`} : {}),
-        },
-        credentials: "include",
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status} @ ${url}`);
-    const ct = res.headers.get("content-type") || "";
-    if (!ct.includes("application/json")) {
-        const text = await res.text().catch(() => "");
-        throw new Error(`JSON 아님 @ ${url} (content-type: ${ct}, len=${text.length})`);
-    }
-    return res.json();
-}
-
-// 주소 값 정규화(normalize) : 문자열 트림, 위경도 수치 변환(null 안전)
+// 주소 객체 정규화 (공백 제거, 숫자 변환)
 function normalize(v) {
     return {
         city: typeof v?.city === "string" ? v.city.trim() : "",
         district: typeof v?.district === "string" ? v.district.trim() : "",
-        detail: typeof v?.detail === "string" ? v.detail.trim() : "",
+        detail: typeof v?.detail === "string" ? v.detail : "",
         latitude:
             v?.latitude == null || v?.latitude === ""
                 ? null
@@ -39,7 +19,7 @@ function normalize(v) {
     };
 }
 
-// 얕은 동등 비교(shallowEqual) : city/district/detail/lat/lng 필드 기준 변경 여부 판단
+// 주소 값이 변했는지 확인
 function shallowEqual(a, b) {
     return (
         a.city === b.city &&
@@ -50,19 +30,17 @@ function shallowEqual(a, b) {
     );
 }
 
-// 주소 선택기 컴포넌트(AddressSelector) : 시/구 로딩 + 상세주소 → 좌표 변환 + 부모 onChange 통지
 export default function AddressSelector({
-                                            kakaoAppKey,
-                                            value,
-                                            onChange,
-                                            showCoords = false,
-                                            geocodeInline = true,
-                                            basePath = "/api/vendors/0/popups",
-                                            token,
-                                        }) {
-    // API 베이스 경로 상수(API_BASE) : /api/vendors/{vendorId}/popups
+    kakaoAppKey,
+    value,
+    onChange,
+    showCoords = false,
+    geocodeInline = true,
+    basePath = "/api/vendors/0/popups",
+    token,
+}) {
     const API_BASE = basePath;
-    // 로컬 상태(cities/districts/입력필드/좌표)
+
     const [cities, setCities] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [city, setCity] = useState(value?.city || "");
@@ -70,11 +48,28 @@ export default function AddressSelector({
     const [detail, setDetail] = useState(value?.detail || "");
     const [lat, setLat] = useState(value?.latitude ?? null);
     const [lng, setLng] = useState(value?.longitude ?? null);
+    const [kakaoReady, setKakaoReady] = useState(false);
 
-    // 간단 캐시 레퍼런스(cacheRef) : cities 1회 로딩, districtsByCity 메모이즈
-    const cacheRef = useRef({cities: undefined, districtsByCity: new Map()});
+    const cacheRef = useRef({ cities: undefined, districtsByCity: new Map() });
+    const [isComposing, setIsComposing] = useState(false);
 
-    // props.value → 내부 상태 동기화 이펙트 : 동일값은 무시하여 불필요 렌더 방지
+    const handleDetailChange = (e) => {
+     setDetail(e.target.value); // 항상 값 반영
+    };
+
+    const handleCompositionStart = () => setIsComposing(true);
+    const handleCompositionEnd = (e) => {
+        setIsComposing(false);
+    };
+
+    // 카카오 SDK 로드
+    useEffect(() => {
+        loadKakaoMaps(kakaoAppKey)
+            .then(() => setKakaoReady(true))
+            .catch((err) => console.error("Kakao SDK 로딩 실패:", err));
+    }, [kakaoAppKey]);
+
+    // state 동기화
     useEffect(() => {
         const nv = normalize(value);
         setCity((prev) => (prev === nv.city ? prev : nv.city));
@@ -84,7 +79,7 @@ export default function AddressSelector({
         setLng((prev) => (Object.is(prev, nv.longitude) ? prev : nv.longitude));
     }, [value]);
 
-    // 도시 목록 로딩 이펙트 : 캐시 사용 + AbortController로 경쟁 상태 방지
+    // 도시 목록 로딩
     useEffect(() => {
         if (cacheRef.current.cities) {
             setCities(cacheRef.current.cities);
@@ -93,7 +88,7 @@ export default function AddressSelector({
         const ac = new AbortController();
         (async () => {
             try {
-                const list = await apiRequest(`${API_BASE}/addresses/cities`, {signal: ac.signal}, token);
+                const list = await apiRequest(`${API_BASE}/addresses/cities`, { signal: ac.signal }, token);
                 const arr = Array.isArray(list) ? list : [];
                 cacheRef.current.cities = arr;
                 setCities(arr);
@@ -106,7 +101,7 @@ export default function AddressSelector({
         return () => ac.abort();
     }, [API_BASE, token]);
 
-    // 구 목록 로딩 이펙트 : city 변경 시 해당 구 목록 호출(캐시/Abort/정합성 유지)
+    // 구 목록 로딩 (city 변경 시)
     useEffect(() => {
         if (!city) {
             setDistricts([]);
@@ -124,8 +119,7 @@ export default function AddressSelector({
         const ac = new AbortController();
         (async () => {
             try {
-                const list = await apiRequest(`${API_BASE}/addresses?city=${encodeURIComponent(city)}`, {
-                    signal: ac.signal}, token);
+                const list = await apiRequest(`${API_BASE}/addresses?city=${encodeURIComponent(city)}`, { signal: ac.signal }, token);
                 const arr = Array.isArray(list) ? list : [];
                 cacheRef.current.districtsByCity.set(city, arr);
                 setDistricts(arr);
@@ -139,13 +133,13 @@ export default function AddressSelector({
         return () => ac.abort();
     }, [API_BASE, city, district, token]);
 
-    // 부모 onChange 최신 참조 유지(onChangeRef)
+    // 부모 onChange 최신 유지
     const onChangeRef = useRef(onChange);
     useEffect(() => {
         onChangeRef.current = onChange;
     }, [onChange]);
 
-    // 부모 onChange 조건부 호출 이펙트 : 값이 실제로 바뀐 경우에만 통지(shallowEqual)
+    // 부모 onChange 호출 (값 변경 시)
     const lastPayloadRef = useRef(null);
     useEffect(() => {
         const payload = {
@@ -157,14 +151,13 @@ export default function AddressSelector({
             addressString: [city, district].filter(Boolean).join(" "),
         };
         const prev = lastPayloadRef.current;
-        const sameAsLast = prev && shallowEqual(prev, payload);
-        if (!sameAsLast) {
+        if (!prev || !shallowEqual(prev, payload)) {
             lastPayloadRef.current = payload;
             onChangeRef.current?.(payload);
         }
     }, [city, district, detail, lat, lng]);
 
-    // lastPayload 초기화 이펙트(최초 동기화)
+    // 최초 동기화
     useEffect(() => {
         lastPayloadRef.current = {
             ...normalize(value),
@@ -172,43 +165,98 @@ export default function AddressSelector({
         };
     }, [value]);
 
-    // 카카오 지오코딩 핸들러(handleGeocode) : 상세주소로 좌표 조회 → lat/lng 갱신
-    const handleGeocode = async () => {
-        if (!kakaoAppKey) return alert("카카오 JS 키가 없습니다(.env 확인).");
-        const full = [city, district, detail].filter(Boolean).join(" ");
-        if (!city || !district || !detail.trim()) return alert("시/구/상세주소를 모두 입력하세요.");
+    // 상세주소 → 좌표 변환
+   const handleGeocode = useCallback(() => {
+       if (
+           !kakaoReady ||
+           !window.kakao?.maps ||
+           !window.kakao.maps.services
+       ) {
+           alert("카카오 지도 SDK가 아직 준비되지 않았습니다.");
+           return;
+       }
 
-        try {
-            await loadKakaoMaps(kakaoAppKey);
-            const {kakao} = window;
-            new kakao.maps.services.Geocoder().addressSearch(full, (results, status) => {
-                if (status === kakao.maps.services.Status.OK && results[0]) {
-                    const {x, y} = results[0];
-                    const nextLat = parseFloat(y);
-                    const nextLng = parseFloat(x);
-                    setLat(nextLat);
-                    setLng(nextLng);
-                    alert("주소 확인 완료");
-                } else {
-                    alert("좌표를 찾지 못했습니다. 주소를 확인하세요.");
-                }
-            });
-        } catch {
-            alert("카카오 지도 스크립트 로드 실패");
-        }
+       if (!city || !district || !detail.trim()) {
+           alert("시/구/상세주소를 모두 입력하세요.");
+           return;
+       }
+
+       const full = `${city} ${district} ${detail.trim()}`;
+       const geocoder = new window.kakao.maps.services.Geocoder(); // 안전하게 접근
+
+       geocoder.addressSearch(full, (results, status) => {
+           if (status === window.kakao.maps.services.Status.OK && results.length > 0) {
+               const result = results[0];
+
+               const hasDong = result.address?.region_3depth_name?.trim();
+               const hasJibun = result.address?.main_address_no?.trim();
+               const hasRoadAddr = result.road_address;
+
+               if (!hasDong || (!hasJibun && !hasRoadAddr)) {
+                   alert("상세 주소를 입력하세요 (동/지번/도로명 포함).");
+                   return;
+               }
+
+               const nextLat = parseFloat(result.y);
+               const nextLng = parseFloat(result.x);
+               setLat(nextLat);
+               setLng(nextLng);
+
+               onChangeRef.current?.({
+                   city,
+                   district,
+                   detail: detail.trim(),
+                   latitude: nextLat,
+                   longitude: nextLng,
+                   addressString: [city, district].filter(Boolean).join(" "),
+               });
+
+               alert("주소 확인 완료");
+           } else {
+               alert("주소를 다시 확인하세요.");
+           }
+       });
+   }, [city, district, detail, kakaoReady]);
+
+    const triggerParentUpdate = () => {
+        onChangeRef.current?.({
+            city,
+            district,
+            detail: detail.trim(),
+            latitude: lat,
+            longitude: lng,
+            addressString: [city, district].filter(Boolean).join(" "),
+        });
     };
 
     return (
         <div className="vp-addr">
             <div className="vp-grid-2">
-                <select className="vp-select" value={city} onChange={(e) => setCity(e.target.value)}>
+               <select
+                 className="vp-select"
+                 value={city}
+                 onChange={(e) => {
+                     const newCity = e.target.value;
+                     setCity(newCity);
+                     setDistrict("");   // 구 초기화
+                     setDetail("");     // 상세주소 초기화
+                 }}
+               >
                     <option value="" disabled>시를 선택하세요</option>
                     {(Array.isArray(cities) ? cities : []).map((c) => (
                         <option key={c} value={c}>{c}</option>
                     ))}
                 </select>
 
-                <select className="vp-select" value={district} onChange={(e) => setDistrict(e.target.value)}>
+                <select
+                  className="vp-select"
+                  value={district}
+                  onChange={(e) => {
+                      const newDistrict = e.target.value;
+                      setDistrict(newDistrict);
+                      setDetail("");    // 상세주소 초기화
+                  }}
+                >
                     <option value="" disabled>구를 선택하세요</option>
                     {(Array.isArray(districts) ? districts : []).map((d) => (
                         <option key={d} value={d}>{d}</option>
@@ -217,12 +265,17 @@ export default function AddressSelector({
             </div>
 
             <div className="vp-addr-detail">
-                <input
-                    className="vp-input"
-                    placeholder="상세주소를 입력해주세요."
-                    value={detail}
-                    onChange={(e) => setDetail(e.target.value)}
-                />
+               <input
+               className="vp-input"
+               placeholder="상세주소를 입력해주세요."
+               value={detail}
+               onChange={handleDetailChange}
+               onCompositionStart={handleCompositionStart}
+               onCompositionEnd={handleCompositionEnd}
+               onBlur={() => triggerParentUpdate()}
+               autoComplete="off"
+               spellCheck={false}
+               />
                 {geocodeInline && (
                     <button type="button" className="vp-link" onClick={handleGeocode}>
                         확인

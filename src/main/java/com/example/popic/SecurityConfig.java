@@ -33,7 +33,9 @@ public class SecurityConfig {
                                 "/vendor/login", "/vendor/join", "/admin/login",
                                 "/auth/**", "/images", "/scan-qr", "/", "/login",
                                 "/board/file/**", "/popupStore/monthly",
-                                "/popupStore/popupDetail/**","/qr-stream","/reservations/confirm", "/api/vendorPopups/**","/popupStore/category", "/popupStore/category/**").permitAll() // 로그인/회원가입/토큰 갱신은 허용
+                                "/popupStore/popupDetail/**","/qr-stream","/reservations/confirm",
+                                "/api/vendorPopups/**","/popupStore/category", "/popupStore/category/**").permitAll() // 로그인/회원가입/토큰 갱신은 허용
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 페이지 진입 방지
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -44,7 +46,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173")); // 프론트 주소
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowCredentials(true); // credentials 허용
         configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
 

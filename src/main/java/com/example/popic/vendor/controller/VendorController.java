@@ -3,6 +3,8 @@ package com.example.popic.vendor.controller;
 
 import com.example.popic.entity.entities.Vendor;
 import com.example.popic.popup.dto.PopupReservationDTO;
+import com.example.popic.popup.dto.WaitingNumberDTO;
+import com.example.popic.popup.service.WaitingNumberService;
 import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.vendor.dto.VendorDTO;
 import com.example.popic.vendor.repository.VendorRepository;
@@ -11,18 +13,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.example.popic.security.JwtUtil;
 
-// 토큰용 import
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import java.time.Duration;
-
-
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -34,6 +32,7 @@ public class VendorController {
     private final JwtUtil jwtUtil;
     private final VendorRepository vendorRepository;
     private final PasswordEncoder passwordEncoder;
+    private final WaitingNumberService  waitingNumberService;
 
     @PostMapping("/join")
     public ResponseEntity<ApiRes> join(@RequestBody Vendor vendor) {
@@ -50,7 +49,9 @@ public class VendorController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiRes> login(@RequestBody Vendor req, HttpServletResponse response) {
+    public ResponseEntity<ApiRes> login(@RequestBody Vendor req,
+                                        @RequestParam(name = "keep", defaultValue = "false") boolean keep,
+                                        HttpServletResponse response) {
         try {
             if (req.getLogin_id() == null || req.getPassword() == null) { // ★
                 return ResponseEntity.ok(ApiRes.fail("요청 형식이 올바르지 않습니다."));
@@ -72,12 +73,21 @@ public class VendorController {
             Cookie refreshCookie = new Cookie("refreshToken", refresh);
             refreshCookie.setHttpOnly(true);
             refreshCookie.setPath("/");
-            refreshCookie.setMaxAge((int) Duration.ofDays(14).getSeconds());
+
+            // 로그인유지(true) = 리프레시 쿠키 만료 시간 그대로, 로그인유지x(false) 세션쿠키(브라우저 종료 시 삭제)
+//            refreshCookie.setMaxAge((int) Duration.ofDays(14).getSeconds()); 기존 코드
+            if (keep) {
+                refreshCookie.setMaxAge((int) java.time.Duration.ofDays(14).getSeconds()); // 수정
+            } else {
+                refreshCookie.setMaxAge(-1);
+            }
+
             response.addCookie(refreshCookie);
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                    .body(ApiRes.okLogin("로그인 성공", access, dto));
+//            return ResponseEntity.ok()
+//                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+//                    .body(ApiRes.okLogin("로그인 성공", access, dto));
+            return ResponseEntity.ok(ApiRes.okLogin("로그인 성공", access, dto));
 
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.ok(ApiRes.fail(e.getMessage()));
@@ -87,12 +97,55 @@ public class VendorController {
     }
 
     @GetMapping("/reservationList")
-    public ResponseEntity<List<PopupReservationDTO>> getReservationList(@RequestParam(name = "popupId")Long popupId,
-                                                                        @RequestParam(name="sort", defaultValue = "")String sort) {
+    public ResponseEntity<Page<PopupReservationDTO>> getReservationList(
+            @RequestParam(name = "vendorId") Long vendorId,
+            @RequestParam(name = "sort", defaultValue = "") String sort,
+            @RequestParam(name = "keyword", defaultValue = "") String keyword,
+            @RequestParam(name = "page", defaultValue = "1") int page, // 1-based
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        // Spring Pageable은 0-based page index 사용
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<PopupReservationDTO> reservationPage = vendorService.getReservationList(vendorId, sort, keyword, pageable);
 
-        List<PopupReservationDTO> reservationList = vendorService.getReservationList(popupId, sort);
+        return ResponseEntity.ok(reservationPage);
+    }
 
-        return ResponseEntity.ok(reservationList);
+    @PutMapping("/waitingCall")
+    public ResponseEntity<Void> waitingCall(@RequestParam(name = "id")Long id){
+        waitingNumberService.waitingCall(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/waitingEntry")
+    public ResponseEntity<Void> waitingEntry(@RequestParam(name = "id")Long id){
+        waitingNumberService.waitingEntry(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/waitingCancel")
+    public ResponseEntity<Void> waitingCancel(@RequestParam(name = "id")Long id){
+        waitingNumberService.waitingCancel(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/fieldWaitingList")
+    public ResponseEntity<Page<WaitingNumberDTO>> getWaitingList(
+            @RequestParam(name = "vendorId") Long vendorId,
+            @RequestParam(name = "sort", defaultValue = "") String sort,
+            @RequestParam(name = "keyword", defaultValue = "") String keyword,
+            @RequestParam(name = "page", defaultValue = "1") int page, // 1-based
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        // Spring Pageable은 0-based page index 사용
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        // 서비스에서 페이지 단위로 데이터를 가져오도록 수정
+        Page<WaitingNumberDTO> waitingPage = waitingNumberService.findByVendorId(vendorId, sort, keyword, pageable);
+
+        return ResponseEntity.ok(waitingPage);
     }
 
     @PutMapping("/vendors/{id}")

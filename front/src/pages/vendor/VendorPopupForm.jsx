@@ -5,6 +5,8 @@ import "../../style/vendorPopup.css";
 import Button from "../../components/commons/Button.jsx";
 import apiRequest from "../../utils/apiRequest.js";
 import {useAuth} from "../../context/AuthContext.jsx"
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 // 상수/헬퍼
 const KAKAO_JS_API_KEY = import.meta.env.VITE_KAKAO_JS_API_KEY;
@@ -72,6 +74,15 @@ export default function VendorPopupForm() {
     // 공용 setForm 헬퍼
     const update = (k, v) => setForm((p) => ({...p, [k]: v}));
 
+    const fetchImage = useCallback(async (imageId) => {
+            const res = await fetch(`/images?type=popup&id=${imageId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!res.ok) return null;
+            const blob = await res.blob();
+            return URL.createObjectURL(blob);
+        }, [token]);
+
     // 카테고리 로드
     useEffect(() => {
         let alive = true;
@@ -94,179 +105,147 @@ export default function VendorPopupForm() {
         if (!isEdit) return;
 
         (async () => {
-            const dto = await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}`, {}, token);
+            try {
+                const dto = await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}`, {}, token);
+                if (!dto) throw new Error("popup data is not valid");
 
-            if (!dto) throw new Error("popup data is not valid");
+                setForm(prev => ({ ...prev, ...dto, price: dto.price ?? "", vendor: dto.vendor ?? null }));
+                setCategorySelect(Array.isArray(dto.categories) && dto.categories.length ? dto.categories[0] : 0);
+                setOpenDays(new Set(dto.open_days || []));
+                if (dto.open_start_time) setStartTime(dto.open_start_time);
+                if (dto.open_end_time) setEndTime(dto.open_end_time);
+                if (dto.capacity_per_hour != null) setCapacityPerHour(String(dto.capacity_per_hour));
 
-            // 기본 폼 채우기
-            setForm(prev => ({
-                ...prev,
-                ...dto,
-                price: dto.price ?? "",          // 숫자 -> 입력칸 문자열
-                vendor: dto.vendor ?? null,
-            }));
+               const imgs = (dto.images_detail || []).map(img => ({
+                   id: img.image_id,
+                   displayName: img.original_name,      // UI에 보여줄 이름
+                   savedName: img.saved_name,           // 서버에 저장된 파일명
+                   url: `/images/popup/${img.saved_name}`
+               }));
+               setExistingImages(imgs);
 
-            // 카테고리(단일 선택 UI라면 첫 번째만)
-            setCategorySelect(Array.isArray(dto.categories) && dto.categories.length ? dto.categories[0] : 0);
-
-            // 요일/시간/정원
-            setOpenDays(new Set(dto.open_days || []));
-            if (dto.open_start_time) setStartTime(dto.open_start_time);
-            if (dto.open_end_time) setEndTime(dto.open_end_time);
-            if (dto.capacity_per_hour != null) setCapacityPerHour(String(dto.capacity_per_hour));
-
-            // 기존 이미지
-            const fetchImage = async (imageId) => {
-                const res = await fetch(`/images?type=popup&id=${imageId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                if (!res.ok) return null;
-                const blob = await res.blob();
-                return URL.createObjectURL(blob);
-            };
-
-            const imgs = await Promise.all(
-                (dto.images_detail || []).map(async (img, i) => {
-                    const url = await fetchImage(img.saved_name);
-                    return { id: img.image_id, savedName: img.saved_name, url };
-                })
-            );
-            setExistingImages(imgs.filter(x => x.url));
-        })().catch(err => {
-            console.error("데이터 로드 실패:", err);
-            alert("데이터를 불러오지 못했습니다.");
-            navigate(`/vendor/${vendorId}/popups`, {replace: true});
-        });
+            } catch(err){
+                console.error("데이터 로드 실패:", err);
+                alert("데이터를 불러오지 못했습니다.");
+                navigate(`/vendor/${vendorId}/popups`, {replace:true});
+            }
+        })();
     }, [isEdit, vendorId, popupId, navigate, token]);
 
     // 새 이미지 프리뷰 관리
-    useEffect(() => {
-        const next = imageFiles.map((f, idx) => ({
-            key: `new-${f.name}-${f.lastModified}-${idx}`,
-            name: f.name,
-            url: URL.createObjectURL(f),
-            fileIndex: idx,
-        }));
-        setImagePreviews(next);
-        return () => next.forEach(p => URL.revokeObjectURL(p.url));
-    }, [imageFiles]);
+       useEffect(()=>{
+           const next = imageFiles.map((f,idx)=>({
+               key:`new-${f.name}-${f.lastModified}-${idx}`,
+               name:f.name,
+               url:URL.createObjectURL(f),
+               fileIndex: idx
+           }));
+           setImagePreviews(next);
+           return ()=>next.forEach(p=>URL.revokeObjectURL(p.url));
+       },[imageFiles]);
 
-    // 주소 변경 핸들러
-    const handleAddrChange = useCallback((v = {}) => {
-        setForm((prev) => {
-            const addr = v.addressString || "";
-            const detail = v.detail || "";
-            const noChange =
-                prev.address === addr &&
-                prev.address_detail === detail &&
-                (v.latitude == null || prev.latitude === v.latitude) &&
-                (v.longitude == null || prev.longitude === v.longitude);
-            if (noChange) return prev;
-            return {
-                ...prev,
-                address: addr,
-                address_detail: detail,
-                latitude: v.latitude ?? prev.latitude,
-                longitude: v.longitude ?? prev.longitude,
-            };
-        });
-    }, []);
+       const handleAddrChange = useCallback((v={})=>{
+           setForm(prev=>{
+               const addr=v.addressString||"";
+               const detail=v.detail||"";
+               const noChange=prev.address===addr && prev.address_detail===detail
+                   && (v.latitude==null||prev.latitude===v.latitude)
+                   && (v.longitude==null||prev.longitude===v.longitude);
+               if(noChange) return prev;
+               return {...prev, address:addr,address_detail:detail,latitude:v.latitude??prev.latitude,longitude:v.longitude??prev.longitude};
+           });
+       },[]);
 
     // 파일 선택/삭제
-    const handleFiles = (e) => {
-        const files = Array.from(e.target.files || []);
-        setImageFiles(prev => [...prev, ...files]);  // 누적 선택
-        e.target.value = "";
-    };
-    const removeExistingImage = async (imageId) => {
-        if (!confirm("이미지를 삭제할까요?")) return;
-        await apiRequest(`/api/vendors/${vendorId}/popups/images/${imageId}`, {method: "DELETE"}, token);
-        setExistingImages(list => list.filter(x => x.id !== imageId));
-    };
+     const handleFiles=(e)=>{
+            const files = Array.from(e.target.files||[]);
+            setImageFiles(prev=>[...prev,...files]);
+            e.target.value="";
+        };
+        const removeExistingImage = async(imageId)=>{
+            if(!confirm("이미지를 삭제할까요?")) return;
+            await apiRequest(`/api/vendors/${vendorId}/popups/images/${imageId}`, {method:"DELETE"}, token);
+            setExistingImages(list=>list.filter(x=>x.id!==imageId));
+        };
 
     // 폼 유효성 검사
-    const validate = () => {
-        if (!form.store_name.trim()) return "팝업명을 입력해 주세요.";
-        if (!form.start_date || !form.end_date) return "운영 기간을 입력해 주세요.";
-        if (!form.address) return "시/구를 선택해 주세요.";
-        if (!form.address_detail.trim()) return "상세 주소를 입력해 주세요.";
-        if (form.latitude == null || form.longitude == null) return "주소를 먼저 적어주세요.";
-        if (form.price !== "" && Number.isNaN(Number(form.price))) return "가격은 숫자만 입력해 주세요.";
-        if (openDays.size === 0) return "운영 요일을 선택해 주세요.";
-        if (!startTime || !endTime || startTime >= endTime) return "운영 시간을 확인하세요.";
-        if (!capacityPerHour || Number(capacityPerHour) <= 0) return "시간당 인원을 입력해 주세요.";
-        return null;
-    };
+   const validate = ()=>{
+       if(!form.store_name.trim()) return "팝업명을 입력해 주세요.";
+       if(!form.start_date||!form.end_date) return "운영 기간을 입력해 주세요.";
+       if(!form.address) return "시/구를 선택해 주세요.";
+       if(!form.address_detail.trim()) return "상세 주소를 입력해 주세요.";
+       if(form.latitude==null||form.longitude==null) return "주소를 먼저 적어주세요.";
+       if(form.price!=="" && Number.isNaN(Number(form.price))) return "가격은 숫자만 입력해 주세요.";
+       if(openDays.size===0) return "운영 요일을 선택해 주세요.";
+       if(!startTime||!endTime||startTime>=endTime) return "운영 시간을 확인하세요.";
+       if(!capacityPerHour||Number(capacityPerHour)<=0) return "시간당 인원을 입력해 주세요.";
+       return null;
+   };
 
     // 제출(등록/수정)
-    const handleSubmit = async (e) => {
+const handleSubmit = async(e)=>{
         e.preventDefault();
         const err = validate();
-        if (err) return alert(err);
+        if(err) return alert(err);
 
         const dto = {
             ...form,
-            categories: categorySelect === 0 ? [] : [categorySelect],
-            open_days: Array.from(openDays),
-            open_start_time: startTime,
-            open_end_time: endTime,
-            capacity_per_hour: Number(capacityPerHour),
-            slot_minutes: 60,
-            price: form.price === "" ? null : Number(form.price),
+            categories: categorySelect===0?[]:[categorySelect],
+            open_days:Array.from(openDays),
+            open_start_time:startTime,
+            open_end_time:endTime,
+            capacity_per_hour:Number(capacityPerHour),
+            slot_minutes:60,
+            price: form.price===""?null:Number(form.price)
         };
 
-        try {
-            if (!isEdit) {
-                // 등록: apiRequest만 호출
+        try{
+            if(!isEdit){
                 const fd = new FormData();
-                fd.append("dto", new Blob([JSON.stringify(dto)], { type: "application/json" }));
-                imageFiles.forEach(f => fd.append("files", f));
-                const json = await apiRequest(`/api/vendors/${vendorId}/popups`, { method: "POST", body: fd }, token);
-                if (!json?.result) return alert(json?.message || "등록 실패");
+                fd.append("dto", new Blob([JSON.stringify(dto)], {type:"application/json"}));
+                imageFiles.forEach(f=>fd.append("files",f));
+
+                const json = await apiRequest(`/api/vendors/${vendorId}/popups`, {method:"POST", body:fd}, token);
+                if(!json?.result) return alert(json?.message||"등록 실패");
+                navigate(`/vendor/${vendorId}/popups`);
             } else {
-                // 수정: PUT 요청은 JSON으로, 이미지 업로드는 별도 요청으로 분리
-                const json = await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}`, {
-                    method: "PUT",
-                    body: dto,
-                }, token);
-                if (!json?.result) return alert(json?.message || "수정 실패");
+                const json = await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}`, {method:"PUT", body:dto}, token);
+                if(!json?.result) return alert(json?.message||"수정 실패");
 
-                if (imageFiles.length > 0) {
+                if(imageFiles.length>0){
                     const fd = new FormData();
-                    imageFiles.forEach(f => fd.append("files", f));
-                    const uploaded = await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}/images`, { method: "POST", body: fd }, token);
+                    imageFiles.forEach(f=>fd.append("files",f));
+                    const uploaded = await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}/images`, {method:"POST", body:fd}, token);
 
-                    // 업로드 후 화면에 표시
-                    const newImgs = await Promise.all(uploaded.map(async img => {
-                        const url = await fetchImage(img.saved_name); // 위 fetchImage 재사용
-                        return { id: img.image_id, savedName: img.saved_name, url };
+                    // Blob 제거, URL 바로 사용
+                    const newImgs = uploaded.map(img=>({
+                        id: img.image_id,
+                        savedName: img.saved_name,
+                        url: `/images/popup/${img.saved_name}`
                     }));
-                    setExistingImages(prev => [...prev, ...newImgs]);
+                    setExistingImages(prev=>[...prev,...newImgs]);
+                    setImageFiles([]);
                 }
-                setImageFiles([]);
+                navigate(`/vendor/${vendorId}/popups`);
             }
-            navigate(`/vendor/${vendorId}/popups`);
-        } catch (e) {
-            console.error(e);
-            alert(isEdit ? "수정 중 오류" : "등록 중 오류");
-        }
+        } catch(e){ console.error(e); alert(isEdit?"수정 중 오류":"등록 중 오류"); }
     };
 
     // 팝업 삭제
-    const handleDeletePopup = async () => {
-        if (!confirm("이 팝업을 삭제할까요? 삭제 후 복구할 수 없습니다.")) return;
-        await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}`, { method: "DELETE" }, token);
-        navigate(`/vendor/${vendorId}/popups`);
-    };
+    const handleDeletePopup=async()=>{
+       if(!confirm("이 팝업을 삭제할까요? 삭제 후 복구할 수 없습니다.")) return;
+       await apiRequest(`/api/vendors/${vendorId}/popups/${popupId}`, {method:"DELETE"}, token);
+       navigate(`/vendor/${vendorId}/popups`);
+   };
 
     // 파생 값
-    const pageTitle = isEdit ? "팝업 수정" : "팝업 등록";
-    const city = form.address?.split(" ")[0] ?? "";
-    const district = form.address?.split(" ")[1] ?? "";
+    const pageTitle = isEdit?"팝업 수정":"팝업 등록";
+   const city=form.address?.split(" ")[0]||"";
+   const district=form.address?.split(" ")[1]||"";
 
     // 렌더
     return (
-        <div className="container">
+        <div className="container vendorPopupFrom">
             <div className="inner">
                 <form className="vp-card" onSubmit={handleSubmit}>
                     <h1 className="vp-title">{pageTitle}</h1>
@@ -284,46 +263,28 @@ export default function VendorPopupForm() {
                     </div>
 
                     {/* 이미지 추가 */}
-                    <div className="vp-field">
-                        <label className="vp-label">이미지 추가</label>
-
+                     <div className="vp-field">
+                        <label className="vp-label required">이미지 추가</label>
                         <label className="vp-input vp-filebox">
                             <input type="file" multiple accept="image/*" onChange={handleFiles}/>
-                            {imageFiles.length === 0 ? "파일을 선택하세요" : `${imageFiles.length}개 선택됨`}
+                            {imageFiles.length===0?"파일을 선택하세요":`${imageFiles.length}개 선택됨`}
                         </label>
 
-                        {(existingImages.length > 0 || imageFiles.length > 0) && (
+                        {(existingImages.length>0||imageFiles.length>0)&&(
                             <ul className="vp-file-list">
-                                {/* 기존 이미지 목록 */}
-                                {existingImages.map((img) => {
-                                    const deletable = typeof img.id === "number";
-                                    return (
-                                        <li key={`exist-${img.id}`} className="vp-file-item">
-                                            <span className="vp-file-name">{img.savedName}</span>
-                                            <button
-                                                type="button"
-                                                className="file-delete"
-                                                disabled={!deletable}
-                                                title={deletable ? "삭제" : "삭제 불가(이미지 ID 없음)"}
-                                                onClick={() => deletable && removeExistingImage(img.id)}
-                                            >
-                                                &times;
-                                            </button>
-                                        </li>
-                                    );
-                                })}
-
-                                {/* 새로 선택한 이미지 목록 */}
-                                {imageFiles.map((f, i) => (
+                               {existingImages.map(img=>{
+                                   const deletable = typeof img.id==="number";
+                                   return (
+                                       <li key={`exist-${img.id}`} className="vp-file-item">
+                                           <span className="vp-file-name">{img.displayName}</span>
+                                           <button type="button" className="file-delete" disabled={!deletable} title={deletable?"삭제":"삭제 불가"} onClick={()=>deletable&&removeExistingImage(img.id)}>&times;</button>
+                                       </li>
+                                   );
+                               })}
+                                {imageFiles.map((f,i)=>(
                                     <li key={`new-${i}`} className="vp-file-item">
                                         <span className="vp-file-name">{f.name}</span>
-                                        <button
-                                            type="button"
-                                            className="file-delete"
-                                            onClick={() => setImageFiles((prev) => prev.filter((_, idx) => idx !== i))}
-                                        >
-                                            &times;
-                                        </button>
+                                        <button type="button" className="file-delete" onClick={()=>setImageFiles(prev=>prev.filter((_,idx)=>idx!==i))}>&times;</button>
                                     </li>
                                 ))}
                             </ul>
@@ -332,7 +293,7 @@ export default function VendorPopupForm() {
 
                     {/* 카테고리 */}
                     <div className="vp-field">
-                        <label className="vp-label">카테고리</label>
+                        <label className="vp-label required">카테고리</label>
                         <select
                             className="vp-select"
                             value={categorySelect}
@@ -374,7 +335,7 @@ export default function VendorPopupForm() {
 
                     {/* 시간당 인원 수 */}
                     <div className="vp-field">
-                        <label className="vp-label">시간당 인원 수</label>
+                        <label className="vp-label required">시간당 인원 수</label>
                         <input
                             className="vp-input"
                             inputMode="numeric"
@@ -386,7 +347,7 @@ export default function VendorPopupForm() {
 
                     {/* 장소 */}
                     <div className="vp-field">
-                        <label className="vp-label">장소</label>
+                        <label className="vp-label required">장소</label>
                         <AddressSelector
                             kakaoAppKey={KAKAO_JS_API_KEY}
                             basePath={`/api/vendors/${vendorId}/popups`}
@@ -406,7 +367,7 @@ export default function VendorPopupForm() {
 
                     {/* 운영 시간 */}
                     <div className="vp-field">
-                        <label className="vp-label">운영 시간</label>
+                        <label className="vp-label required">운영 시간</label>
                         <div className="vp-days">
                             {DAYS.map((d) => (
                                 <Button
@@ -439,7 +400,7 @@ export default function VendorPopupForm() {
 
                     {/* 가격 */}
                     <div className="vp-field">
-                        <label className="vp-label">가격(원)</label>
+                        <label className="vp-label required">가격(원)</label>
                         <input
                             className="vp-input"
                             inputMode="decimal"
@@ -451,18 +412,27 @@ export default function VendorPopupForm() {
 
                     {/* 팝업 소개 */}
                     <div className="vp-field">
-                        <label className="vp-label">팝업 소개</label>
-                        <textarea
-                            className="vp-textarea"
-                            rows={8}
-                            value={form.description ?? ""}
-                            onChange={(e) => update("description", e.target.value)}
-                            placeholder="간단한 소개를 입력하세요"
-                        />
+                      <label className="vp-label required">팝업 소개</label>
+                      <CKEditor
+                        editor={ClassicEditor}
+                        data={form.description ?? ""}
+                        onChange={(event, editor) => {
+                          const data = editor.getData();
+                          update("description", data);
+                        }}
+                        config={{
+                          placeholder: "간단한 소개를 입력하세요",
+                          toolbar: [
+                            "heading", "|",
+                            "bold", "italic", "|",
+                            "undo", "redo"
+                          ]
+                        }}
+                      />
                     </div>
 
                     {/* 버튼 */}
-                    <div className="vp-actions">
+                    <div className="vp-actions ">
                         <Button type="submit" variant="primary" color="red">
                             {isEdit ? "수정" : "등록"}
                         </Button>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "../../style/qrCode.css";
 
-const QrCode = () => {
+const QrCode = ({reservationId}) => {
     const [qrData, setQrData] = useState(null);
     const [timeLeft, setTimeLeft] = useState(0);
     const [error, setError] = useState(null);
@@ -12,7 +12,7 @@ const QrCode = () => {
         const fetchQr = async () => {
             try {
                 const res = await fetch(
-                    `http://localhost:8080/generate-qr?reservationId=1`,
+                    `http://localhost:8080/generate-qr?reservationId=${reservationId}`,
                     {
                         headers: { authorization: `Bearer ${token}` },
                         method: "GET",

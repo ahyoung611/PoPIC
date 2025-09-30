@@ -1,7 +1,10 @@
 package com.example.popic.popup.service;
 
+import com.example.popic.CustomUserPrincipal;
+import com.example.popic.entity.entities.PopupStore;
 import com.example.popic.entity.entities.PopupStoreSlot;
 import com.example.popic.entity.entities.Reservation;
+import com.example.popic.entity.entities.User;
 import com.example.popic.popup.dto.PopupReservationDTO;
 import com.example.popic.popup.repository.PopupRepository;
 import com.example.popic.popup.repository.PopupStoreSlotRepository;
@@ -82,5 +85,52 @@ public class ReservationService {
     @Transactional
     public void entryReservationById(Long reservationId) {
         reservationRepository.entryReservationById(reservationId);
+    }
+
+    @Transactional
+    public void cancelReservation(Long reservationId, Long userId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+
+        // 본인 예약인지 확인
+        if (!reservation.getUser().getUser_id().equals(userId)) {
+            throw new IllegalStateException("본인의 예약만 취소할 수 있습니다.");
+        }
+
+        // 이미 취소된 경우
+        if (reservation.getStatus() == -1) {
+            throw new IllegalStateException("이미 취소된 예약입니다.");
+        }
+
+        // 상태 변경
+        reservation.setStatus(-1);
+        reservationRepository.save(reservation);
+    }
+
+    public boolean isJoin(Long popupId, CustomUserPrincipal principal) {
+        return reservationRepository.existsByUserIdAndPopupId(principal.getId(), popupId);
+    }
+
+    @Transactional
+    public PopupReservationDTO reserveFreeSlot(Long slotId, Long userId, Long storeId, int count) {
+        if (reservationRepository.existsDuplicateReservation(userId, storeId, slotId)) {
+            throw new IllegalStateException("이미 해당 슬롯에 예약이 있습니다.");
+        }
+
+        User userRef = userRepository.getReferenceById(userId);
+        PopupStore storeRef = storeRepository.getReferenceById(storeId);
+        PopupStoreSlot slotRef = slotRepository.getReferenceById(slotId);
+
+        Reservation r = new Reservation();
+        r.setUser(userRef);
+        r.setStore(storeRef);
+        r.setSlot(slotRef);
+        r.setReservation_count(count);
+        r.setDeposit_amount(BigDecimal.ZERO);
+        r.setPayment_key("FREE");
+        r.setStatus(1);
+
+        Reservation saved = reservationRepository.save(r);
+        return PopupReservationDTO.from(saved); // ← 요걸로!
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -84,11 +86,32 @@ public class UserProfileController {
     // 비밀번호 재설정
     @PostMapping("/password")
     public ResponseEntity<Void> changePassword(@PathVariable Long userId, @RequestBody UserPasswordDto req) {
+        // 현재 로그인된 사용자의 인증 정보를 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            // 인증되지 않은 사용자 (토큰 없음)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // 인증된 사용자의 loginId를 가져오기
+        String authenticatedLoginId = authentication.getName();
+
+        // loginId를 사용하여 데이터베이스에서 실제 사용자 ID를 조회
+        UserDTO authenticatedUser = service.getUserByLoginId(authenticatedLoginId);
+
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // 요청 URL의 userId와 현재 로그인된 사용자의 ID를 비교
+        Long currentUserId = authenticatedUser.getUser_id();
+        if (!currentUserId.equals(userId)) {
+            // ID가 일치하지 않으면 권한 없음
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // 모든 검증이 통과되면, 비밀번호 변경 서비스를 호출
         accountUserVendorService.changeUserPassword(userId, req);
         return ResponseEntity.noContent().build();
     }
-
-
-
-
 }

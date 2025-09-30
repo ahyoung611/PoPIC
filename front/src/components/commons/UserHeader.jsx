@@ -21,7 +21,7 @@ export default function UserHeader() {
     const linkClass = ({ isActive }) => `header__link ${isActive ? "is-active" : ""}`;
     const onLogout = () => {
         logout?.();
-        nav("/", { replace: true });
+        nav("/main", { replace: true });
     };
 
     const myPagePath = myId ? `/userMyPage/${myId}` : "/login";
@@ -36,13 +36,13 @@ export default function UserHeader() {
                         </svg>
                     </button>
 
-                    <div className="header__brand" onClick={() => nav("/")}>
+                    <div className="header__brand" onClick={() => nav("/main")}>
                         <img src="/popic-logo.png" alt="logo" />
                     </div>
 
                     <nav className="header__nav">
                         <NavLink to="/main" end className={linkClass}>홈</NavLink>
-                        <NavLink to="/popups" className={linkClass}>팝업 예약</NavLink>
+                        <NavLink to="/popupList" className={linkClass}>팝업 예약</NavLink>
                         <NavLink to="/board" className={linkClass}>게시판</NavLink>
                     </nav>
 
@@ -66,7 +66,7 @@ export default function UserHeader() {
 
                 <div className="Drawer__section">
                     <NavLink to="/main" end className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>홈</NavLink>
-                    <NavLink to="/popups" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>팝업 예약</NavLink>
+                    <NavLink to="/popupList" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>팝업 예약</NavLink>
                     <NavLink to="/board" className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>게시판</NavLink>
 
                     {isLoggedIn ? (

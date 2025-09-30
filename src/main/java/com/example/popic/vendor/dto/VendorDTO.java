@@ -5,8 +5,10 @@ import com.example.popic.entity.entities.Vendor;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -39,12 +41,21 @@ public class VendorDTO {
         this.phone_number = vendor.getPhone_number();
         this.brn = vendor.getBrn();
         this.join_date = vendor.getJoin_date();
+
         this.status = vendor.getStatus();
+        this.role   = vendor.getRole();
 
         //  young 프로필
         if(vendor.getProfile() != null){
-            this.profileOriginalName = vendor.getProfile().getOriginal_name();
-            this.profileSavedName = vendor.getProfile().getSaved_name();
+            this.profileOriginalName = Optional.ofNullable(vendor.getProfile().getOriginal_name())
+                    .orElse("unknown_file");
+            this.profileSavedName = Optional.ofNullable(vendor.getProfile().getSaved_name())
+                    .orElse("");
+            this.avatarExists = StringUtils.hasText(this.profileSavedName);
+        } else {
+            this.profileOriginalName = "unknown_file";
+            this.profileSavedName = "";
+            this.avatarExists = false;
         }
     }
 

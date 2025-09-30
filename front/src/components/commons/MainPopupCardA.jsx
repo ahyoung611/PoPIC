@@ -1,4 +1,3 @@
-// MainPopupCardA.jsx
 import React from "react";
 import "../../style/mainPopupCard.css";
 import MainPopupCardImg from "./MainPopupCardImg.jsx";
@@ -9,10 +8,10 @@ export default function MainPopupCardA({
                                            bookmarked, onToggleBookmark,
                                            onClick
                                        }) {
-//                                            console.log("popupId", popupId);
+
 
     return (
-         <div className="mpc-card mpc-card--typeA" onClick={onClick}>
+         <div className="mpc-card mpc-card--typeA" role="button" onClick={onClick}>
             <MainPopupCardImg
                 popupId={popupId}
                 alt={alt}

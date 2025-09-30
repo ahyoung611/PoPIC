@@ -1,8 +1,31 @@
-import React from 'react';
-import FavoriteItem from './BookMarkItem.jsx';
+import React, { useState, useMemo } from 'react';
+import BookMarkItem from './BookMarkItem.jsx';
 import Select from "../commons/Select.jsx";
+import Pagination from '../commons/Pagination.jsx';
 
 export default function BookMarkList({ items, loading, sort, onSortChange, onToggleLike, onOpenDetail }) {
+    const ITEMS_PER_PAGE = 4; // 한 페이지당 보여줄 아이템 수
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // 정렬된 아이템
+    const sortedItems = useMemo(() => {
+        if (sort === "latest") {
+            return [...items].sort((a, b) => b.id - a.id);
+        } else {
+            return [...items].sort((a, b) => a.id - b.id);
+        }
+    }, [items, sort]);
+
+    // 현재 페이지 아이템
+    const currentItems = useMemo(() => {
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        return sortedItems.slice(start, end);
+    }, [sortedItems, currentPage]);
+
+    // 총 페이지
+    const totalPages = Math.ceil(sortedItems.length / ITEMS_PER_PAGE);
+
     return (
         <section>
             <div className="section-title">
@@ -20,22 +43,22 @@ export default function BookMarkList({ items, loading, sort, onSortChange, onTog
                 <div className="favorite-list">
                     {[...Array(2)].map((_, i) => (
                         <div key={i} className="favorite-item">
-                            <div className="skeleton" style={{ width:120, height:90 }} />
+                            <div className="skeleton" />
                             <div>
-                                <div className="skeleton" style={{ width:260, height:18, marginBottom:8 }} />
-                                <div className="skeleton" style={{ width:180, height:14 }} />
+                                <div className="skeleton" />
+                                <div className="skeleton" />
                             </div>
-                            <div className="skeleton" style={{ width:80, height:20 }} />
+                            <div className="skeleton" />
                         </div>
                     ))}
                 </div>
             ) : (
                 <div className="favorite-list">
-                    {items.length === 0 ? (
-                        <div style={{ color:'#888' }}>찜한 팝업이 없습니다.</div>
+                    {currentItems.length === 0 ? (
+                        <div className="nonList">찜한 팝업이 없습니다.</div>
                     ) : (
-                        items.map((it) => (
-                            <FavoriteItem
+                        currentItems.map((it) => (
+                            <BookMarkItem
                                 key={it.id}
                                 item={it}
                                 onToggleLike={onToggleLike}
@@ -44,6 +67,15 @@ export default function BookMarkList({ items, loading, sort, onSortChange, onTog
                         ))
                     )}
                 </div>
+            )}
+
+            {/* 페이지네이션 */}
+            {totalPages > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
             )}
         </section>
     );

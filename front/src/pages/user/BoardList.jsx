@@ -1,158 +1,135 @@
-import {useEffect, useState} from "react";
+import { useEffect, useMemo, useState } from "react";
 import BoardListItem from "../../components/board/BoardListItem.jsx";
 import Select from "../../components/commons/Select.jsx";
-import "../../style/board.css";
-import "../../style/button.css"
-import {useAuth} from "../../context/AuthContext.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 
-const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
-const API  = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
+import SearchHeader from "../../components/commons/SearchHeader.jsx";
+import Pagination from "../../components/commons/Pagination.jsx";
 
-export default function BoardListView() {
-    const [boards, setBoards] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const {auth} = useAuth();
-    const token = auth?.token;
+const host =
+  (typeof window !== "undefined" && window.location?.hostname) || "localhost";
+const API =
+  (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
-    // 입력 전용
-    const [kwInput, setKwInput] = useState("");
-    // 실제 요청에 사용하는 키워드
-    const [kwQuery, setKwQuery] = useState("");
+export default function BoardList() {
+  const [boards, setBoards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { auth } = useAuth();
+  const token = auth?.token;
 
-    // 검색 범위: tc=제목+내용, title=제목, content=내용
-    const [scope, setScope] = useState("tc");
+  const [kwInput, setKwInput] = useState("");
+  const [kwQuery, setKwQuery] = useState("");
 
-    // 페이징
-    const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const size = 5;
+  const [scope, setScope] = useState("tc");
 
-    useEffect(() => {
-        if (!token) return;
-        const controller = new AbortController();
-        (async () => {
-            setLoading(true);
-            try {
-                const qs = new URLSearchParams({
-                    page: String(page),
-                    size: String(size),
-                    keyword: kwQuery,
-                    scope,
-                });
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const size = 5;
 
-                const res = await fetch(`${API}/board?${qs}`, {
-                    signal: controller.signal,
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    credentials: "include",
-                });
-                console.log("res")
-                console.log(res);
+  const isEmpty = useMemo(() => !loading && boards.length === 0, [loading, boards]);
 
-                if (!res.ok) throw new Error("불러오기 실패");
-                const data = await res.json(); // Page<BoardDTO>
-                setBoards(data.content || []);
-                setTotalPages(data.totalPages || 0);
-            } catch (e) {
-                if (e.name !== "AbortError") console.error(e);
-            } finally {
-                setLoading(false);
-            }
-        })();
-        return () => controller.abort();
-    }, [kwQuery, scope, page, token]);
+  useEffect(() => {
+    if (!token) return;
+    const controller = new AbortController();
 
-    const submitSearch = (e) => {
-        e.preventDefault();
-        setPage(0);
-        setKwQuery(kwInput.trim());
-    };
+    (async () => {
+      setLoading(true);
+      try {
+        const qs = new URLSearchParams({
+          page: String(page),
+          size: String(size),
+          keyword: kwQuery,
+          scope,
+        });
 
+        const res = await fetch(`${API}/board?${qs}`, {
+          signal: controller.signal,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
 
-    if (loading) return <div className="inner">불러오는 중...</div>;
+        if (!res.ok) throw new Error("불러오기 실패");
+        const data = await res.json();
+        setBoards(data.content || []);
+        setTotalPages(data.totalPages || 0);
+      } catch (e) {
+        if (e.name !== "AbortError") console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    })();
 
-    return (
-        <div className="container100">
-            <div className="inner">
-                <h2 className="board__title">커뮤니티</h2>
-                <div className="list__box">
-                    <form onSubmit={submitSearch} className="board__toolbar">
-                        <div className="board__scope">
-                            <Select
-                                value={scope}
-                                onChange={setScope}
-                                options={[
-                                    {label: "전체", value: "tc"},
-                                    {label: "제목", value: "title"},
-                                    {label: "내용", value: "content"},
-                                ]}
-                                style={{height: 36}}
-                            />
-                        </div>
+    return () => controller.abort();
+  }, [kwQuery, scope, page, token]);
 
-                        <input
-                            className="board__search"
-                            value={kwInput}
-                            onChange={(e) => setKwInput(e.target.value)}
-                            placeholder="검색할 내용을 입력해주세요."
-                        />
-                        <button type="submit" className="btn btn--ghost">검색</button>
-                        <button
-                            type="button"
-                            className="btn btn--primary"
-                            onClick={() => (window.location.href = "/board/new")}
-                        >
-                            등록
-                        </button>
-                    </form>
+  const submitSearch = () => {
+    setPage(0);
+    setKwQuery(kwInput.trim());
+  };
 
-                    <ul className="board-list">
-                        {boards.length === 0 ? (
-                            <li className="board-empty">게시글이 없습니다.</li>
-                        ) : (
-                            boards.map((b) => (
-                                <BoardListItem
-                                    key={b.boardId}
-                                    item={b}
-                                    onClick={(id) => (window.location.href = `/board/${id}`)}
-                                />
-                            ))
-                        )}
-                    </ul>
+  const goCreate = () => (window.location.href = "/board/new");
+  const goDetail = (id) => (window.location.href = `/board/${id}`);
 
-                    <nav className="pagination" aria-label="페이지">
-                        <button
-                            type="button"
-                            className="pagination__btn"
-                            onClick={() => setPage((p) => Math.max(0, p - 1))}
-                            disabled={page === 0}
-                        >
-                            ‹
-                        </button>
-                        {Array.from({length: totalPages}, (_, i) => (
-                            <button
-                                type="button"
-                                key={i}
-                                className={`pagination__btn ${i === page ? "is-active" : ""}`}
-                                onClick={() => setPage(i)}
-                                aria-current={i === page ? "page" : undefined}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
-                        <button
-                            type="button"
-                            className="pagination__btn"
-                            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-                            disabled={page >= totalPages - 1}
-                        >
-                            ›
-                        </button>
-                    </nav>
-                </div>
-            </div>
+  const currentPage = page + 1;
+  const handlePageChange = (nextPage1Based) => {
+    setPage(nextPage1Based - 1);
+  };
+
+  return (
+    <div className="container">
+      <div className="inner">
+        <h2 className="board__title">커뮤니티</h2>
+
+         <div className="list-controls" style={{ display: "flex", gap: "5px" }}>
+          <Select
+           id="scope"
+           value={scope}
+           onChange={setScope}
+           options={[
+             { label: "전체", value: "tc" },
+             { label: "제목", value: "title" },
+             { label: "내용", value: "content" },
+           ]}
+           style={{ height: 36 }}
+         />
+          <SearchHeader
+            className="board__search-header"
+            searchValue={kwInput}
+            onSearchChange={setKwInput}
+            onSearchClick={submitSearch}
+            onRegisterClick={goCreate}
+            placeholder="검색할 내용을 입력해주세요."
+            showRegister
+          />
         </div>
-    );
+
+        <ul className="board-list" aria-live="polite" aria-busy={loading}>
+          {loading ? (
+            <li className="board-empty">불러오는 중...</li>
+          ) : isEmpty ? (
+            <li className="board-empty">게시글이 없습니다.</li>
+          ) : (
+            boards.map((b) => (
+              <BoardListItem
+                key={b.boardId}
+                item={b}
+                onClick={(id) => goDetail(id)}
+              />
+            ))
+          )}
+        </ul>
+
+        {totalPages > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
+      </div>
+    </div>
+  );
 }

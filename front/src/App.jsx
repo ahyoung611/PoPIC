@@ -31,10 +31,12 @@ import FieldWaiting from "./pages/vendor/FieldWaiting.jsx";
 import GoogleCallback from "./pages/user/GoogleCallback.jsx";
 import KakaoCallback from "./pages/user/KakaoCallback.jsx";
 import WelcomePage from "./pages/WelcomePage.jsx";
-import PopupList from "./pages/user/PopupList.jsx";
+import PopupList from "./pages/PopupList.jsx";
 import {useAuth} from "./context/AuthContext.jsx";
 import MyPosts from "./pages/user/MyPosts.jsx";
 import MyReviews from "./pages/user/MyReviews.jsx";
+import OnsiteTicket from "./pages/user/OnsiteTicket.jsx";
+import RequireAdmin from "./components/commons/RequireAdmin.jsx";
 
 
 function App() {
@@ -46,9 +48,6 @@ function App() {
         return (
             <>
                 <UserHeader>
-                    <Route path="/" element={<Main/>}/>
-                    <Route path="/popups" element={<Main/>}/>
-                    <Route path="/community" element={<Main/>}/>
                 </UserHeader>
                 <Outlet></Outlet>
             </>
@@ -59,11 +58,6 @@ function App() {
         return (
             <>
                 <VendorHeader>
-                    <Route path="/vendorPopups" element={<VendorMain/>}/>
-                    <Route path="/vendorPopups/new" element={<VendorMain/>}/>
-                    <Route path="/vendor/popups/edit" element={<VendorMain/>}/>
-                    <Route path="/vendor/reservations" element={<VendorMain/>}/>
-                    <Route path="/vendor/onsite" element={<VendorMain/>}/>
                 </VendorHeader>
                 <Outlet></Outlet>
             </>
@@ -74,7 +68,6 @@ function App() {
         return (
             <>
                 <AdminHeader>
-                    <Route path="/" element={<AdminMain/>}/>
                 </AdminHeader>
                 <Outlet></Outlet>
             </>
@@ -122,6 +115,7 @@ function App() {
                     <Route path={"/me/popic"} element={<MyPopic />} />
                     <Route path={"/me/posts"} element={<MyPosts />} />
                     <Route path={"/me/reviews"} element={<MyReviews />} />
+                    <Route path={"/me/walkIn/:waitingId"} element={<OnsiteTicket />} />
 
                 {/*벤더 유저 Layout */}
                     <Route path={"/vendor/reservations"} element={<OperatorReservations/>}></Route>
@@ -134,10 +128,23 @@ function App() {
                     <Route path="/vendor/myPage/:vendorId" element={<VendorMyPage/>} />
 
                 {/*어드민 Layout */}
-                    <Route path="/admin" element={<AdminMain/>}></Route>
-                    <Route path="/admin/popupManage" element={<AdminPopup/>}></Route>
-                    <Route path="/admin/vendorManage" element={<AdminVendor/>}></Route>
-                    <Route path="/admin/userManage" element={<AdminUser/>}></Route>
+                {/*    <Route path="/admin" element={<AdminMain/>}></Route>*/}
+                {/*    <Route path="/admin/popupManage" element={<AdminPopup/>}></Route>*/}
+                {/*    <Route path="/admin/vendorManage" element={<AdminVendor/>}></Route>*/}
+                {/*    <Route path="/admin/userManage" element={<AdminUser/>}></Route>*/}
+                    {/* 어드민 주소창 직접 입력 진입 방지 */}
+                    <Route
+                      element={
+                        <RequireAdmin>
+                              <Outlet />
+                            </RequireAdmin>
+                      }
+                    >
+                      <Route path="/admin" element={<AdminMain/>} />
+                      <Route path="/admin/popupManage" element={<AdminPopup/>} />
+                      <Route path="/admin/vendorManage" element={<AdminVendor/>} />
+                      <Route path="/admin/userManage" element={<AdminUser/>} />
+                    </Route>
                 </Route>
 
             </Route>

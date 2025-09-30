@@ -1,18 +1,19 @@
-// MainPopupCardB.jsx
 import React from "react";
 import "../../style/mainPopupCard.css";
 import MainPopupCardImg from "./MainPopupCardImg.jsx";
 
 export default function MainPopupCardB({
-                                           image, alt, category,
-                                           title, periodText,
-                                           bookmarked, onToggleBookmark,
-                                           onClick, href = "#"
+                                         popupId, alt, category,
+                                         title, periodText,
+                                         bookmarked, onToggleBookmark,
+                                         onClick
                                        }) {
-    return (
-        <a href={href} className="mpc-card mpc-card--typeB" onClick={onClick}>
+
+
+        return (
+         <div className="mpc-card mpc-card--typeB" role="button" onClick={onClick}>
             <MainPopupCardImg
-                image={image}
+                popupId={popupId}
                 alt={alt}
                 category={category}
                 bookmarked={bookmarked}
@@ -23,6 +24,6 @@ export default function MainPopupCardB({
                 <h3 className="mpc-card__title">{title}</h3>
                 <p className="mpc-card__period">{periodText}</p>
             </div>
-        </a>
+        </div>
     );
 }

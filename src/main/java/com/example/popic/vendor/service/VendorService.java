@@ -10,6 +10,8 @@ import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.vendor.dto.VendorDTO;
 import com.example.popic.vendor.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,22 +37,29 @@ public class VendorService {
         return vendorRepository.save(vendor).getVendor_id();
     }
 
-    public List<PopupReservationDTO> getReservationList(Long popupId, String sort) {
+    // 서버사이드 페이징 적용
+    public Page<PopupReservationDTO> getReservationList(Long vendorId, String sort, String keyword, Pageable pageable) {
         int sortNum;
-        if(sort.contains("reservation")){
+        Page<PopupReservationDTO> result;
+
+        if (sort.contains("reservation")) {
             sortNum = 1;
-        }else if(sort.contains("complete")){
+            result = reservationRepository.getReservationsByVendorIdAndSortNum(vendorId, sortNum, keyword, pageable)
+                    .map(PopupReservationDTO::new);
+        } else if (sort.contains("complete")) {
             sortNum = 0;
-        }else if(sort.contains("cancel")){
+            result = reservationRepository.getReservationsByVendorIdAndSortNum(vendorId, sortNum, keyword, pageable)
+                    .map(PopupReservationDTO::new);
+        } else if (sort.contains("cancel")) {
             sortNum = -1;
-        }else{
-            return reservationRepository.getReservationsByPopupId(popupId).stream()
-                    .map(PopupReservationDTO::new)
-                    .collect(Collectors.toList());
+            result = reservationRepository.getReservationsByVendorIdAndSortNum(vendorId, sortNum, keyword, pageable)
+                    .map(PopupReservationDTO::new);
+        } else {
+            result = reservationRepository.getReservationsByVendorId(vendorId, keyword, pageable)
+                    .map(PopupReservationDTO::new);
         }
-        return reservationRepository.getReservationsByPopupIdAndSortNum(popupId, sortNum).stream()
-                .map(PopupReservationDTO::new)
-                .collect(Collectors.toList());
+
+        return result;
     }
 
     public void updateVendor(Long id, VendorDTO dto) {

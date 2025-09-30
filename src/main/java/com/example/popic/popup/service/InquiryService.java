@@ -1,5 +1,6 @@
 package com.example.popic.popup.service;
 
+import com.example.popic.CustomUserPrincipal;
 import com.example.popic.entity.entities.*;
 import com.example.popic.popup.dto.InquiryDTO;
 import com.example.popic.popup.dto.InquiryRepliyDTO;
@@ -9,25 +10,28 @@ import com.example.popic.popup.repository.PopupRepository;
 import com.example.popic.user.repository.UserRepository;
 import com.example.popic.vendor.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class InquiryService {
+
     private final InquiryRepository inquiryRepository;
     private final UserRepository userRepository;
-    private final PopupRepository  popupRepository;
-    private final InquiryReplyRepository  inquiryReplyRepository;
+    private final PopupRepository popupRepository;
+    private final InquiryReplyRepository inquiryReplyRepository;
     private final VendorRepository vendorRepository;
 
-
+    // 문의 등록
     public void save(InquiryDTO inquiryRequestDTO) {
         User user = userRepository.findById(inquiryRequestDTO.getUserId()).orElse(null);
-        PopupStore store =  popupRepository.findById(inquiryRequestDTO.getPopupId()).orElse(null);
+        PopupStore store = popupRepository.findById(inquiryRequestDTO.getPopupId()).orElse(null);
 
         Inquiry inquiry = Inquiry.builder()
                 .title(inquiryRequestDTO.getSubject())
@@ -39,23 +43,24 @@ public class InquiryService {
         inquiryRepository.save(inquiry);
     }
 
-    public List<InquiryDTO> findAllByPopupId(Long popupId) {
-        return inquiryRepository.findAllByPopupId(popupId).stream()
-                .map(InquiryDTO::new)
-                .collect(Collectors.toList());
+    // 서버사이드 페이지네이션 적용
+    public Page<InquiryDTO> findAllByPopupId(Long popupId, Pageable pageable) {
+        return inquiryRepository.findAllByPopupStoreId(popupId, pageable)
+                .map(InquiryDTO::new);
     }
 
+    // 답변 조회
     public List<InquiryRepliyDTO> getAllReply(Long popupId) {
         return inquiryReplyRepository.getAllRepliy(popupId).stream()
                 .map(InquiryRepliyDTO::new)
                 .collect(Collectors.toList());
     }
 
+    // 답변 등록
     public void saveReply(InquiryRepliyDTO reply) {
         PopupStore store = popupRepository.findById(reply.getPopup_id()).orElse(null);
         Vendor vendor = vendorRepository.findById(reply.getVendor().getVendor_id()).orElse(null);
         Inquiry inquiry = inquiryRepository.findById(reply.getInquiry_id()).orElse(null);
-
 
         InquiryReply inquiryReply = InquiryReply.builder()
                 .inquiry(inquiry)
@@ -67,4 +72,28 @@ public class InquiryService {
         inquiryReplyRepository.save(inquiryReply);
     }
 
+    public Optional<Inquiry> findById(Long id) {
+        return inquiryRepository.findById(id);
+    }
+
+    // 문의 수정
+    public void updateInquiry(Long id, InquiryDTO inquiryDTO) {
+        Inquiry inquiry = inquiryRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("삭제 중 오류가 발생했습니다.")
+        );
+
+        inquiryRepository.updateInquiry(id, inquiryDTO.getSubject(), inquiryDTO.getContent(), inquiryDTO.getIsPrivate());
+    }
+
+    // 문의 삭제
+    public void deleteInquiry(Long inquiryId, CustomUserPrincipal principal) {
+        Inquiry inquiry = inquiryRepository.findById(inquiryId).orElseThrow(() ->
+                new RuntimeException("삭제 중 오류가 발생했습니다.")
+        );
+
+        if (!inquiry.getUser().getUser_id().equals(principal.getId()))
+            throw new RuntimeException("삭제 권한이 없습니다.");
+
+        inquiryRepository.deleteById(inquiryId);
+    }
 }

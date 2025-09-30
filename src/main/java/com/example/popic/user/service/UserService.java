@@ -132,11 +132,32 @@ public class UserService {
         }
         u.setEmail(email);
 
+//        if (email != null && !email.isBlank()) {
+//            if (userRepository.existsEmail(email)) {
+//                email = null;
+//            }
+//        }
+//        u.setEmail(email);
+
         // 이름 = 닉네임
         u.setName(info.getNickname());
         System.out.println("유저 서비스에 신규 유저 들어감? : " + u);
         return userRepository.save(u);
     }
 
+    // 소셜 가입시 부족한 정보 입력
+    public User updateSocialFields(Long userId, String email, String name, String phone) {
+        User u = userRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+                if (email != null && !email.isBlank()) {
+                if (!email.equalsIgnoreCase(u.getEmail()) && userRepository.existsEmail(email)) {
+                        throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+                    }
+                u.setEmail(email);
+            }
+        if (name != null && !name.isBlank()) u.setName(name);
+        if (phone != null && !phone.isBlank()) u.setPhone_number(phone);
+        return userRepository.save(u);
+    }
 }

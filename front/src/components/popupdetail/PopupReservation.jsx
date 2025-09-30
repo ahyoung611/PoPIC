@@ -13,8 +13,6 @@ const PopupReservation = (props) => {
         setReservationTime(start);
         setSelectedSlot(slot || null);
     };
-    console.log(selectedSlot?.capacity);
-    console.log(selectedSlot?.slot_id);
 
     function reservationSubmit() {
         if (reservationDate == "") {
@@ -28,18 +26,18 @@ const PopupReservation = (props) => {
             return;
         }
 
-        const depositPerPerson = 10000;
-        const basePrice = Number(props.popup?.price) || 0;
-
-        const finalPrice = basePrice === 0
-            ? depositPerPerson
-            : basePrice;
+        // const depositPerPerson = 10000;
+        // const basePrice = Number(props.popup?.price) || 0;
+        //
+        // const finalPrice = basePrice === 0
+        //     ? depositPerPerson
+        //     : basePrice;
 
         const reservationData = {
             name: props.popup.store_name,
             date: reservationDate,
             time: reservationTime,
-            price: finalPrice,
+            price: props.popup.price,
             reservationCount: reservationNumber,
             slot_id: selectedSlot?.slot_id,
             slot_version: selectedSlot?.version,

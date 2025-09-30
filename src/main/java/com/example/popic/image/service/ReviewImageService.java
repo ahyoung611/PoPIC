@@ -5,6 +5,7 @@ import com.example.popic.entity.entities.ReviewImage;
 import com.example.popic.image.dto.ReviewImageDTO;
 import com.example.popic.image.repository.ReviewImageRepository;
 import com.example.popic.popup.repository.PopupReviewRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,5 +32,9 @@ public class ReviewImageService {
                 .build();
 
         reviewImageRepository.save(reviewImage);
+    }
+
+    public void deleteImage(Long reviewId) {
+        reviewImageRepository.deleteReviewImageByReviewId(reviewId);
     }
 }
