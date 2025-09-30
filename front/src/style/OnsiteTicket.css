@@ -1,6 +1,7 @@
 .onsite-container {
    position: relative;
    height: calc(100vh - 60px - 44px);
+    background-color: var(--white-color);
 }
 
 .onsite-card {
