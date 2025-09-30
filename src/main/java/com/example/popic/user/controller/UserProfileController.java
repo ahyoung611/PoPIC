@@ -5,9 +5,7 @@ import com.example.popic.user.dto.UserPasswordDto;
 import com.example.popic.user.service.AccountUserVendorService;
 import com.example.popic.user.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
@@ -41,7 +39,13 @@ public class UserProfileController {
     @DeleteMapping
     public ResponseEntity<Void> delete(@PathVariable Long userId) {
         service.deleteProfile(userId);
-        return ResponseEntity.ok().build();
+
+        ResponseCookie cleared = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true).secure(false).sameSite("Lax")
+                .path("/").maxAge(0).build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cleared.toString())
+                .build();
     }
 
     // 프로필 사진 조회 (이미지 파일을 직접 반환)

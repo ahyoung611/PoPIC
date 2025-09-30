@@ -46,7 +46,7 @@ function PasswordField({ label, value, onChange, placeholder, autoComplete = "ne
 }
 
 export default function UserProfile() {
-  const { auth } = useAuth();
+  const { auth, logout } = useAuth();
   const token = auth?.token;
 
   const { userId } = useParams();
@@ -265,7 +265,8 @@ export default function UserProfile() {
     if (!ok) return;
     try {
       await apiRequest(`/api/users/${userId}`, { method: "DELETE" }, token);
-      navigate("/");
+        logout();
+        navigate("/main", { replace: true });
     } catch (e) {
       console.error("회원 탈퇴 실패", e);
       alert("회원 탈퇴에 실패했습니다. 다시 시도해 주세요.");
