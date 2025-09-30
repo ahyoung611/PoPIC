@@ -20,7 +20,7 @@
     height: 250px;
     position: absolute;
     left: 50%;
-    top: 250px;
+    top: 200px;
     cursor: pointer;
     animation: popic-bounce 1s ease-in-out infinite;
 }
@@ -46,30 +46,26 @@
 }
 
 .earth-container .earth {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%) !important;
-    bottom: -1200px;
-    width: 1500px;
-    height: 1500px;
-    border-radius: 50%;
-    background: url("https://i.postimg.cc/d0bNh1pn/stylized-earth-01.jpg");
-    background-size: 2000px;
-    background-position: center;
-
-    box-shadow: inset -20px 20px 40px rgba(235, 225, 52, 0.3),
-    inset 20px -20px 40px rgba(2, 16, 31, 0.5),
-    inset 10px -10px 10px rgba(2, 16, 31, 0.5);
-    transform-style: preserve-3d;
-    transform: rotate(15deg);
-    animation: rotate 20s linear infinite;
+     position: absolute;
+     left: 5%;
+     bottom: -1200px;
+      width: 1500px;
+      height: 1500px;
+      border-radius: 50%;
+      background: url("https://i.postimg.cc/d0bNh1pn/stylized-earth-01.jpg");
+      background-size: 3270px;
+      background-position: center;
+      background-color: #0c55ad;
+      box-shadow:
+        inset -20px 20px 40px rgba(235, 225, 52, 0.3),
+        inset 20px -20px 40px rgba(2, 16, 31, 0.5),
+        inset 10px -10px 10px rgba(2, 16, 31, 0.5);
+      transform-style: preserve-3d;
+      transform: rotate(15deg);
+      animation: rotate 30s linear infinite;
 }
 
 @keyframes rotate {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 2000px 0;
-    }
+  0%   { background-position: 0 0; }
+  100% { background-position: 545px 0; }
 }
