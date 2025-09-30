@@ -70,12 +70,14 @@ const AdminUser = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sort, token]);
 
-    const manageOptionsNoSelect = manageOptions.filter((o) => o.value !== "선택"); // 수정
+    // const manageOptionsNoSelect = manageOptions.filter((o) => o.value !== "선택"); // 수정
+    //
+    // const allowedUserCodes = new Set([0, 1]); // 정지, 정상만
+    // const userManageOptions = manageOptionsNoSelect.filter(
+    //     (o) => allowedUserCodes.has(statusCodeFromLabel(o.value)) // 수정
+    // );
 
-    const allowedUserCodes = new Set([0, 1]); // 정지, 정상만
-    const userManageOptions = manageOptionsNoSelect.filter(
-        (o) => allowedUserCodes.has(statusCodeFromLabel(o.value)) // 수정
-    );
+    const userManageOptions = manageOptions;
 
     return (
         <div className="container">

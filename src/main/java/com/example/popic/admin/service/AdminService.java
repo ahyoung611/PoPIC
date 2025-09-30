@@ -39,13 +39,20 @@ public class AdminService {
     // 상태에 다른 조절
     private Integer mapSortToStatus(String sort, boolean vendor) {
         if (sort == null || sort.isBlank()) return null; // 전체
+
+        try {
+            int code = Integer.parseInt(sort);
+            if (code == 0 || code == 1 || (vendor && (code == 2 || code == 3))) {
+                return code;
+            }
+        } catch (NumberFormatException ignored) {}
+
         return switch (sort) {
             case "normal" -> 1;
             case "blocked" -> 0;
-            case "deleted" -> -1;
-            // 필요 시 주석 해제
-            // case "waiting" -> vendor ? 2 : null;
-            // case "rejected" -> vendor ? 3 : null;
+            case "deleted" -> -1;          // (유저 용도; 벤더엔 안 씀)
+            case "pending" -> vendor ? 2 : null;
+            case "rejected" -> vendor ? 3 : null;
             default -> null;
         };
     }
