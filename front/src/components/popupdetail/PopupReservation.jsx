@@ -1,7 +1,12 @@
 import {useState} from "react";
 import PopupReservationCalendar from "./PopupReservationCalendar.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 const PopupReservation = (props) => {
+    const user = useAuth().getUser();
+    const nav = useNavigate();
+
     const [reservationNumber, setReservationNumber] = useState(1);
     const [reservationDate, setReservationDate] = useState("");
     const [reservationTime, setReservationTime] = useState("");
@@ -13,6 +18,14 @@ const PopupReservation = (props) => {
         setReservationTime(start);
         setSelectedSlot(slot || null);
     };
+
+    if(!user){
+        return(
+            <div className={"msg-container"} onClick={()=>{nav("/login")}}>
+                <p className={"no-login"}>로그인 후 이용 가능합니다.</p>
+            </div>
+        )
+    }
 
     function reservationSubmit() {
         if (reservationDate == "") {
