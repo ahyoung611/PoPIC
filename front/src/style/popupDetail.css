@@ -122,47 +122,30 @@
 }
 
 /* 모달 */
-.popupStore-detail .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
+
+
+.popupStore-detail .be-ck .ck.ck-editor { width: 100%; margin: 0; }
+.popupStore-detail .be-ck .ck-editor__main { margin: 0; }
+.popupStore-detail .be-ck .ck-editor__editable_inline {
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px !important;
+  padding: 15px;
+  height: 120px;
+  overflow: auto;
+  line-height: 1.5;
+  color: var(--black-color);
+  box-shadow: none;
+  overflow-y: auto;
 }
 
-.popupStore-detail .modal-overlay .modal {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    width: 400px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+.popupStore-detail .be-ck .ck-editor__editable_inline:focus {
+  border-color: var(--main-color);
+  outline: none;
 }
 
-.popupStore-detail .modal-overlay .modal-actions {
-    margin-top: 10px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
+.popupStore-detail .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content{ border: none; }
 
-.popupStore-detail .modal-overlay input,
-.popupStore-detail .modal-overlay textarea {
-    width: 100%;
-    margin: 5px 0;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-}
-
-.popupStore-detail .modal-overlay textarea {
-    min-height: 100px;
-    resize: vertical;
-}
 
 /* 팝업 정보 표시 css 시작 */
 
@@ -459,26 +442,20 @@
 .popupStore-detail .popupReview-container .review-wrapper {
     border-bottom: 1px solid var(--border-color);
     padding: 16px;
-    font-family: 'Arial', sans-serif;
-}
 
-.popupStore-detail .popupReview-container .review-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
 }
 
 .popupStore-detail .popupReview-container .review-image {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
-    border-radius: 6px;
 }
 
 .popupStore-detail .popupReview-container .review-info {
     display: flex;
     flex-direction: column;
     flex: 1;
+    margin-top: 10px;
 }
 
 .popupStore-detail .popupReview-container .review-info .info-1{
@@ -590,8 +567,14 @@
     margin: 10px 0;
 }
 
+.review-top{
+ display:flex;
+ align-items: flex-start;
+ }
+
 .btn-wrapper {
     display: flex;
+    align-items: center;
     margin-left: auto;
     gap: 10px;
     color: var(--darkgray-color);

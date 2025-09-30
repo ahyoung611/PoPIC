@@ -252,6 +252,7 @@
   box-shadow: none;
   overflow-y: auto;
 }
+
 .boardEditContainer .be-ck .ck-editor__editable_inline:focus {
   border-color: var(--main-color);
   outline: none;
@@ -408,7 +409,7 @@
   min-height: 260px;
   border: 1px solid var(--border-color);
   border-radius: 10px !important;
-  padding: 14px 16px;
+  padding: 15px;
   background: #fff;
 }
 .boardEditContainer .be-ck.be-ck--article .ck-editor__editable_inline.ck-focused {

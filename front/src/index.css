@@ -18,6 +18,7 @@ img { -webkit-user-drag: none; user-drag: none; }
   --gray-color: #B0B0B0;
   --darkgray-color: #666666;
   --gray-hover-color: #d9d9d9;
+  --darkRed-color: #E0443C;
   --blue-color: #287ED8;
   --blue-hover-color: #0056b3;
   --border-color: #E0E0E0;
@@ -58,7 +59,8 @@ body {
 }
 
 /*  Layout Containers  */
-.container { width: 100%; height: auto; background-color: #FAFAFA; }
+
+.container { width: 100%; height: auto;}
 
 .inner {
   position: relative;
@@ -88,6 +90,7 @@ body {
   outline: none;
   background: #fff;
 }
+
 
 /* 포커스 라인 */
 .ck.ck-editor__editable.ck-focused {
