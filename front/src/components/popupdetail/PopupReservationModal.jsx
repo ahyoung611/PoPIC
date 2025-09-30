@@ -1,6 +1,6 @@
 import "../../style/modal.css";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../context/AuthContext.jsx";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
@@ -10,8 +10,10 @@ const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:808
 const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
     if (!isOpen) return null; // 모달이 열리지 않으면 아무것도 반환하지 않음
     const navigate = useNavigate();
-    const {auth} = useAuth();
+    const {auth, getToken} = useAuth();
     const user = auth?.user;
+    const token = getToken();
+    const [status, setStatus] = React.useState(reservationData.status);
 
     const goCheckout = async () => {
         try {
@@ -35,12 +37,41 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
                 return;
             }
 
-            // 중복 예약이 없을 때만 checkout 페이지로 이동
-            navigate(
-                `/checkout?price=${reservationData.price}&name=${encodeURIComponent(
-                    reservationData.name
-                )}&date=${reservationData.date}&time=${reservationData.time}&people=${reservationData.reservationCount}&popupId=${reservationData.popupId}&slotId=${reservationData.slot_id}`
-            );
+            if (reservationData.price > 0) {
+                // 중복 예약이 없을 때만 checkout 페이지로 이동
+                navigate(
+                    `/checkout?price=${reservationData.price}&name=${encodeURIComponent(
+                        reservationData.name
+                    )}&date=${reservationData.date}&time=${reservationData.time}&people=${reservationData.reservationCount}&popupId=${reservationData.popupId}&slotId=${reservationData.slot_id}`
+                );
+            } else {
+                // 무료 팝업인 경우 결제 진행 x
+                try {
+                    const res = await fetch(`${URL}/reservations/free`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({
+                            slotId: reservationData.slot_id,
+                            storeId: reservationData.popupId,
+                            reservationCount: reservationData.reservationCount,
+                        }),
+                    });
+                    const json = await res.json();
+                    if (!res.ok) {
+                        alert(json?.message || "무료 예약 처리에 실패했어요.");
+                        return;
+                    }
+                    setStatus(1);
+                    alert("예약이 완료되었습니다.");
+                    onClose?.();
+                } catch (e) {
+                    console.error(e);
+                    alert("예약 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                }
+            }
         } catch (err) {
             console.error("중복 체크 실패:", err);
             alert("예약 상태 확인에 실패했습니다. 잠시 후 다시 시도해주세요.");
