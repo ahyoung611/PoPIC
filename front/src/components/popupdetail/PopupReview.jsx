@@ -5,6 +5,7 @@ import ReviewModal from "./ReviewModal.jsx";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {useNavigate} from "react-router-dom";
 import Pagination from "../commons/Pagination.jsx";
+import DOMPurify from "dompurify";
 
 const PopupReview = (props)=>{
     const [review, setReview] = useState([]);
@@ -19,6 +20,7 @@ const PopupReview = (props)=>{
     const [editReview, setEditReview] = useState(null);
     const user = useAuth().getUser();
     const nav = useNavigate();
+    const sanitize = (html) => DOMPurify.sanitize(String(html || ""), { USE_PROFILES: { html: true } });
 
 
 
@@ -161,6 +163,7 @@ const PopupReview = (props)=>{
                     return (
                         <div key={idx} className="review-wrapper">
                             <div className="review-header">
+                                <div className="review-top">
                                 {item.images && item.images.length > 0 && (
                                     <img
                                         className="review-image"
@@ -168,29 +171,30 @@ const PopupReview = (props)=>{
                                         alt="review"
                                     />
                                 )}
+                             {item.user.user_id === user.user_id && (
+                                    <div className={"btn-wrapper"}>
+                                        <button onClick={()=>modifyReview(item)}>수정하기</button>
+                                        <p>|</p>
+                                        <button onClick={()=>deleteReview(item)}>삭제하기</button>
+                                    </div>
+                                )}
+                            </div>
                                 <div className="review-info">
                                     <div className={"info-1"}>
                                         <h2 className="review-title">{item.title}</h2>
                                         <span className="review-user, review-date">{maskName(item.user.name)} | {new Date(item.createdAt).toLocaleDateString()}</span>
                                     </div>
-                                    <div className={"review-content"}>
-                                        <p>{item.content}</p>
-                                        <div className="review-actions">
-                                            <button
-                                                className="btn-reply-toggle"
-                                                onClick={() => toggleReplyHandler(item.review_id)}
-                                            >
-                                                더보기
-                                                <span className={`toggle-arrow ${openReplies[item.review_id] ? "open" : ""}`}>▾</span>
-                                            </button>
-                                        </div>
+                                    <div className="review-content">
+                                      <div
+                                        className="ck-content"
+                                        style={{ flex: 1, marginRight: 8 }}
+                                        dangerouslySetInnerHTML={{ __html: sanitize(item.content) }}
+                                      />
+                                      <div className="review-actions" onClick={() => toggleReplyHandler(item.review_id)}>
+                                        더보기<span className={`toggle-arrow ${openReplies[item.review_id] ? "open" : ""}`}>▾</span>
+                                      </div>
                                     </div>
-                                    {item.user.user_id === user.user_id && (
-                                        <div className={"btn-wrapper"}>
-                                            <button onClick={()=>modifyReview(item)}>수정하기</button> |
-                                            <button onClick={()=>deleteReview(item)}>삭제하기</button>
-                                        </div>
-                                    )}
+
                                 </div>
                             </div>
 
