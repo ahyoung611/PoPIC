@@ -4,10 +4,10 @@ import Button from "../commons/Button.jsx";
 
 // 상태
 const STATUS_META = {
-    1: { text: "승인 완료",  color: "blue" },
+    1: { text: "승인 완료",  color: "red" },
     2: { text: "승인 대기",  color: "gray" },
-    3: { text: "승인 반려",  color: "red"  },
-    0: { text: "정지",      color: "red"  },
+    3: { text: "승인 반려",  color: "darkRed"  },
+    0: { text: "정지",      color: "gray"  },
     [-1]: { text: "운영 종료", color: "gray" },
 };
 

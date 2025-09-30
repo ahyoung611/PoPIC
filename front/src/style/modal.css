@@ -16,6 +16,10 @@
     animation: modal-pop .14s ease-out;
 }
 
+.modalPanel .modalTitle{
+  font-size:var(--font-title);
+ }
+
 @keyframes modal-pop{
     from { transform: scale(.98); opacity: .88; }
     to   { transform: scale(1);   opacity: 1; }
@@ -29,6 +33,7 @@
     border: 1px solid var(--border-color);
     margin-bottom: 10px;
     transition: border 0.2s ease;
+    font-size:var(--font-small);
 }
 
 .modalPanel input:focus,
