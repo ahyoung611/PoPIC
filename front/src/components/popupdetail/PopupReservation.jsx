@@ -17,8 +17,10 @@ const PopupReservation = (props) => {
     function reservationSubmit() {
         if (reservationDate == "") {
             alert("예약 날짜를 선택해주세요.");
+             return;
         } else if (reservationTime == "") {
             alert("예약 시간을 선택해주세요.");
+            return;
         }
 
         if (selectedSlot && (selectedSlot.capacity - selectedSlot.reserved_count) < reservationNumber) {
