@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {useAuth} from "../../context/AuthContext.jsx";
-import {useLocation, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import Button from "../../components/commons/Button.jsx";
 import "../../style/OnsiteTicket.css";
 
@@ -10,6 +10,7 @@ const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:808
 const OnsiteTicket = () => {
     const {auth, getToken} = useAuth();
     const token = getToken?.();
+    const nav = useNavigate()
 
     const {waitingId} = useParams();
     const location = useLocation();
@@ -118,10 +119,17 @@ const OnsiteTicket = () => {
                         className="onsite-illust"
                     />
 
+                    <h2 className="onsite-title">{title}</h2>
                     <p className="onsite-message">
                         {waiting.callTime ? "지금 입장해주세요!" : "잠시만 기다려주세요!"}
                     </p>
-                    <h2 className="onsite-title">{title}</h2>
+                    <div className="onsite-msg">
+                        {waiting.callTime ?
+                            <div>
+                                <p className="call-msg">호출 후 10분 뒤 자동 대기 취소됩니다.</p>
+                                <p>호출 시간 : {new Date(waiting.callTime).toLocaleTimeString()}</p></div> :
+                            <p>""</p>}
+                    </div>
 
                     <div className="onsite-qr-box">
                         <div className="onsite-qr-left">
@@ -130,7 +138,9 @@ const OnsiteTicket = () => {
                         </div>
                         {waiting.callTime ? (
                             <div className="onsite-qr-right">
-                                <div className="onsite-qr-placeholder">QR</div>
+                                <div className="onsite-qr-placeholder">
+                                    <img src={"/PoPICQR.png"} alt={"팝픽 깃허브 큐알"}/>
+                                </div>
                             </div>
                         ) : (
                             <div className="onsite-grid-item">
@@ -141,14 +151,22 @@ const OnsiteTicket = () => {
                     </div>
 
                     {!waiting.callTime && (
-                        <Button
-                            variant="primary"
-                            color={isCanceled ? "gray" : "red"}
-                            disabled={isCanceled}
-                            onClick={onCancel}
-                        >
-                            {isCanceled ? "취소됨" : "대기 취소"}
-                        </Button>
+                        <div className={"btn-area"}>
+                            <Button
+                                variant="outline"
+                                onClick={() => nav("/me/popic?tab=대기")}
+                            >
+                                목록
+                            </Button>
+                            <Button
+                                variant="primary"
+                                color={isCanceled ? "gray" : "red"}
+                                disabled={isCanceled}
+                                onClick={onCancel}
+                            >
+                                {isCanceled ? "취소됨" : "대기 취소"}
+                            </Button>
+                        </div>
                     )}
                 </div>
             </div>
