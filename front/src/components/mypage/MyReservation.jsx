@@ -1,11 +1,13 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import MyReservationModal from "./MyReservationModal.jsx";
+import Button from "../commons/Button.jsx";
+import {useNavigate} from "react-router-dom";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
-const MyReservation = ({reservations}) => {
-
+const MyReservation = ({reservations, onUpdateReservation}) => {
+    const nav = useNavigate();
     const [selected, setSelected] = useState(null);
 
     const formatStatus = (status) => {
@@ -18,6 +20,11 @@ const MyReservation = ({reservations}) => {
         }
     }
 
+    useEffect(() => {
+        formatStatus();
+    }, [reservations]);
+
+
     return (
         <div className="reservation-list">
             {reservations.map(r => {
@@ -28,21 +35,38 @@ const MyReservation = ({reservations}) => {
 
                 return (
                     <div key={r.reservationId} className="reservation-card">
-                        <div className="thumb">
-                            <img src={thumb} alt={r.popup?.store_name || "popup"} />
+                        <div className={"title-box"} onClick={() => {
+                            nav(`/popupStore/detail/${r.popup?.store_id}`);
+                        }}>
+                            <div className="thumb">
+                                <img src={thumb} alt={r.popup?.store_name || "popup"}/>
+                            </div>
+                            <div className="info">
+                                <div className="row">
+                                    <div className="title">예약번호</div>
+                                    <div className="content">{r.reservationId}</div>
+                                </div>
+                                <div className="row">
+                                    <div className="title">예약 날짜</div>
+                                    <div className="content">{r.slot?.schedule.date} {r.slot?.start_time}</div>
+                                </div>
+                                <div className="row">
+                                    <div className="title">장소</div>
+                                    <div className="content">{r.popup?.address} {r.popup?.address_detail}</div>
+                                </div>
+                                <div className="row">
+                                    <div className="title">상태</div>
+                                    <div className="content">{formatStatus(r.status)}</div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="info">
-                            <p><strong>예약번호</strong> {r.reservationId}</p>
-                            <p><strong>예약일시</strong>{r.slot?.schedule.date} {r.slot?.start_time}</p>
-                            <p><strong>장소</strong> {r.popup?.address} {r.popup?.address_detail}</p>
-                            <p><strong>상태</strong> {formatStatus(r.status)}</p>
-                        </div>
-                        <button
-                            className="detail-btn"
+                        <Button
+                            className={"detail-btn"}
+                            variant={"ghost"}
                             onClick={() => setSelected(r)}
                         >
                             주문상세 →
-                        </button>
+                        </Button>
                     </div>
                 );
             })}
@@ -50,6 +74,12 @@ const MyReservation = ({reservations}) => {
                 open={!!selected}
                 reservation={selected}
                 onClose={() => setSelected(null)}
+                onUpdateReservation={(id, newStatus) => {
+                    const updated = reservations.map(r =>
+                        r.reservationId === id ? { ...r, status: newStatus } : r
+                    );
+                    onUpdateReservation(updated);
+                }}
             />
         </div>
     );

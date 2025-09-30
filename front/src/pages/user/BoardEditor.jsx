@@ -105,6 +105,7 @@ export default function BoardEditor() {
     e.preventDefault();
     if (readOnly) return;
     if (!title.trim()) return alert("제목을 입력하세요");
+    if (!content.trim()) return alert("내용을 입력하세요");
     if (uploading) return alert("파일 업로드가 끝날 때까지 기다려주세요.");
 
     setSubmitting(true);
@@ -237,7 +238,6 @@ export default function BoardEditor() {
                         observer
                         observeParents
                         watchSlidesProgress
-                        rebuildOnUpdate
                       >
                         {attachments.map((f) => (
                           <SwiperSlide key={f.savedName || f.url}>

@@ -17,8 +17,10 @@ const PopupReservation = (props) => {
     function reservationSubmit() {
         if (reservationDate == "") {
             alert("예약 날짜를 선택해주세요.");
+             return;
         } else if (reservationTime == "") {
             alert("예약 시간을 선택해주세요.");
+            return;
         }
 
         if (selectedSlot && (selectedSlot.capacity - selectedSlot.reserved_count) < reservationNumber) {
@@ -26,18 +28,11 @@ const PopupReservation = (props) => {
             return;
         }
 
-        const depositPerPerson = 10000;
-        const basePrice = Number(props.popup?.price) || 0;
-
-        const finalPrice = basePrice === 0
-            ? depositPerPerson
-            : basePrice;
-
         const reservationData = {
             name: props.popup.store_name,
             date: reservationDate,
             time: reservationTime,
-            price: finalPrice,
+            price: props.popup.price,
             reservationCount: reservationNumber,
             slot_id: selectedSlot?.slot_id,
             slot_version: selectedSlot?.version,

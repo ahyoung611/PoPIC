@@ -1,140 +1,119 @@
 .onsite-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 60px - 44px); /* header, footer 제외 */
-    background-color: var(--bg-color);
-
+   position: relative;
+   height: calc(100vh - 60px - 44px);
+    background-color: var(--white-color);
 }
 
 .onsite-card {
-    width: 100%;
-    max-width: 420px;
+    width: 420px;
     background: var(--white-color);
+    border: 1px solid var(--border-color);
     border-radius: 16px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--main-color);
-    padding: 24px;
+    padding: 32px 24px;
     text-align: center;
+    box-shadow: var(--shadow);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* 일러스트 */
 .onsite-illust {
     width: 120px;
-    height: auto;
-    margin: 0 auto 16px auto;
-}
-
-/* 안내 문구 */
-.onsite-message {
-    font-size: var(--font-small);
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: var(--darkgray-color);
-}
-
-.onsite-message.active {
-    color: var(--main-color); /* 호출 후 강조 */
-    font-weight: 600;
-}
-
-/* 팝업 이름 */
-.onsite-title {
-    font-size: var(--font-subtitle);
-    font-weight: 600;
-    color: var(--black-color);
-    margin-bottom: 16px;
-}
-
-/* 유효시간 */
-.onsite-time {
-    font-size: var(--font-small);
-    color: var(--main-color);
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-/* 대기 현황 (호출 전) */
-.onsite-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.onsite-grid-item {
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 16px 0;
-}
-
-.onsite-label {
-    font-size: var(--font-caption);
-    color: var(--darkgray-color);
-    margin-bottom: 4px;
+    margin: 0 auto 12px;
     display: block;
 }
 
+/* 메시지 (캡슐형) */
+.onsite-message {
+    display: inline-block;
+    background-color: var(--bg-color);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: var(--font-small);
+    color: var(--darkgray-color);
+    margin-bottom: 20px;
+}
+
+/* 타이틀 */
+.onsite-title {
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-bold);
+    color: var(--black-color);
+    margin-bottom: 24px;
+}
+
+/* 대기 정보 박스 */
+.onsite-qr-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    background: var(--bg-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.onsite-qr-left,
+.onsite-qr-right,
+.onsite-grid-item {
+    flex: 1;
+    text-align: center;
+}
+
+.onsite-qr-left {
+    border-right: 1px solid var(--border-color);
+    padding-right: 12px;
+}
+
+.onsite-qr-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 12px;
+}
+
+/* 라벨 */
+.onsite-label {
+    font-size: var(--font-small);
+    color: var(--darkgray-color);
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* 값 */
 .onsite-value-red {
     font-size: var(--font-title);
-    font-weight: bold;
+    font-weight: var(--font-bold);
     color: var(--main-color);
 }
 
 .onsite-value-blue {
     font-size: var(--font-title);
-    font-weight: bold;
+    font-weight: var(--font-bold);
     color: var(--blue-color);
 }
-/* QR 박스 전체 */
-.onsite-qr-box {
-    display: flex;
-    justify-content: space-around; /* 가운데 배치 */
-    align-items: center;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 24px;
-    background: var(--white-color);
-    gap: 24px; /* 번호와 QR 사이 간격 */
-}
 
-/* 왼쪽: 라벨 + 번호를 세로로 묶어서 중앙정렬 */
-.onsite-qr-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* 가운데 정렬 */
-    justify-content: center;
-    margin-left: 17px;
-}
-
-.onsite-qr-left .onsite-label {
-    font-size: var(--font-caption);
-    color: var(--darkgray-color);
-    margin-bottom: 6px;
-}
-
-.onsite-qr-left .onsite-value-red {
-    font-size: 34px; /* 더 크게 */
-    font-weight: bold;
-    color: var(--main-color);
-    line-height: 1.2;
-}
-
-/* 오른쪽: QR */
-.onsite-qr-right {
-    flex-shrink: 0;
-}
-
+/* QR placeholder */
 .onsite-qr-placeholder {
-    width: 120px;
-    height: 120px;
-    background: var(--gray-hover-color);
+    width: 100px;
+    height: 100px;
+    background: var(--white-color);
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--darkgray-color);
-    font-size: var(--font-caption);
-    border-radius: 8px;
+    color: var(--gray-color);
+    font-size: var(--font-small);
 }
 
+/* 버튼 */
+.onsite-card .btn {
+    width: 100%;
+    border-radius: 999px;
+    font-size: var(--font-button);
+    font-weight: var(--font-semibold);
+    padding: 14px 0; /* 좌우 여백 늘림 */
+}

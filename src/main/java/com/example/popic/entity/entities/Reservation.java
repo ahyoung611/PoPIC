@@ -40,7 +40,7 @@ public class Reservation {
     @Column(nullable = false)
     private int status = 1; // 1: 예약, -1: 예약 취소, 0: 참여 완료
 
-    private BigDecimal deposit_amount = new BigDecimal("10000.00"); // 예약금
+    private BigDecimal deposit_amount;
 
     @Column(length = 255)
     private String payment_key; // 결제 PG사에서 받은 키

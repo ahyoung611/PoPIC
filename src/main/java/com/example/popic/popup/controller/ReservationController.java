@@ -4,10 +4,12 @@ import com.example.popic.CustomUserPrincipal;
 import com.example.popic.popup.dto.PopupReservationDTO;
 import com.example.popic.popup.repository.ReservationRepository;
 import com.example.popic.popup.service.ReservationService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +20,12 @@ import java.util.Map;
 @RequestMapping("/reservations")
 @RequiredArgsConstructor
 public class ReservationController {
-
+    private final StringRedisTemplate stringRedisTemplate;
     private final ReservationService reservationService;
     private final ReservationRepository reservationRepository;
 
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmPayment(@RequestBody PopupReservationDTO dto) {
-        System.out.println(">>> 예약 요청 인원 = " + dto.getReservationCount());
         try {
             PopupReservationDTO saved = reservationService.reserveSlot(
                     dto.getSlot().getSlot_id(),
@@ -72,10 +73,14 @@ public class ReservationController {
     public ResponseEntity<?> cancelReservation(
             @PathVariable Long reservationId,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
         try {
             Long userId = principal.getId(); // 내부 user 엔티티 접근
             reservationService.cancelReservation(reservationId, userId);
+
+
             return ResponseEntity.ok(Map.of("message", "예약이 취소되었습니다."));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -93,4 +98,22 @@ public class ReservationController {
         return ResponseEntity.ok(isJoin);
     }
 
+    @PostMapping("/free")
+    public ResponseEntity<?> reserveFree(
+            @RequestBody Map<String, Object> body,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        try {
+            Long userId  = principal.getId();
+            Long slotId  = ((Number) body.get("slotId")).longValue();
+            Long storeId = ((Number) body.get("storeId")).longValue();
+            Integer count = ((Number) body.get("reservationCount")).intValue();
+
+            PopupReservationDTO saved = reservationService.reserveFreeSlot(slotId, userId, storeId, count);
+            return ResponseEntity.ok(saved);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "잘못된 요청입니다."));
+        }
+    }
 }

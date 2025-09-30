@@ -1,27 +1,121 @@
+/* 모달 배경 */
 .modal-overlay {
     position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     z-index: 999;
 }
 
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    min-width: 320px;
-    max-width: 480px;
+/* 모달 본체 */
+.modal-overlay .modal-content {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    width: 380px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    animation: fadeIn 0.25s ease-in-out;
+    position: relative;
 }
 
-.close-btn {
-    margin-top: 16px;
-    padding: 8px 12px;
-    background: #f33;
-    color: #fff;
-    border: none;
+/* 제목 */
+.modal-overlay .popup-title {
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* QR 영역 */
+.modal-overlay .qr-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.modal-overlay .qr-container {
+    position: relative;
+    text-align: center;
+}
+
+.modal-overlay .qr-image {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    padding: 6px;
+}
+
+/* QR 상태 오버레이 */
+.modal-overlay .qr-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.85);
+    color: var(--main-color);
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 8px;
-    cursor: pointer;
+}
+
+.modal-overlay .qr-timer {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.modal-overlay .point-color {
+    color: var(--main-color);
+}
+
+.modal-overlay .qr-expired {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--main-color);
+}
+
+.modal-overlay .qr-error {
+    text-align: center;
+    color: var(--main-color);
+}
+
+/* 예약 정보 */
+.modal-overlay .info-section {
+    margin: 15px 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.modal-overlay .info-section p {
+    margin: 6px 0;
+}
+
+.modal-overlay .info-section strong {
+    display: inline-block;
+    min-width: 70px;
+    color: var(--black-color);
+}
+
+/* 버튼 영역 */
+.modal-overlay .button-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useAuth } from "../../context/AuthContext.jsx";
-import { useParams, useLocation } from "react-router-dom";
+import React, {useEffect, useMemo, useState} from "react";
+import {useAuth} from "../../context/AuthContext.jsx";
+import {useLocation, useParams} from "react-router-dom";
 import Button from "../../components/commons/Button.jsx";
 import "../../style/OnsiteTicket.css";
 
@@ -8,10 +8,10 @@ const host = (typeof window !== "undefined" && window.location?.hostname) || "lo
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
 const OnsiteTicket = () => {
-    const { auth, getToken } = useAuth();
+    const {auth, getToken} = useAuth();
     const token = getToken?.();
 
-    const { waitingId } = useParams();
+    const {waitingId} = useParams();
     const location = useLocation();
     const query = new URLSearchParams(location.search);
 
@@ -25,13 +25,13 @@ const OnsiteTicket = () => {
     const [ahead, setAhead] = useState(0); // 앞 팀 계산
 
     const headers = useMemo(() => {
-        const h = { "Content-Type": "application/json" };
+        const h = {"Content-Type": "application/json"};
         if (token) h.Authorization = `Bearer ${token}`;
         return h;
     }, [token]);
 
     const fetchJSON = async (path, init = {}) => {
-        const res = await fetch(`${URL}${path}`, { headers, ...init });
+        const res = await fetch(`${URL}${path}`, {headers, ...init});
         const ct = res.headers.get("content-type") || "";
         if (!res.ok) {
             const msg = (await res.text().catch(() => "")) || `HTTP ${res.status}`;
@@ -46,7 +46,7 @@ const OnsiteTicket = () => {
         try {
             if (!userId || !Number.isFinite(storeId) || !token) return;
 
-            const list = await fetchJSON(`/waiting/user/${userId}`, { signal });
+            const list = await fetchJSON(`/waiting/user/${userId}`, {signal});
             const arr = Array.isArray(list) ? list : list?.content ?? [];
             const my = arr.find((w) => w.id === Number(waitingId));
 
@@ -60,7 +60,7 @@ const OnsiteTicket = () => {
 
     // 내 앞에 몇 팀 있는지
     const fetchAhead = async (id, signal) => {
-        const data = await fetchJSON(`/waiting/${id}/ahead`, { signal });
+        const data = await fetchJSON(`/waiting/${id}/ahead`, {signal});
         if (data) setAhead(data?.aheadTeams ?? 0);
     };
 
@@ -93,7 +93,7 @@ const OnsiteTicket = () => {
     const onCancel = async () => {
         if (!waitingId) return;
         try {
-            const updated = await fetchJSON(`/waiting/${waitingId}/status?value=-1`, { method: "PATCH" });
+            const updated = await fetchJSON(`/waiting/${waitingId}/status?value=-1`, {method: "PATCH"});
             if (updated) setWaiting(updated);
         } catch (e) {
             alert(e.message || "취소 처리에 실패했습니다.");
@@ -109,46 +109,48 @@ const OnsiteTicket = () => {
     const title = waiting.storeName || waiting.popup?.name || statePopupName || "팝업 스토어";
 
     return (
-        <main className="onsite-container">
-            <div className="onsite-card">
-                <img
-                    src={waiting.callTime ? "/AfterOnsite.png" : "/BeforeOnsite.png"}
-                    alt="대기 일러스트"
-                    className="onsite-illust"
-                />
+        <main className="container">
+            <div className="onsite-container">
+                <div className="onsite-card">
+                    <img
+                        src={waiting.callTime ? "/AfterOnsite.png" : "/BeforeOnsite.png"}
+                        alt="대기 일러스트"
+                        className="onsite-illust"
+                    />
 
-                <p className="onsite-message">
-                    {waiting.callTime ? "지금 입장해주세요!" : "잠시만 기다려주세요!"}
-                </p>
-                <h2 className="onsite-title">{title}</h2>
+                    <p className="onsite-message">
+                        {waiting.callTime ? "지금 입장해주세요!" : "잠시만 기다려주세요!"}
+                    </p>
+                    <h2 className="onsite-title">{title}</h2>
 
-                {waiting.callTime ? (
                     <div className="onsite-qr-box">
                         <div className="onsite-qr-left">
                             <div className="onsite-label">대기 번호</div>
                             <div className="onsite-value-red">{waiting.queueNumber}</div>
                         </div>
-                        <div className="onsite-qr-right">
-                            <div className="onsite-qr-placeholder">QR</div>
-                        </div>
+                        {waiting.callTime ? (
+                            <div className="onsite-qr-right">
+                                <div className="onsite-qr-placeholder">QR</div>
+                            </div>
+                        ) : (
+                            <div className="onsite-grid-item">
+                                <span className="onsite-label">현재 대기 팀</span>
+                                <span className="onsite-value-blue">{ahead}</span>
+                            </div>
+                        )}
                     </div>
-                ) : (
-                    <div className="onsite-grid-item">
-                        <span className="onsite-label">현재 대기 팀</span>
-                        <span className="onsite-value-blue">{ahead}</span>
-                    </div>
-                )}
 
-                {!waiting.callTime && (
-                    <Button
-                        variant="primary"
-                        color={isCanceled ? "gray" : "red"}
-                        disabled={isCanceled}
-                        onClick={onCancel}
-                    >
-                        {isCanceled ? "취소됨" : "대기 취소"}
-                    </Button>
-                )}
+                    {!waiting.callTime && (
+                        <Button
+                            variant="primary"
+                            color={isCanceled ? "gray" : "red"}
+                            disabled={isCanceled}
+                            onClick={onCancel}
+                        >
+                            {isCanceled ? "취소됨" : "대기 취소"}
+                        </Button>
+                    )}
+                </div>
             </div>
         </main>
     );
