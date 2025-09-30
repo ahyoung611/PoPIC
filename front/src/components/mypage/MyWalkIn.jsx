@@ -45,10 +45,22 @@ const MyWalkIn = ({walkIn = []}) => {
                             ) : null}
                         </div>
                         <div className="info">
-                            <p><strong>대기번호</strong> {w.queueNumber}</p>
-                            <p><strong>팝업명</strong> {storeName}</p>
-                            <p><strong>장소</strong> {w.address} {w.addressDetail}</p>
-                            <p><strong>상태</strong> {formatStatus(w.status)}</p>
+                            <div className="row">
+                                <div className="title">대기번호</div>
+                                <div className="content">{w.queueNumber}</div>
+                            </div>
+                            <div className="row">
+                                <div className="title">팝업명</div>
+                                <div className="content">{storeName}</div>
+                            </div>
+                            <div className="row">
+                                <div className="title">장소</div>
+                                <div className="content">{w.address} {w.addressDetail}</div>
+                            </div>
+                            <div className="row">
+                                <div className="title">상태</div>
+                                <div className="content">{formatStatus(w.status)}</div>
+                            </div>
                         </div>
                     </div>
                 );
