@@ -26,7 +26,6 @@ export default function BoardListItem({ item, onClick }) {
           <div className="board-card__meta">
             {writerName || "user"} | {dateText} | 조회 {viewCount ?? 0}
           </div>
-          <div className="board-card__desc">{previewText}</div>
         </div>
 
         <Button variant="ghost" color="gray" onClick={() => onClick?.(boardId)}>

@@ -2,13 +2,15 @@ import React, {useEffect, useState} from "react";
 import "../../style/MyReservationModal.css";
 import QrCode from "../qr/QrCode.jsx";
 import {useAuth} from "../../context/AuthContext.jsx";
+import Button from "../commons/Button.jsx";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
-const MyReservationModal = ({open, onClose, reservation}) => {
-const token = useAuth().getToken();
+const MyReservationModal = ({open, onClose, reservation, onUpdateReservation }) => {
+    const token = useAuth().getToken();
     const [status, setStatus] = useState(reservation?.status);
+
     useEffect(() => {
         if (reservation) {
             setStatus(reservation?.status);
@@ -46,7 +48,9 @@ const token = useAuth().getToken();
             }
 
             setStatus(-1);
+            onUpdateReservation(reservation.reservationId, -1);
             alert("예약이 취소되었습니다.");
+
         } catch (error) {
             console.error(error);
             alert("서버 오류로 예약 취소에 실패했습니다.");
@@ -56,24 +60,28 @@ const token = useAuth().getToken();
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <h2>{reservation.popup?.store_name}</h2>
-                <div className="onsite-qr-right">
-                    <div className="onsite-qr-placeholder">
-                        <QrCode reservationId={reservation.reservationId}/>
-                    </div>
-                </div>
-                <p><strong>예약번호:</strong> {reservation.reservationId}</p>
-                <p><strong>예약일시:</strong> {reservation.slot?.schedule.date} {reservation.slot?.start_time}</p>
-                <p><strong>장소:</strong> {reservation.popup?.address} {reservation.popup?.address_detail}</p>
-                <p><strong>결제금액:</strong>{(reservation.depositAmount).toLocaleString()}원</p>
-                <p><strong>상태:</strong> {formatStatus(status)}</p>
+                <h2 className="popup-title">{reservation.popup?.store_name}</h2>
 
-                <button className="close-btn" onClick={onClose}>닫기</button>
-                {status !== -1 && (
-                    <button className="cancel-btn" onClick={reservationCancel}>
-                        예약 취소
-                    </button>
-                )}
+                <div className="qr-section">
+                    <QrCode reservationId={reservation.reservationId}/>
+                </div>
+
+                <div className="info-section">
+                    <p><strong>예약번호</strong> {reservation.reservationId}</p>
+                    <p><strong>예약 날짜</strong> {reservation.slot?.schedule.date} {reservation.slot?.start_time}</p>
+                    <p><strong>장소</strong> {reservation.popup?.address} {reservation.popup?.address_detail}</p>
+                    <p><strong>결제금액</strong> {(reservation.depositAmount).toLocaleString()}원</p>
+                    <p><strong>상태</strong> {formatStatus(status)}</p>
+                </div>
+
+                <div className="button-section">
+                    <Button variant={"ghost"} onClick={onClose}>닫기</Button>
+                    {status === 1 && (
+                        <Button variant={"ghost"} onClick={reservationCancel}>
+                            예약 취소
+                        </Button>
+                    )}
+                </div>
             </div>
         </div>
     );
