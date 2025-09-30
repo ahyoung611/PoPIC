@@ -15,6 +15,7 @@ const PopupTabInfo = (props) => {
         { credentials: "include" },
         token
       );
+      console.log("res", response);
       setPopupSchedule(response || []);
     };
     fetchPopupDetail();
@@ -34,9 +35,17 @@ const PopupTabInfo = (props) => {
       map.setZoomable(false);
 
       const markerPosition = new window.kakao.maps.LatLng(props.popup.latitude, props.popup.longitude);
-      const marker = new window.kakao.maps.Marker({ position: markerPosition, clickable: true });
-      marker.setMap(map);
-      window.kakao.maps.event.addListener(marker, "click", copyLocation);
+
+        const imageSrc = "/favicon.png"; // 사용할 이미지 경로
+        const imageSize = new window.kakao.maps.Size(40, 40); // 마커 이미지 크기
+        const imageOption = { offset: new window.kakao.maps.Point(20, 40) }; // 이미지 기준점 (가운데 하단)
+
+        const markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+        const marker = new window.kakao.maps.Marker({
+            position: markerPosition,
+            image: markerImage, // 여기서 이미지 적용
+        });
+        marker.setMap(map);
     };
 
     if (window.kakao?.maps) {
