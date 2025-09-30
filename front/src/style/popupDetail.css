@@ -400,28 +400,22 @@
 
 .popupStore-detail .popupReview-container .review-search .review-search-header {
     display: flex;
+    flex-direction: column;
+    gap: 10px;
     justify-content: space-between;
     align-items: center;
     margin: 0 7px;
+}
+
+.popupStore-detail .popupReview-container .review-point {
+    width: 100%;
 }
 
 .popupStore-detail .popupReview-container .review-search .review-search-header .point-color {
     color: var(--main-color);
 }
 
-.popupStore-detail .popupReview-container .review-search .review-search-header .search-bar {
-    display: flex;
-    width: 50%;
-}
 
-.popupStore-detail .popupReview-container .review-search .review-search-header .search-bar input{
-    display: flex;
-    border: 1px solid var(--border-color);
-    border-radius: 3px;
-    padding: 5px;
-    margin-right: 5px;
-    flex: 1;
-}
 
 .popupStore-detail .popupReview-container .review-btn{
     text-align: center;
@@ -604,6 +598,5 @@
 .msg-container .no-login{
     color: var(--black-color);
 }
-
 
 /* 팝업 리뷰 컴포넌트 css 끝 */

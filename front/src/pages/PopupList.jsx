@@ -160,7 +160,7 @@ export default function PopupList() {
             searchValue={searchValue}
             onSearchChange={setSearchValue}
             onSearchClick={onSearchClick}
-
+            placeholder="팝업명을 입력해주세요."
           />
         </div>
 

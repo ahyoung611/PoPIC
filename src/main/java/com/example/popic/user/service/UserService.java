@@ -80,7 +80,6 @@ public class UserService {
         // 신규 가입
         User u = new User();
         u.setLogin_id(oauthLoginId);
-        u.setPassword(passwordEncoder.encode("oauth-" + java.util.UUID.randomUUID())); // 소셜용 더미 PW
         u.setRole(ROLE.USER);
         u.setStatus(1);
         u.setPoint(0);
