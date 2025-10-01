@@ -5,6 +5,7 @@ import '../../style/fieldWaiting.css';
 import apiRequest from "../../utils/apiRequest.js";
 import {useAuth} from "../../context/AuthContext.jsx";
 import Pagination from "../../components/commons/Pagination.jsx";
+import SearchHeader from "../../components/commons/SearchHeader.jsx";
 
 const FieldWaiting = ()=>{
     const [sort, setSort] = useState("");
@@ -54,7 +55,8 @@ const FieldWaiting = ()=>{
             },token);
         }
         await fetchEntry();
-        fetchList();
+        await fetchList();
+        await fetchCurrentWaiting();
         alert("입장 처리를 완료했습니다.");
     }
 
@@ -67,7 +69,8 @@ const FieldWaiting = ()=>{
             },token);
         }
         await fetchCancel();
-        fetchList();
+        await fetchList();
+        await fetchCurrentWaiting();
         alert("취소 처리를 완료했습니다.");
     }
 
@@ -104,8 +107,13 @@ const FieldWaiting = ()=>{
                             { label: "예약 취소", value: "cancel" },
                         ]}
                     />
-                    <input type={"text"} value={keyword} onChange={(e)=>{setKeyword(e.target.value)}} placeholder={"예약자 이름 검색"}/>
-                    <Button onClick={fetchList}>검색</Button>
+                    <SearchHeader
+                        searchValue={keyword}
+                        onSearchChange={setKeyword}
+                        onSearchClick={() => fetchList(1)}   // 검색 버튼 클릭 or Enter
+                        placeholder="예약자 이름 검색"
+                        className="field-search"
+                    />
                 </div>
                 <div className={"list-table"}>
                     <table>
