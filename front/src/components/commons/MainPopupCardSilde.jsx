@@ -119,6 +119,7 @@ export default function MainPopupCardSlide({
   };
 
   return (
+      <div className="main-container">
     <section
       ref={sectionRef}
       className={`mpc-section ${isBgFx ? "mpc-section--bgfx" : ""}`}
@@ -237,5 +238,6 @@ export default function MainPopupCardSlide({
         </a>
       )}
     </section>
+    </div>
   );
 }
