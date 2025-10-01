@@ -67,7 +67,10 @@ const WelcomePage = () => {
                 <div className="popic">
                     <img onClick={toMain} src="/popic3D.png" alt="popic" />
                 </div>
-                <div className="earth"></div>
+                <div class="earth-wrap">
+                    <div className="earth">
+                    </div>
+                </div>
             </div>
         </div>
     );
