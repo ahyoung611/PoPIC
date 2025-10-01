@@ -1,5 +1,4 @@
 import React from "react";
-import "../../style/mainPopupCard.css";
 import MainPopupCardImg from "./MainPopupCardImg.jsx";
 
 export default function MainPopupCardB({
@@ -11,8 +10,9 @@ export default function MainPopupCardB({
 
 
         return (
-         <div className="mpc-card mpc-card--typeB" role="button" onClick={onClick}>
+         <div className={`popup-card mpc-card mpc-card--typeB`} role="button" onClick={onClick}>
             <MainPopupCardImg
+                className="popup-card"
                 popupId={popupId}
                 alt={alt}
                 category={category}

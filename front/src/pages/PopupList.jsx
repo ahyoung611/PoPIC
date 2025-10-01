@@ -62,7 +62,7 @@ export default function PopupList() {
       return allItems.filter((it) => it.title?.toLowerCase().includes(q));
     }, [allItems, searchValue]);
 
-    // 페이지네이션 계산 (filtered 이후)
+    // 페이지네이션 계산
     const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
 
     const paged = useMemo(() => {
@@ -146,6 +146,7 @@ export default function PopupList() {
   return (
     <div className="container">
         <div className="inner">
+            <div className="popup-list__content">
       <div className="popup-list">
         <h1 className="list-title">ALL POPUP</h1>
 
@@ -200,5 +201,6 @@ export default function PopupList() {
       </div>
     </div>
     </div>
+     </div>
   );
 }
