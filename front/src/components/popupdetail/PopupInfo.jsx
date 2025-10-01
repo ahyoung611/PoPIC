@@ -46,7 +46,7 @@ const PopupInfo = (props) => {
     return (
         <div className="popupInfo">
             <div className="popup-left">
-                <div className="popup-title"><span className={"title"}>{popup.store_name}</span></div>
+                <div className="popup-title"><p>{popup.store_name}</p></div>
                 <div className="popup-date">{popup.start_date} ~ {popup.end_date}</div>
                 <div className="popup-address">{popup.address} {popup.address_detail}</div>
             </div>

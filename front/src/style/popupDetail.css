@@ -1,79 +1,20 @@
-.popupStore-detail {
-    /*text-align: center;*/
-}
-
-/* 이미지 슬라이더 */
-.popupStore-detail .photo-slider {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto 20px;
-    overflow: hidden;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.popupStore-detail .photo-slider img.popup-image {
-    height: 400px;
-    object-fit: cover;
-    transition: transform 0.5s ease, opacity 0.5s ease;
-    opacity: 1;
-    position: relative;
-}
-
-.popupStore-detail .photo-slider img.popup-image.fade-out {
-    opacity: 0;
-}
-
-.popupStore-detail .photo-slider img.popup-image:hover {
-    transform: scale(1.05);
-}
-
-.popupStore-detail .photo-slider .arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(255, 255, 255, 0.8);
-    border: none;
-    padding: 8px 12px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    transition: background-color 0.2s;
-    z-index: 10;
-}
-
-.popupStore-detail .photo-slider .arrow:hover {
-    background-color: rgba(255, 255, 255, 1);
-}
-
-.popupStore-detail .photo-slider .arrow.left {
-    left: 10px;
-}
-
-.popupStore-detail .photo-slider .arrow.right {
-    right: 10px;
-}
-
-/* 팝업 탭 css 시작 */
+/* 팝업 탭 ------------------------------------------------------------------------------------------------------------------------ */
 .popupStore-detail .menu-tab {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
 }
 
 .popupStore-detail .tab {
     flex: 1;
     text-align: center;
-    padding: 8px 0;
+    padding: 10px 0;
     background: none;
     border: none;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-regular);
     color: var(--black-color);
     cursor: pointer;
     position: relative;
@@ -81,11 +22,11 @@
 }
 
 .popupStore-detail .tab:hover {
-    font-weight: 600;
+    font-weight: var(--font-semibold);
 }
 
 .popupStore-detail .tab.active {
-    font-weight: 600;
+    font-weight: var(--font-semibold);
 }
 
 .popupStore-detail .tab.active::after {
@@ -99,17 +40,8 @@
     border-radius: 100px;
 }
 
-/* 팝업 탭 css 끝 */
 
-
-/* 팝업 상세 이미지 */
-.popupStore-detail .popup-image {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-}
-
-/* 팝업 탭 정보 */
+/* 팝업 탭 정보 --------------------------------------------------------------------------------*/
 .popupStore-detail .popup-tab-info #map {
     width: 100%;
     height: 500px;
@@ -120,9 +52,6 @@
     justify-content: space-between;
     align-items: center;
 }
-
-/* 모달 */
-
 
 .popupStore-detail .be-ck .ck.ck-editor { width: 100%; margin: 0; }
 .popupStore-detail .be-ck .ck-editor__main { margin: 0; }
@@ -147,148 +76,173 @@
 .popupStore-detail .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content{ border: none; }
 
 
-/* 팝업 정보 표시 css 시작 */
+/* 팝업 정보 표시 -------------------------------------------------------------------------------- */
 
 .popupStore-detail .popupInfo {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 16px;
-    padding: 8px 0;
+    margin :20px 10px;
 }
 
-.popupStore-detail .popup-left {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.popupStore-detail .popup-title .title {
-    font-size: var(--font-subtitle);
-    font-weight: bold;
-    margin: 0;
+.popupStore-detail .popup-title {
+    font-size: var(--font-title);
+    font-weight: var(--font-bold);
+    margin: 10px 0;
 }
 
 .popupStore-detail .popup-date,
 .popupStore-detail .popup-address {
-    font-size: var(--font-small);
+    font-size: var(--font-base);
     color: var(--black-color);
+    line-height:1.5;
 }
 
 .popupStore-detail .popup-right {
     flex-shrink: 0;
 }
 
-/* 팝업 정보 표시 css 끝 */
 
-/* 팝업 tab info  css 시작 */
+/* 팝업 tab info  -------------------------------------------------------------------------------- */
 .popupStore-detail .popup-tab-info{
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 20px;
+    padding: 20px 10px;
 }
 
-.popupStore-detail .popup-tab-info .title{
+.popupStore-detail .title{
     font-size: var(--font-subtitle);
+    font-weight: var(--font-semibold);
+    margin-bottom:15px;
 }
 
-.popupStore-detail .popup-tab-info .open-time{
-    margin: 7px 0;
-}
 
 .popupStore-detail .popup-tab-info .open-time p{
     margin: 5px 0;
-    font-size: var(--font-small);
+    font-size: var(--font-base);
+    font-weight: var(--font-regular);
 }
 
-.popupStore-detail .popup-tab-info .popup-description{
-    margin: 7px 0;
-}
-
-.popupStore-detail .popup-tab-info .popup-description .title{
-    margin-bottom: 7px;
-}
-
-.popupStore-detail .popup-tab-info .popup-description .content{
+.popupStore-detail .popup-description .content{
     background-color: var(--bg-color);
-    padding: 13px;
-    border-radius: 4px;
-}
-
-.popupStore-detail .popup-tab-info .popup-location{
-    margin: 7px 0;
-}
-
-.popupStore-detail .popup-tab-info .popup-location .title{
-    margin-bottom: 12px;
+    padding: 20px;
+    border-radius: 5px;
 }
 
 .popupStore-detail .popup-tab-info .popup-location .copyLocation{
     font-size: var(--font-small);
-    margin-top: 8px;
+    margin-top: 10px;
 }
 
-/* 팝업 tab info  css 끝 */
 
-/* 팝업 예약 컴포넌트 css 시작 */
+/* 팝업 예약 컴포넌트 -------------------------------------------------------------------------------- */
 
-.popupStore-detail .popupReservation .reservation-number-input{
-    display: flex;
-    justify-content: space-between;
-    font-size: var(--font-size-base);
+.popupStore-detail .reserve-panel{
+  display:flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.popupStore-detail .popupReservation .reservation-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 130px;
-    height: 40px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: var(--white-color);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+/* 오른쪽 요약 카드 */
+.popupStore-detail .reserve-summary{
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 15px;
+  background: var(--white-color);
 }
 
-.popupStore-detail .popupReservation .reservation-btn button {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #616161;
-    cursor: pointer;
-    padding: 0 15px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
+.popupStore-detail .summary-title{
+  font-size: var(--font-subtitle);
+  font-weight: var(--font-semibold);
+  margin-bottom: 15px;
 }
 
-.popupStore-detail .popupReservation .reservation-btn button:hover {
-    background-color: #f5f5f5;
+.popupStore-detail .summary-box{
+   width:100%;
+   display:flex;
+   align-items: center;
+   justify-content:space-between;
 }
 
-.popupStore-detail .popupReservation .reservation-btn span {
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-    flex-grow: 1; /* Allows the span to take available space */
-    text-align: center;
-    padding: 0 5px; /* Adjust padding around the number */
+.popupStore-detail .summary-box  .summary-left,
+.popupStore-detail .summary-box .summary-right{
+    display:flex;
+    flex-direction: column;
+    gap:10px;
 }
 
-.popupStore-detail .popupReservation .reservation-btn .minus {
-    border-right: 1px solid #e0e0e0;
+.popupStore-detail .summary-sub{ color: var(--darkgray-color); }
+.popupStore-detail .summary-price{ margin-top: 5px; }
+
+.popupStore-detail .summary-row{
+  display:flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.popupStore-detail .popupReservation .reservation-btn .plus {
-    border-left: 1px solid #e0e0e0;
+.popupStore-detail .qty-box{
+  display:flex; align-items:center; gap:10px;
+  border:1px solid var(--border-color);
+  border-radius: 8px; height:40px; padding:0 8px;
+}
+.popupStore-detail .qty-btn{
+  width:32px; height:32px; border:none; background:#f5f5f5;
+  border-radius:6px; cursor:pointer; font-size:18px; line-height:1;
+}
+.popupStore-detail .qty-num{ min-width:28px; text-align:center; font-weight:600; }
+
+.popupStore-detail .remain-row{
+  text-align:center;
 }
 
-/* 팝업 예약 컴포넌트 css 끝 */
+.popupStore-detail .divider{
+    border:0;
+    height:1px;
+    background:var(--border-color);;
+    margin:16px 0;
+ }
 
-/* 팝업 문의 컴포넌트 css 시작 */
+.popupStore-detail .total-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size: var(--font-subtitle);
+}
+
+.popupStore-detail .total-row .total{
+    color: var(--main-color);
+}
+
+.popupStore-detail .reserve-btn{
+  margin-top:15px; width:100%;
+}
+
+/* ===== 안내 박스 ===== */
+.popupStore-detail .popup-description{ margin-top: 20px; }
+.popupStore-detail .popup-description .desc-title{
+  font-size: var(--font-subtitle);
+  font-weight: var(--font-semibold);
+  margin-bottom: 10px;
+}
+.popupStore-detail .popup-description .desc-card{
+  background:#f6f6f6;
+  border:1px solid #e4e4e4;
+  border-radius:12px;
+  padding:16px;
+  color:#333;
+}
+.popupStore-detail .popup-description .desc-card h4{
+  margin:16px 0 8px; font-weight:700;
+}
+.popupStore-detail .popup-description .desc-card ol{
+  margin:0; padding-left: 18px;
+}
+.popupStore-detail .popup-description .desc-card li{
+  line-height:1.6; margin:4px 0;
+}
+
+/* 팝업 문의 컴포넌트 -------------------------------------------------------------------------------- */
 
 .popupStore-detail .popupInquiry-container .inquiry-btn{
     text-align: center;
@@ -394,10 +348,8 @@
     background: none;
     cursor: pointer;
 }
-/* 팝업 문의 컴포넌트 css 끝 */
 
-/* 팝업 리뷰 컴포넌트 css 시작 */
-
+/* 팝업 리뷰 컴포넌트 -------------------------------------------------------------------------------- */
 .popupStore-detail .popupReview-container .review-search .review-search-header {
     display: flex;
     flex-direction: column;
@@ -414,8 +366,6 @@
 .popupStore-detail .popupReview-container .review-search .review-search-header .point-color {
     color: var(--main-color);
 }
-
-
 
 .popupStore-detail .popupReview-container .review-btn{
     text-align: center;
@@ -599,4 +549,100 @@
     color: var(--black-color);
 }
 
-/* 팝업 리뷰 컴포넌트 css 끝 */
+/*  팝업 상세: 이미지 슬라이드  */
+
+/* 슬라이드 컨테이너 */
+.popupStore-detail .popupStore-Swiper{
+  position: relative;
+    width: 100%;
+    height: 420px;
+    overflow: hidden;
+    background: #000;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+.popupStore-detail .popupStore-Swiper .swiper-wrapper{
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* 각 슬라이드 */
+.popupStore-detail .popupStore-Swiper .swiper-slide{
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* 블러 배경  */
+.popupStore-detail .popupStore-Swiper .swiper-slide::before{
+  content: "";
+  position: absolute; inset: 0;
+  background-image: var(--bg);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  filter: blur(14px) brightness(.85) saturate(1.05);
+  transform: scale(1.15);
+  z-index: 0;
+}
+
+/* 중앙 포스터 */
+.popupStore-detail .popupStore-Swiper .slide-img{
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  max-width: min(66%, 560px);
+  max-height: 80%;
+  width: auto; height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  z-index: 1;
+  transition: transform .35s ease;
+  will-change: transform;
+}
+
+.popupStore-detail .popupStore-Swiper .swiper-slide:hover .slide-img{
+  transform: translate(-50%,-50%);
+}
+
+/* 진행바 */
+.popupStore-detail .popupStore-Swiper .popupStore-progress{
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  top: auto;
+  height: 5px;
+  transform: none;
+  background: #e7e7ea;
+  border-radius: 999px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.popupStore-detail .popupStore-Swiper .popupStore-progress .swiper-pagination-progressbar-fill{
+  background: var(--main-color, --bg-color);
+  border-radius: 999px;
+  transform-origin: left center;
+}
+
+/* 컨테이너에 포스터/바 공통 너비 */
+.popupStore-detail .popupStore-Swiper { position:relative; --posterW: min(66%, 560px); }
+
+/* 반응형 */
+/* 모바일 */
+@media (max-width: 560px){
+  .popupStore-detail .popupStore-Swiper{ height: 480px; }
+}
+
+/* PC */
+@media (max-width: 900px){
+  .popupStore-detail .popupStore-Swiper{ height: 520px; }
+  .popupStore-detail .popupStore-Swiper .slide-img{
+    max-width: 72%;
+    max-height: 78%;
+  }
+}
+

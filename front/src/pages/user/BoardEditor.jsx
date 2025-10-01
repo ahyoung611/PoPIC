@@ -283,11 +283,10 @@ export default function BoardEditor() {
                 )}
 
                 {/* 본문 */}
-                  {/* 본문 */}
-                  <div
-                      className="be-content ck-content"
-                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content || "") }}
-                  />
+                <div
+                  className="be-content"
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content || "") }}
+                />
               </form>
             </div>
 

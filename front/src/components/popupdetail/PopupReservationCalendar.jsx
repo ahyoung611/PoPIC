@@ -154,7 +154,7 @@ export default function PopupReservationCalendar({popup, value, onChange}) {
             <div className="pr-cal">
                 <div className="pr-head">
                     <button className="pr-btn" onClick={() => setCursor(new Date(y, m - 1, 1))}>◀</button>
-                    <div className="font-semibold">
+                    <div className="pr-month">
                         {firstDay.toLocaleString("en-US", {month: "long"})} {y}
                     </div>
                     <button className="pr-btn" onClick={() => setCursor(new Date(y, m + 1, 1))}>▶</button>

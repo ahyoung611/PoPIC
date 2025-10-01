@@ -2,7 +2,6 @@ import PopupImage from "../components/popupdetail/PopupImage.jsx";
 import PopupInfo from "../components/popupdetail/PopupInfo.jsx";
 import {useEffect, useState} from "react";
 import apiRequest from "../utils/apiRequest.js";
-import '../style/popupDetail.css';
 import PopupReservation from "../components/popupdetail/PopupReservation.jsx";
 import PopupReview from "../components/popupdetail/PopupReview.jsx";
 import PopupTabInfo from "../components/popupdetail/PopupTabInfo.jsx";
@@ -11,6 +10,8 @@ import QrCode from "../components/qr/QrCode.jsx";
 import {useAuth} from "../context/AuthContext.jsx"
 import {useLocation, useParams} from "react-router-dom";
 import PopupReservationModal from "../components/popupdetail/PopupReservationModal.jsx";
+
+import '../style/popupDetail.css';
 
 const PopupDetail = () => {
     const {auth} = useAuth();
