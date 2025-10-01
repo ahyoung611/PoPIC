@@ -139,7 +139,7 @@ export default function VendorMyPage() {
   /* 폼 스키마 */
   const vendorSchema = useMemo(() => ({
     fields: [
-      { name:"manager_name", label:"이름",   required:true, readOnly:!edit },
+      { name:"manager_name", label:"담당자",   required:true, readOnly:!edit },
       { name:"login_id",     label:"아이디", required:true, readOnly:true },
       { name:"brn",          label:"사업자 등록 번호", required:true, readOnly:true },
       { name:"phone_number", label:"전화번호", required:true, readOnly:!edit },
@@ -148,16 +148,16 @@ export default function VendorMyPage() {
   }), [edit]);
 
   /* 25.10.01 기존 코드*/
-/*  const badgeMeta = STATUS_BADGE[data?.status] ?? { text:"상태 미정", color:"gray" };
+  const badgeMeta = STATUS_BADGE[data?.status] ?? { text:"상태 미정", color:"gray" };
   const badge = (
     <Button variant="label" color={badgeMeta.color} disabled style={{ cursor:"default" }}>
       {badgeMeta.text}
     </Button>
-  );*/
+  );
 
     /* 25.10.01 신규 코드 (승인 재요청) */
     // ★ 반려 → 재심사(승인대기) 액션 (기존 배지를 클릭 가능하게)
-  const handleReapply = useCallback(async () => {
+/*  const handleReapply = useCallback(async () => {
     if (!vendorId) return;
     if (data?.status !== VENDOR_STATUS.REJECTED) return;
     try {
@@ -169,9 +169,8 @@ export default function VendorMyPage() {
       console.error(e);
       alert(e?.message || "재심사 요청에 실패했습니다.");
     }
-  }, [vendorId, token, data?.status]);
-
-  const badgeMeta = STATUS_BADGE[data?.status] ?? { text:"상태 미정", color:"gray" };
+  }, [vendorId, token, data?.status]);*/
+/*  const badgeMeta = STATUS_BADGE[data?.status] ?? { text:"상태 미정", color:"gray" };
   const isRejected = data?.status === VENDOR_STATUS.REJECTED;
   // 반려일 때만 클릭 가능, 나머지는 기존처럼 라벨형 비활성
   const badge = isRejected ? (
@@ -186,7 +185,7 @@ export default function VendorMyPage() {
     </Button>
   ) : (
     <Button variant="label" color={badgeMeta.color} disabled style={{ cursor:"default" }}>{badgeMeta.text}</Button>
-      );
+      );*/
 
   if (loading || !data || !form) return null;
 
@@ -225,6 +224,18 @@ export default function VendorMyPage() {
           credentials:"include",
         });
         if (!res.ok) throw new Error(`사진 업로드 실패: ${res.status}`);
+      }
+
+      // ★ 저장 성공 이후: 기존 상태가 '승인 반려(3)'였다면 자동 재심사 요청 → '승인 대기(2)' 전환
+      if (data?.status === VENDOR_STATUS.REJECTED) {
+        try {
+          await apiRequest(`/api/vendors/${vendorId}/status/reapply`, { method: "POST" }, token);
+          setData(prev => ({ ...prev, status: VENDOR_STATUS.PENDING }));
+          setForm(prev => ({ ...prev, status: VENDOR_STATUS.PENDING }));
+        } catch (e) {
+          console.error("재심사 요청 실패", e);
+          alert(e?.message || "재심사 요청에 실패했습니다. 관리자에게 문의해 주세요.");
+        }
       }
 
       setEdit(false);
@@ -363,7 +374,7 @@ export default function VendorMyPage() {
                 </div>
               )}
 
-              renderActions={() => (
+/*              renderActions={() => (
                   <div className="btn-box">
                     {!edit ? (
                       <Button color="red" onClick={() => setEdit(true)}>수정</Button>
@@ -377,7 +388,7 @@ export default function VendorMyPage() {
                       </>
                     )}
                   </div>
-                )}
+                )}*/
 
             />
 
