@@ -36,6 +36,13 @@ public class VendorProfileController {
         return dto;
     }
 
+    // 벤더 승인 재요청
+    @PostMapping("/status/reapply")
+    public ResponseEntity<VendorDTO> reapply(@PathVariable Long vendorId) {
+        VendorDTO dto = service.requestReapproval(vendorId);
+        return ResponseEntity.ok(dto);
+    }
+
     // 벤더 프로필 수정
     @PutMapping
     public VendorDTO update(@PathVariable Long vendorId, @RequestBody Map<String, Object> payload) {

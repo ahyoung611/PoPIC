@@ -114,4 +114,21 @@ public class VendorProfileService {
     public VendorProfile getProfileByVendorId(Long vendorId) {
         return vendorProfileRepository.findByVendorVendor_Id(vendorId).orElse(null);
     }
+
+    // 벤더 승인 재요청
+    @Transactional
+    public VendorDTO requestReapproval(Long vendorId) {
+        Vendor vendor = vendorRepository.findById(vendorId)
+                .orElseThrow(() -> new IllegalArgumentException("Vendor not found: " + vendorId));
+
+        // 상태 전이 규칙: REJECTED(3) -> PENDING(2)
+        if (vendor.getStatus() != 3) {
+            throw new IllegalStateException("현재 상태에서는 재심사 요청을 할 수 없습니다.");
+        }
+
+        vendor.setStatus(2); // 승인 대기
+        // JPA dirty checking으로 flush
+        return new VendorDTO(vendor);
+    }
+
 }
