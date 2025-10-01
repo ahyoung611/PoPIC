@@ -16,6 +16,17 @@ export default function ConfirmModal({
                                          onConfirm,
                                          onCancel,
                                      }) {
+    const handleClose = () => {
+        const scrollY = parseInt(document.body.style.top || "0") * -1;
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        document.body.style.overflowY = "";
+        window.scrollTo(0, scrollY);
+
+        onCancel?.();
+    };
+
     if (!open) return null;
 
     useEffect(() => {
@@ -28,16 +39,20 @@ export default function ConfirmModal({
         return () => document.removeEventListener("keydown", onKey);
     }, [closeOnEsc, onCancel, onConfirm]);
 
-    // 바디 스크롤 잠금
-    useEffect(() => {
-        document.body.style.overflow = "hidden";
-        return () => (document.body.style.overflow = "");
-    }, []);
+   useEffect(() => {
+       if (!open) return;
+
+       const scrollY = window.scrollY;
+       document.body.style.position = "fixed";
+       document.body.style.top = `-${scrollY}px`;
+       document.body.style.width = "100%";
+       document.body.style.overflowY = "hidden";
+   }, [open]);
 
     return createPortal(
         <div
             className="modalMask"
-            onClick={closeOnOutside ? onCancel : undefined}
+             onClick={closeOnOutside ? handleClose : undefined}
             role="presentation"
         >
             <div
@@ -62,7 +77,7 @@ export default function ConfirmModal({
                         className="modalBtn modalBtn--cancel"
                         variant="outline"
                         color="gray"
-                        onClick={onCancel}
+                         onClick={handleClose}
                     >
                         {cancelText}
                     </Button>

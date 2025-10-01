@@ -1,13 +1,17 @@
-.modalMask{
-    position: fixed; inset: 0;
-    display: flex; align-items: center; justify-content: center;
+/*  Modal */
+.modalMask {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: rgba(0,0,0,.50);
     z-index: 1000;
 }
 
-.modalPanel{
+.modalPanel {
     width: min(500px, 92vw);
-    background: #fff;
+    background: var(--white-color);
     border-radius: 10px;
     padding: 20px;
     box-shadow: var(--shadow);
@@ -16,33 +20,40 @@
     animation: modal-pop .14s ease-out;
 }
 
-.modalPanel .modalTitle{
-  font-size:var(--font-title);
- }
+.modalPanel .modalTitle {
+    font-size: var(--font-title);
+    font-weight: var(--font-bold);
+    letter-spacing: -0.01em;
+    text-align: center;
+    color: var(--black-color);
+    margin-bottom: 30px;
+}
 
-@keyframes modal-pop{
+@keyframes modal-pop {
     from { transform: scale(.98); opacity: .88; }
     to   { transform: scale(1);   opacity: 1; }
 }
 
 .modalPanel input[type=text],
-.modalPanel textarea{
+.modalPanel textarea {
     width: 100%;
-    padding:10px;
+    padding: 10px;
     border-radius: 5px;
     border: 1px solid var(--border-color);
     margin-bottom: 10px;
     transition: border 0.2s ease;
-    font-size:var(--font-small);
+    font-size: var(--font-small);
+    background: var(--white-color);
+    color: var(--black-color);
 }
 
 .modalPanel input:focus,
-.modalPanel textarea:focus{
+.modalPanel textarea:focus {
     border: 1px solid var(--main-color) !important;
     outline: none !important;
 }
 
-/* 비공개 체크박스 */
+/*  Checkbox  */
 .privateCheck {
     display: flex;
     align-items: center;
@@ -79,87 +90,97 @@
     background-image: url("/privateCheck-p.png");
 }
 
-.privateCheck input[type="checkbox"]:checked + label{
+.privateCheck input[type="checkbox"]:checked + label {
     color: var(--black-color);
 }
 
-
-.modalTitle{
-    font-size: var( --font-title); font-weight: 800;
-    letter-spacing: -0.01em;
-    text-align: center; color: var(--black-color);
-    margin-bottom: 30px;
+/*  Modal Actions  */
+.modalActions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
 }
 
-.modalActions{
-    display: flex; justify-content: center; gap: 12px;
-}
-
-.modalBtn{
-    height: 40px; min-width: 80px;
+.modalBtn {
+    height: 40px;
+    min-width: 80px;
     border-radius: 5px;
-    font-size: var(--font-small); font-weight: 700;
+    font-size: var(--font-small);
+    font-weight: var(--font-bold);
+    background: var(--white-color);
+    color: var(--black-color);
+    border: 1px solid var(--border-color);
     transition: background .2s ease, color .2s ease, transform .08s ease, border-color .2s ease;
 }
-.modalBtn:active{ transform: scale(.98); }
+.modalBtn:active {
+    transform: scale(.98);
+}
 
-
-/* 예약 모달창만 */
-.reservationModal .modalPanel{
+/*  Reservation Modal  */
+.reservationModal .modalPanel {
     width: min(420px, 92vw);
     padding: 24px 22px;
 }
 
-.reservationModal .modalTitle{
+.reservationModal .modalTitle {
     margin-bottom: 18px;
 }
 
-.reservationModal .reservationList{
+.reservationModal .reservationList {
     display: grid;
     gap: 8px;
     margin-bottom: 18px;
-    font-size: var(--font-body, 14px);
+    font-size: var(--font-body);
 }
-.reservationModal .reservationList p{
+.reservationModal .reservationList p {
     display: flex;
     align-items: center;
     margin: 0;
 }
-.reservationModal .reservationList p strong{
+.reservationModal .reservationList p strong {
     color: var(--gray-color);
-    font-weight: 700;
+    font-weight: var(--font-bold);
     min-width: 120px;
 }
-.reservationModal .reservationList .price{
-    font-weight: 800;
+.reservationModal .reservationList .price {
+    font-weight: var(--font-bold);
     letter-spacing: -0.01em;
 }
 
-.reservationModal .modalActions{ display: flex; justify-content: center; gap: 12px; }
+.reservationModal .modalActions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
 
-.reservationModal .modalBtn.btnPay{
-    background: #F61909;
-    color: #fff;
+.reservationModal .modalBtn.btnPay {
+    background: var(--darkRed-color);
+    color: var(--white-color);
     border: 1px solid transparent;
 }
-.reservationModal .modalBtn.btnPay:hover{
+.reservationModal .modalBtn.btnPay:hover {
     box-shadow: 0 3px 10px rgba(0,0,0,.15);
 }
-.reservationModal .modalBtn.btnGhost{
-    background: #fff;
+.reservationModal .modalBtn.btnGhost {
+    background: var(--white-color);
     color: var(--black-color);
     border: 1px solid var(--border-color);
 }
-.reservationModal .modalBtn.btnGhost:hover{
-    background: rgba(0,0,0,.03);
+.reservationModal .modalBtn.btnGhost:hover {
+    background: var(--gray-hover-color);
 }
 
-@media (max-width: 360px){
-    .reservationModal .reservationList p strong{ min-width: 100px; }
+/* 반응형 */
+@media (max-width: 360px) {
+    .reservationModal .reservationList p strong {
+        min-width: 100px;
+    }
 }
 
+/* Walk-in Modal */
 .walkInModalDescription {
     text-align: center;
     margin-bottom: 30px;
     font-size: var(--font-subtitle);
+    color: var(--darkgray-color);
 }
