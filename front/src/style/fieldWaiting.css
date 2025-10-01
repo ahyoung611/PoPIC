@@ -40,13 +40,6 @@
     margin-bottom: 20px;
 }
 
-.field-waiting .search-bar input {
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    flex: 1;
-    padding: 7px;
-}
-
 .field-waiting .list-table {
     display: flex;
     justify-content: center;
