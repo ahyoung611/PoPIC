@@ -4,6 +4,7 @@ import Banner from "../components/commons/Banner.jsx";
 import MainPopupCardSlide from "../components/commons/MainPopupCardSilde.jsx";
 import apiRequest from "../utils/apiRequest.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import "../style/mainPopupCard.css";
 
 // API 서버 베이스 URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
@@ -174,7 +175,7 @@ const Main = () => {
         <p className="loading-message">데이터를 불러오는 중입니다...</p>
       ) : (
         <>
-          {/* 섹션 1: 탭/배지 숨김 */}
+          {/* 이달의 팝업 */}
           <div>
             <MainPopupCardSlide
               title="MONTHLY PICK"
@@ -189,8 +190,8 @@ const Main = () => {
             />
           </div>
 
-          {/* 섹션 2: 탭/배지 숨김 + 배경 효과 */}
-          <div className="mpc-section--bgcolor">
+          {/* 곧 종료되는 팝업 (10일 이내) */}
+          <div  className="mpc-section--bgcolor">
             <MainPopupCardSlide
               title="CLOSING SOON"
               fetcher={fetchByClosingSoon}
@@ -205,12 +206,12 @@ const Main = () => {
             />
           </div>
 
-          {/* 섹션 3: 카테고리 탭/배지 표시 */}
+          {/* 카테고리별 팝업 */}
           <div>
             <MainPopupCardSlide
               title="CATEGORY PICK"
               fetcher={fetchByCategory}
-              categories={CATEGORY_TABS}   // 카테고리 사용
+              categories={CATEGORY_TABS}
               limit={8}
               slidesPerView={4}
               showMore

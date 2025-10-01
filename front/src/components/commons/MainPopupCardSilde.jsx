@@ -4,8 +4,6 @@ import { Navigation, A11y } from "swiper/modules";
 import Button from "../commons/Button";
 import "swiper/css";
 import "swiper/css/navigation";
-
-import "../../style/mainPopupCard.css";
 import MainPopupCardA from "./MainPopupCardA.jsx";
 
 export default function MainPopupCardSlide({
@@ -21,8 +19,8 @@ export default function MainPopupCardSlide({
   bookmarkedPopups,
   onToggleBookmark,
 
-  showTabs = true,        // 탭 노출 여부 (기본 true)
-  showCategory = true,    // 카드 배지(categoryLabel) 노출 여부 (기본 true)
+  showTabs = true,
+  showCategory = true,
 }) {
   const currentIndexRef = useRef(0);
   const [activeCategory, setActiveCategory] = useState(categories?.[0]?.key ?? null);
@@ -47,7 +45,6 @@ export default function MainPopupCardSlide({
       setLoading(true);
       try {
         const hasCategories = Array.isArray(categories) && categories.length > 0;
-        // ★ 카테고리가 있을 때만 categoryKey 전달
         const arg = hasCategories ? { categoryKey: activeCategory ?? undefined } : undefined;
         const data = await (arg ? fetcher?.(arg) : fetcher?.());
         if (!mounted) return;

@@ -13,7 +13,7 @@
     padding: 50px 0;
 }
 
-.main-container .mpc-section--bgcolor {
+.main-container .mpc-section--bgfx {
     background: var(--bg-color);
 }
 
@@ -51,6 +51,7 @@
 
 .main-container .mpc-section .mpc-section__swiper-wrap {
     width: 100%;
+    min-height : 460px;
     position: relative;
     overflow: visible !important;
 }
@@ -109,8 +110,8 @@
     transition: transform .15s ease, box-shadow .2s ease, opacity .2s ease;
 }
 
-.main-container .mpc-swiper-button-prev { left: 0; }
-.main-container .mpc-swiper-button-next { right: 0; }
+.main-container .mpc-swiper-button-prev { left: 5px; }
+.main-container .mpc-swiper-button-next { right: 5px; }
 
 .main-container .mpc-section .mpc-section__swiper .swiper-button-disabled {
     opacity: 0;
