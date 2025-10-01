@@ -1,5 +1,5 @@
 // src/views/vendor/VendorMyPage.jsx
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState, useCallback} from "react";
 import {useParams} from "react-router-dom";
 import Button from "../../components/commons/Button.jsx";
 import ProfileForm from "../../components/commons/ProfileForm.jsx";
@@ -147,12 +147,46 @@ export default function VendorMyPage() {
     ]
   }), [edit]);
 
-  const badgeMeta = STATUS_BADGE[data?.status] ?? { text:"상태 미정", color:"gray" };
+  /* 25.10.01 기존 코드*/
+/*  const badgeMeta = STATUS_BADGE[data?.status] ?? { text:"상태 미정", color:"gray" };
   const badge = (
     <Button variant="label" color={badgeMeta.color} disabled style={{ cursor:"default" }}>
       {badgeMeta.text}
     </Button>
-  );
+  );*/
+
+    /* 25.10.01 신규 코드 (승인 재요청) */
+    // ★ 반려 → 재심사(승인대기) 액션 (기존 배지를 클릭 가능하게)
+  const handleReapply = useCallback(async () => {
+    if (!vendorId) return;
+    if (data?.status !== VENDOR_STATUS.REJECTED) return;
+    try {
+      await apiRequest(`/api/vendors/${vendorId}/status/reapply`, { method: "POST" }, token);
+      setData(prev => ({ ...prev, status: VENDOR_STATUS.PENDING }));
+      setForm(prev => ({ ...prev, status: VENDOR_STATUS.PENDING }));
+      alert("재심사 요청이 접수되어 상태가 '승인 대기'로 변경되었습니다.");
+    } catch (e) {
+      console.error(e);
+      alert(e?.message || "재심사 요청에 실패했습니다.");
+    }
+  }, [vendorId, token, data?.status]);
+
+  const badgeMeta = STATUS_BADGE[data?.status] ?? { text:"상태 미정", color:"gray" };
+  const isRejected = data?.status === VENDOR_STATUS.REJECTED;
+  // 반려일 때만 클릭 가능, 나머지는 기존처럼 라벨형 비활성
+  const badge = isRejected ? (
+    <Button
+      variant="label"
+      color={badgeMeta.color}
+      onClick={handleReapply}
+      title="클릭하여 재심사 요청 (승인 대기 전환)"
+      style={{ cursor: "pointer" }}
+    >
+      {badgeMeta.text}
+    </Button>
+  ) : (
+    <Button variant="label" color={badgeMeta.color} disabled style={{ cursor:"default" }}>{badgeMeta.text}</Button>
+      );
 
   if (loading || !data || !form) return null;
 
@@ -328,6 +362,23 @@ export default function VendorMyPage() {
                   )}
                 </div>
               )}
+
+              renderActions={() => (
+                  <div className="btn-box">
+                    {!edit ? (
+                      <Button color="red" onClick={() => setEdit(true)}>수정</Button>
+                    ) : (
+                      <>
+                        <Button color="red" onClick={handleSave}>저장</Button>
+                        <Button variant="outline" color="gray" onClick={handleCancel}>취소</Button>
+                        {canChangePassword && (
+                          <Button variant="outline" color="gray" onClick={() => setPwOpen(o => !o)}>비밀번호 변경</Button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+
             />
 
             {pwOpen && canChangePassword && (

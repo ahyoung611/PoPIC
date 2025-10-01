@@ -47,7 +47,21 @@ const PopupInfo = (props) => {
         <div className="popupInfo">
             <div className="popup-left">
                 <div className="popup-title"><p>{popup.store_name}</p></div>
-                <div className="popup-date">{popup.start_date} ~ {popup.end_date}</div>
+                <div className="popup-date">{new Date(popup.start_date).toLocaleDateString(
+                    "ko-KR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit"
+                    })
+                    .replace(/\.$/, ""
+                )} - {new Date(popup.end_date).toLocaleDateString(
+                    "ko-KR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit"
+                    })
+                    .replace(/\.$/, ""
+                )}</div>
                 <div className="popup-address">{popup.address} {popup.address_detail}</div>
             </div>
 
