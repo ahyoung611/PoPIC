@@ -18,9 +18,8 @@
 }
 
 .main-container .mpc-section .mpc-section__title {
-    font-weight: 700;
+    font-weight: var( --font-bold);
     font-size: var(--font-title-l);
-    color: var(--black-color);
     text-align: center;
     margin: 25px 0 50px 0;
 }
@@ -151,8 +150,8 @@
 }
 
 .main-container .mpc-card__title {
-    font-size: var(--font-size-base);
-    font-weight: 700;
+    font-size: var(--font-body);
+    font-weight: var(--font-semibold);
     color: var(--black-color);
     line-height: 1.35;
     white-space: nowrap;
@@ -163,12 +162,13 @@
 
 .main-container .mpc-card__period {
     font-size: var(--font-body);
-    font-weight: 600;
     color: var(--main-color);
+    font-weight: var(--font-semibold);
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-align: center;
-     white-space: nowrap;
-     overflow: hidden;
-     text-overflow: ellipsis;
 }
 
 .main-container .mpc-card__divider {
@@ -220,7 +220,8 @@
     background: var(--white-color);
     color: var(--black-color);
     border-radius: 999px;
-    box-shadow: var(shadow);
+    font-weight:var(--font-regular);
+    box-shadow: var(--shadow);
 }
 
 .main-container .mpc-media__bookmark {

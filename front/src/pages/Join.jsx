@@ -6,7 +6,18 @@ import nonEye from "../../public/nonEye.png"
 import logo from "../../public/popic-logo.png"
 import apiRequest from "../utils/apiRequest.js" // ← 헬퍼 경로 맞게 수정
 import { useEffect, useMemo, useRef, useState } from "react";
+import Button from "../components/commons/Button.jsx";
 import $ from "jquery"
+import FloatingBg from "../components/commons/FloatingBg";
+
+const bgImgs = [
+  "/favicon.png",
+  "/Picon.png",
+  "/Oicon.png",
+  "/Picon.png",
+  "/Iicon.png",
+  "/Cicon.png",
+];
 
 const Join = () => {
     const [params] = useSearchParams();
@@ -226,6 +237,7 @@ const Join = () => {
 
     return (
         <main className="join">
+            <FloatingBg images={bgImgs} count={8} opacity={0.5} />
             <section className="join-card">
                 <header className="join-header">
                     <img className="join-logo" src={logo} alt="PoPiC" />
@@ -404,9 +416,9 @@ const Join = () => {
                     {/*<button className="join-submit" type="submit" disabled={loading}>
                         {loading ? "처리 중" : "회원가입"}
                     </button>*/}
-                    <button className="join-submit" type="submit" disabled={loading}>
+                    <Button variant="primary" color="red" className="join-submit" type="submit" disabled={loading}>
                         {loading ? "처리 중" : (social ? "회원가입" : "회원가입")}
-                    </button>
+                    </Button>
 
                 </form>
             </section>
