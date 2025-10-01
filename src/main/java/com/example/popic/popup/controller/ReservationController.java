@@ -4,6 +4,7 @@ import com.example.popic.CustomUserPrincipal;
 import com.example.popic.popup.dto.PopupReservationDTO;
 import com.example.popic.popup.repository.ReservationRepository;
 import com.example.popic.popup.service.ReservationService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ import java.util.Map;
 @RequestMapping("/reservations")
 @RequiredArgsConstructor
 public class ReservationController {
-    private final StringRedisTemplate stringRedisTemplate;
+    private final StringRedisTemplate redisTemplate;
     private final ReservationService reservationService;
     private final ReservationRepository reservationRepository;
 
@@ -72,14 +73,28 @@ public class ReservationController {
     @PatchMapping("/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(
             @PathVariable Long reservationId,
-            @AuthenticationPrincipal CustomUserPrincipal principal) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
+            @AuthenticationPrincipal CustomUserPrincipal principal,
+            @RequestBody Map<String, String> qrToken) {
+
+        String token = qrToken.get("qrToken");
 
         try {
+            String json = redisTemplate.opsForValue().get(token);
+
+            if(json == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "QR 토큰이 유효하지 않습니다."));
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+
+            Map<String, Object> redisData = objectMapper.readValue(json, new TypeReference<>() {});
+            redisData.put("status", -1);
+            redisTemplate.opsForValue().set(token, objectMapper.writeValueAsString(redisData));
+
             Long userId = principal.getId(); // 내부 user 엔티티 접근
             reservationService.cancelReservation(reservationId, userId);
-
 
             return ResponseEntity.ok(Map.of("message", "예약이 취소되었습니다."));
         } catch (IllegalArgumentException e) {
@@ -87,6 +102,9 @@ public class ReservationController {
                     .body(Map.of("message", e.getMessage()));
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", e.getMessage()));
         }
     }

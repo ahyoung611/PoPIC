@@ -10,6 +10,7 @@ const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:808
 const MyReservationModal = ({open, onClose, reservation, onUpdateReservation }) => {
     const token = useAuth().getToken();
     const [status, setStatus] = useState(reservation?.status);
+    const [qrToken, setQrToken] = useState("");
 
     useEffect(() => {
         if (reservation) {
@@ -39,6 +40,9 @@ const MyReservationModal = ({open, onClose, reservation, onUpdateReservation }) 
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`,
                 },
+                body: JSON.stringify({
+                    qrToken: qrToken,
+                }),
             });
 
             if (!response.ok) {
@@ -63,7 +67,11 @@ const MyReservationModal = ({open, onClose, reservation, onUpdateReservation }) 
                 <h2 className="popup-title">{reservation.popup?.store_name}</h2>
 
                 <div className="qr-section">
-                    <QrCode reservationId={reservation.reservationId}/>
+                    {open && <QrCode setStatus={setStatus}
+                                     setQrToken={setQrToken}
+                                     reservation={reservation}
+                                     onUpdateReservation={onUpdateReservation}
+                    />}
                 </div>
 
                 <div className="info-section">
