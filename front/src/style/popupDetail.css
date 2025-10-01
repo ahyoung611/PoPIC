@@ -269,6 +269,7 @@
 
 .popupStore-detail .popupInquiry-list .inquiry-item .item-1 {
     display: flex;
+    justify-content: space-between;
 }
 
 .popupStore-detail .popupInquiry-list .inquiry-item .title{
@@ -278,6 +279,16 @@
 
 .popupStore-detail .popupInquiry-list .inquiry-item .content{
     font-size: var(--font-size-base);
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .content p {
+    display: flex;
+    align-items: center;
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .content img {
+    width: 20px;
+    height: 20px;
 }
 
 .popupStore-detail .popupInquiry-list .inquiry-item .user, .createdAt{
@@ -315,6 +326,19 @@
     transform: translateY(-5px);
     transition: all 0.3s ease;
     padding: 0; /* 닫혔을 때 padding 제거 */
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .vendor-name {
+    font-size: var(--font-small);
+    font-weight: bold;
+    color: var(--black-color);
+    display: flex;
+    justify-content: space-between;
+}
+
+.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .reply-html, .reply-createdAt {
+    font-size: 12px;
+    color: var(--darkgray-color);
 }
 
 .popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies.open {
