@@ -262,11 +262,14 @@ const PopupReview = ({popup}) => {
                 })}
 
                 {/* 페이지네이션 */}
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={(page) => fetchReview(page, searchKeyword)} // 검색어 유지
-                />
+                {totalPages > 1 && (
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={(page) => fetchReview(page, searchKeyword)} // 검색어 유지
+                    />
+                )}
+
             </div>
         </div>
     );
