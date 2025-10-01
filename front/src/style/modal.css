@@ -10,10 +10,10 @@
 }
 
 .modalPanel {
-    width: min(500px, 92vw);
+    width: min(450px, 92vw);
     background: var(--white-color);
     border-radius: 10px;
-    padding: 20px;
+    padding: 30px;
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
     position: relative;
@@ -26,7 +26,6 @@
     letter-spacing: -0.01em;
     text-align: center;
     color: var(--black-color);
-    margin-bottom: 30px;
 }
 
 @keyframes modal-pop {
@@ -122,6 +121,14 @@
     padding: 24px 22px;
 }
 
+.modalPanel .modalDesc{
+ text-align: center;
+ font-size: var(--font-subtitle);
+ color: var(--darkgray-color);
+ padding: 30px;
+ line-height:1.5;
+}
+
 .reservationModal .modalTitle {
     margin-bottom: 18px;
 }
@@ -170,17 +177,11 @@
     background: var(--gray-hover-color);
 }
 
+
+
 /* 반응형 */
 @media (max-width: 360px) {
     .reservationModal .reservationList p strong {
         min-width: 100px;
     }
-}
-
-/* Walk-in Modal */
-.walkInModalDescription {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: var(--font-subtitle);
-    color: var(--darkgray-color);
 }

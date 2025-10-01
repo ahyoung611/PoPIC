@@ -75,14 +75,14 @@ const PopupInfo = (props) => {
 
             <ConfirmModal
                 open={walkInModalOpen}
-                title="현장 대기하시겠습니까?"
+                title="현장 대기 신청"
                 description={
                     <span className="walkInModalDescription">
-                    순서가 호출되면 즉시 입장해 주세요.<br/>
-                    호출 후 10분이 지나면 자동으로 취소됩니다
+                    순서가 오면 바로 입장해주세요.<br/>
+                    (10분 초과 시 자동 취소)
                     </span>
                 }
-                okText="대기하기"
+                okText="현장 대기"
                 cancelText="취소"
                 closeOnOutside
                 closeOnEsc

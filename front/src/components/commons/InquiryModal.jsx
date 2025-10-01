@@ -11,8 +11,8 @@ export default function InquiryModal({
   title,
   subject,
   onSubjectChange,
-  content,            // HTML 문자열
-  onContentChange,    // (htmlString) => void
+  content,
+  onContentChange,
   onSubmit,
   onClose,
   submitText = "문의 완료",
