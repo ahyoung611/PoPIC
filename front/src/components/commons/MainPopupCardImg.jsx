@@ -94,9 +94,9 @@ export default function MainPopupCardImg({
             ) : null}
             <ConfirmModal
                 open={modalOpen}
-                title="로그인이 필요합니다"
-                description="게시판을 이용하려면 로그인 해주세요."
-                okText="로그인 하러가기"
+                title="로그인 필요"
+                description="로그인 후 북마크 사용이 가능합니다."
+                okText="로그인"
                 cancelText="취소"
                 onConfirm={() => {
                     setModalOpen(false);
