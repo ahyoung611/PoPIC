@@ -73,12 +73,11 @@ export default function ConfirmModal({
         {description && <p className="modalDesc">{description}</p>}
         <div className="modalActions">
           {/* 확인 버튼 */}
-          <Button className="modalBtn modalBtn--ok" onClick={handleConfirm}>
+          <Button variant="primary" color="red" onClick={handleConfirm}>
             {okText}
           </Button>
           {/* 취소 버튼 */}
           <Button
-            className="modalBtn modalBtn--cancel"
             variant="cancel"
             color="gray"
             onClick={handleClose}

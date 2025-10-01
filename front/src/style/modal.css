@@ -10,7 +10,7 @@
 }
 
 .modalPanel {
-    width: min(450px, 92vw);
+    width: min(400px, 92vw);
     background: var(--white-color);
     border-radius: 10px;
     padding: 30px;
@@ -129,15 +129,18 @@
  line-height:1.5;
 }
 
+
+/* 예약하기 모달 ------------------------------------------- */
 .reservationModal .modalTitle {
     margin-bottom: 18px;
 }
 
 .reservationModal .reservationList {
     display: grid;
-    gap: 8px;
-    margin-bottom: 18px;
-    font-size: var(--font-body);
+    gap: 10px;
+    margin: 25px 0;
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-regular);
 }
 .reservationModal .reservationList p {
     display: flex;
@@ -145,8 +148,7 @@
     margin: 0;
 }
 .reservationModal .reservationList p strong {
-    color: var(--gray-color);
-    font-weight: var(--font-bold);
+    font-weight: var(--font-semibold);
     min-width: 120px;
 }
 .reservationModal .reservationList .price {
@@ -155,33 +157,13 @@
 }
 
 .reservationModal .modalActions {
+    width: 100%;
     display: flex;
     justify-content: center;
     gap: 12px;
 }
 
-.reservationModal .modalBtn.btnPay {
-    background: var(--darkRed-color);
-    color: var(--white-color);
-    border: 1px solid transparent;
-}
-.reservationModal .modalBtn.btnPay:hover {
-    box-shadow: 0 3px 10px rgba(0,0,0,.15);
-}
-.reservationModal .modalBtn.btnGhost {
-    background: var(--white-color);
-    color: var(--black-color);
-    border: 1px solid var(--border-color);
-}
-.reservationModal .modalBtn.btnGhost:hover {
-    background: var(--gray-hover-color);
+.modalActions .btn{
+    flex:1 !important;
 }
 
-
-
-/* 반응형 */
-@media (max-width: 360px) {
-    .reservationModal .reservationList p strong {
-        min-width: 100px;
-    }
-}
