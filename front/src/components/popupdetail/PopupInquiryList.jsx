@@ -141,11 +141,11 @@ const PopupInquiryList = ({ popup, refreshFlag }) => {
   return (
     <div className="popupInquiry-list">
       {/* 상단 카운트 */}
-{/*       <div style={{ display: "flex", justifyContent: "space-between", margin: "0 7px 10px" }}> */}
-{/*         <span> */}
-{/*           총 <b className="point-color">{totalCount}</b>개의 문의가 등록되었습니다. */}
-{/*         </span> */}
-{/*       </div> */}
+      {/* <div style={{ display: "flex", justifyContent: "space-between", margin: "0 7px 10px" }}>*/}
+      {/*   <span>*/}
+      {/*     총 <b className="point-color">{totalCount}</b>개의 문의가 등록되었습니다.*/}
+      {/*   </span>*/}
+      {/* </div>*/}
 
       {/* 수정 모달 */}
       <InquiryModal
