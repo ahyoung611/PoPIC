@@ -35,10 +35,10 @@ const AdminPopup = () => {
         if(window.confirm(newStatus+ " 상태로 변경 하시겠습니까?")){
             let statusCode;
             switch (newStatus) {
-                case "활성":
+                case "승인":
                     statusCode = 1;
                     break;
-                case "비활성":
+                case "반려":
                     statusCode = 3;
                     break;
                 default:
