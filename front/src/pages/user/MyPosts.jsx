@@ -36,13 +36,15 @@ const MyPosts = () => {
     }, [token, page, size, sortBy, direction]);
 
     return (
-        <div className="myposts-container">
-            <h3 className="myposts-title">나의 글</h3>
+        <div className="container">
+                    <div className="inner">
+                         <div className="myPosts">
+                            <h1 className="page-title">나의 리뷰</h1>
 
-            <div className="myposts-list">
+            <div className="myPosts-list">
                 {Array.isArray(posts) && posts.length > 0 ? (
                     posts.map(p => (
-                        <div key={p.boardId} className="myposts-item">
+                        <div key={p.boardId} className="myPosts-item">
                             {/* 썸네일 */}
                             <div className="thumb">
                                 {p.files && p.files.length > 0 ? (
@@ -95,6 +97,8 @@ const MyPosts = () => {
                 </div>
             )}
         </div>
+    </div>
+</div>
     );
 };
 
