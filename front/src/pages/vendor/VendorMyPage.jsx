@@ -11,6 +11,10 @@ import "../../style/profilePhoto.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
+/* 전화/사업자번호 패턴 (join.jsx 기준) */
+const PHONE_PATTERN = /^(?:01[0-9]-?\d{4}-?\d{4}|01[0-9]\d{8})$/;
+const toDigits = (s = "") => s.replace(/\D/g, "");
+
 /* 벤더 상태 상수 */
 const VENDOR_STATUS = {
   APPROVED: 1,
@@ -142,50 +146,26 @@ export default function VendorMyPage() {
       { name:"manager_name", label:"담당자",   required:true, readOnly:!edit },
       { name:"login_id",     label:"아이디", required:true, readOnly:true },
       { name:"brn",          label:"사업자 등록 번호", required:true, readOnly:true },
-      { name:"phone_number", label:"전화번호", required:true, readOnly:!edit },
+      // { name:"phone_number", label:"전화번호", required:true, readOnly:!edit },
+      {
+        name:"phone_number",
+        label:"전화번호",
+        required:true,
+        readOnly:!edit,
+        pattern: String.raw`^(?:01[0-9]-?\d{4}-?\d{4}|01[0-9]\d{8})$`,
+        placeholder:"핸드폰번호",
+        inputMode:"tel",
+      },
       { name:"vendor_name",  label:"업체명", required:true, readOnly:!edit },
     ]
   }), [edit]);
 
-  /* 25.10.01 기존 코드*/
   const badgeMeta = STATUS_BADGE[data?.status] ?? { text:"상태 미정", color:"gray" };
   const badge = (
     <Button variant="label" color={badgeMeta.color} disabled style={{ cursor:"default" }}>
       {badgeMeta.text}
     </Button>
   );
-
-    /* 25.10.01 신규 코드 (승인 재요청) */
-    // ★ 반려 → 재심사(승인대기) 액션 (기존 배지를 클릭 가능하게)
-/*  const handleReapply = useCallback(async () => {
-    if (!vendorId) return;
-    if (data?.status !== VENDOR_STATUS.REJECTED) return;
-    try {
-      await apiRequest(`/api/vendors/${vendorId}/status/reapply`, { method: "POST" }, token);
-      setData(prev => ({ ...prev, status: VENDOR_STATUS.PENDING }));
-      setForm(prev => ({ ...prev, status: VENDOR_STATUS.PENDING }));
-      alert("재심사 요청이 접수되어 상태가 '승인 대기'로 변경되었습니다.");
-    } catch (e) {
-      console.error(e);
-      alert(e?.message || "재심사 요청에 실패했습니다.");
-    }
-  }, [vendorId, token, data?.status]);*/
-/*  const badgeMeta = STATUS_BADGE[data?.status] ?? { text:"상태 미정", color:"gray" };
-  const isRejected = data?.status === VENDOR_STATUS.REJECTED;
-  // 반려일 때만 클릭 가능, 나머지는 기존처럼 라벨형 비활성
-  const badge = isRejected ? (
-    <Button
-      variant="label"
-      color={badgeMeta.color}
-      onClick={handleReapply}
-      title="클릭하여 재심사 요청 (승인 대기 전환)"
-      style={{ cursor: "pointer" }}
-    >
-      {badgeMeta.text}
-    </Button>
-  ) : (
-    <Button variant="label" color={badgeMeta.color} disabled style={{ cursor:"default" }}>{badgeMeta.text}</Button>
-      );*/
 
   if (loading || !data || !form) return null;
 
@@ -198,11 +178,30 @@ export default function VendorMyPage() {
         return;
       }
     }
+
+  const formatPhone = (raw = "") => {
+      const digits = raw.replace(/\D/g, ""); // 숫자만 추출
+      if (digits.length === 11) {
+          return digits.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+      }
+      return raw; // fallback (길이가 맞지 않으면 원본 반환)
+  };
+
+  // 정규식 검증
+  const phoneRaw = String(form.phone_number || "");
+  if (!PHONE_PATTERN.test(phoneRaw)) {
+    alert("전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678 또는 01012345678) 형식으로 입력하세요");
+    return;
+  }
+  // 저장 시에는 하이픈 포함 저장
+  const phoneFormatted = formatPhone(phoneRaw);
+
     try {
       const payload = {
         manager_name: form.manager_name,
         brn:          form.brn,
-        phone_number: form.phone_number,
+        // phone_number: form.phone_number,
+        phone_number: phoneFormatted,
         vendor_name:  form.vendor_name,
       };
       await apiRequest(`/api/vendors/${vendorId}`, { method:"PUT", body: payload }, token);
@@ -270,19 +269,20 @@ export default function VendorMyPage() {
 
   /* 비밀번호 클라이언트 검증 */
   const validateNewPasswordClient = (pwd, loginId) => {
-    if (!pwd || pwd.length < 8 || pwd.length > 64) return "비밀번호는 8~64자여야 합니다.";
+    // 사용자가 아무 값도 입력하지 않았을 때, → 현재 비밀번호를 입력해주세요.
+    if (!pwd || pwd.length < 8 || pwd.length > 64) return "비밀번호는 8자 이상이어야 합니다.";
     if (/\s/.test(pwd)) return "비밀번호에 공백은 사용할 수 없습니다.";
     const hasLetter = /[A-Za-z]/.test(pwd);
     const hasDigit = /\d/.test(pwd);
     const hasSpecial = /[^A-Za-z0-9]/.test(pwd);
-    if (!(hasLetter && hasDigit && hasSpecial)) return "문자, 숫자, 특수문자를 모두 포함해야 합니다.";
+    if (!(hasLetter && hasDigit && hasSpecial)) return "영문, 숫자, 특수문자를 모두 포함해야 합니다.";
     if (/(.)\1\1/.test(pwd)) return "같은 문자를 3회 이상 연속 사용할 수 없습니다.";
     if (loginId && pwd.toLowerCase().includes(String(loginId).toLowerCase())) return "비밀번호에 아이디를 포함할 수 없습니다.";
     return "";
   };
 
-  /* 비밀번호 변경 */
-  const handleChangePassword = async () => {
+  /* 2025. 10. 02 기존 코드 : 비밀번호 변경 */
+/*  const handleChangePassword = async () => {
     setPwErr("");
 
     if (pwForm.newPassword !== pwForm.confirmNewPassword) {
@@ -290,7 +290,42 @@ export default function VendorMyPage() {
       return;
     }
     const clientErr = validateNewPasswordClient(pwForm.newPassword, form?.login_id);
-    if (clientErr) { setPwErr(clientErr); return; }
+    if (clientErr) { setPwErr(clientErr); return; }*/
+
+    /* 25.10.02 새로운 비밀번호 코드 */
+    const handleChangePassword = async () => {
+        setPwErr("");
+
+        // 1) 현재 비밀번호 입력 여부 확인
+        if (!pwForm.currentPassword) {
+            setPwErr("비밀번호를 입력해주세요.");
+            return;
+        }
+
+        // 2) 새 비밀번호 입력 여부 확인
+        if (!pwForm.newPassword) {
+            setPwErr("새 비밀번호를 입력해주세요.");
+            return;
+        }
+
+        // 3) 새 비밀번호 확인 입력 여부 확인
+        if (!pwForm.confirmNewPassword) {
+            setPwErr("새 비밀번호 확인을 입력해주세요.");
+            return;
+        }
+
+        // 4) 새 비밀번호/확인 값 불일치
+        if (pwForm.newPassword !== pwForm.confirmNewPassword) {
+            setPwErr("새 비밀번호와 확인 값이 일치하지 않습니다.");
+            return;
+        }
+
+        // 5) 새 비밀번호 규칙 검증 (join.jsx 기준)
+        const clientErr = validateNewPasswordClient(pwForm.newPassword, form?.login_id);
+        if (clientErr) {
+            setPwErr(clientErr);
+            return;
+        }
 
     try {
       setPwLoading(true);
@@ -373,23 +408,6 @@ export default function VendorMyPage() {
                   )}
                 </div>
               )}
-
-/*              renderActions={() => (
-                  <div className="btn-box">
-                    {!edit ? (
-                      <Button color="red" onClick={() => setEdit(true)}>수정</Button>
-                    ) : (
-                      <>
-                        <Button color="red" onClick={handleSave}>저장</Button>
-                        <Button variant="outline" color="gray" onClick={handleCancel}>취소</Button>
-                        {canChangePassword && (
-                          <Button variant="outline" color="gray" onClick={() => setPwOpen(o => !o)}>비밀번호 변경</Button>
-                        )}
-                      </>
-                    )}
-                  </div>
-                )}*/
-
             />
 
             {pwOpen && canChangePassword && (
@@ -410,7 +428,7 @@ export default function VendorMyPage() {
                   label="새 비밀번호"
                   value={pwForm.newPassword}
                   onChange={(v) => setPwForm(f => ({ ...f, newPassword: v }))}
-                  placeholder="8~64자 / 문자·숫자·특수 모두 포함"
+                  placeholder="새 비밀번호"
                   autoComplete="new-password"
                   name="new-password"
                 />
@@ -418,7 +436,7 @@ export default function VendorMyPage() {
                   label="새 비밀번호 확인"
                   value={pwForm.confirmNewPassword}
                   onChange={(v) => setPwForm(f => ({ ...f, confirmNewPassword: v }))}
-                  placeholder="다시 한 번 입력하세요"
+                  placeholder="새 비밀번호 확인"
                   autoComplete="new-password"
                   name="confirm-new-password"
                 />

@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.Map;
 
 import java.util.List;
 
@@ -87,8 +88,8 @@ public class UserProfileController {
         return List.of();
     }
 
-    // 비밀번호 재설정
-    @PostMapping("/password")
+    // 25.10.02 기존 코드 : 비밀번호 재설정
+/*    @PostMapping("/password")
     public ResponseEntity<Void> changePassword(@PathVariable Long userId, @RequestBody UserPasswordDto req) {
         // 현재 로그인된 사용자의 인증 정보를 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -117,5 +118,44 @@ public class UserProfileController {
         // 모든 검증이 통과되면, 비밀번호 변경 서비스를 호출
         accountUserVendorService.changeUserPassword(userId, req);
         return ResponseEntity.noContent().build();
+    }*/
+
+    // 25.10.02 신규 코드 : 비밀번호 재설정
+    @PostMapping("/password")
+    public ResponseEntity<?> changePassword(@PathVariable Long userId, @RequestBody UserPasswordDto req) {
+        // 현재 로그인된 사용자의 인증 정보를 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+        // 인증되지 않은 사용자 (토큰 없음)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body(Map.of("message", "인증이 필요합니다."));
+        }
+
+        // 인증된 사용자의 loginId를 가져오기
+        String authenticatedLoginId = authentication.getName();
+
+        // loginId를 사용하여 데이터베이스에서 실제 사용자 ID를 조회
+        UserDTO authenticatedUser = service.getUserByLoginId(authenticatedLoginId);
+
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(Map.of("message", "권한이 없습니다."));
+        }
+
+        // 요청 URL의 userId와 현재 로그인된 사용자의 ID를 비교
+        Long currentUserId = authenticatedUser.getUser_id();
+        if (!currentUserId.equals(userId)) {
+        // ID가 일치하지 않으면 권한 없음
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(Map.of("message", "본인 계정에서만 변경할 수 있습니다."));
+        }
+        // 모든 검증이 통과되면, 비밀번호 변경 서비스를 호출
+        try {
+                    accountUserVendorService.changeUserPassword(userId, req);
+                    return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+                    // 예: "비밀번호에 아이디를 포함할 수 없습니다.", "현재 비밀번호가 올바르지 않습니다." 등
+                    return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 }
