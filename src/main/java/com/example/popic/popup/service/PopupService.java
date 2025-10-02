@@ -88,4 +88,8 @@ public class PopupService {
         return entities.stream().map(PopupDTO::new).collect(Collectors.toList());
     }
 
+    @Transactional
+    public void updateEndedStores(LocalDate today, int status) {
+        popupRepository.updateEndedStores(today, status);
+    }
 }

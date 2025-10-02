@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,4 +54,8 @@ public interface PopupRepository extends JpaRepository<PopupStore, Long> {
     @Query("SELECT DISTINCT p FROM PopupStore p JOIN p.categories c LEFT JOIN FETCH p.images i WHERE p.status = :status AND c.category_id = :categoryId")
     List<PopupStore> findAllByStatusAndCategory(@Param("status") int status, @Param("categoryId") Long categoryId);
 
+
+    @Modifying
+    @Query("UPDATE PopupStore p SET p.status = -1 WHERE p.status = :status AND p.end_date < :today")
+    void updateEndedStores(LocalDate today, int status);
 }
