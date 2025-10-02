@@ -7,17 +7,18 @@ import "../../style/OnsiteTicket.css";
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
-const OnsiteTicket = () => {
+const OnsiteTicket = ({waitingId, storeId, popupName, close}) => {
     const {auth, getToken} = useAuth();
     const token = getToken?.();
     const nav = useNavigate()
 
-    const {waitingId} = useParams();
+
     const location = useLocation();
     const query = new URLSearchParams(location.search);
 
-    const storeId = Number(query.get("storeId"));
-    const statePopupName = query.get("popupName");
+    // const {waitingId} = useParams();
+    // const storeId = Number(query.get("storeId"));
+    // const statePopupName = query.get("popupName");
 
     const userId = auth?.user?.user_id;
 
@@ -107,7 +108,7 @@ const OnsiteTicket = () => {
     if (!waiting) return <div>대기 정보가 없습니다.</div>;
 
     const isCanceled = waiting.status === -1;
-    const title = waiting.storeName || waiting.popup?.name || statePopupName || "팝업 스토어";
+    const title = waiting.storeName || waiting.popup?.name || popupName || "팝업 스토어";
 
     return (
         <main className="container">
@@ -150,24 +151,25 @@ const OnsiteTicket = () => {
                         )}
                     </div>
 
-                    {!waiting.callTime && (
                         <div className={"btn-area"}>
                             <Button
                                 variant="outline"
-                                onClick={() => nav("/me/popic?tab=대기")}
+                                onClick={close}
                             >
-                                목록
+                                닫기
                             </Button>
-                            <Button
-                                variant="primary"
-                                color={isCanceled ? "gray" : "red"}
-                                disabled={isCanceled}
-                                onClick={onCancel}
-                            >
-                                {isCanceled ? "취소됨" : "대기 취소"}
-                            </Button>
+                            {!waiting.callTime && (
+                                <Button
+                                    variant="primary"
+                                    color={isCanceled ? "gray" : "red"}
+                                    disabled={isCanceled}
+                                    onClick={onCancel}
+                                >
+                                    {isCanceled ? "취소됨" : "대기 취소"}
+                                </Button>
+                            )}
                         </div>
-                    )}
+
                 </div>
             </div>
         </main>
