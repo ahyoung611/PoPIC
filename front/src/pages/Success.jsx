@@ -31,7 +31,7 @@ export default function SuccessPage() {
         const requestData = {
             reservationCount: peopleCount,
             status: 0,
-            price: price * peopleCount,
+            depositAmount: price * peopleCount,
             paymentKey: searchParams.get("paymentKey") || null,
             user: {user_id: user?.user_id || null},
             popup: {store_id: popupId},
