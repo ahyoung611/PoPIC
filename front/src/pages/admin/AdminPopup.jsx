@@ -109,14 +109,14 @@ const AdminPopup = () => {
                                             item.status === 2
                                                 ? "선택"
                                                 : item.status === 1
-                                                    ? "활성"
-                                                    : "비활성"
+                                                    ? "승인"
+                                                    : "반려"
                                         }
                                         onChange={(e) => changePopupStatus(item.store_id, e.target.value)}
                                     >
                                         <option value="선택">선택</option>
-                                        <option value="활성">활성</option>
-                                        <option value="비활성">비활성</option>
+                                        <option value="승인">승인</option>
+                                        <option value="반려">반려</option>
                                     </select>
                                 </td>
                                 <td>

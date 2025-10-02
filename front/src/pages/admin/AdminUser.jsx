@@ -39,18 +39,6 @@ const AdminUser = () => {
             setCurrentPage(isArray ? 1 : ((res?.number ?? 0) + 1));
         };
 
-    // const changeStatus = async (id, newLabel) => {
-    //     if (!newLabel) return;
-    //     if (window.confirm(`${newLabel} 상태로 변경하시겠습니까?`)) {
-    //         const code = statusCodeFromLabel(newLabel);
-    //         await apiRequest(
-    //             `/admin/user/status?id=${id}&status=${code}`,
-    //             { method: "POST", credentials: "include" },
-    //             token
-    //         );
-    //         fetchUsers();
-    //     }
-    // };
     const changeStatus = (id, newLabel) => {
             if (!newLabel) return;
             setPendingChange({ id, newLabel });
@@ -69,13 +57,6 @@ const AdminUser = () => {
         fetchUsers(1); // 수정: sort/token 바뀔 때 1페이지부터
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sort, token]);
-
-    // const manageOptionsNoSelect = manageOptions.filter((o) => o.value !== "선택"); // 수정
-    //
-    // const allowedUserCodes = new Set([0, 1]); // 정지, 정상만
-    // const userManageOptions = manageOptionsNoSelect.filter(
-    //     (o) => allowedUserCodes.has(statusCodeFromLabel(o.value)) // 수정
-    // );
 
     const userManageOptions = manageOptions;
 

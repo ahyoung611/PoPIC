@@ -80,8 +80,10 @@ export default function VendorMain() {
 
     // 검색 필터링
     const filtered = useMemo(() => {
-        if (!appliedSearch.trim()) return rows;
-        const kw = searchValue.trim().toLowerCase();
+        // if (!appliedSearch.trim()) return rows;
+        // const kw = searchValue.trim().toLowerCase();
+        const kw = appliedSearch.trim().toLowerCase();
+        if (!kw) return rows;
         return rows.filter((r) =>
             [r.title, ...(r.categories || [])]
                 .filter(Boolean)
@@ -89,7 +91,7 @@ export default function VendorMain() {
                 .toLowerCase()
                 .includes(kw)
         );
-    }, [rows, appliedSearch, searchValue]);
+    }, [rows, appliedSearch/*, searchValue*/]);
 
     // 페이징 계산
     const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -131,6 +133,7 @@ export default function VendorMain() {
                     onSearchChange={setSearchValue}
                     onSearchClick={handleSearch}
                     onRegisterClick={handleRegister}
+                    placeholder="팝업명을 입력해주세요."
                 />
                 <div className="vendor-list">
                     {paged.length === 0 ? (
