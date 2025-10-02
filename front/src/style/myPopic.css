@@ -54,25 +54,26 @@
 
 /* 리스트/카드 */
 .my-popic .reservation-list {
-  width: 100%;
+  /* min-height: 850px; */
+  margin-bottom:20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.card {
+.my-popic .card {
   background: var(--white-color);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   transition: transform .15s ease, box-shadow .2s ease;
 }
 
-.card:hover{
+.my-popic  .card:hover{
      transform: translateY(-2px);
      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
 }
 
-.reservation-card .card-main {
+.my-popic  .reservation-card .card-main {
   display: flex;
   cursor: pointer;
   border-bottom: 0.5px solid var(--border-color);
@@ -81,39 +82,40 @@
 }
 
 /* 이미지 */
-.reservation-card .thumb {
+.my-popic  .reservation-card .thumb {
   flex-shrink: 0; margin-right: 15px;
 }
 
-.reservation-card .thumb img {
+.my-popic  .reservation-card .thumb img {
   width: 100px;
   height: 120px;
   object-fit: cover;
   border-radius: 5px;
 }
 
-/* 본문 메타 영역 */
-.meta {
+/* 본문 */
+.my-popic  .meta {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 10px;
   font-size: var(--font-size-base);
   font-weight: var(--font-regular)
+  line-height:1.5;
 }
 
-.meta-row {
+.my-popic  .meta-row {
   display: flex;
   align-items: center;
   gap: 5px;
 }
 
-.meta-bold{
+.my-popic  .meta-bold{
   font-weight: var(--font-semibold);
   font-size: var(--font-body);
 }
 
-.meta-row .icon {
+.my-popic  .meta-row .icon {
   width: 18px;
   height: 18px;
   object-fit: contain;
@@ -121,12 +123,12 @@
 
 /* 하단 버튼 */
 .my-popic .reservation-list .reservation-card .btn-box {
-  padding: 5px 10px;
+  padding: 5px 20px;
   text-align: right;
 }
 
 /* 반응형 */
 @media (max-width: 520px) {
-  .reservation-card .thumb img { width: 90px; height: 110px; }
-  .meta-row .icon { width: 16px; height: 16px; }
+  .my-popic .reservation-card .thumb img { width: 90px; height: 110px; }
+  .my-popic .meta-row .icon { width: 16px; height: 16px; }
 }

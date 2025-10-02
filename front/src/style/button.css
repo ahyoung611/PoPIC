@@ -31,7 +31,7 @@
 .btn.btn--outline:hover { transform: none; }
 
 /* ghost : 상세보기 -> */
-.btn.btn--ghost { background: transparent; color: inherit; border-color: transparent; }
+.btn.btn--ghost { background: transparent; color: inherit; border-color: transparent; padding:0;}
 .btn.btn--ghost:hover { color: var(--main-color)!important; }
 
 /* filter : 전체 | 패션 | 뷰티  */

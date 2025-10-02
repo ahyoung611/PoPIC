@@ -20,7 +20,7 @@
 
 /* 게시글 리스트 */
 .board-list {
-  min-height: 590px;
+  min-height: 780px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -31,10 +31,13 @@
 
 /* 빈 상태 박스  */
 .board-empty {
-  padding: 20px;
-  text-align: center;
-  color: var(--darkgray-color);
-  border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 350px);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--white-color);
 }
 
 /* BoardListItem 카드 스타일 */

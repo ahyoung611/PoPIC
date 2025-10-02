@@ -153,15 +153,16 @@ const OnsiteTicket = ({waitingId, storeId, popupName, close}) => {
 
                         <div className={"btn-area"}>
                             <Button
-                                variant="outline"
+                                variant="primary"
+                                color="red"
                                 onClick={close}
                             >
                                 닫기
                             </Button>
                             {!waiting.callTime && (
                                 <Button
-                                    variant="primary"
-                                    color={isCanceled ? "gray" : "red"}
+                                    variant={isCanceled ? "primary" : "cancel"}
+                                    color={isCanceled ? "red" : "gray"}
                                     disabled={isCanceled}
                                     onClick={onCancel}
                                 >
