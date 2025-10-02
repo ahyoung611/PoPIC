@@ -13,7 +13,7 @@ const QrCode = ({ setStatus, reservation, setQrToken, onUpdateReservation }) => 
         const fetchQr = async () => {
             try {
                 const res = await fetch(
-                    `http://10.5.4.14:8080/generate-qr?reservationId=${reservation.reservationId}`,
+                    `http://localhost:8080/generate-qr?reservationId=${reservation.reservationId}`,
                     {
                         headers: { authorization: `Bearer ${token}` },
                         method: "GET",
@@ -60,7 +60,7 @@ const QrCode = ({ setStatus, reservation, setQrToken, onUpdateReservation }) => 
                     setStatus(-1);
                     onUpdateReservation(reservation.reservationId, -1);
                 }
-                setTimeLeft(0); // 타이머 0으로 초기화
+                setTimeLeft(0);
                 evtSource.close();
             } else if (event.data === "OK") {
                 setQrData((prev) => ({ ...prev, status: "OK" }));

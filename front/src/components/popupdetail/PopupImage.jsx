@@ -19,7 +19,7 @@ export default function PopupImage({ images = [] }) {
         modules={[Autoplay, Pagination]}
         loop
         speed={800}
-        autoplay={{ delay: 3500, disableOnInteraction: false }}
+        autoplay={{ delay: 2500, disableOnInteraction: false }}
         pagination={{ el: ".popupStore-progress", type: "progressbar" }}
       >
         {images.map((id, i) => (

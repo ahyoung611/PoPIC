@@ -22,15 +22,16 @@ export default function BoardListItem({ item, onClick }) {
     <li className="board-card">
       <div className="board-card__head">
         <div className="board-card__main">
-          <div className="board-card__title">{title}</div>
-          <div className="board-card__meta">
+         <div className="board-card__meta">
             {writerName || "user"} | {dateText} | 조회 {viewCount ?? 0}
           </div>
+          <div className="board-card__bottom">
+              <div className="board-card__title">{title}</div>
+               <Button variant="ghost" color="gray" onClick={() => onClick?.(boardId)}>
+                상세 보기 &gt;
+              </Button>
+          </div>
         </div>
-
-        <Button variant="ghost" color="gray" onClick={() => onClick?.(boardId)}>
-          상세 보기 &#8594;
-        </Button>
       </div>
     </li>
   );

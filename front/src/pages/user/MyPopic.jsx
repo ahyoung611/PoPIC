@@ -26,6 +26,33 @@ const MyPopic = () => {
     const [resPage, setResPage] = useState(1);
     const [walkPage, setWalkPage] = useState(1);
 
+    // 예약 페이징
+    const resTotal = reservations.length;
+    const resTotalPages = Math.max(1, Math.ceil(resTotal / RES_PAGE_SIZE));
+    const resPageData = useMemo(() => {
+        const start = (resPage - 1) * RES_PAGE_SIZE;
+        return reservations.slice(start, start + RES_PAGE_SIZE);
+    }, [reservations, resPage]);
+
+    // 대기 페이징
+    const walkTotal = walkIn.length;
+    const walkTotalPages = Math.max(1, Math.ceil(walkTotal / WALK_PAGE_SIZE));
+    const walkPageData = useMemo(() => {
+        const start = (walkPage - 1) * WALK_PAGE_SIZE;
+        return walkIn.slice(start, start + WALK_PAGE_SIZE);
+    }, [walkIn, walkPage]);
+
+    const formatTodayKR = () => {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}년 ${mm}월 ${dd}일`;
+    };
+
+    const todayStr = formatTodayKR();
+    const pageTitle = activeTab === "예약" ? "예약 현황" : "현장 대기 현황";
+
     useEffect(() => {
         const userId = auth?.user?.user_id;
         if (!userId) return;
@@ -55,66 +82,57 @@ const MyPopic = () => {
     useEffect(() => setResPage(1), [reservations]);
     useEffect(() => setWalkPage(1), [walkIn]);
 
-    // 예약 페이징
-    const resTotal = reservations.length;
-    const resTotalPages = Math.max(1, Math.ceil(resTotal / RES_PAGE_SIZE));
-    const resPageData = useMemo(() => {
-        const start = (resPage - 1) * RES_PAGE_SIZE;
-        return reservations.slice(start, start + RES_PAGE_SIZE);
-    }, [reservations, resPage]);
 
-    // 대기 페이징
-    const walkTotal = walkIn.length;
-    const walkTotalPages = Math.max(1, Math.ceil(walkTotal / WALK_PAGE_SIZE));
-    const walkPageData = useMemo(() => {
-        const start = (walkPage - 1) * WALK_PAGE_SIZE;
-        return walkIn.slice(start, start + WALK_PAGE_SIZE);
-    }, [walkIn, walkPage]);
 
-    return (
-        <div className={"container"}>
-            <div className={"inner"}>
-                <div className="my-popic">
-                    <div className="tab-menu">
-                        <button
-                            className={activeTab === "예약" ? "active" : ""}
-                            onClick={() => setActiveTab("예약")}
-                        >
-                            예약
-                        </button>
-                        <button
-                            className={activeTab === "대기" ? "active" : ""}
-                            onClick={() => setActiveTab("대기")}
-                        >
-                            현장발권
-                        </button>
-                    </div>
+      return (
+        <div className="container">
+          <div className="inner">
+            <div className="my-popic">
+              {/* 상단 타이틀 영역 */}
+              <div className="page-head">
+                <h1 className="page-title">{pageTitle}</h1>
+              </div>
 
-                    {activeTab === "예약" && (
-                        <>
-                            <MyReservation reservations={resPageData}
-                                           onUpdateReservation={setReservations}/>
-                            <Pagination
-                                currentPage={resPage}
-                                totalPages={resTotalPages}
-                                onPageChange={setResPage}
-                            />
-                        </>
-                    )}
+              <div className="tab-menu">
+                <button
+                  className={activeTab === "예약" ? "active" : ""}
+                  onClick={() => setActiveTab("예약")}
+                >
+                  예약
+                </button>
+                <button
+                  className={activeTab === "대기" ? "active" : ""}
+                  onClick={() => setActiveTab("대기")}
+                >
+                  현장발권
+                </button>
+              </div>
 
-                    {activeTab === "대기" && (
-                        <>
-                            <MyWalkIn walkIn={walkPageData}/>
-                            <Pagination
-                                currentPage={walkPage}
-                                totalPages={walkTotalPages}
-                                onPageChange={setWalkPage}
-                            />
-                        </>
-                    )}
-                </div>
+              {activeTab === "예약" && (
+                <>
+                  <MyReservation reservations={resPageData}
+                                 onUpdateReservation={setReservations}/>
+                  <Pagination
+                    currentPage={resPage}
+                    totalPages={resTotalPages}
+                    onPageChange={setResPage}
+                  />
+                </>
+              )}
+
+              {activeTab === "대기" && (
+                <>
+                  <MyWalkIn walkIn={walkPageData}/>
+                  <Pagination
+                    currentPage={walkPage}
+                    totalPages={walkTotalPages}
+                    onPageChange={setWalkPage}
+                  />
+                </>
+              )}
             </div>
+          </div>
         </div>
-    );
-};
+      );
+    };
 export default MyPopic;

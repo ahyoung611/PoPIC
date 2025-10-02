@@ -1,72 +1,91 @@
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Button from "../commons/Button.jsx";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
-const MyWalkIn = ({walkIn = []}) => {
-    const navigate = useNavigate();
+const ICONS = {
+  pin: "/favicon.png",
+  check: "/privateCheck-p.png",
+  clock: "/privateCheck-g.png",
+  cancel: "/privateCheck-g.png",
+};
 
-    const goWalkInPage = (w) => {
-        const popupName = w.popup?.name ?? w.storeName ?? "팝업";
-        navigate(`/me/walkIn/${w.id}?storeId=${w.storeId}&popupName=${popupName}`);
-    };
+// (내용 유지) 상태 텍스트
+const statusText = (status) => {
+  if (status === 1) return "대기 중";
+  if (status === 0) return "참여 완료";
+  if (status === -1) return "대기 취소";
+  return "";
+};
 
-    const formatStatus = (status) => {
-        if (status === 1) {
-            return "대기 중";
-        } else if (status === -1) {
-            return "대기 취소";
-        } else if (status === 0) {
-            return "참여 완료";
-        }
-    }
+// (내용 유지) 상태 아이콘
+const statusIcon = (status) => {
+  if (status === 1) return ICONS.clock;   // 대기 중
+  if (status === 0) return ICONS.check;   // 참여 완료
+  if (status === -1) return ICONS.cancel; // 대기 취소
+  return ICONS.clock;
+};
 
-    return (
-        <div className="reservation-list">
-            {walkIn.map((w) => {
-                const imageId = w.popup?.images?.length > 0 ? w.popup.images[0] : null;
-                const thumb = imageId ? `${URL}/images?id=${imageId}&type=popup` : "";
-                const storeName = w.popup?.storeName ?? w.storeName;
+const MyWalkIn = ({ walkIn = [] }) => {
+  const navigate = useNavigate();
 
-                return (
-                    <div
-                        key={w.id}
-                        className="reservation-card"
-                        onClick={() => goWalkInPage(w)}
-                        role="button"
-                    >
-                        <div className="thumb">
-                            {thumb ? (
-                                <img
-                                    src={thumb}
-                                    alt={storeName || "popup"}
-                                    onError={(e) => (e.currentTarget.style.display = "none")}
-                                />
-                            ) : null}
-                        </div>
-                        <div className="info">
-                            <div className="row">
-                                <div className="title">대기번호</div>
-                                <div className="content">{w.queueNumber}</div>
-                            </div>
-                            <div className="row">
-                                <div className="title">팝업명</div>
-                                <div className="content">{storeName}</div>
-                            </div>
-                            <div className="row">
-                                <div className="title">장소</div>
-                                <div className="content">{w.address} {w.addressDetail}</div>
-                            </div>
-                            <div className="row">
-                                <div className="title">상태</div>
-                                <div className="content">{formatStatus(w.status)}</div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            })}
-        </div>
-    );
+  const goWalkInPage = (w) => {
+    const popupName = w.popup?.name ?? w.storeName ?? "팝업";
+    navigate(`/me/walkIn/${w.id}?storeId=${w.storeId}&popupName=${popupName}`);
+  };
+
+  return (
+    <div className="reservation-list">
+      {walkIn.map((w) => {
+        const imageId = w.popup?.images?.[0];
+        const thumb = imageId ? `${URL}/images?id=${imageId}&type=popup` : "";
+        const storeName = w.popup?.storeName ?? w.storeName;
+
+        return (
+          <div key={w.id} className="reservation-card card" onClick={() => nav(`/popupStore/detail/${r.popup?.store_id}`)}>
+            <div className="card-main" >
+              <div className="thumb">
+                {thumb && <img src={thumb} alt={storeName} />}
+              </div>
+
+              <div className="meta">
+                {/* 팝업명 */}
+                <div className="meta-row meta-bold">
+                  <span>{storeName}</span>
+                </div>
+
+                {/* 현장발권 날짜 */}
+                <div className="meta-row">
+                    <span >현장대기 날짜 입력</span>
+                </div>
+
+                {/* 주소 */}
+                <div className="meta-row">
+                  <img className="icon" src={ICONS.pin} alt="" />
+                  <span>
+                    {w.address} {w.addressDetail}
+                  </span>
+                </div>
+
+                {/* 상태 */}
+                <div className="meta-row">
+                  <img className="icon" src={statusIcon(w.status)} alt="" />
+                  <span className="status-text">{statusText(w.status)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="btn-box">
+              <Button className="detail-btn" variant="ghost" onClick={() => goWalkInPage(w)}>
+                대기 상세보기 &gt;
+              </Button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 };
 
 export default MyWalkIn;

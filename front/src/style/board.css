@@ -20,7 +20,7 @@
 
 /* 게시글 리스트 */
 .board-list {
-  height: 560px;
+  min-height: 590px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -42,15 +42,8 @@
   display: block;
   background: var(--white-color);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 15px;
-}
-
-.board-card__head {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  align-items: start;
 }
 
 .board-card__main { min-width: 0; }
@@ -58,17 +51,25 @@
   font-size: 16px;
   font-weight: var(--font-bold);
   color: var(--black-color);
-  line-height: 1.35;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  padding-top: 10px;
+  width:70%;
 }
 
 .board-card__meta {
-  margin-top: 6px;
   font-size: 13px;
   color: var(--darkgray-color);
 }
+
+.board-card__bottom {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
 /* 본문 요약 */
 .board-card__desc {
   margin-top: 8px;

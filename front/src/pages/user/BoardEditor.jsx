@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination as SwiperPagination, Thumbs, Keyboard, A11y, FreeMode } from "swiper/modules";
+import { Navigation, Pagination as SwiperPagination, Thumbs, Keyboard, A11y, FreeMode, Autoplay } from "swiper/modules";
 import "swiper/css";
 
 import FileUpload from "../../components/board/FileUpload.jsx";
@@ -225,12 +225,12 @@ export default function BoardEditor() {
                     <div className="be-swiper">
                       <Swiper
                         className="be-swiper__main"
-                        modules={[Navigation, SwiperPagination, Thumbs, Keyboard, A11y]}
+                        modules={[Navigation, Thumbs, Keyboard, A11y, Autoplay]}
                         navigation
                         pagination={{ clickable: true }}
                         keyboard={{ enabled: true }}
                         thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                        loop={false}
+//                         loop={false}
                         a11y={{ enabled: true }}
                         spaceBetween={12}
                         slidesPerView={1}
@@ -238,6 +238,11 @@ export default function BoardEditor() {
                         observer
                         observeParents
                         watchSlidesProgress
+//                         speed={800}
+//                         autoplay={{
+//                         delay: 2500,
+//                         disableOnInteraction: false,
+//                       }}
                       >
                         {attachments.map((f) => (
                           <SwiperSlide key={f.savedName || f.url}>

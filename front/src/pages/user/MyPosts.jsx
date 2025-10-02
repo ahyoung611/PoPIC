@@ -71,7 +71,7 @@ const MyPosts = () => {
                                     variant="label"
                                     onClick={() => nav(`/board/${p.boardId}`)}
                                 >
-                                    상세보기
+                                    상세보기 &gt;
                                 </Button>
                             </div>
                         </div>

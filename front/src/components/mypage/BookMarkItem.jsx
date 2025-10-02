@@ -97,7 +97,6 @@ export default function BookMarkItem({
 
         <Button
           variant="ghost"
-          color="gray"
           aria-label="상세 보기"
           onClick={handleOpen}
         >

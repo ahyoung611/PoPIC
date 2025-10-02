@@ -167,3 +167,42 @@
     flex:1 !important;
 }
 
+.reservationModal .qr-container{
+    position:relative;
+    text-align:center;
+}
+
+/* 예약시 QR */
+.reservationModal .qr-container .qr-overlay {
+  position: absolute;
+  height:100%;
+  inset: 0;
+  background: rgba(255,255,255,0.9);
+  color: var(--main-color);
+  font-size: var(--font-body);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reservationModal .qr-timer {
+  margin-top: 10px;
+  font-size: var(--font-size-base);
+}
+
+.reservationModal .point-color {
+  color: var(--main-color);
+}
+
+.reservationModal .qr-expired {
+  margin-top: 10px;
+  font-size: var(--font-size-base);
+  color: var(--main-color);
+}
+
+.reservationModal .qr-error {
+  text-align: center;
+  font-size: var(--font-size-base);
+  color: var(--main-color);
+}
