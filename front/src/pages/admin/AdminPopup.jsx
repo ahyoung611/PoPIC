@@ -39,7 +39,7 @@ const AdminPopup = () => {
                     statusCode = 1;
                     break;
                 case "비활성":
-                    statusCode = -1;
+                    statusCode = 3;
                     break;
                 default:
                     statusCode = 2;
