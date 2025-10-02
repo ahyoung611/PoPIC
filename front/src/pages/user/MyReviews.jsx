@@ -36,15 +36,17 @@ const MyReviews = () => {
     }, [token, page, size, sortBy, direction]);
 
     return (
-        <div className="myposts-container">
-            <h3 className="myposts-title">나의 리뷰</h3>
+         <div className="container">
+             <div className="inner">
+                  <div className="myPosts">
+                         <h1 className="page-title">나의 리뷰</h1>
 
-            <div className="myposts-list">
+            <div className="myPosts-list">
                 {Array.isArray(reviews) && reviews.length > 0 ? (
                     reviews.map(r => (
                         <div
                             key={r.review_id}
-                            className="myposts-item"
+                            className="myPosts-item"
                             style={{cursor: "pointer"}}
                             onClick={() => {
                                 nav(`/popupStore/detail/${r.store?.store_id}`, { state: { tab: "리뷰" } });
@@ -52,31 +54,26 @@ const MyReviews = () => {
                         >
                             {/* 썸네일 */}
                             <div className="thumb">
-                                {r.images && r.images.length > 0 ? (
                                     <img
                                         src={`http://localhost:8080/images?type=review&id=${r.images[0]}`}
                                         alt="리뷰 썸네일"
                                     />
-                                ) : (
-                                    <div style={{background: "#f5f5f5", width: "100%", height: "100%"}}/>
-                                )}
                             </div>
 
                             {/* 정보 */}
                             <div className="info">
                                 <div className="title">
-                                    {r.store?.store_name && (
-                                        <span style={{color: "#FF5148", marginRight: "6px"}}>
-                                            [{r.store.store_name}]
-                                        </span>
-                                    )}
-                                    {r.title || "제목 없음"}
+                                    <p>[{r.store.store_name}]</p>
+
                                 </div>
+                                <div className="content">
+                                     <p>{r.title }</p>
+                                     <p >{r.content}</p>
+                                    </div>
                                 <div className="meta">
                                     <span>{r.user?.name || "익명"}</span>
-                                    <span>{new Date(r.createdAt).toLocaleDateString("ko-KR")}</span>
+                                    <p>작성날짜 : <span>{new Date(r.createdAt).toLocaleDateString("ko-KR")}</span></p>
                                 </div>
-                                <div className="content">{r.content}</div>
                             </div>
                         </div>
                     ))
@@ -98,7 +95,9 @@ const MyReviews = () => {
                     ))}
                 </div>
             )}
+           </div>
         </div>
+      </div>
     )
 }
 
