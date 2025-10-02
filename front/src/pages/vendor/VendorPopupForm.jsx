@@ -171,6 +171,7 @@ export default function VendorPopupForm() {
     // 폼 유효성 검사
    const validate = ()=>{
        if(!form.store_name.trim()) return "팝업명을 입력해 주세요.";
+       if(categorySelect === 0) return  "카테고리를 선택해 주세요";
        if(!form.start_date||!form.end_date) return "운영 기간을 입력해 주세요.";
        if(!form.address) return "시/구를 선택해 주세요.";
        if(!form.address_detail.trim()) return "상세 주소를 입력해 주세요.";

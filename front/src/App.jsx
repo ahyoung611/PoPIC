@@ -115,7 +115,7 @@ function App() {
                     <Route path={"/me/popic"} element={<MyPopic />} />
                     <Route path={"/me/posts"} element={<MyPosts />} />
                     <Route path={"/me/reviews"} element={<MyReviews />} />
-                    <Route path={"/me/walkIn/:waitingId"} element={<OnsiteTicket />} />
+                    {/*<Route path={"/me/walkIn/:waitingId"} element={<OnsiteTicket />} />*/}
 
                 {/*벤더 유저 Layout */}
                     <Route path={"/vendor/reservations"} element={<OperatorReservations/>}></Route>
