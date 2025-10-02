@@ -1,6 +1,7 @@
 import Button from "../commons/Button.jsx";
 import ConfirmModal from "../commons/ConfirmModal.jsx";
 import {useState} from "react";
+import { useNavigate } from "react-router-dom";
 import {useAuth} from "../../context/AuthContext.jsx";
 
 const PopupInfo = (props) => {
@@ -9,6 +10,8 @@ const PopupInfo = (props) => {
     const {auth, getToken} = useAuth();
     const token = getToken();
     const user = auth?.user;
+    const navigate = useNavigate();
+    const isLoggedIn = !!user?.user_id;
 
     const walkInSubmit = () => {
         setWalkInModalOpen(true);
@@ -16,11 +19,13 @@ const PopupInfo = (props) => {
     console.log("Popup object:", popup);
 
     const walkInConfirm = async () => {
+        if (!isLoggedIn) return;
         try {
             const response = await fetch(`/waiting/create?userId=${user?.user_id}&storeId=${popup.store_id}`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`, // 필요하면 토큰 포함
+                    ...(token ? { "Authorization": `Bearer ${token}` } : {}), // user token 있는지 여부 추가
                 },
             });
 
@@ -42,6 +47,14 @@ const PopupInfo = (props) => {
     const walkInCancel = () => {
         setWalkInModalOpen(false);
     }
+
+    // 비회원 진입해서 현장 대기 버튼 클릭시 로그인 페이지로 이동
+    const goLogin = () => {
+        // 로그인 페이지로 이동 (현재 경로 복귀용 next 쿼리 포함)
+        const next = encodeURIComponent(window.location.pathname + window.location.search);
+        navigate(`/login?next=${next}`); // /login?next=${next}
+        setWalkInModalOpen(false);
+    };
 
     return (
         <div className="popupInfo">
@@ -73,7 +86,8 @@ const PopupInfo = (props) => {
                 )}
             </div>
 
-            <ConfirmModal
+            {/* 기존 컨펌 모달 */}
+{/*            <ConfirmModal
                 open={walkInModalOpen}
                 title="현장 대기 신청"
                 description={
@@ -87,6 +101,38 @@ const PopupInfo = (props) => {
                 closeOnOutside
                 closeOnEsc
                 onConfirm={walkInConfirm}
+                onCancel={walkInCancel}
+            />*/}
+
+            <ConfirmModal
+                open={walkInModalOpen}
+                title="비회원 현장 대기"
+                description={
+                    <span className="walkInModalDescription">
+                        순서가 오면 바로 입장해주세요.<br/>
+                        (10분 초과 시 자동 취소)
+                    </span>
+                }
+                okText="현장 대기"
+                title={isLoggedIn ? "현장 대기 신청" : "로그인 필요"}
+                description={
+                    isLoggedIn ? (
+                        <span className="walkInModalDescription">
+                                순서가 오면 바로 입장해주세요.<br/>
+                                (10분 초과 시 자동 취소)
+                        </span>
+                    ) : (
+                        <span className="walkInModalDescription">
+                                로그인 후 현장 대기가 가능합니다.
+                        </span>
+                    )
+                }
+                okText={isLoggedIn ? "현장 대기" : "로그인"}
+                cancelText="취소"
+                closeOnOutside
+                closeOnEsc
+                onConfirm={walkInConfirm}
+                onConfirm={isLoggedIn ? walkInConfirm : goLogin}
                 onCancel={walkInCancel}
             />
         </div>
