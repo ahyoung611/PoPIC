@@ -8,6 +8,15 @@ import apiRequest from "../../utils/apiRequest.js";
 import "../../style/profileCard.css";
 import "../../style/profilePhoto.css";
 
+/* 전화번호 패턴 (벤더와 동일 규칙) */
+const PHONE_PATTERN = /^(?:01[0-9]-?\d{4}-?\d{4}|01[0-9]\d{8})$/;
+const toDigits = (s = "") => s.replace(/\D/g, "");
+const formatPhone = (raw = "") => {
+const digits = toDigits(raw);
+    if (digits.length === 11) return digits.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+      return raw;
+};
+
 /* 비밀번호 입력 필드 (보기/숨김 토글) */
 function PasswordField({ label, value, onChange, placeholder, autoComplete = "new-password" }) {
   const [visible, setVisible] = React.useState(false);
@@ -104,8 +113,8 @@ export default function UserProfile() {
     return "";
   };
 
-  /* 비밀번호 변경 */
-  const handleChangePassword = async () => {
+  /* 25.10.02 기존 코드 : 비밀번호 변경 */
+/*  const handleChangePassword = async () => {
     setPwErr("");
 
     if (!isMyPage) {
@@ -124,7 +133,32 @@ export default function UserProfile() {
     if (clientErr) {
       setPwErr(clientErr);
       return;
-    }
+    }*/
+
+    /* 25.10.02 신규 코드 : 비밀번호 변경 */
+    const handleChangePassword = async () => {
+        setPwErr("");
+
+        if (!isMyPage) {
+            // 1) 현재 비밀번호 입력 여부
+            if (!pwForm.currentPassword) { setPwErr("비밀번호를 입력해주세요."); return; }
+            // 2) 새 비밀번호 입력 여부
+            if (!pwForm.newPassword) { setPwErr("새 비밀번호를 입력해주세요."); return; }
+            // 3) 새 비밀번호 확인 입력 여부
+            if (!pwForm.confirmNewPassword) { setPwErr("새 비밀번호 확인을 입력해주세요."); return; }
+            // 4) 새/확인 불일치
+            if (pwForm.newPassword !== pwForm.confirmNewPassword) {
+            setPwErr("새 비밀번호와 확인 값이 일치하지 않습니다."); return;
+            }
+            // 5) 현재와 동일 금지
+            if (pwForm.currentPassword === pwForm.newPassword) {
+            setPwErr("동일한 비밀번호 입니다."); return;
+            }
+            // 6) 규칙 검증(아이디 포함 금지 포함)
+            // {
+            const clientErr = validateNewPasswordClient(pwForm.newPassword, form?.login_id);
+            if (clientErr) { setPwErr(clientErr); return; }
+        }
 
     setPwLoading(true);
     try {
@@ -192,7 +226,16 @@ export default function UserProfile() {
       fields: [
         { name: "name", label: "이름", required: true, readOnly: !edit },
         { name: "login_id", label: "아이디", required: true, readOnly: true },
-        { name: "phone_number", label: "전화번호", required: true, readOnly: !edit },
+        // { name: "phone_number", label: "전화번호", required: true, readOnly: !edit },
+        {
+          name: "phone_number",
+          label: "전화번호",
+          required: true,
+          readOnly: !edit,
+          pattern: String.raw`^(?:01[0-9]-?\d{4}-?\d{4}|01[0-9]\d{8})$`,
+          inputMode: "tel",
+          placeholder: "핸드폰번호",
+        },
         { name: "email", label: "이메일", required: true, readOnly: !edit },
       ],
     }),
@@ -215,10 +258,20 @@ export default function UserProfile() {
       }
     }
 
+    // 전화번호 패턴 검증 + 하이픈 강제 포맷
+    const phoneRaw = String(form.phone_number || "");
+    if (!PHONE_PATTERN.test(phoneRaw)) {
+    // HTML5 기본 검증과 중복 방지를 위해 경고만 간단히 처리
+        alert("전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678 또는 01012345678)");
+        return;
+    }
+    const phoneFormatted = formatPhone(phoneRaw);
+
     try {
       const payload = {
         name: form.name,
-        phone_number: form.phone_number,
+        // phone_number: form.phone_number,
+        phone_number: phoneFormatted,
         email: form.email,
       };
 

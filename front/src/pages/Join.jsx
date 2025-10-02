@@ -33,18 +33,6 @@ const Join = () => {
     const navigate = useNavigate();
     const [showPw, setShowPw] = useState(false);
     const [loading, setLoading] = useState(false);
-    // const [form, setForm] = useState({
-    //     // USER
-    //     login_id: "",
-    //     email: "",
-    //     password: "",
-    //     name: "",
-    //     phone_number: "",
-    //     // VENDOR
-    //     vendor_name: "",
-    //     manager_name: "",
-    //     brn: "",
-    // });
     const [form, setForm] = useState({
             // USER
             login_id: "",
@@ -67,11 +55,31 @@ const Join = () => {
     // 사업자등록번호 패턴
     const BRN_PATTERN = String.raw`^\d{3}-?\d{2}-?\d{5}$`;
 
-    // 비밀번호 onChange 핸들러
-    const handlePasswordChange = (e) => {
+    // 25.10.02 기존 코드 : 비밀번호 onChange 핸들러
+/*    const handlePasswordChange = (e) => {
         const value = e.target.value;
         setForm((f) => ({ ...f, password: value }));
 
+    };*/
+
+    // 비밀번호 변경 핸들러
+    const handlePasswordChange = (e) => {
+        const newPw = e.target.value;
+        const id = form.login_id || "";
+
+        // 정규식 규칙(영문+숫자+특수문자 포함, 8자 이상)
+        const regex = /^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
+
+        // 아이디 포함 여부 검사
+        if (id && newPw.toLowerCase().includes(id.toLowerCase())) {
+            e.target.setCustomValidity("비밀번호에 아이디를 포함할 수 없습니다.");
+        } else if (!regex.test(newPw)) {
+            e.target.setCustomValidity("비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.");
+        } else {
+            e.target.setCustomValidity(""); // 유효
+        }
+
+        setForm((prev) => ({ ...prev, password: newPw }));
     };
 
     const businessNumberCheck = () => {
@@ -271,34 +279,6 @@ const Join = () => {
                         </div>
                     )}
 
-
-                    {/* 비밀번호 + 보기 토글 */}
-                    {/*<div className="join-field join-field--password">
-                        <input
-                            className="join-input"
-                            type={showPw ? "text" : "password"}
-                            name="password"
-                            pattern="(?=.{8,})(?=.*[A-Za-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).*"
-                            placeholder="비밀번호"
-                            title="비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다."
-                            value={form.password}
-                            onChange={handlePasswordChange}
-                            required
-                            // minLength={8}
-                        />
-                        <button
-                            type="button"
-                            className="join-icon-btn"
-                            aria-label="비밀번호 표시"
-                            onClick={togglePassword}
-                            title="비밀번호 표시"
-                        >
-                            <img
-                                src={showPw ? eye : nonEye}
-                                alt={showPw ? "비밀번호 보임" : "비밀번호 숨김"}
-                            />
-                        </button>
-                    </div>*/}
                     {/* 비밀번호: 소셜 모드에서는 숨김 */}
                     {!social && (
                         <div className="join-field join-field--password">
@@ -413,9 +393,6 @@ const Join = () => {
                         </>
                     )}
 
-                    {/*<button className="join-submit" type="submit" disabled={loading}>
-                        {loading ? "처리 중" : "회원가입"}
-                    </button>*/}
                     <Button variant="primary" color="red" className="join-submit" type="submit" disabled={loading}>
                         {loading ? "처리 중" : (social ? "회원가입" : "회원가입")}
                     </Button>
