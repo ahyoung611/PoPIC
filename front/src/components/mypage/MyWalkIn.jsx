@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Button from "../commons/Button.jsx";
+import OnsiteTicket from "../../pages/user/OnsiteTicket.jsx";
+import {useState} from "react";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
@@ -12,10 +14,17 @@ const ICONS = {
 };
 
 // (내용 유지) 상태 텍스트
-const statusText = (status) => {
-  if (status === 1) return "대기 중";
-  if (status === 0) return "참여 완료";
-  if (status === -1) return "대기 취소";
+const statusText = (w) => {
+
+  if (w.status === 1){
+      if(w.callTime){
+          return "호출 완료";
+      }
+      return "대기 중";
+  }
+
+  if (w.status === 0) return "참여 완료";
+  if (w.status === -1) return "대기 취소";
   return "";
 };
 
@@ -28,7 +37,11 @@ const statusIcon = (status) => {
 };
 
 const MyWalkIn = ({ walkIn = [] }) => {
-  const navigate = useNavigate();
+  const nav = useNavigate();
+
+    const [selected, setSelected] = useState(null);
+    const openDetail = (w) => setSelected(w);
+    const closeDetail = () => setSelected(null);
 
   const goWalkInPage = (w) => {
     const popupName = w.popup?.name ?? w.storeName ?? "팝업";
@@ -43,8 +56,8 @@ const MyWalkIn = ({ walkIn = [] }) => {
         const storeName = w.popup?.storeName ?? w.storeName;
 
         return (
-          <div key={w.id} className="reservation-card card" onClick={() => nav(`/popupStore/detail/${r.popup?.store_id}`)}>
-            <div className="card-main" >
+          <div key={w.id} className="reservation-card card">
+            <div className="card-main" onClick={() => nav(`/popupStore/detail/${w.popup?.store_id}`)} >
               <div className="thumb">
                 {thumb && <img src={thumb} alt={storeName} />}
               </div>
@@ -71,19 +84,33 @@ const MyWalkIn = ({ walkIn = [] }) => {
                 {/* 상태 */}
                 <div className="meta-row">
                   <img className="icon" src={statusIcon(w.status)} alt="" />
-                  <span className="status-text">{statusText(w.status)}</span>
+                  <span className="status-text">{statusText(w)}</span>
                 </div>
               </div>
             </div>
 
             <div className="btn-box">
-              <Button className="detail-btn" variant="ghost" onClick={() => goWalkInPage(w)}>
-                대기 상세보기 &gt;
-              </Button>
+                {w.status !== 0 && (
+                    <Button
+                        className="detail-btn"
+                        variant="ghost"
+                        onClick={() => openDetail(w)}
+                    >
+                        대기 상세보기 &gt;
+                    </Button>
+                )}
             </div>
           </div>
         );
       })}
+        {selected && (
+            <OnsiteTicket
+                waitingId={selected.id}
+                storeId={selected.storeId}
+                popupName={selected.popup?.name}
+                close={closeDetail}
+            />
+        )}
     </div>
   );
 };
