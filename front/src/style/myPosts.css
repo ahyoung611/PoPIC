@@ -1,3 +1,4 @@
+/* 나의 리뷰, 나의 글 */
 .myPosts .page-title{
   text-align: center;
   font-weight: var(--font-bold);
@@ -5,99 +6,157 @@
   color: var(--black-color);
   margin: 30px;
 }
+.myPosts-count{
+  padding: 20px 0;
+  font-weight: var(--font-regular);
+}
+.myPosts-count strong{ color: var(--main-color); }
 
-.myPosts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    min-height: 200px;
+.myPosts{
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 160px);
 }
 
-.myPosts-item {
-    display: flex;
-    gap: 10px;
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-    transition: background 0.2s;
+.myPosts-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: transparent;
+  flex: 1;                    
+  min-height: 280px;         
+}
+.myPosts-list.is-empty{ min-height: 360px; }
+
+.myPosts-card{
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 15px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--white-color);
+  transition: transform .15s ease, box-shadow .2s ease;
 }
 
-.myPosts-item:hover {
-    background: var(--bg-color);
-    border-radius: 12px;
+.myPosts-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
 }
 
-.myPosts-item .thumb img {
-   width: 100px;
-   height: 120px;
-   object-fit: cover;
-   border-radius: 5px;
+.myPosts-card .thumb{
+  width: 120px;
+  aspect-ratio: 1 / 1.2;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--bg-color);
 }
 
-.myPosts-item .info {
-    flex:1;
+.myPosts-card .thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
-.myPosts-item .title {
-    font-weight: 700;
-    font-size: 16px;
-    color: var(--black-color);
+.myPosts-card .body{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 10px;
 }
 
-.myPosts-item .meta {
-    font-size: var(--font-small);
-    color: var(--darkgray-color);
-    display: flex;
-    gap: 10px;
+.myPosts-card .head-row{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
-.myPosts-item .content {
-    font-size: var(--font-body);
-    color: var(--black-color);
-    line-height: 1.4;
-    max-height: 3.5em;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.myPosts-card .title-group{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  line-height: 1.5;
+}
+.myPosts-card .title-group .store{
+  font-weight: var(--font-bold);
+  color: var(--main-color);
+  font-size: var(--font-subtitle);
 }
 
-.no-posts {
-    text-align: center;
-    color: var(--darkgray-color);
-    padding: 40px 0;
+.myPosts-card .title-group .subject{
+  font-weight: var(--font-semibold);
+  font-size: var(--font-body);
+  padding-bottom: 5px;
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 20px;
+.myPosts-card .meta-top{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  font-weight: var(--font-regular);
+  font-size: var(--font-size-base);
 }
 
-.page-btn {
-    border: 1px solid var(--border-color);
-    background: var(--white-color);
-    padding: 6px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: var(--font-small);
+.myPosts-card .meta-top .bar{ opacity: .7; }
+
+
+.myPosts-card .excerpt{
+  color: var(--darkgray-color);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-regular);
 }
 
-.page-btn.active {
-    background: var(--main-color);
-    color: var(--white-color);
-    border-color: var(--main-color);
+.myPosts-card .foot-row{
+  display: flex;
+  justify-content: flex-end;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-regular);
+  height: 30px;
 }
 
-.page-btn:hover {
-    background: var(--bg-color);
+.myPosts-card.no-thumb{
+  grid-template-columns: 1fr;
+  padding: 16px;
 }
 
-@media (max-width: 480px) {
-    .myposts-item {
-        grid-template-columns: 1fr;
-    }
-    .myposts-item .thumb {
-        width: 100%;
-        height: 180px;
-    }
+.myPosts-card .foot-row .btn{
+    padding:0px !important;
 }
+
+/* 빈 상태 */
+.empty-state{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 350px);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--white-color);
+}
+
+.no-posts{ text-align: center; color: var(--darkgray-color); padding: 0; }
+
+/* 페이지네이션: 항상 같은 위치 */
+.myPosts-card .pagination{
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* 반응형 */
+@media (max-width: 500px){
+  .myPosts-card{ grid-template-columns: 1fr; }
+  .myPosts-card .thumb{ width: 100%; height: 200px; }
+  .myPosts-card .meta-top{ font-size: var(--font-small); }
+}
+
+

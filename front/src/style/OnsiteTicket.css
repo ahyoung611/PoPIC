@@ -1,15 +1,15 @@
 /* 전체 화면 덮는 오버레이 */
 .onsite-container {
-    position: fixed;  /* 화면 고정 */
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999; /* 위로 올리기 */
+    z-index: 999;
 }
 
 /* 모달 카드 */
