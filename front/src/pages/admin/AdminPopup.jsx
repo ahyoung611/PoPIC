@@ -92,7 +92,7 @@ const AdminPopup = () => {
                                 <th>전화번호</th>
                                 <th>등록날짜</th>
                                 <th>관리</th>
-                                <th>상세보기</th>
+                                <th>상세보기 &gt;</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -121,7 +121,7 @@ const AdminPopup = () => {
                                 </td>
                                 <td>
                                     <Button onClick={()=>{adminPopupDetail(item)}} variant={"ghost"} color={"gray"}>
-                                        상세보기
+                                        상세보기 &gt;
                                     </Button>
                                 </td>
                             </tr>

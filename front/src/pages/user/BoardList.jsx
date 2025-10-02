@@ -82,7 +82,6 @@ export default function BoardList() {
     <div className="container">
       <div className="inner">
         <h2 className="board__title">커뮤니티</h2>
-
          <div className="list-controls" style={{ display: "flex", gap: "5px" }}>
           <Select
            id="scope"
