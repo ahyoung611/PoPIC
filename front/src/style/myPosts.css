@@ -145,17 +145,6 @@
     padding:0px !important;
 }
 
-/* 빈 상태 */
-.empty-state{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 350px);
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background: var(--white-color);
-}
-
 .no-posts{ text-align: center; color: var(--darkgray-color); padding: 0; }
 
 /* 페이지네이션: 항상 같은 위치 */

@@ -6,12 +6,11 @@ export default function SearchHeader({
   searchValue = "",
   onSearchChange,
   onSearchClick,
-  onRegisterClick,          // 있을 수도/없을 수도
-  showRegister,             // (옵션) 명시적으로 표시 여부 제어
-  placeholder = "상품명을 입력하세요",
+  onRegisterClick,
+  showRegister,
+  placeholder = "검색어 입력하세요",
   className = "",
 }) {
-  // showRegister가 boolean이면 그대로, 아니면 onRegisterClick 유무로 판단
   const shouldShowRegister =
     typeof showRegister === "boolean" ? showRegister : !!onRegisterClick;
 
@@ -31,12 +30,12 @@ export default function SearchHeader({
         aria-label="검색어 입력"
       />
 
-      {/* 검색 버튼 (Enter로도 동작) */}
+      {/* 검색 버튼 (Enter로 동작) */}
       <Button type="submit" variant="primary" color="red" aria-label="검색">
         검색
       </Button>
 
-      {/* 등록 버튼 (옵션) */}
+      {/* 등록 버튼 */}
       {shouldShowRegister && (
         <Button
           type="button"
