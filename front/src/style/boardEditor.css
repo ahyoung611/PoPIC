@@ -1,11 +1,17 @@
 /* 카드 & 폼 */
+.boardEditContainer .be-wrap{
+  width: 100%;
+  margin: auto;
+  position: static;
+  transform: none;
+}
+
 .boardEditContainer .be-card {
   background: var(--white-color);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   box-shadow: var(--shadow);
   padding: 15px;
-  min-height:380px;
 }
 
 .boardEditContainer .be-form {
@@ -71,7 +77,7 @@
 .boardEditContainer .be-head__actions .btn {
   height: 30px;
   padding: 0 10px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 13px;
   line-height: 1;
 }
@@ -120,7 +126,11 @@
 }
 
 /* 스와이퍼(이미지) */
-.boardEditContainer .be-swiper { display: grid; gap: 10px; }
+.boardEditContainer .be-swiper {
+    display: grid;
+    gap: 10px;
+    cursor: pointer;
+}
 
 /* 메인 슬라이더 */
 .boardEditContainer .be-swiper__main {
@@ -145,7 +155,7 @@
   width: 92px !important;
   height: 64px;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   opacity: .7;
 }
@@ -172,11 +182,10 @@
 .boardEditContainer .be-content {
   background: var(--white-color);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 16px;
-  min-height: 250px;
   color: var(--black-color);
-  line-height: 1.65;
+  line-height: 1.5;
   word-break: break-word;
 }
 
@@ -188,9 +197,6 @@
   padding-top: 4px;
   border-top: 1px solid var(--border-color);
 }
-
-/* 카드 간격 */
-.boardEditContainer .be-card + .be-card { margin-top: 16px; }
 
 /* 토글 카렛(▾) */
 .boardEditContainer .btn-caret .caret{
@@ -228,6 +234,7 @@
 .boardEditContainer .be-comments .be-ops-left{
   display:flex;
   justify-content:space-between;
+  padding:0 15px;
 }
 
 /* 댓글 입력 폼(에디터+버튼) */
@@ -245,12 +252,13 @@
   background: var(--white-color);
   border: 1px solid var(--border-color);
   border-radius: 10px !important;
-  padding: 10px 12px;
+  padding: 10px;
   min-height: 76px;
   line-height: 1.5;
   color: var(--black-color);
   box-shadow: none;
   overflow-y: auto;
+  font-size:var(--font-size-base);
 }
 
 .boardEditContainer .be-ck .ck-editor__editable_inline:focus {
@@ -278,7 +286,6 @@
 }
 .boardEditContainer .be-comment-item {
   display: grid;
-  gap: 10px;
   padding: 12px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -289,17 +296,17 @@
 .boardEditContainer .be-comment-item.is-reply {
   background: transparent;
   border: none;
+  border-radius:0px;
   border-top: 1px solid var(--border-color);
   padding: 10px 0;
   margin-left: 10px;
-  border-radius: 0;
 }
 
 /* 대댓글 컨테이너 */
 .boardEditContainer .be-comment-children {
-  margin-top: 8px;
+  margin-top: 10px;
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 /* 댓글 메타(좌:작성자/날짜, 우:삭제) */
@@ -327,26 +334,15 @@
 
 /* 댓글 본문 */
 .boardEditContainer .be-comment-content {
-  font-size: 14px;
-  color: #374151;
-  line-height: 1.55;
+  font-size: var(--font-small);
+  line-height: 1.5;
   word-break: break-word;
-  padding: 0 10px;
+  padding: 0 15px;
 }
 
 /* 인라인 답글 폼/액션 */
 .boardEditContainer .be-reply-form { display: grid; gap: 8px; margin-top: 8px; }
 .boardEditContainer .be-reply-actions { display: flex; gap: 10px; justify-content: flex-end; }
-
-/* 반응형 */
-@media (max-width: 600px) {
-  .boardEditContainer .be-card { padding: 12px; }
-  .boardEditContainer .be-mainimg { height: 320px; }
-  .boardEditContainer .be-comment-form { grid-template-columns: 1fr; }
-  .boardEditContainer .be-content { padding: 12px; border-radius: 10px; }
-}
-@media (min-width: 640px)  { .boardEditContainer .be-mainimg { height: 280px; } }
-@media (min-width: 1024px) { .boardEditContainer .be-mainimg { height: 300px; } }
 
 /* CKEditor 상단 sticky 패널 테두리 제거 */
 .boardEditContainer .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content{ border: none; }
@@ -354,7 +350,8 @@
 /* CKEditor 앞/뒤 요소 여백 보정 */
 .boardEditContainer .ck.ck-editor__editable_inline>:last-child,
 .boardEditContainer .ck.ck-editor__editable_inline>:first-child  {
-  margin:5px 0;
+  margin:5px;
+  font-size:var(--font-small);
 }
 
 /* 등록/수정 전용 카드 */
@@ -362,7 +359,7 @@
   width:100%;
   background: var(--white-color);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: 10px;
   box-shadow: var(--shadow);
   padding: 36px 28px;
   display: grid;
@@ -401,7 +398,9 @@
   outline: none;
   background: #fff;
 }
-.boardEditContainer .be-input:focus { border-color: var(--main-color); }
+.boardEditContainer .be-input:focus {
+order-color: var(--main-color);
+}
 
 /* CKEditor(등록/수정 본문) */
 .boardEditContainer .be-ck.be-ck--article .ck.ck-editor { width: 100%; }
@@ -424,3 +423,13 @@
   gap: 10px;
   margin-top: 8px;
 }
+
+/* 반응형 */
+@media (max-width: 600px) {
+  .boardEditContainer .be-card { padding: 12px; }
+  .boardEditContainer .be-mainimg { height: 320px; }
+  .boardEditContainer .be-comment-form { grid-template-columns: 1fr; }
+  .boardEditContainer .be-content { padding: 12px; border-radius: 10px; }
+}
+@media (min-width: 640px)  { .boardEditContainer .be-mainimg { height: 280px; } }
+@media (min-width: 1024px) { .boardEditContainer .be-mainimg { height: 300px; } }

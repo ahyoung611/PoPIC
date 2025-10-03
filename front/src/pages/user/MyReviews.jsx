@@ -79,7 +79,8 @@ const MyReviews = () => {
     nav(`/popupStore/detail/${storeId}`, { state: { tab: "리뷰" } });
   };
 
-  const showPagination = totalCount >= PAGE_SIZE && totalPages > 1;
+  const effectiveTotalPages = totalPages || Math.ceil(totalCount / PAGE_SIZE);
+  const showPagination = totalCount >= 4 && effectiveTotalPages > 1;
 
   return (
     <div className="container">
@@ -145,7 +146,7 @@ const MyReviews = () => {
           {showPagination && (
             <Pagination
               currentPage={page}
-              totalPages={totalPages}
+              totalPages={effectiveTotalPages}
               onPageChange={setPage}
             />
           )}

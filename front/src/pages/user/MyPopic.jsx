@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import MyReservation from "../../components/mypage/MyReservation.jsx";
 import MyWalkIn from "../../components/mypage/MyWalkIn.jsx";
 import Pagination from "../../components/commons/Pagination.jsx";
 import "../../style/myPopic.css";
-import { useLocation } from "react-router-dom";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
@@ -13,6 +13,7 @@ const RES_PAGE_SIZE = 4;
 const WALK_PAGE_SIZE = 4;
 
 const MyPopic = () => {
+  const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
   const [walkIn, setWalkIn] = useState([]);
   const { auth, getToken } = useAuth();
@@ -25,6 +26,20 @@ const MyPopic = () => {
 
   const [resPage, setResPage] = useState(1);
   const [walkPage, setWalkPage] = useState(1);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (tab === "예약") {
+      setResPage(1);
+    } else {
+      setWalkPage(1);
+    }
+
+    // (옵션) URL ?tab= 값 동기화
+    const sp = new URLSearchParams(location.search);
+    sp.set("tab", tab);
+    navigate({ search: sp.toString() }, { replace: true });
+  };
 
   // 예약 페이징
   const resTotal = reservations.length;
@@ -69,64 +84,70 @@ const MyPopic = () => {
       .catch((err) => console.error("대기 내역 조회 실패", err));
   }, [auth?.user?.user_id, token]);
 
-  useEffect(() => setResPage(1), [reservations]);
-  useEffect(() => setWalkPage(1), [walkIn]);
-
   const showResPagination = resTotal > RES_PAGE_SIZE && resTotalPages > 1;
   const showWalkPagination = walkTotal > WALK_PAGE_SIZE && walkTotalPages > 1;
 
   return (
     <div className="container">
       <div className="inner">
-        <div className="my-popic">
+        <div className="myPopic">
           {/* 상단 타이틀 영역 */}
           <div className="page-head">
             <h1 className="page-title">{pageTitle}</h1>
           </div>
 
+          {/* 탭 */}
           <div className="tab-menu">
             <button
               className={activeTab === "예약" ? "active" : ""}
-              onClick={() => setActiveTab("예약")}
+              onClick={() => handleTabChange("예약")}
             >
               예약
             </button>
             <button
               className={activeTab === "대기" ? "active" : ""}
-              onClick={() => setActiveTab("대기")}
+              onClick={() => handleTabChange("대기")}
             >
               현장발권
             </button>
           </div>
 
+          {/* 예약 탭 */}
           {activeTab === "예약" && (
-            <>
+            <div className="panel" style={{ "--myPopic-list-rows": RES_PAGE_SIZE }}>
               <MyReservation
                 reservations={resPageData}
                 onUpdateReservation={setReservations}
               />
-              {showResPagination && (
-                <Pagination
-                  currentPage={resPage}
-                  totalPages={resTotalPages}
-                  onPageChange={setResPage}
-                />
-              )}
-            </>
+              <div className="pagination-keeper">
+                {showResPagination && (
+                  <Pagination
+                    currentPage={resPage}
+                    totalPages={resTotalPages}
+                    onPageChange={setResPage}
+                  />
+                )}
+              </div>
+            </div>
           )}
 
+
+          {/* 현장대가 탭 */}
           {activeTab === "대기" && (
-            <>
+            <div className="panel" style={{ "--myPopic-list-rows": WALK_PAGE_SIZE }}>
               <MyWalkIn walkIn={walkPageData} />
-              {showWalkPagination && (
-                <Pagination
-                  currentPage={walkPage}
-                  totalPages={walkTotalPages}
-                  onPageChange={setWalkPage}
-                />
-              )}
-            </>
+              <div className="pagination-keeper">
+                {showWalkPagination && (
+                  <Pagination
+                    currentPage={walkPage}
+                    totalPages={walkTotalPages}
+                    onPageChange={setWalkPage}
+                  />
+                )}
+              </div>
+            </div>
           )}
+
         </div>
       </div>
     </div>
