@@ -5,17 +5,19 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background-color: var(--white-color);
 }
 
 .success-card {
     width: 420px;
-    background: var(--white-color); /* 카드만 흰색 */
+    background: var(--white-color);
     border: 1px solid var(--border-color);
     border-radius: 16px;
     padding: 32px 24px;
     text-align: center;
     box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 /* 일러스트 */
@@ -23,18 +25,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 16px;
 }
 
 .success-illustration img {
     width: 120px;
 }
 
-/* 메시지 (캡슐형) */
+/* 메시지 */
 .success-message {
     display: inline-block;
     background-color: var(--bg-color);
-    padding: 6px 14px;
+    padding: 8px 20px;
     border-radius: 999px;
     font-size: var(--font-small);
     color: var(--darkgray-color);
@@ -43,31 +44,31 @@
 
 /* 타이틀 */
 .popup-title {
-    font-size: var(--font-subtitle);
+    font-size: var(--font-title);
     font-weight: var(--font-bold);
-    margin: 16px 0 24px;
-    color: var(--black-color);
 }
 
 /* 예약 정보 박스 */
 .reservation-box {
+    text-align:left;
     background: var(--bg-color);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 20px;
-    margin-bottom: 24px;
-    text-align: left;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.reservation-box p {
-    margin: 10px 0;
-    font-size: var(--font-small);
-    color: var(--black-color);
+.reservation-box > p {
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    font-size: var(--font-size-base);
 }
 
 .reservation-box strong {
-    display: inline-block;
-    width: 90px;
-    color: var(--darkgray-color);
+    font-size: var(--font-size-base);
     font-weight: var(--font-semibold);
 }
 

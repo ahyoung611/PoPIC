@@ -224,7 +224,7 @@ const handleSubmit = async(e)=>{
                         savedName: img.saved_name,
                         url: `/images/popup/${img.saved_name}`
                     }));
-                    setExistingImages(prev=>[...prev,...newImgs]);
+                    setExistingImages(prev=>[...newImgs,...prev]);
                     setImageFiles([]);
                 }
                 navigate(`/vendor/${vendorId}/popups`);
@@ -440,7 +440,7 @@ const handleSubmit = async(e)=>{
 
                         {isEdit ? (
                             <>
-                                <Button type="button" variant="outline" color="gray" onClick={handleDeletePopup}>
+                                <Button type="button" variant="cancel" color="gray" onClick={handleDeletePopup}>
                                     삭제
                                 </Button>
                                 <Button
@@ -455,7 +455,7 @@ const handleSubmit = async(e)=>{
                         ) : (
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="cancel"
                                 color="gray"
                                 onClick={(e) => {
                                     e.preventDefault();

@@ -22,6 +22,7 @@ const CATEGORY_JSON = [
     { category_id: "7", name: "취미" },
     { category_id: "8", name: "캐릭터" },
 ];
+
 const CATEGORY_TABS = [{ key: "all", label: "전체" }, ...CATEGORY_JSON.map(c => ({ key: String(c.category_id), label: c.name }))];
 
 export default function PopupList() {
@@ -56,17 +57,17 @@ export default function PopupList() {
         return () => window.removeEventListener("resize", updateCols);
     }, []);
 
-    // 검색 적용 (searchValue 기준으로만 필터링)
+    // 검색 적용
     const filtered = useMemo(() => {
         const q = searchValue.trim().toLowerCase();
         if (!q) return allItems;
         return allItems.filter((it) => it.title?.toLowerCase().includes(q));
     }, [allItems, searchValue]);
 
-    // 검색 실행 (버튼/엔터 시 실행)
+    // 검색 실행
     const onSearchClick = () => {
-        setSearchValue(inputValue); // 입력값을 검색어로 확정
-        setPage(1);                 // 첫 페이지로 이동
+        setSearchValue(inputValue);
+        setPage(1);
     };
 
     // 페이지네이션 계산
@@ -75,6 +76,14 @@ export default function PopupList() {
         const start = (page - 1) * PER_PAGE;
         return filtered.slice(start, start + PER_PAGE);
     }, [filtered, page, PER_PAGE]);
+
+    const emptyMsg = searchValue.trim()
+      ? "검색 결과가 없습니다."
+      : categoryKey !== "all"
+        ? "해당 카테고리에 등록된 팝업이 없습니다."
+        : "등록된 팝업이 없습니다.";
+
+    const showPagination = filtered.length > 0 && totalPages > 1;
 
     // 내 북마크 불러오기
     const fetchBookmarks = useCallback(async () => {
@@ -163,46 +172,48 @@ export default function PopupList() {
                                 className="list-controls__category"
                             />
                             <SearchHeader
-                                searchValue={inputValue}          // 입력값만 연결
-                                onSearchChange={setInputValue}    // 타이핑 시 입력값만 변경
-                                onSearchClick={onSearchClick}     // 엔터/버튼 시 실제 검색 실행
+                                searchValue={inputValue}
+                                onSearchChange={setInputValue}
+                                onSearchClick={onSearchClick}
                                 placeholder="팝업명을 입력해주세요."
                             />
                         </div>
 
                         {loading ? (
-                            <div className="popup-grid">
-                                {Array.from({ length: cols * 2 }).map((_, i) => (
-                                    <div key={i} className="popup-card--skeleton" />
-                                ))}
-                            </div>
+                          <div className="popup-grid">
+                            {Array.from({ length: cols * 2 }).map((_, i) => (
+                              <div key={i} className="popup-card--skeleton" />
+                            ))}
+                          </div>
+                        ) : filtered.length === 0 ? (
+                          <div className="empty-state">
+                            <p className="no-posts">{emptyMsg}</p>
+                          </div>
                         ) : (
-                            <div className="popup-grid">
-                                {paged.length === 0 ? (
-                                    <div className="nonList">검색 결과가 없습니다.</div>
-                                ) : (
-                                    paged.map((item) => (
-                                        <div key={item.id} className="popup-grid__cell">
-                                            <MainPopupCardB
-                                                popupId={item.id}
-                                                alt={item.title}
-                                                category={item.categoryLabel}
-                                                bookmarked={bookmarked.has(Number(item.id))}
-                                                onToggleBookmark={handleToggleBookmark}
-                                                periodText={item.periodText}
-                                                title={item.title}
-                                                onClick={() => goDetail(item.id)}
-                                            />
-                                        </div>
-                                    ))
-                                )}
-                            </div>
+                          <div className="popup-grid">
+                            {paged.map((item) => (
+                              <div key={item.id} className="popup-grid__cell">
+                                <MainPopupCardB
+                                  popupId={item.id}
+                                  alt={item.title}
+                                  category={item.categoryLabel}
+                                  bookmarked={bookmarked.has(Number(item.id))}
+                                  onToggleBookmark={handleToggleBookmark}
+                                  periodText={item.periodText}
+                                  title={item.title}
+                                  onClick={() => goDetail(item.id)}
+                                />
+                              </div>
+                            ))}
+                          </div>
                         )}
                     </div>
 
-                    <div className="list-pagination">
+                    {showPagination && (
+                      <div className="list-pagination">
                         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-                    </div>
+                      </div>
+                    )}
                 </div>
             </div>
         </div>

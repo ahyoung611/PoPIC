@@ -3,6 +3,16 @@ import {useNavigate, useSearchParams} from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
 import Button from "../components/commons/Button.jsx";
 import "../style/success.css"
+import FloatingBg from "../components/commons/FloatingBg";
+
+const bgImgs = [
+  "/favicon.png",
+  "/Picon.png",
+  "/Oicon.png",
+  "/Picon.png",
+  "/Iicon.png",
+  "/Cicon.png",
+];
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
@@ -85,7 +95,8 @@ export default function SuccessPage() {
     }, [popupId, slotId, date, token]);
 
     return (
-        <main className="container">
+        <div className="container">
+            <FloatingBg images={bgImgs} count={8} opacity={0.5} />
             <div className="success-wrapper">
                 <div className="success-card">
                     <div className="success-illustration">
@@ -113,6 +124,6 @@ export default function SuccessPage() {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }

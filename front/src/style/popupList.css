@@ -8,7 +8,7 @@
 .popup-list .list-title {
   text-align: center;
   font-weight: var(--font-bold);
-  font-size: var(--font-title-l);
+  font-size: var(--font-title-m);
   color: var(--black-color);
   margin: 30px 0;
 }
