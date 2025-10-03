@@ -1,19 +1,42 @@
 /* 예약 현황 & 현장 대기 */
-.my-popic {
+:root{
+  --myPopic-card-min-h: 200px;
+  --myPopic-list-gap: 10px;
+  --myPopic-pagination-h: 60px;
+}
+
+.myPopic {
   display: flex;
   flex-direction: column;
 }
 
+.myPopic .panel{
+  display:flex;
+  flex-direction:column;
+  height:calc(
+      var(--myPopic-list-rows) * var(--myPopic-card-min-h) +
+      (var(--myPopic-list-rows) - 1) * var(--myPopic-list-gap) +
+      var(--myPopic-pagination-h) + 10px
+    );
+}
+
+.myPopic .pagination-keeper{
+  height:var(--myPopic-pagination-h);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
 /* 탭 */
-.my-popic .tab-menu {
+.myPopic .tab-menu {
   display: flex;
   align-items: center;
   border-bottom: 1px solid var(--border-color);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   width: 100%;
 }
 
-.my-popic .tab-menu button {
+.myPopic .tab-menu button {
   flex: 1;
   text-align: center;
   padding: 10px 0;
@@ -25,14 +48,14 @@
   position: relative;
 }
 
-.my-popic .tab-menu button:hover{
+.myPopic .tab-menu button:hover{
   font-weight: var(--font-semibold);
 }
-.my-popic .tab-menu .active {
+.myPopic .tab-menu .active {
   font-weight: var(--font-semibold);
 }
 
-.my-popic .tab-menu .active:after {
+.myPopic .tab-menu .active:after {
   content: "";
   position: absolute;
   left: 0;
@@ -44,7 +67,7 @@
 }
 
 /* 헤더 */
-.my-popic .page-title{
+.myPopic .page-title{
   text-align: center;
   font-weight: var(--font-bold);
   font-size: var(--font-title-l);
@@ -53,40 +76,44 @@
 }
 
 /* 리스트/카드 */
-.my-popic .reservation-list {
-  /* min-height: 850px; */
-  margin-bottom:20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.myPopic .reservation-list{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:var(--myPopic-list-gap);
+  padding-top: 10px;
 }
 
-.my-popic .card {
+.myPopic .card {
   background: var(--white-color);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   transition: transform .15s ease, box-shadow .2s ease;
 }
 
-.my-popic  .card:hover{
-     transform: translateY(-2px);
-     box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
+.myPopic .card:hover{
+border: 1px solid var(--main-color);
+transform: translateY(-2px);
+box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
 }
 
-.my-popic  .reservation-card .card-main {
+.myPopic .reservation-card{
+  min-height: var(--myPopic-card-min-h);
+}
+
+.myPopic  .reservation-card .card-main {
   display: flex;
   cursor: pointer;
   border-bottom: 0.5px solid var(--border-color);
   padding: 10px;
-  margin : 0 10px;
 }
 
 /* 이미지 */
-.my-popic  .reservation-card .thumb {
+.myPopic .reservation-card .thumb {
   flex-shrink: 0; margin-right: 15px;
 }
 
-.my-popic  .reservation-card .thumb img {
+.myPopic .reservation-card .thumb img {
   width: 100px;
   height: 120px;
   object-fit: cover;
@@ -94,41 +121,41 @@
 }
 
 /* 본문 */
-.my-popic  .meta {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 10px;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-regular)
-  line-height:1.5;
+.myPopic .meta {
+  display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:10px;
+    font-size:var(--font-size-base);
+    font-weight:var(--font-regular);
+    line-height:1.5;
 }
 
-.my-popic  .meta-row {
+.myPopic .meta-row {
   display: flex;
   align-items: center;
   gap: 5px;
 }
 
-.my-popic  .meta-bold{
+.myPopic .meta-bold{
   font-weight: var(--font-semibold);
   font-size: var(--font-body);
 }
 
-.my-popic  .meta-row .icon {
+.myPopic .meta-row .icon {
   width: 18px;
   height: 18px;
   object-fit: contain;
 }
 
 /* 하단 버튼 */
-.my-popic .reservation-list .reservation-card .btn-box {
+.myPopic .reservation-list .reservation-card .btn-box {
   padding: 5px 20px;
   text-align: right;
 }
 
 /* 반응형 */
 @media (max-width: 520px) {
-  .my-popic .reservation-card .thumb img { width: 90px; height: 110px; }
-  .my-popic .meta-row .icon { width: 16px; height: 16px; }
+  .myPopic .reservation-card .thumb img { width: 90px; height: 110px; }
+  .myPopic .meta-row .icon { width: 16px; height: 16px; }
 }

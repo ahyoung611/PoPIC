@@ -147,7 +147,7 @@ export default function BoardEditor() {
   const pageTitle = isCreate ? "게시글 등록" : isEdit ? "게시글 수정" : "게시글";
 
   return (
-    <div className="boardEditContainer">
+    <div className="container boardEditContainer">
       <div className="inner">
         {readOnly ? (
           <div className="be-wrap">
@@ -230,7 +230,6 @@ export default function BoardEditor() {
                         pagination={{ clickable: true }}
                         keyboard={{ enabled: true }}
                         thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-//                         loop={false}
                         a11y={{ enabled: true }}
                         spaceBetween={12}
                         slidesPerView={1}
@@ -238,11 +237,6 @@ export default function BoardEditor() {
                         observer
                         observeParents
                         watchSlidesProgress
-//                         speed={800}
-//                         autoplay={{
-//                         delay: 2500,
-//                         disableOnInteraction: false,
-//                       }}
                       >
                         {attachments.map((f) => (
                           <SwiperSlide key={f.savedName || f.url}>

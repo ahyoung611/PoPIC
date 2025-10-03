@@ -1,3 +1,20 @@
+/* 게시글 */
+:root{
+  --board-card-min-h: 88px;
+  --board-list-gap: 10px;
+  --board-pagination-h: 60px;
+}
+
+.board-panel{
+  display: flex;
+  flex-direction: column;
+  height: calc(
+    var(--board-rows) * var(--board-card-min-h) +
+    (var(--board-rows) - 1) * var(--board-list-gap) +
+    var(--board-pagination-h)
+  );
+}
+
 /* 제목 */
 .board__title {
   text-align: center;
@@ -20,13 +37,13 @@
 
 /* 게시글 리스트 */
 .board-list {
-  min-height: 780px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--board-list-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 /* 빈 상태 박스  */
@@ -34,10 +51,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 350px);
+    min-height: 100%;
     border-radius: 10px;
     border: 1px solid var(--border-color);
     background: var(--white-color);
+}
+
+.board__pagination-keeper{
+  height: var(--board-pagination-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* BoardListItem 카드 스타일 */
@@ -47,6 +71,13 @@
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 15px;
+  transition: transform .15s ease, box-shadow .2s ease;
+}
+
+.board-card:hover{
+border: 1px solid var(--main-color);
+transform: translateY(-2px);
+box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
 }
 
 .board-card__main { min-width: 0; }

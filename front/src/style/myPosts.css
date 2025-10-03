@@ -1,4 +1,11 @@
 /* 나의 리뷰, 나의 글 */
+
+:root{
+  --myPosts-list-rows: 4;               /* 카드 수 */
+  --myPosts-card-min-h: 140px;          /* 카드 1개 높이 */
+  --myPosts-list-gap: 10px;             /* 간격 */
+}
+
 .myPosts .page-title{
   text-align: center;
   font-weight: var(--font-bold);
@@ -20,12 +27,16 @@
 
 .myPosts-list{
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: transparent;
-  flex: 1;                    
-  min-height: 280px;         
+    flex-direction: column;
+    gap: var(--myPosts-list-gap);
+    background: transparent;
+    flex: 1;
+    min-height: calc(
+      var(--myPosts-list-rows) * var(--myPosts-card-min-h) +
+      (var(--myPosts-list-rows) - 1) * var(--myPosts-list-gap)
+    );
 }
+
 .myPosts-list.is-empty{ min-height: 360px; }
 
 .myPosts-card{
@@ -37,18 +48,20 @@
   border: 1px solid var(--border-color);
   background: var(--white-color);
   transition: transform .15s ease, box-shadow .2s ease;
+  min-height: var(--myPosts-card-min-h);
 }
 
 .myPosts-card:hover{
   transform: translateY(-2px);
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--main-color);
 }
 
 .myPosts-card .thumb{
   width: 120px;
   aspect-ratio: 1 / 1.2;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--bg-color);
 }
 
@@ -146,7 +159,7 @@
 .no-posts{ text-align: center; color: var(--darkgray-color); padding: 0; }
 
 /* 페이지네이션: 항상 같은 위치 */
-.myPosts-card .pagination{
+.pagination{
   display: flex;
   justify-content: center;
   margin-top: 20px;
