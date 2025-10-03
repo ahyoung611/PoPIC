@@ -42,7 +42,8 @@ export default function PopupList() {
 
     // 반응형 컬럼 수
     const [cols, setCols] = useState(2);
-    const PER_PAGE = cols * 2;
+    const ROWS = 2;
+    const PER_PAGE = cols * ROWS;
 
     // 컬럼 수 계산
     useEffect(() => {
@@ -76,6 +77,8 @@ export default function PopupList() {
         const start = (page - 1) * PER_PAGE;
         return filtered.slice(start, start + PER_PAGE);
     }, [filtered, page, PER_PAGE]);
+
+    const fillerCount = Math.max(0, PER_PAGE - paged.length);
 
     const emptyMsg = searchValue.trim()
       ? "검색 결과가 없습니다."
@@ -158,10 +161,10 @@ export default function PopupList() {
     const goDetail = (id) => navigate(`/popupStore/detail/${id}`);
 
     return (
-        <div className="container">
+        <div className="container popupList-container">
             <div className="inner">
-                <div className="popup-list__content">
-                    <div className="popup-list">
+                <div className="popupList__content">
+                    <div className="popupList">
                         <h1 className="list-title">ALL POPUP</h1>
 
                         <div className="list-controls" style={{ display: "flex", gap: "5px" }}>
@@ -179,43 +182,54 @@ export default function PopupList() {
                             />
                         </div>
 
-                        {loading ? (
-                          <div className="popup-grid">
-                            {Array.from({ length: cols * 2 }).map((_, i) => (
-                              <div key={i} className="popup-card--skeleton" />
-                            ))}
-                          </div>
-                        ) : filtered.length === 0 ? (
-                          <div className="empty-state">
-                            <p className="no-posts">{emptyMsg}</p>
-                          </div>
-                        ) : (
-                          <div className="popup-grid">
-                            {paged.map((item) => (
-                              <div key={item.id} className="popup-grid__cell">
-                                <MainPopupCardB
-                                  popupId={item.id}
-                                  alt={item.title}
-                                  category={item.categoryLabel}
-                                  bookmarked={bookmarked.has(Number(item.id))}
-                                  onToggleBookmark={handleToggleBookmark}
-                                  periodText={item.periodText}
-                                  title={item.title}
-                                  onClick={() => goDetail(item.id)}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                    </div>
+                       <div className="popup-keeper" style={{ "--rows": ROWS }}>
+                         {loading ? (
+                           <div className="popup-grid">
+                             {Array.from({ length: PER_PAGE }).map((_, i) => (
+                               <div key={i} className="popup-grid__cell">
+                                 <div className="popup-card popup-card--skeleton" />
+                               </div>
+                             ))}
+                           </div>
+                         ) : filtered.length === 0 ? (
+                           <div className="empty-state">
+                             <p className="no-posts">{emptyMsg}</p>
+                           </div>
+                         ) : (
+                           <div className="popup-grid">
+                             {paged.map((item) => (
+                               <div key={item.id} className="popup-grid__cell">
+                                 <MainPopupCardB
+                                   popupId={item.id}
+                                   alt={item.title}
+                                   category={item.categoryLabel}
+                                   bookmarked={bookmarked.has(Number(item.id))}
+                                   onToggleBookmark={handleToggleBookmark}
+                                   periodText={item.periodText}
+                                   title={item.title}
+                                   onClick={() => goDetail(item.id)}
+                                 />
+                               </div>
+                             ))}
 
-                    {showPagination && (
-                      <div className="list-pagination">
-                        <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-                      </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-}
+                             {Array.from({ length: fillerCount }).map((_, i) => (
+                               <div key={`ghost-${i}`} className="popup-grid__cell">
+                                 <div className="popup-card popup-card--ghost" aria-hidden />
+                               </div>
+                             ))}
+                           </div>
+                         )}
+                       </div>
+
+                       {/* 페이지네이션 */}
+                       {showPagination && (
+                         <div className="list-pagination">
+                           <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+                         </div>
+                       )}
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             );
+           }

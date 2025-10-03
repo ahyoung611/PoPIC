@@ -11,7 +11,7 @@ img { -webkit-user-drag: none; user-drag: none; }
 :root {
   --main-color: #FF5148;
   --main-hover-color: #E0443C;
-  --main-color-rgb: 255, 81, 72; /* rgba() 사용 편의를 위해 추가 */
+  --main-color-rgb: 255, 81, 72;
 
   --black-color: #333333;
   --white-color: #ffffff;
@@ -63,7 +63,6 @@ body {
 }
 
 /*  Layout Containers  */
-
 .container { width: 100%; height: auto;}
 
 .inner {
@@ -169,7 +168,7 @@ body {
 @media (min-width: 601px) and (max-width: 1024px) {
   .inner { max-width: 90%; padding: 18px; }
 }
-/* 데스크톱(≥1025px) */
+/* PC(≥1025px) */
 @media (min-width: 1025px) {
   .inner { max-width: 1000px; padding: 20px; }
 }
