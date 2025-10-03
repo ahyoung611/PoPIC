@@ -1,55 +1,16 @@
-.reservationManage {
-    display: flex;
+/* 예약관리 */
+
+.reservation-container .rm-page{
+  display: flex;
+  flex-direction: column;
+}
+
+/* 타이틀 */
+.reservation-container .rm-title{
     text-align: center;
-}
-
-.reservationManage .title {
-    font-size: var(--font-title);
     font-weight: var(--font-bold);
-    margin: 20px 0;
+    font-size: var(--font-title-m);
+    color: var(--black-color);
+    margin: 30px;
 }
 
-.reservationManage .search-bar {
-    display: flex;
-    gap: 10px;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.reservationManage .search-bar input {
-    flex: 1;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 7px;
-}
-
-.reservationManage .list-table {
-    display: flex;
-    justify-content: center;
-}
-
-.reservationManage .list-table table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.reservationManage .list-table table thead {
-    background-color: var(--bg-color);
-}
-
-.reservationManage .list-table table thead tr th{
-    padding: 10px;
-    border-radius: 4px;
-    font-size: var(--font-size-base);
-}
-
-.reservationManage .list-table table tbody tr {
-    border-bottom: 1px solid var(--border-color);
-
-}
-
-
-.reservationManage .list-table table tbody tr td {
-    font-size: var(--font-small);
-    padding: 12px 0;
-}

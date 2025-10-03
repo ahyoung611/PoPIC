@@ -29,7 +29,6 @@ export default function VendorHeader() {
 
     const loginPath        = "/login";
     const homePath         = vendorId ? `/vendor/${vendorId}/popups`       : loginPath;
-    const newPopupPath     = vendorId ? `/vendor/${vendorId}/popups/new`   : loginPath;
     const reservationsPath = vendorId ? `/vendor/${vendorId}/reservations` : loginPath;
     const onsitePath       = vendorId ? `/vendor/${vendorId}/onsite`       : loginPath;
     const myPagePath       = vendorId ? `/vendor/myPage/${vendorId}`       : loginPath;
@@ -55,8 +54,6 @@ export default function VendorHeader() {
                     {/* 데스크톱 내비 */}
                     <nav className="header__nav">
                         <NavLink to={homePath} end className={linkClass}>팝업 관리</NavLink>
-                        {/* 팝업 등록 : 승인 완료 운영자만 가능하게 제어 필요 */}
-                        {/*<NavLink to={newPopupPath} className={linkClass}>팝업 등록</NavLink>*/}
                         <NavLink to={reservationsPath} className={linkClass}>예약 관리</NavLink>
                         <NavLink to={onsitePath} className={linkClass}>현장 관리</NavLink>
                     </nav>
@@ -86,8 +83,7 @@ export default function VendorHeader() {
                 </button>
 
                 <div className="Drawer__section">
-                    <NavLink to={homePath} end className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>홈</NavLink>
-                    <NavLink to={newPopupPath} className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>팝업 등록</NavLink>
+                    <NavLink to={homePath} end className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>팝업 관리</NavLink>
                     <NavLink to={reservationsPath} className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>예약 관리</NavLink>
                     <NavLink to={onsitePath} className={({isActive})=>`Drawer__item ${isActive?"is-active":""}`} onClick={close}>현장 관리</NavLink>
 

@@ -1,0 +1,106 @@
+/* 테이블 */
+:root{
+  --table-header-h: 50px;
+  --table-row-min-h: 52px;
+}
+
+.table-controls{
+    display: flex;
+    gap: 5px;
+}
+
+.table-keeper,
+.table-container{
+  min-width: 0;
+}
+
+.table-keeper{
+  min-height: calc(var(--table-header-h) + var(--table-row-min-h) * var(--rows, 10));
+  display: flex;
+}
+
+.table-container{
+  flex: 1;
+  width: 100%;
+  background: var(--white-color);
+  overflow: hidden;
+}
+
+.table-pagination{
+  min-height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 기본 테이블 */
+.table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 720px;
+  text-align:center;
+}
+
+/* 헤더 */
+.table thead th{
+  background: var(--bg-color);
+  font-weight: var(--font-semibold);
+  font-size: var(--font-size-base);
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+/* 바디 */
+.table tbody td{
+  padding: 5px;
+  font-size: var(--font-size-base);
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+/* 툴바 안 기본 인풋 */
+.table-input{
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--white-color);
+  font-size: var(--font-size-base);
+  outline: none;
+}
+
+.btn-group{
+    display: flex;
+    gap:5px;
+    align-items:center;
+    justify-content: center;
+}
+
+@media (max-width: 768px){
+ .table-scroll{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .table-container{
+    overflow-x: auto;        /* overflow-x를 명시적으로 */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table{
+    min-width: 640px;        /* 테이블이 컨테이너보다 넓어지도록 */
+    font-size: var(--font-small);
+  }
+  .table thead th{ padding: 12px; }
+  .table tbody td{ padding: 8px 6px; }
+}
+
+/* 더 작은 화면 */
+@media (max-width: 480px){
+  .table{ min-width: 520px; }
+}
+
+

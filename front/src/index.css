@@ -76,6 +76,19 @@ body {
   flex-direction: column;
 }
 
+/* 빈 상태 */
+.empty-state{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:100%;
+  min-height: calc(100vh - 350px);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--white-color);
+  color: var(--darkgray-color);
+}
+
 /*  CKEditor (글작성 에디터)
     npm install @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic
     npm i dompurify
