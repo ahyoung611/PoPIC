@@ -61,6 +61,7 @@ public class PopupStore {
     private BigDecimal price = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "popupStore", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("image_id DESC")
     private List<Image> images = new ArrayList<>();
 
     @CreationTimestamp
@@ -75,8 +76,8 @@ public class PopupStore {
 
     // 팝업 운영자 상태 관리 - young
     public static final int STATUS_SUSPENDED = 0;   // 정지
-    public static final int STATUS_APPROVED  = 1;   // 승인 완료(운영중)
-    public static final int STATUS_PENDING   = 2;   // 승인 대기
-    public static final int STATUS_REJECTED  = 3;   // 승인 반려
-    public static final int STATUS_ENDED     = -1;  // 운영 종료
+    public static final int STATUS_APPROVED = 1;   // 승인 완료(운영중)
+    public static final int STATUS_PENDING = 2;   // 승인 대기
+    public static final int STATUS_REJECTED = 3;   // 승인 반려
+    public static final int STATUS_ENDED = -1;  // 운영 종료
 }

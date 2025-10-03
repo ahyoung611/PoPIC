@@ -112,7 +112,7 @@
 }
 
 .popupStore-detail .title{
-    font-size: var(--font-subtitle);
+    font-size: var(--font-title);
     font-weight: var(--font-semibold);
     margin-bottom:15px;
 }
@@ -121,13 +121,13 @@
 .popupStore-detail .popup-tab-info .open-time p{
     margin: 5px 0;
     font-size: var(--font-base);
-    font-weight: var(--font-regular);
 }
 
 .popupStore-detail .popup-description .content{
     background-color: var(--bg-color);
     padding: 20px;
     border-radius: 5px;
+    line-height:1.5;
 }
 
 .popupStore-detail .popup-tab-info .popup-location .copyLocation{

@@ -40,48 +40,47 @@ export default function VendorPopupCard({
             </div>
 
             <div className="popup-body">
-                <div className="popup-head">
+                <div className="popup-box">
+                    <div className="popup-head" >
                     <h3 className="popup-title">{title}</h3>
 
-                    {/* 상태 라벨 버튼 */}
-                    <Button
-                        variant="label"
-                        color={meta.color}
-                        disabled
-                        aria-label={`상태: ${meta.text}`}
-                        style={{ cursor: "default" }}
-                    >
-                        {meta.text}
-                    </Button>
+                        {/* 상태 라벨 버튼 */}
+                        <Button
+                            variant="label"
+                            color={meta.color}
+                            disabled
+                            aria-label={`상태: ${meta.text}`}
+                            style={{ cursor: "default" }}
+                        >
+                            {meta.text}
+                        </Button>
+                    </div>
+                     <p className="date">
+                        {startDate} - {endDate}
+                    </p>
                 </div>
 
                 <div className="popup-meta">
-                    <p className="date">
-                        {startDate} - {endDate}
-                    </p>
-
-                    {category_names?.length > 0 && (
+                    <div className="popup-meta-box">
+                        {category_names?.length > 0 && (
                         <div className="chips">
                             {category_names.map((c, i) => (
-                                <span className="chip" key={i}>
-                  {c}
-                </span>
-                            ))}
-                        </div>
-                    )}
+                                <span className="chip" key={i}>{c}</span>))}
+                        </div> )}
+                         <div className="popup-actions">
+                            {canEdit && (
+                                <Button variant="ghost" color="gray" onClick={() => onEdit?.(id)}>
+                                    수정 &gt;
+                                </Button>
+                            )}
+                            <Button variant="ghost" color="gray" onClick={() => onView?.(id)}>
+                                상세보기 &gt;
+                            </Button>
+                         </div>
+                    </div>
                 </div>
 
-                <div className="popup-actions">
-                    {/* 승인 대기/반려에서만 수정 가능 */}
-                    {canEdit && (
-                        <Button variant="ghost" color="gray" onClick={() => onEdit?.(id)}>
-                            수정
-                        </Button>
-                    )}
-                    <Button variant="ghost" color="gray" onClick={() => onView?.(id)}>
-                        상세 보기
-                    </Button>
-                </div>
+
             </div>
         </div>
     );
