@@ -149,7 +149,7 @@ const FieldWaiting = ()=>{
                                                 <button className={"btn"} onClick={()=>{waitingCancel(item)}}>취소</button>
                                             </>
                                         )
-                                    ) : (
+                                    ) : item.status === 0 &&(
                                         <button className={"btn"} onClick={()=>{waitingCall(item)}}>
                                             호출하기
                                         </button>

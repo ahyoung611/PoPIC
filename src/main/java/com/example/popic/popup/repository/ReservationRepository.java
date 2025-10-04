@@ -65,4 +65,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
           AND r.status = 0
     """)
     boolean existsByUserIdAndPopupId(Long userId, Long popupId);
+
+    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
+            "FROM Reservation r " +
+            "WHERE r.payment_key = :paymentKey")
+    boolean existsByPaymentKey(String paymentKey);
 }

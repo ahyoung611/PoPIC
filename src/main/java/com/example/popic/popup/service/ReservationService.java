@@ -30,8 +30,14 @@ public class ReservationService {
     @Transactional
     public PopupReservationDTO reserveSlot(Long slotId, Long userId, Long storeId,
                                            int count, BigDecimal depositAmount, String paymentKey) {
+
+        if(paymentKey != null && reservationRepository.existsByPaymentKey(paymentKey)){
+            throw new IllegalStateException("이미 처리된 결제입니다.");
+        }
+
         PopupStoreSlot slot = slotRepository.findById(slotId)
                 .orElseThrow(() -> new IllegalArgumentException("Slot not found"));
+
 
         if (slot.getReserved_count() + count > slot.getCapacity()) {
             throw new IllegalStateException("해당 슬롯 정원이 가득 찼습니다.");
