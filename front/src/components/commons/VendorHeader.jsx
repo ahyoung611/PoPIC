@@ -47,7 +47,7 @@ export default function VendorHeader() {
                     </button>
 
                     {/* 로고 */}
-                    <div className="header__brand" onClick={() => nav("/vendor/${vendorId}/popups")}>
+                    <div className="header__brand" onClick={() => nav(`/vendor/${vendorId}/popups`)}>
                         <img src="/popic-logo.png" alt="logo" />
                     </div>
 

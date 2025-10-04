@@ -1,8 +1,13 @@
 /* 베이스 */
-.select { position: relative; display: inline-block; }
+.select {
+    position: relative;
+    display:
+    inline-block;
+ }
 
 /* 네이티브 select */
 .select select {
+    min-width: 95px;
     padding: 0 10px;
     height: 40px !important;
     background: var(--white-color);
@@ -21,7 +26,7 @@
     border-color: var(--main-color);
 }
 
-/* ▼ 아이콘 */
+/* 아이콘 */
 .select__icon {
     position: absolute; right: 12px; top: 50%;
     transform: translateY(-50%);
@@ -29,7 +34,7 @@
     pointer-events: none;
 }
 
-/* ===== Input/select/Button을 한 줄로 붙이는 경우 ===== */
+/*  Input/select/Button을 한 줄로 붙이는 경우  */
 .input-group { display: flex; align-items: center; }
 .input-group > * { border-radius: 0; }
 
@@ -39,7 +44,7 @@
 }
 
 .input-group input {
-    height: 42px;                 /* 같은 높이로 맞춤 */
+    height: 42px;
     border-left: 0;
     border-right: 0;
 }

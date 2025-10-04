@@ -93,7 +93,7 @@ body {
     npm i dompurify
 */
 
-/* 에디터 본문 */
+/* 에디터 본문 ------------------------------------------------- */
 .ck-editor__editable_inline {
   width: 100%;
   padding: 14px 16px;
@@ -105,6 +105,15 @@ body {
   resize: none;
   outline: none;
   background: #fff;
+}
+
+.ck-content h1{ font-size: var(--font-title); font-weight: var(--font-semibold); line-height: 1.35;}
+.ck-content h2{ font-size: var(--font-title); font-weight: var(--font-semibold); line-height: 1.35;}
+.ck-content h3{ font-size: var(--font-title); font-weight: var(--font-semibold); line-height: 1.35;}
+.ck-content p{ line-height: 1.5;}
+.ck-content b,
+.ck-content strong{
+  font-weight: var(--font-semibold) !important;
 }
 
 
@@ -157,6 +166,33 @@ body {
 /* CKEditor 상단 sticky panel 경계선 제거 */
 .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content {
   border: none;
+}
+
+/* 스크롤바 -------------------------------------------------  */
+html {
+  scrollbar-width: none;
+}
+
+html:hover {
+  scrollbar-width: thin;
+  scrollbar-color: var(--main-color) var(--bg-color);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--main-color);
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
 }
 
 /* 반응형 */
