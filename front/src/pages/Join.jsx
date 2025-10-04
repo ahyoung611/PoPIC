@@ -381,14 +381,16 @@ const Join = () => {
                                     onChange={onChange}
                                     required
                                 />
-                                <button
+                                <Button
+                                    variant="outline"
+                                    color="gray"
                                     type="button"
                                     className="join-inline-btn"
                                     onClick={businessNumberCheck}
                                     disabled={brnVerified || !form.brn}
                                 >
                                     {brnVerified ? "인증 완료" : "인증"}
-                                </button>
+                                </Button>
                             </div>
                         </>
                     )}

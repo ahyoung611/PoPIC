@@ -44,7 +44,6 @@ export default function ReviewModal({ isOpen, onClose, popupId, onSubmitSuccess,
       alert("리뷰 제목을 입력하세요.");
       return;
     }
-    // 빈 HTML 방지(공백/nbsp 제거)
     const plain = html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
     if (!plain) {
       alert("리뷰 내용을 입력하세요.");
@@ -53,7 +52,7 @@ export default function ReviewModal({ isOpen, onClose, popupId, onSubmitSuccess,
 
     const fd = new FormData();
     fd.append("title", title);
-    fd.append("content", html);         // CKEditor HTML 그대로 전송
+    fd.append("content", html);
     fd.append("popupId", popupId);
     fd.append("userId", user.user_id);
     fd.append("type", "review");
@@ -61,7 +60,7 @@ export default function ReviewModal({ isOpen, onClose, popupId, onSubmitSuccess,
     if (file) {
       fd.append("file", file);
     } else if (existingImage) {
-      fd.append("existingImage", existingImage); // 서버에서 그대로 유지 처리
+      fd.append("existingImage", existingImage);
     } else {
       fd.append("existingImage", "");
     }
@@ -86,63 +85,84 @@ export default function ReviewModal({ isOpen, onClose, popupId, onSubmitSuccess,
   };
 
   return (
-    <div className="modalMask">
+    <div className="modalMask reviewModal">
       <div className="modalPanel">
         <h2 className="modalTitle">{editData ? "리뷰 수정" : "리뷰 작성"}</h2>
 
-          <input
-            type="text"
-            placeholder="제목을 입력해주세요."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-
-          {/* CKEditor(툴바 삭제) */}
-          <div className="be-ck be-ck--article">
-            <CKEditor
-              editor={ClassicEditor}
-              data={html}
-              onReady={(ed) => { editorRef.current = ed; }}
-              onChange={(_, ed) => setHtml(ed.getData())}
-              disabled={saving}
-              config={{
-                toolbar: [],
-                placeholder: "내용을 입력해주세요.",
-              }}
+        <div className="modalForm">
+          {/* 제목 */}
+          <div className="modalField">
+            <label className="modalLabel" htmlFor="review-title">제목</label>
+            <input
+              id="review-title"
+              type="text"
+              className="modalInput"
+              placeholder="제목을 입력해주세요."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
-          {/* 기존 이미지 프리뷰(수정 시) */}
+          {/* 내용 */}
+          <div className="modalField">
+            <label className="modalLabel" htmlFor="review-content">내용</label>
+            <div className="modalCK be-ck be-ck--article" id="review-content">
+              <CKEditor
+                editor={ClassicEditor}
+                data={html}
+                onReady={(ed) => { editorRef.current = ed; }}
+                onChange={(_, ed) => setHtml(ed.getData())}
+                disabled={saving}
+                config={{
+                  toolbar: [],
+                  placeholder: "내용을 입력해주세요.",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* 기존 이미지 */}
           {existingImage && !file && (
-            <div className="existing-image-preview">
-{/*               <img */}
-{/*                 src={`http://localhost:8080/images?type=review&id=${existingImage}`} */}
-{/*                 alt="기존 이미지" */}
-{/*                 style={{ width: 120, height: "auto", borderRadius: 8 }} */}
-{/*               /> */}
-              <button type="button" onClick={() => setExistingImage(null)} style={{ marginLeft: 8 }}>
+            <div className="modalField existing-image-preview">
+              <div className="thumb" role="img"
+                   style={{
+                     backgroundImage: `url('http://localhost:8080/images?type=review&id=${existingImage}')`
+                   }}
+              />
+              <button type="button" className="btn-text" onClick={() => setExistingImage(null)}>
                 이미지 제거
               </button>
             </div>
           )}
 
-          {/* 새 파일 업로드 */}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-          />파일을 선택하세요
-
+          {/* 파일 업로드 */}
+          <div className="modalField">
+            <label className="modalLabel">이미지</label>
+            <div className="fileRow">
+              <input
+                id="review-file"
+                type="file"
+                accept="image/*"
+                className="fileInput-hidden"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+              />
+              <label htmlFor="review-file" className="fileBtn">파일 선택</label>
+              <span className="fileName">
+                {file?.name || (existingImage ? "기존 이미지 유지" : "선택된 파일 없음")}
+              </span>
+            </div>
+          </div>
+        </div>
 
         <div className="modalActions">
           <Button className="modalBtn" variant="primary" color="red" onClick={handleSubmit} disabled={saving}>
             {saving ? "처리 중..." : (editData ? "수정" : "등록")}
           </Button>
-          <Button className="modalBtn" variant="cancel" color="gray"  onClick={onClose} variant="outline" color="gray">
+          <Button className="modalBtn" variant="outline" color="gray" onClick={onClose}>
             취소
           </Button>
         </div>
       </div>
-       </div>
+    </div>
   );
 }
