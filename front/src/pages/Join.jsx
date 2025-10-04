@@ -12,11 +12,11 @@ import FloatingBg from "../components/commons/FloatingBg";
 
 const bgImgs = [
   "/favicon.png",
-  "/Picon.png",
-  "/Oicon.png",
-  "/Picon.png",
-  "/Iicon.png",
-  "/Cicon.png",
+  "/bgIcon/Picon.png",
+  "/bgIcon/Oicon.png",
+  "/bgIcon/Picon.png",
+  "/bgIcon/Iicon.png",
+  "/bgIcon/Cicon.png",
 ];
 
 const Join = () => {

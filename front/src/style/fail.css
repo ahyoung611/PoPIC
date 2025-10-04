@@ -1,0 +1,107 @@
+/* 결제 실패 */
+.fail-container .fail-card{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 420px;
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/*  일러스트 */
+.fail-illustration{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fail-illustration img{
+  width: 120px;
+}
+
+/* 메시지 */
+.fail-message{
+  display: inline-block;
+  background: rgba(var(--main-color-rgb), .10);
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: var(--font-small);
+  color: var(--main-color);
+}
+
+.fail-title-box{
+   line-height:1.5;
+}
+
+.fail-title-box .fail-title{
+  font-size: var(--font-title);
+  font-weight: var(--font-bold);
+}
+
+.fail-title-box .fail-subtitle{
+  font-size: var(--font-size-base);
+  color: var(--darkgray-color);
+}
+
+/* 오류 정보 */
+.fail-info{
+  text-align: left;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-color);
+  padding: 20px;
+}
+
+.fail-info .info-row{
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.fail-info .info-row:last-child{ border-bottom: 0; }
+.fail-info .label{
+  color: var(--darkgray-color);
+  font-size: var(--font-small);
+}
+
+.fail-info .value{
+  color: var(--black-color);
+  font-size: var(--font-size-base);
+  word-break: break-all;
+}
+
+/* 힌트 */
+.fail-hints{
+  text-align: left;
+  padding-left: 18px;
+  color: var(--darkgray-color);
+  font-size: var(--font-small);
+  line-height:1.5;
+}
+
+.fail-hints li{
+  list-style: disc;
+}
+
+/* 버튼 */
+.fail-actions{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.fail-actions .btn{
+  flex: 1 0 0;
+  min-width: 140px;
+}
