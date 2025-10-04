@@ -99,7 +99,7 @@ const MyPosts = () => {
                           <div className="subject">{p.title}</div>
                         </div>
                         <div className="meta-top">
-                          <span>{p.user?.name || "익명"}</span>
+                          <span>{p.writerName || "익명"}</span>
                           <span className="bar">|</span>
                           <span>{formatDate(p.createdAt)}</span>
                         </div>

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {replace, useNavigate, useSearchParams} from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
 import Button from "../components/commons/Button.jsx";
 import "../style/success.css"
@@ -37,6 +37,8 @@ export default function SuccessPage() {
 
     useEffect(() => {
         if (!user) return;
+
+        sessionStorage.setItem("reservationConfirmed", "true");
 
         const requestData = {
             reservationCount: peopleCount,

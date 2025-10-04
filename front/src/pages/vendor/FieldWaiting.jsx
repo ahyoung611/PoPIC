@@ -227,7 +227,7 @@ export default function FieldWaiting() {
                           </Button>
                         </td>
                         <td>
-                          {!called ? (
+                          {!called ? item.status !== -1 && (
                             <div className="btn-group">
                               <Button variant="ghost" color="gray" onClick={() => waitingCall(item)}>
                                 호출
