@@ -42,7 +42,7 @@
     border: 1px solid var(--border-color);
     margin-bottom: 10px;
     transition: border 0.2s ease;
-    font-size: var(--font-small);
+    font-size: var(--font-size-base);
     background: var(--white-color);
     color: var(--black-color);
 }
@@ -118,7 +118,7 @@
 
 /*  Reservation Modal  */
 .reservationModal .modalPanel {
-    width: min(420px, 92vw);
+    width: min(450px, 92vw);
     padding: 24px 22px;
 }
 
@@ -173,7 +173,7 @@
     text-align:center;
 }
 
-/* 예약시 QR */
+/* 예약시 QR ------------------------------------------- */
 .reservationModal .qr-container .qr-overlay {
   position: absolute;
   height:100%;
@@ -206,4 +206,254 @@
   text-align: center;
   font-size: var(--font-size-base);
   color: var(--main-color);
+}
+
+/* 리뷰 작성 모달 ------------------------------------------- */
+.reviewModal .modalPanel {
+  width: min(520px, 92vw);
+  padding: 26px 22px;
+}
+
+.reviewModal .modalForm {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0 16px;
+}
+
+.reviewModal .modalField { display: grid; gap: 8px; }
+
+.reviewModal .modalLabel {
+  font-size: var(--font-small);
+  color: var(--darkgray-color);
+}
+
+/* 인풋 공통 */
+.reviewModal .modalPanel .modalInput {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--white-color);
+  color: var(--black-color);
+  font-size: var(--font-size-base) ;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.reviewModal .modalPanel .modalInput:focus {
+  border-color: var(--main-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0,126,255,.08);
+}
+
+/* CKEditor 박스 */
+.reviewModal .modalCK .ck.ck-editor { width: 100%; }
+.reviewModal .modalCK .ck-editor__top { display: none; }
+.reviewModal .modalCK .ck-editor__main { margin: 0; }
+.reviewModal .modalCK .ck-editor__editable_inline {
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px !important;
+  padding: 14px;
+  min-height: 140px;
+  line-height: 1.55;
+  color: var(--black-color);
+  box-shadow: none;
+  overflow-y: auto;
+}
+.reviewModal .modalCK .ck-editor__editable_inline:focus {
+  border-color: var(--main-color);
+  outline: none;
+}
+
+/* 파일 업로드 행 */
+.reviewModal .fileRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.reviewModal .fileInput-hidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+.reviewModal .fileBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--white-color);
+  color: var(--black-color);
+  font-size: var(--font-small);
+  cursor: pointer;
+  transition: border-color .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.reviewModal .fileBtn:hover {
+  border-color: var(--main-color);
+  color: var(--main-color);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.reviewModal .fileName {
+  font-size: var(--font-small);
+  color: var(--darkgray-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 기존 이미지 프리뷰 */
+.reviewModal .existing-image-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.reviewModal .existing-image-preview .thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+.reviewModal .btn-text {
+  border: none;
+  background: none;
+  color: var(--darkgray-color);
+  font-size: var(--font-small);
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: color .2s ease, background .2s ease;
+}
+.reviewModal .btn-text:hover {
+  color: var(--main-color);
+  background: rgba(0,0,0,.04);
+}
+
+/* 버튼 영역 여백 */
+.reviewModal .modalActions { margin-top: 6px; }
+
+/* 모바일 */
+@media (max-width: 560px) {
+  .reviewModal .modalPanel {
+    width: min(94vw, 520px);
+    padding: 20px 16px;
+  }
+  .reviewModal .fileName { max-width: 50vw; }
+}
+
+/* 문의 작성 모달 ------------------------------------------- */
+
+/* 패널 크기/여백 */
+.inquiryModal .modalPanel {
+  width: min(520px, 92vw);
+  padding: 26px 22px;
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  animation: modal-pop .14s ease-out;
+}
+
+/* 타이틀 */
+.inquiryModal .modalTitle {
+  font-size: var(--font-title);
+  font-weight: var(--font-bold);
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--black-color);
+  margin: 0 0 14px;
+}
+
+/* 텍스트 */
+.inquiryModal .mf-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--white-color);
+  color: var(--black-color);
+  font-size: var(--font-size-base);
+  transition: border-color .2s ease, box-shadow .2s ease;
+  margin: 10px 0 8px;
+}
+.inquiryModal .mf-input:focus {
+  border-color: var(--main-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0,126,255,.08);
+}
+
+/* CKEditor  */
+.inquiryModal .be-ck .ck.ck-editor { width: 100%; }
+.inquiryModal .be-ck .ck-editor__top { display: none; }
+.inquiryModal .be-ck .ck-editor__main { margin: 0; }
+.inquiryModal .be-ck .ck-editor__editable_inline {
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px !important;
+  padding: 14px;
+  min-height: 140px;
+  line-height: 1.55;
+  color: var(--black-color);
+  box-shadow: none;
+  overflow-y: auto;
+}
+.inquiryModal .be-ck .ck-editor__editable_inline:focus {
+  border-color: var(--main-color);
+  outline: none;
+}
+
+/* 비공개 체크 */
+.inquiryModal .privateCheck {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 !important;
+  user-select: none;
+}
+.inquiryModal .privateCheck input[type="checkbox"] {
+  display: none;
+}
+.inquiryModal .privateCheck label {
+  position: relative;
+  padding-left: 26px;
+  cursor: pointer;
+  font-size: var(--font-small);
+  color: var(--gray-color);
+}
+.inquiryModal .privateCheck label::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 20px; height: 20px;
+  background-image: url("/privateCheck-g.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+.inquiryModal .privateCheck input[type="checkbox"]:checked + label::before {
+  background-image: url("/privateCheck-p.png");
+}
+.inquiryModal .privateCheck input[type="checkbox"]:checked + label {
+  color: var(--black-color);
+}
+
+/* 버튼 영역 */
+.inquiryModal .modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+/* 모바일 */
+@media (max-width: 560px) {
+  .inquiryModal .modalPanel {
+    width: min(94vw, 520px);
+    padding: 20px 16px;
+  }
 }

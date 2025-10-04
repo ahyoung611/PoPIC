@@ -117,7 +117,6 @@
     margin-bottom:15px;
 }
 
-
 .popupStore-detail .popup-tab-info .open-time p{
     margin: 5px 0;
     font-size: var(--font-base);
@@ -245,133 +244,214 @@
 /* 팝업 문의 컴포넌트 -------------------------------------------------------------------------------- */
 
 .popupStore-detail .popupInquiry-container .inquiry-btn{
-    text-align: center;
     border: 1px solid var(--border-color);
-    border-radius: 3px;
-    padding: 5px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    color: var(--darkgray-color);
+    text-align: center;
+    padding: 10px;
+    margin-bottom:20px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
 }
 
 .popupStore-detail .popupInquiry-container .inquiry-btn:hover {
-    background-color: rgba(0, 0, 0, 0.01); /* 배경 살짝 강조 */
-    transform: translateY(-2px); /* 살짝 위로 튀는 느낌 */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+    border: 1px solid var(--main-color);
+    color: var(--main-color);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+}
+
+.popupStore-detail .popupInquiry-list .empty-state{
+   min-height: 400px;
 }
 
 .popupStore-detail .popupInquiry-list .inquiry-item{
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    border-bottom: 1px solid var(--border-color);
-    padding: 5px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
+  padding: 14px 8px;
 }
 
-.popupStore-detail .popupInquiry-list .inquiry-item .item-1 {
-    display: flex;
-    justify-content: space-between;
+/* 상단 정보줄 */
+.popupStore-detail .popupInquiry-list .inquiry-item .user,
+.popupStore-detail .popupInquiry-list .inquiry-item .createdAt{
+  font-size: var(--font-small);
+  color: var(--darkgray-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
+.popupStore-detail .popupInquiry-list .inquiry-item .btn-wrapper{
+  display: inline-flex;
+  gap: 10px;
+  color: var(--darkgray-color);
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .btn-wrapper button{
+  border: none; background: none; cursor: pointer;
+}
+
+/* 제목/토글 라인 */
+.popupStore-detail .popupInquiry-list .inquiry-item .item-1{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .popupStore-detail .popupInquiry-list .inquiry-item .title{
-    font-size: var(--font-subtitle);
-    font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--font-subtitle);
+  font-weight: var( --font-semibold);
+  margin: 2px 0;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
 }
 
-.popupStore-detail .popupInquiry-list .inquiry-item .content{
-    font-size: var(--font-size-base);
+.popupStore-detail .popupInquiry-list .inquiry-item .title.is-private { color: var(--gray-color); }
+.popupStore-detail .popupInquiry-list .inquiry-item .title.is-public  { color: var(--black-color); }
+
+.popupStore-detail .popupInquiry-list .inquiry-item .title img{
+  width: 25px;
+  height:25px;
+  object-fit:cover;
+ }
+
+/* 비공개 글 */
+.popupStore-detail .popupInquiry-list .inquiry-item.private .btn-reply-toggle{
+  display: none !important;
 }
 
-.popupStore-detail .popupInquiry-list .inquiry-item .content p {
-    display: flex;
-    align-items: center;
+/* 답변완료 배지 */
+.popupStore-detail .popupInquiry-list .inquiry-item.has-reply .title::after{
+  content: "답변완료";
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: var(--font-caption);
+  line-height: 1.5;
+  border: 1px solid var(--main-color);
+  color: var(--main-color);
+  border-radius: 999px;
+  vertical-align: top;
 }
 
-.popupStore-detail .popupInquiry-list .inquiry-item .content img {
-    width: 20px;
-    height: 20px;
-}
-
-.popupStore-detail .popupInquiry-list .inquiry-item .user, .createdAt{
-    font-size: var(--font-small);
-    display: flex;
-    justify-content: space-between;
-}
-
+/* 더보기 버튼 */
 .popupStore-detail .popupInquiry-list .inquiry-item .btn-reply-toggle{
-    border: none;
-    background: none;
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
+  display: flex;
+  align-items:
+  center;
+  gap: 5px;
 }
 
-/* 화살표 스타일 */
-.toggle-arrow {
-    display: inline-block;
-    transition: transform 0.3s;
+.toggle-arrow{ transition: transform .25s; }
+.toggle-arrow.open{ transform: rotate(180deg); }
+
+/* 접힘 영역(공개 글 전용) */
+.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies{
+  max-height: 0; opacity: 0; overflow: hidden;
+  transform: translateY(-4px);
+  transition: all .28s ease;
+  padding: 0; margin-top: 0;
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies.open{
+  max-height: 800px;
+  opacity: 1;
+  transform: translateY(0);
 }
 
-/* 열림 상태에서 화살표 회전 */
-.toggle-arrow.open {
-    transform: rotate(180deg);
+/* 문의 본문 카드 */
+.popupStore-detail .popupInquiry-list .inquiry-item .question{
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px; padding: 12px; margin-bottom: 8px;
 }
 
-.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-    padding: 0; /* 닫혔을 때 padding 제거 */
+/* 관리자 댓글 카드 ── 문의 + 리뷰 공통 */
+.popupStore-detail .popupInquiry-list .inquiry-item .admin-reply,
+.popupStore-detail .popupReview-container .admin-reply{
+  margin-top: 10px;
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--main-color);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  align-items:center;
+  gap: 10px;
+  box-shadow: var(--shadow);
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .admin-reply .admin-avatar,
+.popupStore-detail .popupReview-container .admin-reply .admin-avatar{
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--main-color); color: #fff;
+  display: grid; place-items: center;
+  font-size: 14px; font-weight: 700;
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .admin-reply .reply-body,
+.popupStore-detail .popupReview-container .admin-reply .reply-body{ min-width: 0; }
+.popupStore-detail .popupInquiry-list .inquiry-item .admin-reply .reply-meta,
+.popupStore-detail .popupReview-container .admin-reply .reply-meta{
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .admin-reply .badge-admin,
+.popupStore-detail .popupReview-container .admin-reply .badge-admin{
+  font-size: 11px; color: #fff; background: var(--main-color);
+  border-radius: 6px; padding: 2px 6px; font-weight: 700;
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .admin-reply .reply-createdAt,
+.popupStore-detail .popupReview-container .admin-reply .reply-createdAt{
+  font-size: 12px; color: var(--darkgray-color);
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .admin-reply .reply-html,
+.popupStore-detail .popupReview-container .admin-reply .reply-html{
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  word-break: break-word;
+  padding: 0 10px;
 }
 
-.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .vendor-name {
-    font-size: var(--font-small);
-    font-weight: bold;
-    color: var(--black-color);
-    display: flex;
-    justify-content: space-between;
+/* 관리자 답변 입력 줄 ── 문의 + 리뷰 공통 */
+.popupStore-detail .popupInquiry-list .inquiry-item .vendor-reply,
+.popupStore-detail .popupReview-container .vendor-reply{
+  margin-top: 10px; display: flex; align-items: stretch; gap: 8px;
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .vendor-reply input,
+.popupStore-detail .popupReview-container .vendor-reply input{
+  flex: 1; padding: 10px 12px; font-size: var(--font-small);
+  border: 1px solid var(--border-color); border-radius: 6px; outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .vendor-reply input:focus,
+.popupStore-detail .popupReview-container .vendor-reply input:focus{
+  border-color: var(--main-color);
+  box-shadow: 0 0 0 3px rgba(0,126,255,.08);
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .vendor-reply .reply-btn,
+.popupStore-detail .popupReview-container .vendor-reply .reply-btn{
+  border: 1px solid var(--border-color); background: var(--white-color);
+  border-radius: 8px; padding: 0 14px; font-size: 13px; cursor: pointer;
+  transition: border-color .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.popupStore-detail .popupInquiry-list .inquiry-item .vendor-reply .reply-btn:hover,
+.popupStore-detail .popupReview-container .vendor-reply .reply-btn:hover{
+  border-color: var(--main-color); color: var(--main-color);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
 
-.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .reply-html, .reply-createdAt {
-    font-size: 12px;
-    color: var(--darkgray-color);
+/* 빈 상태 & 안내 */
+.popupStore-detail .popupInquiry-list .inquiry-item .no-content{
+  font-size: var(--font-small); color: var(--darkgray-color);
+  padding:10px;
 }
 
-.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies.open {
-    max-height: 300px; /* 충분히 큰 값으로 설정 */
-    opacity: 1;
-    transform: translateY(0);
-    padding: 10px 0; /* 열릴 때 패딩 추가로 자연스럽게 */
+/* 모바일 미세 조정 */
+@media (max-width: 560px){
+  .popupStore-detail .popupInquiry-list .inquiry-item{ padding: 12px 4px; }
 }
 
-.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .no-content {
-    font-size: var(--font-small);
-}
-
-.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .vendor-reply {
-    margin-top: 8px;
-    display: flex;
-    gap: 10px;
-}
-
-.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .vendor-reply input {
-    padding: 10px 12px; /* 안쪽 여백 */
-    font-size: var(--font-small); /* 읽기 좋은 크기 */
-    border: 1px solid var(--border-color); /* 연한 테두리 */
-    border-radius: 3px; /* 둥근 모서리 */
-    outline: none; /* 기본 파란색 focus 제거 */
-    transition: all 0.2s ease; /* 부드러운 효과 */
-}
-
-.popupStore-detail .popupInquiry-list .inquiry-item .inquiry-replies .vendor-reply .reply-btn {
-    border: none;
-    background: none;
-    cursor: pointer;
-}
 
 /* 팝업 리뷰 컴포넌트 -------------------------------------------------------------------------------- */
 .popupStore-detail .popupReview-container .review-search .review-search-header {
@@ -380,200 +460,154 @@
     gap: 10px;
     justify-content: space-between;
     align-items: center;
-    margin: 0 7px;
 }
 
-.popupStore-detail .popupReview-container .review-point {
-    width: 100%;
-}
+/* ================ 리뷰: 문의와 동일한 토글 UX ================ */
 
-.popupStore-detail .popupReview-container .review-search .review-search-header .point-color {
-    color: var(--main-color);
-}
+.popupStore-detail .popupReview-container .review-point { width:100%; }
+.popupStore-detail .popupReview-container .review-search .review-search-header .point-color { color: var(--main-color); }
 
 .popupStore-detail .popupReview-container .review-btn{
-    text-align: center;
-    border: 1px solid var(--border-color);
-    border-radius: 3px;
-    padding: 5px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin: 10px 0;
+  border:1px solid var(--border-color);
+  color:var(--darkgray-color);
+  text-align:center;
+  padding:10px;
+  margin-bottom:20px;
+  border-radius:10px;
+  transition:all .2s ease-in-out; cursor:pointer;
+}
+.popupStore-detail .popupReview-container .review-btn:hover{
+  border-color:var(--main-color); color:var(--main-color); box-shadow:var(--shadow);
 }
 
-.popupStore-detail .popupReview-container .review-btn:hover {
-    background-color: rgba(0, 0, 0, 0.01); /* 배경 살짝 강조 */
-    transform: translateY(-2px); /* 살짝 위로 튀는 느낌 */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+/* 리스트: 스크롤 사용 안 함 */
+.popupStore-detail .popupReview-container .review-list{
+    height: auto;
+    overflow: visible;
+    padding-right: 0;
 }
 
-.popupStore-detail .popupReview-container .review-wrapper {
-    border-bottom: 1px solid var(--border-color);
-    padding: 16px;
-
+.popupStore-detail .popupReview-container .review-list .empty-state{
+   min-height: 400px;
 }
 
-.popupStore-detail .popupReview-container .review-image {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
+@media (max-width: 560px){
+  .popupStore-detail .popupReview-container .review-list{ height: auto; }
 }
 
-.popupStore-detail .popupReview-container .review-info {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    margin-top: 10px;
+/* 아이템 */
+.popupStore-detail .popupReview-container .review-item{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  border-bottom:1px solid var(--border-color);
+  padding:15px;
+}
+.popupStore-detail .popupReview-container .review-item .user,
+.popupStore-detail .popupReview-container .review-item .createdAt{
+  font-size:var(--font-small); color:var(--darkgray-color);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.popupStore-detail .popupReview-container .review-item .variant{
+  color: var(--main-color); font-weight: var(--font-semibold);
+}
+.popupStore-detail .popupReview-container .review-item .btn-wrapper{
+  display:inline-flex; gap:10px; color:var(--darkgray-color);
+}
+.popupStore-detail .popupReview-container .review-item .btn-wrapper button{
+  border:none; background:none; cursor:pointer;
 }
 
-.popupStore-detail .popupReview-container .review-info .info-1{
-    display: flex;
-    justify-content: space-between;
+.popupStore-detail .popupReview-container .review-item .item-1{
+  display:flex; align-items:center; justify-content:space-between;
+}
+.popupStore-detail .popupReview-container .review-item .title{
+  font-size: var(--font-subtitle);
+  font-weight: var(--font-semibold);
+  overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+}
+.popupStore-detail .popupReview-container .review-item.has-reply .title::after{
+  content:"답변완료"; display:inline-block; margin-left:8px; padding:2px 8px;
+  font-size:11px; line-height:1.6; border:1px solid var(--main-color);
+  color:var(--main-color); border-radius:999px; vertical-align:top;
 }
 
-.popupStore-detail .popupReview-container .review-title {
-    margin: 0;
-    font-size: 16px;
-    font-weight: bold;
+/* 더보기 버튼 */
+.popupStore-detail .popupReview-container .review-item .btn-reply-toggle{
+  display: flex;
+  align-items:center;
+  gap:5px;
+  cursor:pointer;
 }
 
-.popupStore-detail .popupReview-container .review-user,
-.popupStore-detail .popupReview-container .review-date {
-    margin: 0;
-    font-size: 12px;
-    color: var(--darkgray-color);
+.popupStore-detail .popupReview-container .toggle-arrow{ transition: transform .25s; }
+.popupStore-detail .popupReview-container .toggle-arrow.open{ transform: rotate(180deg); }
+
+/* 펼침영역 */
+.popupStore-detail .popupReview-container .review-body{
+  max-height:0; opacity:0; overflow:hidden; transform:translateY(-4px);
+  transition:all .28s ease; padding:0; margin-top:0;
+}
+.popupStore-detail .popupReview-container .review-body.open{
+  max-height:1200px;
+  opacity:1;
+  transform:translateY(0);
 }
 
-.popupStore-detail .popupReview-container .review-content {
-    margin: 8px 0;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
+/* 펼침 내부: 이미지 + 본문 + 관리자 댓글 */
+.popupStore-detail .popupReview-container .review-image-lg{
+  width: 200px;
+  max-width: 100%;
+  height:auto;
+  border-radius:10px;
+  box-shadow:var(--shadow);
+  margin-bottom:10px;
+}
+.popupStore-detail .popupReview-container .review-text{
+  background:var(--bg-color); border:1px solid var(--border-color);
+  border-radius:8px; padding:12px; margin-bottom:8px; color:var(--black-color);
 }
 
-.popupStore-detail .popupReview-container .review-actions {
-    text-align: right;
-    font-size: 12px;
-    color: var(--black-color);
-    cursor: pointer;
+/* 관리자 댓글 리스트 컨테이너 */
+.popupStore-detail .popupReview-container .review-replies{
+  margin-top: 8px;
 }
 
-.popupStore-detail .popupReview-container .review-replies {
-    margin-top: 8px;
-    padding-left: 16px;
+/* 빈 상태 문구  */
+.popupStore-detail .popupReview-container .no-content{
+  font-size: var(--font-small); color: var(--darkgray-color);
+  padding:10px 0;
 }
 
-.popupStore-detail .popupReview-container .reply {
-    display: flex;
-    flex-direction: column;
-    margin-top: 4px;
-    border-left: 2px solid var(--border-color);
-    padding-left: 8px;
+/* 댓글 입력 */
+.popupStore-detail .popupReview-container .vendor-reply{
+  margin-top:10px; display:flex; align-items:stretch; gap:8px;
+}
+.popupStore-detail .popupReview-container .vendor-reply input{
+  flex:1; padding:10px 12px; font-size:var(--font-small);
+  border:1px solid var(--border-color); border-radius:6px; outline:none;
+  transition:border-color .2s, box-shadow .2s;
+}
+.popupStore-detail .popupReview-container .vendor-reply input:focus{
+  border-color:var(--main-color); box-shadow:0 0 0 3px rgba(0,126,255,.08);
+}
+.popupStore-detail .popupReview-container .vendor-reply .reply-btn{
+  border:1px solid var(--border-color); background:var(--white-color);
+  border-radius:8px; padding:0 14px; font-size:13px; cursor:pointer;
+  transition:border-color .2s, color .2s, box-shadow .2s;
+}
+.popupStore-detail .popupReview-container .vendor-reply .reply-btn:hover{
+  border-color:var(--main-color); color:var(--main-color); box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
 
-.popupStore-detail .popupReview-container .reply .reply-1 {
-    display: flex;
-    justify-content: space-between;
+/* 모바일 */
+@media (max-width:560px){
+  .popupStore-detail .popupReview-container .review-item{ padding:12px 4px; }
+  .popupStore-detail .popupReview-container .review-image-lg{ width: 60%; }
 }
 
-.popupStore-detail .popupReview-container .reply-author {
-    font-weight: bold;
-    font-size: var(--font-small);
-    color: var(--black-color);
-}
 
-.popupStore-detail .popupReview-container .reply-createdAt {
-    font-size: 12px;
-    color: var(--darkgray-color);
-}
-
-.popupStore-detail .popupReview-container .reply-content {
-    margin: 0;
-    font-size: 13px;
-    color: var(--darkgray-color);
-}
-
-.popupStore-detail .popupReview-container .no-reply {
-    font-size: 13px;
-    color: var(--gray-color);
-    font-style: italic;
-}
-
-.popupStore-detail .popupReview-container .reply-input {
-    width: calc(100% - 60px);
-    padding: 6px 8px;
-    margin-top: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-}
-
-.popupStore-detail .popupReview-container .reply-submit {
-    padding: 6px 12px;
-    margin-left: 4px;
-    border: 1px solid var(--border-color);
-    background-color: var(--white-color);
-    color: var(--gray-color);
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.popupStore-detail .popupReview-container .btn-reply-toggle {
-    background: none;
-    border: none;
-    color: var(--black-color);
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
-}
-
-.popupStore-detail .popupReview-container .review-wrapper{
-    border: 1px solid var(--border-color);
-    border-radius: 3px;
-    margin: 10px 0;
-}
-
-.review-top{
- display:flex;
- align-items: flex-start;
- }
-
-.btn-wrapper {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-    gap: 10px;
-    color: var(--darkgray-color);
-}
-
-.btn-wrapper button {
-    border: none;
-    background: none;
-    cursor: pointer;
-}
-
-.msg-container {
-    border: 1px solid var(--border-color);
-    text-align: center;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 8px;
-    transition: all 0.2s ease-in-out;
-}
-
-.msg-container:hover {
-    background-color: rgba(0, 0, 0, 0.03);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-}
-
-.msg-container .no-login{
-    color: var(--black-color);
-}
-
-/*  팝업 상세: 이미지 슬라이드  */
+/*  팝업 상세 ------------------------------------------------------------ */
 
 /* 슬라이드 컨테이너 */
 .popupStore-detail .popupStore-Swiper{
@@ -669,4 +703,3 @@
     max-height: 78%;
   }
 }
-

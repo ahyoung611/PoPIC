@@ -25,7 +25,7 @@ export default function InquiryModal({
   if (!open) return null;
 
   return (
-    <div className="modalMask">
+    <div className="modalMask inquiryModal">
       <div className="modalPanel">
         {/* 타이틀 */}
         <h2 className="modalTitle">{title}</h2>
