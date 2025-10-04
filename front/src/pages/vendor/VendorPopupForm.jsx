@@ -189,8 +189,13 @@ const handleSubmit = async(e)=>{
         const err = validate();
         if(err) return alert(err);
 
+        // 반려(3) 상태에서 '수정' 제출 시 자동으로 승인대기(2)로 전환
+        const nextStatus =
+           isEdit && Number(form.status) === 3 ? 2 : form.status;
+
         const dto = {
             ...form,
+            status: nextStatus, // 수정 시 스테이터스 변환
             categories: categorySelect===0?[]:[categorySelect],
             open_days:Array.from(openDays),
             open_start_time:startTime,
