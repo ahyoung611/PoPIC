@@ -61,10 +61,7 @@
 }
 
 .fail-info .info-row{
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 10px;
-  align-items: center;
+  text-align:center;
   padding: 8px 0;
   border-bottom: 1px dashed var(--border-color);
 }
