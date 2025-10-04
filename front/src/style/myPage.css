@@ -107,10 +107,11 @@
 }
 
 .userMyPage .section-title {
-    font-size: var(--font-title-m);
+    text-align: center;
     font-weight: var(--font-bold);
+    font-size: var(--font-title);
     color: var(--black-color);
-    padding: 20px 15px;
+    padding: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -121,12 +122,6 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-}
-
-.userMyPage .favorite-list {
-    display: flex;
-    flex-direction: column;
-    min-height: 300px;
 }
 
 .userMyPage .favorite-item {
