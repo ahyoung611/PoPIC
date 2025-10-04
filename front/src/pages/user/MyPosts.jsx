@@ -48,7 +48,7 @@ const MyPosts = () => {
   const nav = useNavigate();
 
   const [posts, setPosts] = useState([]);
-  const [page, setPage] = useState(1); // UI 1-base
+  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -81,7 +81,7 @@ const MyPosts = () => {
   return (
     <div className="container">
       <div className="inner">
-        <div className="myPosts">
+        <div className="myPosts" style={{ "--myPosts-list-rows": PAGE_SIZE }}>
           <h1 className="page-title">나의 게시글</h1>
           <div className="myPosts-count">
             내가 작성한 글 <strong>{totalCount}</strong>개

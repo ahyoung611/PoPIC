@@ -84,10 +84,11 @@ const MyReservationModal = ({open, onClose, reservation, onUpdateReservation }) 
 
         {/* 버튼 */}
         <div className="modalActions">
-          <Button variant="primary" color="red" onClick={onClose}>닫기</Button>
             {status === 1 && (
-                <Button variant="cancel" color="gray" onClick={reservationCancel}>예약 취소</Button>
+                <Button variant="outline" color="gray" onClick={reservationCancel}>예약 취소</Button>
             )}
+          <Button variant="primary" color="red" onClick={onClose}>닫기</Button>
+
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@ img { -webkit-user-drag: none; user-drag: none; }
 :root {
   --main-color: #FF5148;
   --main-hover-color: #E0443C;
-  --main-color-rgb: 255, 81, 72; /* rgba() 사용 편의를 위해 추가 */
+  --main-color-rgb: 255, 81, 72;
 
   --black-color: #333333;
   --white-color: #ffffff;
@@ -42,7 +42,7 @@ img { -webkit-user-drag: none; user-drag: none; }
   --font-bold: 700;
 
   /* Shadow */
-  --shadow: 0 4px 6px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow: box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
   --main-shadow:0 2px 0px rgba(0, 0, 0, 0.05), 0 0px 2px rgba(255, 81, 72, 0.6)
 
 }
@@ -63,7 +63,6 @@ body {
 }
 
 /*  Layout Containers  */
-
 .container { width: 100%; height: auto;}
 
 .inner {
@@ -74,6 +73,19 @@ body {
   min-height: calc(100vh - 60px - 44px);
   display: flex;
   flex-direction: column;
+}
+
+/* 빈 상태 */
+.empty-state{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:100%;
+  min-height: calc(100vh - 350px);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--white-color);
+  color: var(--darkgray-color);
 }
 
 /*  CKEditor (글작성 에디터)
@@ -156,7 +168,7 @@ body {
 @media (min-width: 601px) and (max-width: 1024px) {
   .inner { max-width: 90%; padding: 18px; }
 }
-/* 데스크톱(≥1025px) */
+/* PC(≥1025px) */
 @media (min-width: 1025px) {
   .inner { max-width: 1000px; padding: 20px; }
 }

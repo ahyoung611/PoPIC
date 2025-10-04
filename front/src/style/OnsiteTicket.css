@@ -1,11 +1,12 @@
-/* 전체 화면 덮는 오버레이 */
+/* 현장 발권 모달창 */
 .onsite-container {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.50);
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,42 +15,35 @@
 
 /* 모달 카드 */
 .onsite-card {
-    width: 420px;
-    max-width: 90%;  /* 작은 화면 대응 */
+    width: min(450px, 92vw);
     background: var(--white-color);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 32px 24px;
-    text-align: center;
-    box-shadow: var(--shadow-lg, 0 8px 24px rgba(0,0,0,0.2));
-    position: relative; /* 오버레이 안에서 가운데 */
-    z-index: 1000;
-    animation: fadeInUp 0.3s ease; /* 살짝 뜨는 애니메이션 */
+    position: relative;
+    animation: modal-pop .14s ease-out;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    text-align:center;
 }
 
-/* 모달 열릴 때 애니메이션 */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@keyframes modal-pop {
+    from { transform: scale(.98); opacity: .88; }
+    to   { transform: scale(1);   opacity: 1; }
 }
 
 /* 기존 스타일은 거의 유지 */
 .onsite-illust {
     width: 120px;
-    margin: 0 auto 12px;
     display: block;
 }
 
 .onsite-message {
     display: inline-block;
     background-color: var(--bg-color);
-    padding: 6px 14px;
+    padding: 8px 20px;
     border-radius: 999px;
     font-size: var(--font-small);
     color: var(--darkgray-color);
@@ -57,20 +51,25 @@
 }
 
 .onsite-title {
-    font-size: var(--font-subtitle);
+    font-size: var(--font-title);
     font-weight: var(--font-bold);
-    color: var(--black-color);
-    margin-bottom: 15px;
+}
+
+.onsite-detail{
+    margin: 10px 0;
+    line-height:1.5;
+    font-weight: var(--font-regular);
 }
 
 .onsite-qr-box {
     display: flex;
     justify-content: space-between;
-    align-items: stretch;
+    align-items: center;
     background: var(--bg-color);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 20px;
-    margin-bottom: 24px;
+    margin: 10px 0;
+    width:100%;
 }
 
 .onsite-qr-left,
@@ -82,22 +81,17 @@
 
 .onsite-qr-left {
     border-right: 1px solid var(--border-color);
-    padding-right: 12px;
+    padding-right: 10px;
 }
 
 .onsite-qr-right {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-left: 12px;
+    padding-left: 10px;
 }
 
 .onsite-label {
-    font-size: var(--font-title);
-    color: var(--darkgray-color);
-    margin-top: 10px;
-    margin-bottom: 10px;
-    display: block;
+    font-size: var(--font-size-base);
+    padding-bottom: 10px;
+    font-weight : var(--font-semibold);
 }
 
 .onsite-msg {
@@ -112,7 +106,7 @@
 }
 
 .onsite-value-blue {
-    font-size: var(--font-title);
+    font-size: var(--font-title-l);
     font-weight: var(--font-bold);
     color: var(--blue-color);
 }
@@ -136,9 +130,11 @@
 }
 
 .btn-area {
+    width:100%;
     display: flex;
     justify-content: space-between;
-    gap: 8px;
+    gap: 5px;
+    margin-top: 10px;
 }
 
 /* 버튼 */
@@ -147,5 +143,5 @@
     border-radius: 999px;
     font-size: var(--font-button);
     font-weight: var(--font-semibold);
-    padding: 14px 0;
+    padding: 15px 0;
 }

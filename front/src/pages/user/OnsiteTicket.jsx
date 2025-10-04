@@ -42,7 +42,7 @@ const OnsiteTicket = ({waitingId, storeId, popupName, close}) => {
         return ct.includes("application/json") ? res.json() : res.text();
     };
 
-    // 내 대기표 불러오기 (userId로 가져온 뒤 waitingId 필터링)
+    // 내 대기표 불러오기
     const loadWaiting = async (signal) => {
         setLoading(true);
         try {
@@ -66,7 +66,7 @@ const OnsiteTicket = ({waitingId, storeId, popupName, close}) => {
         if (data) setAhead(data?.aheadTeams ?? 0);
     };
 
-    // 첫 로딩 시 대기 정보 불러오기
+    // 대기 정보 불러오기
     useEffect(() => {
         if (!userId || !Number.isFinite(storeId) || !token || !waitingId) return;
         const c = new AbortController();
@@ -74,7 +74,7 @@ const OnsiteTicket = ({waitingId, storeId, popupName, close}) => {
         return () => c.abort();
     }, [userId, storeId, token, waitingId]);
 
-    // 10초마다 내 앞팀 수 확인(갱신)
+    // 10초마다 내 앞팀 수 확인
     useEffect(() => {
         if (!waitingId || !token) return;
         const first = new AbortController();
@@ -126,16 +126,16 @@ const OnsiteTicket = ({waitingId, storeId, popupName, close}) => {
                     <h2 className="onsite-title">{title}</h2>
                     <div className="onsite-msg">
                         {waiting.callTime ?
-                            <div>
+                            <div className="onsite-detail">
                                 <p className="call-msg">호출 후 10분 뒤 자동 대기 취소됩니다.</p>
                                 <p>호출 시간 : {new Date(waiting.callTime).toLocaleTimeString()}</p></div> :
-                            <p>""</p>}
+                            <p></p>}
                     </div>
 
                     <div className="onsite-qr-box">
                         <div className="onsite-qr-left">
-                            <div className="onsite-label">대기 번호</div>
-                            <div className="onsite-value-red">{waiting.queueNumber}</div>
+                            <p className="onsite-label">대기 번호</p>
+                            <p className="onsite-value-red">{waiting.queueNumber}</p>
                         </div>
                         {waiting.callTime ? (
                             <div className="onsite-qr-right">
@@ -144,24 +144,17 @@ const OnsiteTicket = ({waitingId, storeId, popupName, close}) => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="onsite-grid-item">
-                                <span className="onsite-label">현재 대기 팀</span>
-                                <span className="onsite-value-blue">{ahead}</span>
+                            <div className="onsite-qr-right">
+                                <p className="onsite-label">현재 대기 팀</p>
+                                <p className="onsite-value-blue">{ahead}</p>
                             </div>
                         )}
                     </div>
 
                         <div className={"btn-area"}>
-                            <Button
-                                variant="primary"
-                                color="red"
-                                onClick={close}
-                            >
-                                닫기
-                            </Button>
-                            {!waiting.callTime && (
+                             {!waiting.callTime && (
                                 <Button
-                                    variant={isCanceled ? "primary" : "cancel"}
+                                    variant={isCanceled ? "primary" : "outline"}
                                     color={isCanceled ? "red" : "gray"}
                                     disabled={isCanceled}
                                     onClick={onCancel}
@@ -169,6 +162,14 @@ const OnsiteTicket = ({waitingId, storeId, popupName, close}) => {
                                     {isCanceled ? "취소됨" : "대기 취소"}
                                 </Button>
                             )}
+                            <Button
+                                variant="primary"
+                                color="red"
+                                onClick={close}
+                            >
+                                닫기
+                            </Button>
+
                         </div>
 
                 </div>
