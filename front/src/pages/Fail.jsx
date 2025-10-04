@@ -33,18 +33,16 @@ export default function FailPage() {
           <div className="fail-title-box">
               <h3 className="fail-title">결제가 정상 처리되지 않았어요.</h3>
               <p className="fail-subtitle">
-                다시 시도하거나, 아래 오류 정보를 참고해주세요.
+                다시 시도하거나, 아래 실패 사유를 참고해주세요.
               </p>
            </div>
 
           {/* 오류 정보 */}
           <div className="fail-info">
             <div className="info-row">
-              <span className="label">에러 코드</span>
-              <span className="value">{code}</span>
+               <span className="label">실패 사유</span>
             </div>
             <div className="info-row">
-              <span className="label">실패 사유</span>
               <span className="value">{message}</span>
             </div>
           </div>
