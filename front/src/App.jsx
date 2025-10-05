@@ -90,12 +90,11 @@ function App() {
     return (
         <Routes>
             <Route path={"/"} element={<WelcomePage/>}></Route>
+             {/* 회원가입 & 로그인(header 필요없음) */}
+            <Route path={"/join"} element={<Join/>}></Route>
+            <Route path={"/login"} element={<Login/>}></Route>
 
             <Route element={<FooterLayout/>}>
-
-                {/* 회원가입 & 로그인(header 필요없음) */}
-                <Route path={"/join"} element={<Join/>}></Route>
-                <Route path={"/login"} element={<Login/>}></Route>
 
                 {/*일반 유저 Layout */}
                 <Route element={<Layout/>}>

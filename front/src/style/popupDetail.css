@@ -573,6 +573,19 @@
   margin-top: 8px;
 }
 
+.popupStore-detail .msg-container{
+    padding:10px;
+    text-align:center;
+    border:1px solid var(--border-color);
+    transition:border-color .2s, box-shadow .2s;
+    cursor:pointer;
+}
+
+.popupStore-detail .msg-container:hover{
+    border:1px solid var(--main-color);
+    color: var(--main-color);
+}
+
 /* 빈 상태 문구  */
 .popupStore-detail .popupReview-container .no-content{
   font-size: var(--font-small); color: var(--darkgray-color);
