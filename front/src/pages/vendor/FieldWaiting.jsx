@@ -62,7 +62,7 @@ export default function FieldWaiting() {
       const [waitingRes, entryRes] = await Promise.all([
         apiRequest(
           `/vendor/fieldWaitingList?vendorId=${user.vendor_id}` +
-            `&sort=waiting&keyword=${encodeURIComponent(keyword)}` +
+            `&sort=waiting` +
             `&page=1&size=1`,
           {},
           token

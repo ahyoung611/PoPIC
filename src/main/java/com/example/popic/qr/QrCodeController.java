@@ -59,7 +59,7 @@ public class QrCodeController {
         Graphics2D g = image.createGraphics();
         g.setColor(Color.black);
         g.fillRect(0, 0, width, height);
-        String qrData = "http://10.5.4.14:8080/scan-qr?token=" + token;
+        String qrData = "http://192.168.23.23:8080/scan-qr?token=" + token;
         BitMatrix matrix = new MultiFormatWriter().encode(qrData, BarcodeFormat.QR_CODE, width, height);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -89,7 +89,7 @@ public class QrCodeController {
         PopupReservationDTO reservationDTO = objectMapper.readValue(reservationData, PopupReservationDTO.class);
         System.out.println("reservationDTO: " + reservationDTO);
 
-        if(reservationDTO.getStatus() != 1){
+        if (reservationDTO.getStatus() != 1) {
             throw new RuntimeException("유효하지 않은 티켓입니다.");
         }
         reservationService.entryReservationById(reservationDTO.getReservationId());

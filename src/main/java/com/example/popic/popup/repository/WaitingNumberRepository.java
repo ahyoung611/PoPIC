@@ -21,23 +21,23 @@ public interface WaitingNumberRepository extends JpaRepository<WaitingNumber, Lo
     boolean existsByStoreAndUserAndWaitingDateAndStatus(PopupStore store, User user, LocalDate date, int status);
 
     @Query("""
-        SELECT COALESCE(MAX(w.queueNumber), 0)
-        FROM WaitingNumber w
-        WHERE w.store.store_id = :storeId
-          AND w.waitingDate = :date
-    """)
+                SELECT COALESCE(MAX(w.queueNumber), 0)
+                FROM WaitingNumber w
+                WHERE w.store.store_id = :storeId
+                  AND w.waitingDate = :date
+            """)
     int findMaxQueueNumberByStoreIdAndDate(@Param("storeId") Long storeId, @Param("date") LocalDate date);
 
     List<WaitingNumber> findByUser(User user);
 
     @Query("""
-        SELECT COUNT(w)
-        FROM WaitingNumber w
-        WHERE w.store.store_id = :storeId
-          AND w.waitingDate = :date
-          AND w.status = 1
-          AND w.queueNumber < :myQueue
-    """)
+                SELECT COUNT(w)
+                FROM WaitingNumber w
+                WHERE w.store.store_id = :storeId
+                  AND w.waitingDate = :date
+                  AND w.status = 1
+                  AND w.queueNumber < :myQueue
+            """)
     long countAheadTeams(
             @Param("storeId") Long storeId,
             @Param("date") LocalDate date,
@@ -46,35 +46,35 @@ public interface WaitingNumberRepository extends JpaRepository<WaitingNumber, Lo
 
     // entry
     @Query("""
-        SELECT w FROM WaitingNumber w
-        WHERE w.store.vendor.vendor_id = :vendorId
-          AND w.waitingDate = CURRENT_DATE
-          AND w.user.name LIKE CONCAT('%', :keyword, '%')
-      AND w.status = 0
-    """)
+                SELECT w FROM WaitingNumber w
+                WHERE w.store.vendor.vendor_id = :vendorId
+                  AND w.waitingDate = CURRENT_DATE
+                  AND w.user.name LIKE CONCAT('%', :keyword, '%')
+              AND w.status = 0
+            """)
     Page<WaitingNumber> findEntryByVendorId(@Param("vendorId") Long vendorId,
                                             @Param("keyword") String keyword,
                                             Pageable pageable);
 
     // cancel
     @Query("""
-        SELECT w FROM WaitingNumber w
-        WHERE w.store.vendor.vendor_id = :vendorId
-          AND w.waitingDate = CURRENT_DATE
-          AND w.user.name LIKE CONCAT('%', :keyword, '%')
-          AND w.status = -1
-    """)
+                SELECT w FROM WaitingNumber w
+                WHERE w.store.vendor.vendor_id = :vendorId
+                  AND w.waitingDate = CURRENT_DATE
+                  AND w.user.name LIKE CONCAT('%', :keyword, '%')
+                  AND w.status = -1
+            """)
     Page<WaitingNumber> findCancelByVendorId(@Param("vendorId") Long vendorId,
                                              @Param("keyword") String keyword,
                                              Pageable pageable);
 
     // 전체
     @Query("""
-        SELECT w FROM WaitingNumber w
-        WHERE w.store.vendor.vendor_id = :vendorId
-          AND w.waitingDate = CURRENT_DATE
-          AND w.user.name LIKE CONCAT('%', :keyword, '%')
-    """)
+                SELECT w FROM WaitingNumber w
+                WHERE w.store.vendor.vendor_id = :vendorId
+                  AND w.waitingDate = CURRENT_DATE
+                  AND w.user.name LIKE CONCAT('%', :keyword, '%')
+            """)
     Page<WaitingNumber> findByVendorId(@Param("vendorId") Long vendorId,
                                        @Param("keyword") String keyword,
                                        Pageable pageable);
@@ -93,4 +93,13 @@ public interface WaitingNumberRepository extends JpaRepository<WaitingNumber, Lo
     @Transactional
     @Query("UPDATE WaitingNumber w SET w.status = -1 WHERE w.id = :id")
     void waitingCancel(Long id);
+
+    @Query("""
+                SELECT w FROM WaitingNumber w
+                WHERE w.store.vendor.vendor_id = :vendorId
+                  AND w.waitingDate = CURRENT_DATE
+                  AND w.user.name LIKE CONCAT('%', :keyword, '%')
+                  AND w.status = 1
+            """)
+    Page<WaitingNumber> findWaitingByVendorId(Long vendorId, String keyword, Pageable pageable);
 }

@@ -80,6 +80,9 @@ public class WaitingNumberService {
             case "cancel":
                 pageResult = waitingNumberRepository.findCancelByVendorId(vendorId, keyword, pageable);
                 break;
+            case "waiting":
+                pageResult = waitingNumberRepository.findWaitingByVendorId(vendorId, keyword, pageable);
+                break;
             default:
                 pageResult = waitingNumberRepository.findByVendorId(vendorId, keyword, pageable);
                 break;
