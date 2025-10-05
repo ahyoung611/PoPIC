@@ -24,9 +24,9 @@ const VENDOR_STATUS = {
   CLOSED: -1,
 };
 const STATUS_BADGE = {
-  [VENDOR_STATUS.APPROVED]: { text: "승인 완료", color: "blue" },
+  [VENDOR_STATUS.APPROVED]: { text: "승인 완료", color: "red" },
   [VENDOR_STATUS.PENDING]:  { text: "승인 대기", color: "gray" },
-  [VENDOR_STATUS.REJECTED]: { text: "승인 반려", color: "red" },
+  [VENDOR_STATUS.REJECTED]: { text: "승인 반려", color: "darkRed" },
   [VENDOR_STATUS.SUSPENDED]:{ text: "정지",     color: "gray" },
   [VENDOR_STATUS.CLOSED]:   { text: "운영 종료", color: "gray" },
 };
