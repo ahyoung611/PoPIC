@@ -127,6 +127,13 @@ public class ReservationService {
         PopupStore storeRef = storeRepository.getReferenceById(storeId);
         PopupStoreSlot slotRef = slotRepository.getReferenceById(slotId);
 
+        if (slotRef.getReserved_count() + count > slotRef.getCapacity()) {
+            throw new IllegalStateException("해당 슬롯 정원이 가득 찼습니다.");
+        }
+
+        slotRef.setReserved_count(slotRef.getReserved_count() + count);
+        slotRepository.save(slotRef);
+
         Reservation r = new Reservation();
         r.setUser(userRef);
         r.setStore(storeRef);
@@ -137,6 +144,6 @@ public class ReservationService {
         r.setStatus(1);
 
         Reservation saved = reservationRepository.save(r);
-        return PopupReservationDTO.from(saved); // ← 요걸로!
+        return PopupReservationDTO.from(saved);
     }
 }
