@@ -46,12 +46,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     // 같은 사람이 같은 시간대 예약할 경우 확인
     @Query("""
-        SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
-        FROM Reservation r
-        WHERE r.user.user_id = :userId
-          AND r.store.store_id = :storeId
-          AND r.slot.slot_id = :slotId
-        """)
+            SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
+            FROM Reservation r
+            WHERE r.user.user_id = :userId
+              AND r.store.store_id = :storeId
+              AND r.slot.slot_id = :slotId
+              AND r.status != -1
+            """)
     boolean existsDuplicateReservation(@Param("userId") Long userId,
                                        @Param("storeId") Long storeId,
                                        @Param("slotId") Long slotId);

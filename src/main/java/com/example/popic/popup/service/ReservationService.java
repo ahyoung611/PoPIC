@@ -108,6 +108,14 @@ public class ReservationService {
             throw new IllegalStateException("이미 취소된 예약입니다.");
         }
 
+        PopupStoreSlot slot = reservation.getSlot();
+        int current = slot.getReserved_count();
+        int cancelCount = reservation.getReservation_count();
+
+        int newCount = Math.max(0, current - cancelCount);
+        slot.setReserved_count(newCount);
+        slotRepository.save(slot);
+
         // 상태 변경
         reservation.setStatus(-1);
         reservationRepository.save(reservation);
