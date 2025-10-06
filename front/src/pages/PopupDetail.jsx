@@ -6,7 +6,6 @@ import PopupReservation from "../components/popupdetail/PopupReservation.jsx";
 import PopupReview from "../components/popupdetail/PopupReview.jsx";
 import PopupTabInfo from "../components/popupdetail/PopupTabInfo.jsx";
 import PopupInquiry from "../components/popupdetail/PopupInquiry.jsx";
-import QrCode from "../components/qr/QrCode.jsx";
 import {useAuth} from "../context/AuthContext.jsx"
 import {useLocation, useParams} from "react-router-dom";
 import PopupReservationModal from "../components/popupdetail/PopupReservationModal.jsx";

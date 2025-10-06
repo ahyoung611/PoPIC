@@ -16,7 +16,6 @@ const PopupInfo = (props) => {
     const walkInSubmit = () => {
         setWalkInModalOpen(true);
     }
-    console.log("Popup object:", popup);
 
     const walkInConfirm = async () => {
         if (!isLoggedIn) return;
