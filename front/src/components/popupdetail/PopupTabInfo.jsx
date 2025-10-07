@@ -80,15 +80,22 @@ const PopupTabInfo = (props) => {
   }, [props.popup?.description]);
 
   // 요일+시간 중복 제거
-  const uniqueSchedule = useMemo(
-    () =>
-      Array.from(
-        new Set(popupSchedule.map((it) => `${it.dayOfWeek}: ${it.start_time} ~ ${it.end_time}`))
-      ),
-    [popupSchedule]
-  );
+    const uniqueSchedule = useMemo(() => {
+        // 요일 순서 고정 (월~일)
+        const dayOrder = ["월", "화", "수", "목", "금", "토", "일"];
 
-  return (
+        return Array.from(
+            new Set(
+                popupSchedule
+                    .sort(
+                        (a, b) => dayOrder.indexOf(a.dayOfWeek) - dayOrder.indexOf(b.dayOfWeek)
+                    )
+                    .map((it) => `${it.dayOfWeek}: ${it.start_time} ~ ${it.end_time}`)
+            )
+        );
+    }, [popupSchedule]);
+
+    return (
     <div className="popup-tab-info">
       <div className="open-time">
         <h3 className="title">운영시간</h3>
