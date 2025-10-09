@@ -1,4 +1,4 @@
-![POPIC Logo](./public/gitImg.png)
+![POPIC Logo](/front/public/gitImg.png)
 </br>
 
 <h3 align="center">"분산된 팝업 정보를 한곳에 모아, 기다림 없는 새로운 방문 경험"</h3>
