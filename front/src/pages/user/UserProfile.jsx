@@ -410,7 +410,7 @@ export default function UserProfile() {
                     label="새 비밀번호"
                     value={pwForm.newPassword}
                     onChange={(v) => setPwForm((f) => ({ ...f, newPassword: v }))}
-                    placeholder="8~64자 / 문자·숫자·특수 모두 포함"
+                    placeholder="새 비밀번호"
                   />
                 </div>
 
@@ -419,7 +419,7 @@ export default function UserProfile() {
                     label="새 비밀번호 확인"
                     value={pwForm.confirmNewPassword}
                     onChange={(v) => setPwForm((f) => ({ ...f, confirmNewPassword: v }))}
-                    placeholder="다시 한 번 입력하세요"
+                    placeholder="새 비밀번호 확인"
                   />
                 </div>
 
