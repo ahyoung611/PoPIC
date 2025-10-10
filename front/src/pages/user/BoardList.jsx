@@ -10,6 +10,8 @@ const host =
 const API =
   (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
 
+console.log("importUrl: ",import.meta?.env?.VITE_API_BASE_URL?.trim())
+
 export default function BoardList() {
   const [boards, setBoards] = useState([]);
   const [loading, setLoading] = useState(true);
