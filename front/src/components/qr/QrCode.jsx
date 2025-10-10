@@ -13,7 +13,7 @@ const QrCode = ({ setStatus, reservation, setQrToken, onUpdateReservation }) => 
         const fetchQr = async () => {
             try {
                 const res = await fetch(
-                    `http://localhost:8080/generate-qr?reservationId=${reservation.reservationId}`,
+                    `http://3.34.97.40:8080/generate-qr?reservationId=${reservation.reservationId}`,
                     {
                         headers: { authorization: `Bearer ${token}` },
                         method: "GET",
@@ -44,7 +44,7 @@ const QrCode = ({ setStatus, reservation, setQrToken, onUpdateReservation }) => 
         if (!qrData?.token) return;
 
         const evtSource = new EventSource(
-            `http://localhost:8080/qr-stream?token=${qrData.token}`
+            `http://3.34.97.40:8080/qr-stream?token=${qrData.token}`
         );
 
         evtSource.onmessage = (event) => {
