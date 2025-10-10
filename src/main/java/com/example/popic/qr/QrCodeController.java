@@ -59,7 +59,7 @@ public class QrCodeController {
         Graphics2D g = image.createGraphics();
         g.setColor(Color.black);
         g.fillRect(0, 0, width, height);
-        String qrData = "http://192.168.23.23:8080/scan-qr?token=" + token;
+        String qrData = "http://3.34.97.40:8080/scan-qr?token=" + token;
         BitMatrix matrix = new MultiFormatWriter().encode(qrData, BarcodeFormat.QR_CODE, width, height);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
