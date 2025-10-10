@@ -19,6 +19,7 @@ public class CategoryDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
         if (categoryRepository.count() == 0) {
             try {
                 List<Category> categories = objectMapper.readValue(
