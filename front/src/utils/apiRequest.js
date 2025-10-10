@@ -19,6 +19,8 @@ async function apiRequest(endpoint, options = {}, token) {
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
+        console.log("res: ",response);
+
         // 401 에러 시 토큰 만료 처리
         if (response.status === 401) {
             return null;
