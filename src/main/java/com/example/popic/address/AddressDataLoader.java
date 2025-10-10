@@ -21,7 +21,8 @@ public class AddressDataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<Address>> typeRef = new TypeReference<List<Address>>() {};
-        List<Address> addresses = mapper.readValue(new File("src/main/resources/address.json"), typeRef);
+//        List<Address> addresses = mapper.readValue(new File("src/main/resources/address.json"), typeRef);
+        List<Address> addresses = mapper.readValue(new File("/address.json"), typeRef);
 
         addressRepository.saveAll(addresses);
 
