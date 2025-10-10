@@ -9,9 +9,9 @@ export default defineConfig({
         port: 5173,
         strictPort: true, // 포트가 이미 사용 중이면 에러
         proxy: {
-            "/waiting":{ target: "http://localhost:8080", changeOrigin: true },
+            "/waiting":{ target: "http://3.34.97.40:8080", changeOrigin: true },
             "/api": {
-                target: "http://localhost:8080", // 스프링 포트
+                target: "http://3.34.97.40:8080", // 스프링 포트
                 changeOrigin: true,
                 secure: false,
             },
