@@ -57,6 +57,8 @@ const MyPosts = () => {
     if (!userId) return;
 
     const apiPage = page - 1; // API 0-base
+      const apiUrl = `${URL}/board/user/${userId}?page=${apiPage}&size=${PAGE_SIZE}&sortBy=created_at&direction=desc`;
+      console.log(apiUrl);
     fetch(
       `${URL}/board/user/${userId}?page=${apiPage}&size=${PAGE_SIZE}&sortBy=created_at&direction=desc`,
       {
