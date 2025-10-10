@@ -40,6 +40,8 @@ export default function BoardList() {
           scope,
         });
 
+        console.log(`${API}/board?${qs}`);
+
         const res = await fetch(`${API}/board?${qs}`, {
           signal: controller.signal,
           headers: {
