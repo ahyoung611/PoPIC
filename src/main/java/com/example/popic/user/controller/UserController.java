@@ -68,6 +68,10 @@ public class UserController {
             refreshCookie.setHttpOnly(true);
             refreshCookie.setPath("/");
 
+            // 배포 환경용 설정 추가
+            refreshCookie.setSecure(true); // HTTPS에서만 전송
+            refreshCookie.setAttribute("SameSite", "None"); // 크로스사이트 허용
+
             // 로그인유지(true) = 리프레시 쿠키 만료 시간 그대로, 로그인유지x(false) 세션쿠키(브라우저 종료 시 삭제)
             if (keep) {
                 refreshCookie.setMaxAge((int) java.time.Duration.ofDays(14).getSeconds()); // 수정
