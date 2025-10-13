@@ -78,7 +78,6 @@
     width: 24px;
     z-index: 2;
     pointer-events: none;
-    background: var(--white-color);
 }
 
 .main-container .mpc-section .mpc-section__swiper-wrap::before { left: 0; }

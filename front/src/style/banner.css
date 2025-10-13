@@ -70,7 +70,7 @@
     transition: 0.5s;
 }
 
-.banner-react .banner-wrap:hover .scrollbar {
+.banner-react .banner-wrap .scrollbar:hover {
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.2);
 }
