@@ -2,6 +2,7 @@ import "../../style/modal.css";
 import React from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../context/AuthContext.jsx";
+import Button from "../commons/Button.jsx";
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
@@ -66,7 +67,7 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
                     }
                     setStatus(1);
                     alert("예약이 완료되었습니다.");
-                    navigate(`/userMyPage/${user.user_id}`)
+                    navigate(`/me/popic`)
                     onClose?.();
                 } catch (e) {
                     console.error(e);
@@ -79,6 +80,26 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
         }
     };
 
+    // 날짜 포맷팅
+    function formatReservationDate(input) {
+      if (!input) return "";
+
+      // YYYY-MM-DD -> YYYY.MM.DD
+      if (typeof input === "string" && /^\d{4}-\d{2}-\d{2}$/.test(input)) {
+        const [y, m, d] = input.split("-");
+        return `${y}.${m}.${d}`;
+      }
+
+      const d = new Date(input);
+      if (isNaN(d.getTime())) {
+        return String(input);
+      }
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}.${m}.${day}`;
+    }
+
     return (
         <div className="modalMask reservationModal" onClick={onClose}>
             <div className="modalPanel" onClick={(e) => e.stopPropagation()}>
@@ -86,15 +107,15 @@ const PopupReservationModal = ({isOpen, onClose, reservationData}) => {
 
                 <div className="reservationList">
                     <p><strong>팝업 이름 </strong> {reservationData.name}</p>
-                    <p><strong>예약 날짜 </strong> {reservationData.date}</p>
+                    <p><strong>예약 날짜 </strong> {formatReservationDate(reservationData.date)}</p>
                     <p><strong>예약 시간 </strong> {reservationData.time}</p>
                     <p><strong>인원 </strong> {reservationData.reservationCount}명</p>
                     <p><strong>금액 </strong> <span className="price">{(reservationData.price*reservationData.reservationCount).toLocaleString()}원</span></p>
                 </div>
 
                 <div className="modalActions">
-                    <button className="modalBtn btnPay" onClick={goCheckout}>결제</button>
-                    <button className="modalBtn btnGhost" onClick={onClose}>취소</button>
+                    <Button variant="primary" color="red" onClick={goCheckout}>결제</Button>
+                    <Button variant="cancel" color="gray" onClick={onClose}>취소</Button>
                 </div>
             </div>
         </div>

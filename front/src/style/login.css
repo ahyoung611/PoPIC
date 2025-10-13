@@ -1,4 +1,4 @@
-/* 전체 레이아웃 */
+/* 로그인 */
 .login {
     min-height: 100dvh;
     display: grid;
@@ -10,22 +10,21 @@
     width: 100%;
     max-width: 440px;
     background: var(--white-color);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 32px 28px 24px;
-    box-shadow: 0 8px 28px rgba(27, 39, 51, 0.06);
-}
 
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: var(--main-shadow);
+}
 /* 헤더 */
 .login-header {
     display: flex;
     justify-content: center;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .login-logo {
-    height: 34px;
-    user-select: none;
+    height: 40px;
+
 }
 
 /* 역할 탭 */
@@ -35,6 +34,7 @@
     gap: 12px;
     margin-bottom: 16px;
 }
+
 .login-role .btn {
     width: 100%;
     height: 44px;
@@ -48,14 +48,10 @@
 .btn.btn--outline.is-gray { background: transparent; color: var(--gray-color); border-color: var(--border-color); }
 .btn.btn--outline.is-gray:hover{ border-color: var(--main-color); color: var(--main-color); }
 .btn.btn--outline:hover { transform: none; }
-
-/* ✅ 활성(선택) 상태 — is-gray가 없는 버튼은 항상 빨간 테두리 유지 */
 .login-role .btn.btn--outline:not(.is-gray) {
     border-color: var(--main-color) !important; /* 기본 규칙을 확실히 덮어쓰기 */
     color: var(--main-color);
-    /*background: #fff5f4;*/
 }
-
 /* 활성 상태에서 hover/active/focus 때도 스타일 유지 */
 .login-role .btn.btn--outline:not(.is-gray):hover,
 .login-role .btn.btn--outline:not(.is-gray):active,
@@ -63,27 +59,24 @@
 .login-role .btn.btn--outline:not(.is-gray):focus-visible {
     border-color: var(--main-color) !important;
     color: var(--main-color);
-    /*background: #fff5f4;*/
 }
-
-
 
 /* 입력 폼 */
 .login-form {
-    margin-top: 8px;
+    margin: 10px 0;
 }
 
 .login-field {
     position: relative;
-    margin-top: 12px;
+    margin-top: 10px;
 }
 
 .login-input {
     width: 100%;
-    height: 44px;
-    padding: 0 12px;
+    height: 45px;
+    padding: 0 15px;
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--white-color);
     outline: 0;
     font-size: var(--font-size-base);
@@ -91,18 +84,17 @@
 }
 
 .login-input:focus {
-    border-color: var(--blue-color);
-    box-shadow: 0 0 0 3px rgba(40, 126, 216, 0.2);
+    border-color: var(--main-color);
 }
 
 /* 비밀번호 토글 */
 .login-field--password .login-input {
-    padding-right: 44px;
+    padding-right: 45px;
 }
 
 /* 왼쪽 아이콘이 있는 입력 필드 */
 .login-field--with-icon .login-input {
-    padding-left: 44px; /* 아이콘 공간 */
+    padding-left: 45px; /* 아이콘 공간 */
 }
 
 .login-icon-left {
@@ -149,41 +141,34 @@
 
 /* 로그인 상태 유지 - 이미지 토글 버튼 */
 .login-keep-toggle {
-    margin-top: 10px;
+    margin: 10px 0;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     border: 0;
     background: transparent;
-    padding: 0;
+    padding: 10px 0;
     cursor: pointer;
     font-size: var(--font-small);
     color: var(--gray-color);
 }
+
 .login-keep-toggle img {
     width: 18px;
     height: 18px;
     object-fit: contain;
     display: block;
 }
+
 .login-keep-toggle[aria-pressed="true"] span {
     color: var(--black-color);
 }
 
-/* 로그인 버튼 레이아웃 (색상/호버는 button.css의 .btn 규칙 사용) */
+/* 로그인 버튼 레이아웃  */
 .login-submit {
     width: 100%;
-    height: 48px;
-    margin-top: 14px;
-    border: 0;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: var(--font-button);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    /* background / color / hover 는 쓰지 않음 (button.css가 담당) */
+    height:45px;
+    border-radius: 10px;
 }
 
 .login-submit:active { transform: none; }
@@ -196,78 +181,63 @@
     justify-content: center;
     gap: 16px;
 }
-
 .login-social-btn {
-    width: 44px;
-    height: 44px;
-    border: 1px solid var(--border-color);
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    background: var(--white-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.login-social-btn:hover {
-    background: #f9f9f9;
-    border-color: var(--main-color);
-}
-
-.login-social-btn img {
-    width: 24px;
-    height: 24px;
-}
-
-/* 푸터 - 회원가입 */
-.login-footer {
-    margin-top: 20px;
-    text-align: center;
-    font-size: var(--font-small);
-    color: var(--gray-color);
-}
-
-.login-footer a {
-    color: var(--main-color);
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.login-footer a:hover {
-    text-decoration: underline;
-}
-
-@media (max-width: 420px) {
-    .login-card {
-        padding: 28px 20px 20px;
-    }
-}
-
-/* 소셜 로그인 */
-.login-socials {
-    margin-top: 18px;
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-}
-
-.login-social-btn {
-    width: 44px;
-    height: 44px;
-    border: none;            /* 테두리 제거 */
-    border-radius: 50%;      /* 원형 */
-    overflow: hidden;        /* 이미지 넘치면 자르기 */
+    overflow: hidden;
     padding: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid var(--border-color);
+    transition: .35s;
+}
+
+.login-social-btn:hover{
+    border: 1px solid var(--main-color);
 }
 
 .login-social-btn img {
     width: 100%;
     height: 100%;
-    object-fit: cover;  /* 이미지 꽉 채우기 */
+    object-fit: cover;
     display: block;
+}
+
+/* 회원가입 */
+.login-footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: var(--font-small);
+    position: relative;
+}
+
+/* 회원가입 라인 */
+.login-signup {
+    position: relative;
+    display: inline-block;
+    padding: 0 10px;
+    background: var(--white-color);
+    z-index: 10;
+}
+
+.login-footer::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--border-color);
+    transform: translateY(-50%);
+    z-index: 5;
+}
+
+
+@media (max-width: 420px) {
+    .login-card {
+        padding: 28px 20px 20px;
+    }
 }

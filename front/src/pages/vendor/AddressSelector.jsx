@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { loadKakaoMaps } from "../../utils/kakaoLoader.js";
 import apiRequest from "../../utils/apiRequest.js";
+import Button from "../../components/commons/Button.jsx";
 
 // 주소 객체 정규화 (공백 제거, 숫자 변환)
 function normalize(v) {
@@ -277,9 +278,9 @@ export default function AddressSelector({
                spellCheck={false}
                />
                 {geocodeInline && (
-                    <button type="button" className="vp-link" onClick={handleGeocode}>
+                    <Button className="addr-btn" variant="outline" color="gray" onClick={handleGeocode}>
                         확인
-                    </button>
+                    </Button>
                 )}
             </div>
 

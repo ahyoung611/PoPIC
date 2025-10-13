@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://3.34.97.40:8080";
 
 
 async function apiRequest(endpoint, options = {}, token) {
@@ -18,6 +18,8 @@ async function apiRequest(endpoint, options = {}, token) {
 
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+
+        console.log("res: ",response);
 
         // 401 에러 시 토큰 만료 처리
         if (response.status === 401) {

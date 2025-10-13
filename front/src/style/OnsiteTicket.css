@@ -1,58 +1,75 @@
+/* 현장 발권 모달창 */
 .onsite-container {
-   position: relative;
-   height: calc(100vh - 60px - 44px);
-    background-color: var(--white-color);
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.50);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
 }
 
+/* 모달 카드 */
 .onsite-card {
-    width: 420px;
+    width: min(450px, 92vw);
     background: var(--white-color);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 32px 24px;
-    text-align: center;
+    border-radius: 10px;
+    padding: 30px;
     box-shadow: var(--shadow);
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    border: 1px solid var(--border-color);
+    position: relative;
+    animation: modal-pop .14s ease-out;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    text-align:center;
 }
 
-/* 일러스트 */
+@keyframes modal-pop {
+    from { transform: scale(.98); opacity: .88; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+/* 기존 스타일은 거의 유지 */
 .onsite-illust {
     width: 120px;
-    margin: 0 auto 12px;
     display: block;
 }
 
-/* 메시지 (캡슐형) */
 .onsite-message {
     display: inline-block;
     background-color: var(--bg-color);
-    padding: 6px 14px;
+    padding: 8px 20px;
     border-radius: 999px;
     font-size: var(--font-small);
     color: var(--darkgray-color);
     margin-bottom: 20px;
 }
 
-/* 타이틀 */
 .onsite-title {
-    font-size: var(--font-subtitle);
+    font-size: var(--font-title);
     font-weight: var(--font-bold);
-    color: var(--black-color);
-    margin-bottom: 15px;
 }
 
-/* 대기 정보 박스 */
+.onsite-detail{
+    margin: 10px 0;
+    line-height:1.5;
+    font-weight: var(--font-regular);
+}
+
 .onsite-qr-box {
     display: flex;
     justify-content: space-between;
-    align-items: stretch;
+    align-items: center;
     background: var(--bg-color);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 20px;
-    margin-bottom: 24px;
+    margin: 10px 0;
+    width:100%;
 }
 
 .onsite-qr-left,
@@ -64,30 +81,24 @@
 
 .onsite-qr-left {
     border-right: 1px solid var(--border-color);
-    padding-right: 12px;
+    padding-right: 10px;
 }
 
 .onsite-qr-right {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-left: 12px;
+    padding-left: 10px;
 }
 
-/* 라벨 */
 .onsite-label {
-    font-size: var(--font-title);
-    color: var(--darkgray-color);
-    margin-top: 10px;
-    margin-bottom: 10px;
-    display: block;
+    font-size: var(--font-size-base);
+    padding-bottom: 10px;
+    font-weight : var(--font-semibold);
 }
 
 .onsite-msg {
     margin-bottom: 10px;
     color: var(--darkgray-color);
 }
-/* 값 */
+
 .onsite-value-red {
     font-size: var(--font-title-l);
     font-weight: var(--font-bold);
@@ -95,12 +106,11 @@
 }
 
 .onsite-value-blue {
-    font-size: var(--font-title);
+    font-size: var(--font-title-l);
     font-weight: var(--font-bold);
     color: var(--blue-color);
 }
 
-/* QR placeholder */
 .onsite-qr-placeholder {
     width: 100px;
     height: 100px;
@@ -120,9 +130,11 @@
 }
 
 .btn-area {
+    width:100%;
     display: flex;
     justify-content: space-between;
-    gap: 8px;
+    gap: 5px;
+    margin-top: 10px;
 }
 
 /* 버튼 */
@@ -131,5 +143,5 @@
     border-radius: 999px;
     font-size: var(--font-button);
     font-weight: var(--font-semibold);
-    padding: 14px 0; /* 좌우 여백 늘림 */
+    padding: 15px 0;
 }

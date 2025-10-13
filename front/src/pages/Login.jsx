@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import apiRequest from "../utils/apiRequest";
+import {useAuth} from "../context/AuthContext.jsx";
 import eye from "../../public/eye.png";
 import nonEye from "../../public/nonEye.png";
 import logo from "../../public/popic-logo.png";
@@ -14,10 +14,19 @@ import usernameIcon from "../../public/icon-username-inactive.png";
 import usernameIconActive from "../../public/icon-username-active.png";
 import privateCheckG from "../../public/privateCheck-g.png";
 import privateCheckP from "../../public/privateCheck-p.png";
-import "../style/login.css";
-import "../style/button.css";
-import {useAuth} from "../context/AuthContext.jsx";
+import Button from "../components/commons/Button.jsx";
+import FloatingBg from "../components/commons/FloatingBg";
 
+import "../style/login.css";
+
+const bgImgs = [
+  "/favicon.png",
+  "/bgIcon/Picon.png",
+  "/bgIcon/Oicon.png",
+  "/bgIcon/Picon.png",
+  "/bgIcon/Iicon.png",
+  "/bgIcon/Cicon.png",
+];
 
 const Login = () => {
     const {login} = useAuth();
@@ -69,11 +78,11 @@ const Login = () => {
             const isAdminLogin = form.login_id.trim().toLowerCase() === "admin";
             let endpoint;
             if (isAdminLogin) {
-                endpoint = "http://localhost:8080/admin/login";
+                endpoint = "http://3.34.97.40:8080/admin/login";
             } else {
                 const base = role === "USER"
-                    ? "http://localhost:8080/user/login"
-                    : "http://localhost:8080/vendor/login";
+                    ? "http://3.34.97.40:8080/user/login"
+                    : "http://3.34.97.40:8080/vendor/login";
                 endpoint = `${base}?keep=${keep ? "true" : "false"}`;
             }
 
@@ -232,6 +241,7 @@ const Login = () => {
 
     return (
         <main className="login">
+             <FloatingBg images={bgImgs} count={8} opacity={0.5} />
             <section className="login-card">
                 <header className="login-header">
                     <img className="login-logo" src={logo} alt="PoPiC" />
@@ -322,13 +332,15 @@ const Login = () => {
                     </button>
 
                     {/* 로그인 버튼 */}
-                    <button
-                        className="btn btn--primary is-red login-submit"
+                    <Button
+                        className="login-submit"
+                        variant="primary"
+                        color="red"
                         type="submit"
                         disabled={loading}
                     >
                         {loading ? "처리 중" : "로그인"}
-                    </button>
+                    </Button>
 
                    {/* 소셜 로그인: 벤더 탭에서는 표시 안 함 */}
                    {role !== "VENDOR" && (
@@ -349,7 +361,9 @@ const Login = () => {
                 {/* 푸터 - 회원가입 링크 */}
                 <footer className="login-footer">
                     <div className="login-signup">
-                        <Link to={goJoinHref}>회원가입</Link>
+                       <Button variant="ghost" onClick={() => navigate(goJoinHref)}>
+                         회원가입
+                       </Button>
                     </div>
                 </footer>
             </section>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
+import apiRequest from "../../utils/apiRequest.js";
 
-const QrCode = ({ reservationId }) => {
+const QrCode = ({ setStatus, reservation, setQrToken, onUpdateReservation }) => {
     const [qrData, setQrData] = useState(null);
     const [timeLeft, setTimeLeft] = useState(0);
     const [error, setError] = useState(null);
@@ -12,7 +13,7 @@ const QrCode = ({ reservationId }) => {
         const fetchQr = async () => {
             try {
                 const res = await fetch(
-                    `http://localhost:8080/generate-qr?reservationId=${reservationId}`,
+                    `http://3.34.97.40:8080/generate-qr?reservationId=${reservation.reservationId}`,
                     {
                         headers: { authorization: `Bearer ${token}` },
                         method: "GET",
@@ -24,8 +25,10 @@ const QrCode = ({ reservationId }) => {
 
                 const data = await res.json();
                 setQrData(data);
+                setQrToken(data.token);
                 setTimeLeft(5 * 60); // 타이머 5분 초기화
                 setError(null);
+                console.log(data);
             } catch (err) {
                 console.error("QR 코드 생성 오류:", err);
                 setError("QR 코드 생성에 실패했습니다.");
@@ -34,22 +37,30 @@ const QrCode = ({ reservationId }) => {
         };
 
         fetchQr();
-    }, [reservationId, token]);
+    }, [reservation, token]);
 
     // SSE 연결
     useEffect(() => {
         if (!qrData?.token) return;
 
         const evtSource = new EventSource(
-            `http://localhost:8080/qr-stream?token=${qrData.token}`
+            `http://3.34.97.40:8080/qr-stream?token=${qrData.token}`
         );
 
         evtSource.onmessage = (event) => {
             console.log("QR 상태 업데이트:", event.data);
 
+
             if (event.data === "USED" || event.data === "CANCELED") {
                 setQrData((prev) => ({ ...prev, status: event.data }));
-                setTimeLeft(0); // 타이머 0으로 초기화
+                if(event.data === "USED"){
+                    setStatus(0);
+                    onUpdateReservation(reservation.reservationId, 0);
+                }else{
+                    setStatus(-1);
+                    onUpdateReservation(reservation.reservationId, -1);
+                }
+                setTimeLeft(0);
                 evtSource.close();
             } else if (event.data === "OK") {
                 setQrData((prev) => ({ ...prev, status: "OK" }));

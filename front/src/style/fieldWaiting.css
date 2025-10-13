@@ -1,84 +1,110 @@
-.field-waiting {
-    display: flex;
-    text-align: center;
+/* 팝업운영자 현장관리 */
+.filedWaiting-container .fw-stats{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 20px 0 26px;
 }
 
-.field-waiting .point-color {
-    color: var(--main-color);
+/* 카드 기본 */
+.filedWaiting-container .stat-card{
+  --accent: var(--main-color);
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 40px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  transition: transform .15s ease, box-shadow .2s ease, border-color .15s ease;
 }
 
-.field-waiting .title {
-    font-size: var(--font-title);
-    font-weight: var(--font-bold);
-    margin: 20px 0;
+.filedWaiting-container .stat-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.10);
+  border-color: rgba(var(--main-color-rgb), .35);
+  background:
+      radial-gradient(120% 120% at 80% -20%, rgba(var(--main-color-rgb), .06), transparent 60%),
+      var(--white-color);
 }
 
-.field-waiting .current-info {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 30px;
+/* 색상 변형 */
+.filedWaiting-container .stat-card.is-waiting{ --accent: var(--gray-color); }
+.filedWaiting-container .stat-card.is-entry{ --accent: var(--main-color); }
+
+/* 아이콘 박스 */
+.filedWaiting-container .stat-icon{
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(var(--main-color-rgb), .08);
+  color: var(--accent);
 }
 
-.field-waiting .current-info .waiting-count, .entry-count {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    padding: 30px;
-    width: 300px;
-    height: 150px;
-    border: 1.4px solid var(--main-color);
-    border-radius: 6px;
-    font-size: var(--font-title);
-    font-weight: var(--font-bold);
+.filedWaiting-container .stat-icon svg{
+  width: 24px; height: 24px;
 }
 
-.field-waiting .search-bar {
-    display: flex;
-    gap: 10px;
-    justify-content: space-between;
-    margin-bottom: 20px;
+/* 텍스트 */
+.filedWaiting-container .stat-content{ display:flex; flex-direction:column; gap: 4px; }
+.filedWaiting-container .stat-title{
+  font-size: var(--font-subtitle);
+  font-weight: var(--font-semibold);
+  color: var(--black-color);
+}
+.filedWaiting-container .stat-value{
+  display:flex; align-items:baseline; gap: 6px;
+}
+.filedWaiting-container .stat-value .num{
+  font-size: 28px;
+  font-weight: var(--font-bold);
+  color: var(--accent);
+}
+.filedWaiting-container .stat-value .unit{
+  font-size: var(--font-subtitle);
+  color: var(--darkgray-color);
 }
 
-.field-waiting .search-bar input {
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    flex: 1;
-    padding: 7px;
+/* 우측 진행 링 */
+.filedWaiting-container .stat-ring{
+  --p: calc((var(--value) / var(--max)) * 1turn);
+  position:absolute;
+  right: 45px; top: 50%;
+  translate: 0 -50%;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background:
+    conic-gradient(var(--accent) var(--p), #eee 0);
+}
+.filedWaiting-container .stat-ring::after{
+  content:"";
+  position:absolute; inset: 6px;
+  border-radius: 50%;
+  background: var(--white-color);
 }
 
-.field-waiting .list-table {
-    display: flex;
-    justify-content: center;
+/* 제목/페이지 공통 */
+.filedWaiting-container .field-waiting{ display:flex; flex-direction:column; }
+.filedWaiting-container .fw-title{
+  text-align: center;
+  font-weight: var(--font-bold);
+  font-size: var(--font-title-m);
+  color: var(--black-color);
+  margin: 30px 0;
 }
 
-.field-waiting .list-table table {
-    width: 100%;
-    border-collapse: collapse;
+.filedWaiting-container .empty-state {
+  min-height: calc(100vh - 500px);
 }
 
-.field-waiting .list-table table thead {
-    background-color: var(--bg-color);
-}
-
-.field-waiting .list-table table thead tr th{
-    padding: 10px;
-    border-radius: 4px;
-    font-size: var(--font-size-base);
-}
-
-.field-waiting .list-table table tbody tr {
-    border-bottom: 1px solid var(--border-color);
-
-}
-
-.field-waiting .list-table table tbody tr td {
-    font-size: var(--font-small);
-    padding: 12px 0;
-}
-
-.field-waiting .list-table table .btn {
-    border: none;
-    background: none;
-    font-size: var(--font-small);
+/* 모바일 */
+@media (max-width: 720px){
+  .filedWaiting-container .fw-stats{
+    grid-template-columns: 1fr;
+  }
+  .filedWaiting-container .stat-value .num{ font-size: 24px; }
 }

@@ -1,112 +1,164 @@
-.myposts-container {
-    display: flex;
+/* 나의 리뷰, 나의 글 */
+
+:root{
+  --myPosts-list-rows: 4;               /* 카드 수 */
+  --myPosts-card-min-h: 140px;          /* 카드 1개 높이 */
+  --myPosts-list-gap: 10px;             /* 간격 */
+}
+
+.myPosts .page-title{
+  text-align: center;
+  font-weight: var(--font-bold);
+  font-size: var(--font-title-m);
+  color: var(--black-color);
+  margin: 30px;
+}
+.myPosts-count{
+  padding: 20px 0;
+  font-weight: var(--font-regular);
+}
+.myPosts-count strong{ color: var(--main-color); }
+
+.myPosts{
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 160px);
+}
+
+.myPosts-list{
+  display: flex;
     flex-direction: column;
-    gap: 20px;
-}
-
-/* 헤더 영역 (제목 + 정렬) */
-.myposts-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.myposts-title {
-    font-size: var(--font-title);
-    font-weight: var(--font-bold);
-    color: var(--black-color);
-}
-
-/* 리스트 영역 */
-.myposts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.myposts-item {
-    display: flex;
-    align-items: flex-start;
-    padding: 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    background: var(--white-color);
-    box-shadow: var(--shadow);
-}
-
-/* 썸네일 */
-.myposts-item .thumb {
-    flex: 0 0 120px;
-    height: 120px;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-right: 16px;
-}
-
-.myposts-item .thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* 정보 */
-.myposts-item .info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.myposts-item .title {
-    font-size: var(--font-subtitle);
-    font-weight: var(--font-semibold);
-    color: var(--black-color);
-}
-
-.myposts-item .meta {
-    font-size: var(--font-small);
-    color: var(--gray-color);
-}
-
-.myposts-item .content {
-    font-size: var(--font-size-base);
-    color: var(--darkgray-color);
-    line-height: 1.4;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* 오른쪽 버튼 (더보기) */
-.myposts-item .right {
-    align-self: center;
-    margin-left: auto;
-}
-
-.myposts-item .right button {
-    background: none;
-    border: none;
-    font-size: var(--font-small);
-    font-weight: var(--font-semibold);
-    color: var(--darkgray-color);
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.myposts-item .right button:hover {
-    color: var(--main-color);
-}
-
-/* 정렬 Select (최신순) */
-.myposts-sort select {
-    border: none;
+    gap: var(--myPosts-list-gap);
     background: transparent;
-    font-size: var(--font-small);
-    font-weight: var(--font-regular);
-    color: var(--darkgray-color);
-    cursor: pointer;
-    appearance: none;
-    padding-right: 20px;
-    background: url("data:image/svg+xml;utf8,<svg fill='%23666666' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right center;
-    background-size: 12px;
+    flex: 1;
+    min-height: calc(
+      var(--myPosts-list-rows) * var(--myPosts-card-min-h) +
+      (var(--myPosts-list-rows) - 1) * var(--myPosts-list-gap)
+    );
 }
+
+.myPosts-list.is-empty{ min-height: 360px; }
+
+.myPosts-card{
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 15px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--white-color);
+  transition: transform .15s ease, box-shadow .2s ease;
+  min-height: var(--myPosts-card-min-h);
+}
+
+.myPosts-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--main-color);
+}
+
+.myPosts-card .thumb{
+  width: 120px;
+  aspect-ratio: 1 / 1.2;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--bg-color);
+}
+
+.myPosts-card .thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.myPosts-card .body{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 10px;
+}
+
+.myPosts-card .head-row{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.myPosts-card .title-group{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  line-height: 1.5;
+}
+.myPosts-card .title-group .store{
+  font-weight: var(--font-bold);
+  color: var(--main-color);
+  font-size: var(--font-subtitle);
+}
+
+.myPosts-card .title-group .subject{
+  font-weight: var(--font-semibold);
+  font-size: var(--font-body);
+  padding-bottom: 5px;
+}
+
+.myPosts-card .meta-top{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  font-weight: var(--font-regular);
+  font-size: var(--font-size-base);
+}
+
+.myPosts-card .meta-top .bar{ opacity: .7; }
+
+
+.myPosts-card .excerpt{
+  color: var(--darkgray-color);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-regular);
+}
+
+.myPosts-card .foot-row{
+  display: flex;
+  justify-content: flex-end;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-regular);
+  height: 30px;
+}
+
+.myPosts-card.no-thumb{
+  grid-template-columns: 1fr;
+  padding: 16px;
+}
+
+.myPosts-card .foot-row .btn{
+    padding:0px !important;
+}
+
+.no-posts{ text-align: center; color: var(--darkgray-color); padding: 0; }
+
+/* 페이지네이션: 항상 같은 위치 */
+.pagination{
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* 반응형 */
+@media (max-width: 500px){
+  .myPosts-card{ grid-template-columns: 1fr; }
+  .myPosts-card .thumb{ width: 100%; height: 200px; }
+  .myPosts-card .meta-top{ font-size: var(--font-small); }
+}
+
+

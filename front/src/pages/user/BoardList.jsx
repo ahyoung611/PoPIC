@@ -2,14 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import BoardListItem from "../../components/board/BoardListItem.jsx";
 import Select from "../../components/commons/Select.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
-
 import SearchHeader from "../../components/commons/SearchHeader.jsx";
 import Pagination from "../../components/commons/Pagination.jsx";
 
 const host =
   (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const API =
-  (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
+  // (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
+    import.meta.env.VITE_API_BASE_URL || `http://${host}:8080`;
+
+console.log("importUrl: ",import.meta?.env?.VITE_API_BASE_URL?.trim())
 
 export default function BoardList() {
   const [boards, setBoards] = useState([]);
@@ -19,12 +21,11 @@ export default function BoardList() {
 
   const [kwInput, setKwInput] = useState("");
   const [kwQuery, setKwQuery] = useState("");
-
   const [scope, setScope] = useState("tc");
 
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const size = 6;
+  const size = 8;
 
   const isEmpty = useMemo(() => !loading && boards.length === 0, [loading, boards]);
 
@@ -41,6 +42,8 @@ export default function BoardList() {
           keyword: kwQuery,
           scope,
         });
+
+        console.log(`${API}/board?${qs}`);
 
         const res = await fetch(`${API}/board?${qs}`, {
           signal: controller.signal,
@@ -74,27 +77,25 @@ export default function BoardList() {
   const goDetail = (id) => (window.location.href = `/board/${id}`);
 
   const currentPage = page + 1;
-  const handlePageChange = (nextPage1Based) => {
-    setPage(nextPage1Based - 1);
-  };
+  const handlePageChange = (nextPage1Based) => setPage(nextPage1Based - 1);
 
   return (
     <div className="container">
       <div className="inner">
-        <h2 className="board__title">커뮤니티</h2>
+        <h2 className="board__title">POPIC COMMUNITY</h2>
 
-         <div className="list-controls" style={{ display: "flex", gap: "5px" }}>
+        <div className="list-controls" style={{ display: "flex", gap: "5px" }}>
           <Select
-           id="scope"
-           value={scope}
-           onChange={setScope}
-           options={[
-             { label: "전체", value: "tc" },
-             { label: "제목", value: "title" },
-             { label: "내용", value: "content" },
-           ]}
-           style={{ height: 36 }}
-         />
+            id="scope"
+            value={scope}
+            onChange={setScope}
+            options={[
+              { label: "전체", value: "tc" },
+              { label: "제목", value: "title" },
+              { label: "내용", value: "content" },
+            ]}
+            style={{ height: 36 }}
+          />
           <SearchHeader
             className="board__search-header"
             searchValue={kwInput}
@@ -106,29 +107,33 @@ export default function BoardList() {
           />
         </div>
 
-        <ul className="board-list" aria-live="polite" aria-busy={loading}>
-          {loading ? (
-            <li className="board-empty">불러오는 중...</li>
-          ) : isEmpty ? (
-            <li className="board-empty">게시글이 없습니다.</li>
-          ) : (
-            boards.map((b) => (
-              <BoardListItem
-                key={b.boardId}
-                item={b}
-                onClick={(id) => goDetail(id)}
-              />
-            ))
-          )}
-        </ul>
+        <div className="board-panel" style={{ "--board-rows": size }}>
+          <ul className="board-list" aria-live="polite" aria-busy={loading}>
+            {loading ? (
+              <li className="board-empty">불러오는 중...</li>
+            ) : isEmpty ? (
+              <li className="board-empty">게시글이 없습니다.</li>
+            ) : (
+              boards.map((b) => (
+                <BoardListItem
+                  key={b.boardId}
+                  item={b}
+                  onClick={(id) => goDetail(id)}
+                />
+              ))
+            )}
+          </ul>
 
-        {totalPages > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        )}
+          <div className="board__pagination-keeper">
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,105 @@
+/* 결제 창 */
+.checkout{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+}
+
+.checkout-wrapper{
+  width: min(920px, 96vw);
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+/* 내부 섹션 간격 */
+#payment-method{ margin-top: 10px; margin-bottom: 14px; }
+#agreement{ margin-top: 8px; }
+
+/* iframe 래퍼 카드화 + 포커스 하이라이트 */
+#payment-method > .__tosspayments_payment_widget_iframe_wrapper__,
+#agreement     > .__tosspayments_payment_widget_iframe_wrapper__{
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--white-color);
+  overflow: hidden;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+#payment-method > .__tosspayments_payment_widget_iframe_wrapper__:focus-within,
+#agreement     > .__tosspayments_payment_widget_iframe_wrapper__:focus-within{
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+/*  헤더  */
+.checkout-head{
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.checkout-title{
+  margin: 0;
+  font-size: var(--font-title);
+  font-weight: var(--font-bold);
+}
+
+/*  금액 요약  */
+.pay-amount{
+  margin: 15px 0;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--white-color);
+  padding: 20px;
+}
+
+.pay-amount__row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size: var(--font-size-base);
+  padding: 5px;
+}
+
+.pay-amount .label{
+  font-weight: var(--font-semibold);
+}
+
+.pay-amount__divider{
+  height: 1px;
+  background: var(--border-color);
+  margin: 10px 0;
+}
+
+.pay-amount__row.total{
+  font-size: var(--font-body);
+  font-weight: var(--font-semibold);
+}
+
+.pay-amount__row.total .value{
+   color: var(--main-color);
+}
+
+/*  CTA 버튼  */
+.btn-wrap{
+    margin-top: 20px;
+    display:flex;
+    justify-content:flex-end; }
+
+.btn.pay-cta{
+  min-width: 180px;
+  height: 45px;
+  border-radius: 10px;
+  font-size: var(--font-base);
+}
+
+/*  반응형  */
+@media (max-width: 560px){
+  .checkout{ padding: 16px; }
+  .checkout-wrapper{ padding: 14px; border-radius: 14px; }
+  .btn-wrap{ justify-content: stretch; }
+  .btn.pay-cta{ width: 100%; min-width: 0; }
+}

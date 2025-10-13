@@ -1,3 +1,11 @@
+.vendorPopups-container .list-title{
+    text-align: center;
+    font-weight: var(--font-bold);
+    font-size: var(--font-title-m);
+    color: var(--black-color);
+    margin: 30px 0;
+}
+
 .vendorPopupFrom .vp-card {
     background: var(--white-color);
     border: 1px solid var(--border-color);
@@ -8,7 +16,7 @@
 
 .vendorPopupFrom .vp-title {
     font-size: var(--font-title-l);
-    font-weight: 600;
+    font-weight: var(--font-semibold);
     text-align: center;
     margin-bottom: 25px;
     color: var(--black-color);
@@ -19,7 +27,7 @@
 .vp-label {
     display: block;
     font-size: var(--font-body);
-    font-weight:600;
+    font-weight: var(--font-semibold);
     color: var(--black-color);
     margin-bottom: 15px;
 }
@@ -36,9 +44,9 @@
     padding: 0 10px;
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    font-size: 16px;
+    font-size: var(--font-size-base);
     outline: none;
-    background: #fff;
+    background: var(--white-color);
 }
 
 .vp-input:focus,
@@ -63,6 +71,12 @@
     justify-content: space-between;
     flex-wrap: wrap;
     margin-bottom: 15px;
+}
+
+.vendorPopupFrom .vp-addr-detail .addr-btn{
+    width: 80px;
+    height: 50px;
+    border-radius:10px;
 }
 
 .vendorPopupFrom .btn--filter{
@@ -104,7 +118,8 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-    color: #8e8e8e;
+    color: var(--darkgray-color);
+    font-size: var(--font-size-base);
 }
 
 .vp-filebox input[type="file"] {

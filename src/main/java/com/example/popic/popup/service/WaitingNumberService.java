@@ -30,6 +30,12 @@ public class WaitingNumberService {
 
         LocalDate today = LocalDate.now();
 
+        LocalDate start = store.getStart_date();
+        LocalDate end   = store.getEnd_date();
+        if (today.isBefore(start) || today.isAfter(end)) {
+            throw new RuntimeException("현재 운영 시간이 아닙니다.");
+        }
+
         if (waitingNumberRepository.existsByStoreAndUserAndWaitingDateAndStatus(store, user, today, 1)) {
             throw new RuntimeException("이미 대기 중입니다.");
         }
@@ -79,6 +85,9 @@ public class WaitingNumberService {
                 break;
             case "cancel":
                 pageResult = waitingNumberRepository.findCancelByVendorId(vendorId, keyword, pageable);
+                break;
+            case "waiting":
+                pageResult = waitingNumberRepository.findWaitingByVendorId(vendorId, keyword, pageable);
                 break;
             default:
                 pageResult = waitingNumberRepository.findByVendorId(vendorId, keyword, pageable);

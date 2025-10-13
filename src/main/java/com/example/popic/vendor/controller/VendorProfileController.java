@@ -36,6 +36,13 @@ public class VendorProfileController {
         return dto;
     }
 
+    // 벤더 승인 재요청
+    @PostMapping("/status/reapply")
+    public ResponseEntity<VendorDTO> reapply(@PathVariable Long vendorId) {
+        VendorDTO dto = service.requestReapproval(vendorId);
+        return ResponseEntity.ok(dto);
+    }
+
     // 벤더 프로필 수정
     @PutMapping
     public VendorDTO update(@PathVariable Long vendorId, @RequestBody Map<String, Object> payload) {
@@ -96,10 +103,22 @@ public class VendorProfileController {
         return service.deleteProfilePhoto(vendorId);
     }
 
-    // 비밀번호 재설정
-    @PostMapping("/password")
+    // 25.10.02 기존 코드 : 비밀번호 재설정
+/*    @PostMapping("/password")
     public ResponseEntity<Void> changePassword(@PathVariable Long vendorId, @RequestBody VendorPasswordDto req) {
         accountUserVendorService.changeVendorPassword(vendorId, req);
         return ResponseEntity.noContent().build();
+    }*/
+
+    // 25.10.02 신규 코드 : 비밀번호 재설정
+    @PostMapping("/password")
+    public ResponseEntity<?> changePassword(@PathVariable Long vendorId, @RequestBody VendorPasswordDto req) {
+        try {
+            accountUserVendorService.changeVendorPassword(vendorId, req);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            // 예: "현재 비밀번호가 올바르지 않습니다."
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 }

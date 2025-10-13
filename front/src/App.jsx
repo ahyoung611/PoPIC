@@ -23,7 +23,6 @@ import CheckoutPage from "./pages/Checkout.jsx";
 import SuccessPage from "./pages/Success.jsx";
 import FailPage from "./pages/Fail.jsx";
 import OperatorReservations from "./pages/vendor/OperatorReservations.jsx";
-import OperatorOnsite from "./pages/vendor/OperatorOnsite.jsx";
 import MyPopic from "./pages/user/MyPopic.jsx";
 import UserProfile from "./pages/user/UserProfile.jsx";
 import ReservationManage from "./pages/vendor/ReservationManage.jsx";
@@ -91,12 +90,11 @@ function App() {
     return (
         <Routes>
             <Route path={"/"} element={<WelcomePage/>}></Route>
+             {/* 회원가입 & 로그인(header 필요없음) */}
+            <Route path={"/join"} element={<Join/>}></Route>
+            <Route path={"/login"} element={<Login/>}></Route>
 
             <Route element={<FooterLayout/>}>
-
-                {/* 회원가입 & 로그인(header 필요없음) */}
-                <Route path={"/join"} element={<Join/>}></Route>
-                <Route path={"/login"} element={<Login/>}></Route>
 
                 {/*일반 유저 Layout */}
                 <Route element={<Layout/>}>
@@ -115,11 +113,11 @@ function App() {
                     <Route path={"/me/popic"} element={<MyPopic />} />
                     <Route path={"/me/posts"} element={<MyPosts />} />
                     <Route path={"/me/reviews"} element={<MyReviews />} />
-                    <Route path={"/me/walkIn/:waitingId"} element={<OnsiteTicket />} />
+                    {/*<Route path={"/me/walkIn/:waitingId"} element={<OnsiteTicket />} />*/}
 
                 {/*벤더 유저 Layout */}
                     <Route path={"/vendor/reservations"} element={<OperatorReservations/>}></Route>
-                    <Route path={"/vendor/onsite"} element={<OperatorOnsite/>}></Route>
+{/*                     <Route path={"/vendor/onsite"} element={<OperatorOnsite/>}></Route> */}
                     <Route path="/vendor/:vendorId/popups" element={<VendorMain/>} />
                     <Route path="/vendor/:vendorId/popups/new" element={<VendorPopupForm/>} />
                     <Route path={"/vendor/:vendorId/reservations"} element={<ReservationManage/>}></Route>

@@ -9,11 +9,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
 
 
 @RestController
@@ -69,6 +67,10 @@ public class UserController {
             Cookie refreshCookie = new Cookie("refreshToken", refresh);
             refreshCookie.setHttpOnly(true);
             refreshCookie.setPath("/");
+
+            // 배포 환경용 설정 추가
+            refreshCookie.setSecure(true); // HTTPS에서만 전송
+            refreshCookie.setAttribute("SameSite", "None"); // 크로스사이트 허용
 
             // 로그인유지(true) = 리프레시 쿠키 만료 시간 그대로, 로그인유지x(false) 세션쿠키(브라우저 종료 시 삭제)
             if (keep) {

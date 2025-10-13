@@ -11,7 +11,7 @@ img { -webkit-user-drag: none; user-drag: none; }
 :root {
   --main-color: #FF5148;
   --main-hover-color: #E0443C;
-  --main-color-rgb: 255, 81, 72; /* rgba() 사용 편의를 위해 추가 */
+  --main-color-rgb: 255, 81, 72;
 
   --black-color: #333333;
   --white-color: #ffffff;
@@ -37,12 +37,14 @@ img { -webkit-user-drag: none; user-drag: none; }
   --font-button: 14px;
 
   /* Font Weights */
-  --font-regular: 400;
+  --font-regular: 500;
   --font-semibold: 600;
   --font-bold: 700;
 
   /* Shadow */
-  --shadow: 0 4px 6px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow: box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
+  --main-shadow:0 2px 0px rgba(0, 0, 0, 0.05), 0 0px 2px rgba(255, 81, 72, 0.6)
+
 }
 
 /*  Body */
@@ -56,10 +58,11 @@ body {
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none;    /* Firefox */
   -ms-user-select: none;     /* IE/Edge (old) */
+  color : var(--black-color);
+  font-size:var(--font-body);
 }
 
 /*  Layout Containers  */
-
 .container { width: 100%; height: auto;}
 
 .inner {
@@ -72,12 +75,25 @@ body {
   flex-direction: column;
 }
 
+/* 빈 상태 */
+.empty-state{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:100%;
+  min-height: calc(100vh - 350px);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--white-color);
+  color: var(--darkgray-color);
+}
+
 /*  CKEditor (글작성 에디터)
     npm install @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic
     npm i dompurify
 */
 
-/* 에디터 본문 */
+/* 에디터 본문 ------------------------------------------------- */
 .ck-editor__editable_inline {
   width: 100%;
   padding: 14px 16px;
@@ -89,6 +105,15 @@ body {
   resize: none;
   outline: none;
   background: #fff;
+}
+
+.ck-content h1{ font-size: var(--font-title); font-weight: var(--font-semibold); line-height: 1.35;}
+.ck-content h2{ font-size: var(--font-title); font-weight: var(--font-semibold); line-height: 1.35;}
+.ck-content h3{ font-size: var(--font-title); font-weight: var(--font-semibold); line-height: 1.35;}
+.ck-content p{ line-height: 1.5;}
+.ck-content b,
+.ck-content strong{
+  font-weight: var(--font-semibold) !important;
 }
 
 
@@ -143,6 +168,33 @@ body {
   border: none;
 }
 
+/* 스크롤바 -------------------------------------------------  */
+html {
+  scrollbar-width: none;
+}
+
+html:hover {
+  scrollbar-width: thin;
+  scrollbar-color: var(--main-color) var(--bg-color);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--main-color);
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
 /* 반응형 */
 /* 모바일(≤600px) */
 @media (max-width: 600px) {
@@ -152,7 +204,7 @@ body {
 @media (min-width: 601px) and (max-width: 1024px) {
   .inner { max-width: 90%; padding: 18px; }
 }
-/* 데스크톱(≥1025px) */
+/* PC(≥1025px) */
 @media (min-width: 1025px) {
   .inner { max-width: 1000px; padding: 20px; }
 }

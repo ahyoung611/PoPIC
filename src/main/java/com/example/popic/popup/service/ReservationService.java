@@ -30,8 +30,14 @@ public class ReservationService {
     @Transactional
     public PopupReservationDTO reserveSlot(Long slotId, Long userId, Long storeId,
                                            int count, BigDecimal depositAmount, String paymentKey) {
+
+        if(paymentKey != null && reservationRepository.existsByPaymentKey(paymentKey)){
+            throw new IllegalStateException("이미 처리된 결제입니다.");
+        }
+
         PopupStoreSlot slot = slotRepository.findById(slotId)
                 .orElseThrow(() -> new IllegalArgumentException("Slot not found"));
+
 
         if (slot.getReserved_count() + count > slot.getCapacity()) {
             throw new IllegalStateException("해당 슬롯 정원이 가득 찼습니다.");
@@ -102,6 +108,14 @@ public class ReservationService {
             throw new IllegalStateException("이미 취소된 예약입니다.");
         }
 
+        PopupStoreSlot slot = reservation.getSlot();
+        int current = slot.getReserved_count();
+        int cancelCount = reservation.getReservation_count();
+
+        int newCount = Math.max(0, current - cancelCount);
+        slot.setReserved_count(newCount);
+        slotRepository.save(slot);
+
         // 상태 변경
         reservation.setStatus(-1);
         reservationRepository.save(reservation);
@@ -121,6 +135,13 @@ public class ReservationService {
         PopupStore storeRef = storeRepository.getReferenceById(storeId);
         PopupStoreSlot slotRef = slotRepository.getReferenceById(slotId);
 
+        if (slotRef.getReserved_count() + count > slotRef.getCapacity()) {
+            throw new IllegalStateException("해당 슬롯 정원이 가득 찼습니다.");
+        }
+
+        slotRef.setReserved_count(slotRef.getReserved_count() + count);
+        slotRepository.save(slotRef);
+
         Reservation r = new Reservation();
         r.setUser(userRef);
         r.setStore(storeRef);
@@ -131,6 +152,6 @@ public class ReservationService {
         r.setStatus(1);
 
         Reservation saved = reservationRepository.save(r);
-        return PopupReservationDTO.from(saved); // ← 요걸로!
+        return PopupReservationDTO.from(saved);
     }
 }

@@ -45,27 +45,88 @@
     }
 }
 
-.earth-container .earth {
+.earth-container .earth-wrap {
      position: absolute;
-     left: 5%;
+     left: 50%;
+     transform:translateX(-50%);
      bottom: -1200px;
-      width: 1500px;
-      height: 1500px;
-      border-radius: 50%;
-      background: url("https://i.postimg.cc/d0bNh1pn/stylized-earth-01.jpg");
-      background-size: 3270px;
-      background-position: center;
-      background-color: #0c55ad;
-      box-shadow:
-        inset -20px 20px 40px rgba(235, 225, 52, 0.3),
-        inset 20px -20px 40px rgba(2, 16, 31, 0.5),
-        inset 10px -10px 10px rgba(2, 16, 31, 0.5);
-      transform-style: preserve-3d;
-      transform: rotate(15deg);
-      animation: rotate 30s linear infinite;
+     width: 1500px;
+     height: 1500px;
+     border-radius: 50%;
+     overflow:hidden;
+     filter:
+         drop-shadow(0 0 4px rgba(255,255,255,.35))
+         drop-shadow(0 0 40px rgba(255,255,255,.30));
 }
 
-@keyframes rotate {
-  0%   { background-position: 0 0; }
-  100% { background-position: 545px 0; }
+.earth-container .earth-wrap .earth{
+     --texW: 3700;
+     position: relative;
+     width: 1500px;
+     height: 1500px;
+     border-radius: 50%;
+     background:
+         url("/earth.png") center / calc(var(--texW)*1px) 100% repeat-x;
+     background-color: #0c55ad;
+     background-size: 3700px;
+     background-position: center;
+     box-shadow:
+         inset -20px  20px  40px rgba(235,225, 52,.30),
+         inset  20px -20px  40px rgba(  2, 16, 31,.50),
+         inset  10px -10px  10px rgba(  2, 16, 31,.50);
+      transform-style: preserve-3d;
+      transform: rotate(15deg);
+      isolation: isolate;
+      animation:
+          earth-spin 150s linear infinite,   /* 속도 */
+          earth-wobble 16s ease-in-out infinite;
+}
+
+/* ★ 끊김 없이 한 바퀴 */
+@keyframes earth-spin{
+  to { background-position: calc(var(--texW) * -1px) 0; }
+}
+
+/* 3D 느낌을 살짝 더하는 미세 흔들림 */
+@keyframes earth-wobble{
+  0%,100% { transform: rotate(15deg); }
+  50%     { transform: rotate(13.8deg); }
+}
+
+/* 대기권 아우라 */
+.earth-container .earth-wrap .earth::before{
+  content:"";
+  position:absolute; inset:-3.5%;
+  border-radius:50%;
+  pointer-events:none;
+  background:
+    radial-gradient(closest-side,
+      rgba(90,170,255,.24) 0%,
+      rgba(90,170,255,.14) 55%,
+      rgba(90,170,255,0)  75%);
+  filter: blur(8px);
+  mix-blend-mode: screen;
+  z-index: 0;
+  animation: atmPulse 3.8s ease-in-out infinite;
+}
+
+/* 림라이트(하단 엣지 쪽 은은한 빛) */
+.earth-container .earth-wrap .earth::after{
+  content:"";
+  position:absolute; inset:-1%;
+  border-radius:50%;
+  pointer-events:none;
+  background:
+    radial-gradient(120% 80% at 50% 115%,
+      rgba(60,140,255,.45) 0%,
+      rgba(60,140,255,.22) 40%,
+      rgba(60,140,255,  0) 65%);
+  filter: blur(10px);
+  mix-blend-mode: screen;
+  z-index: 1;
+}
+
+@keyframes atmPulse{
+  0%,100% { transform: scale(1.00); opacity:.95; }
+  50%     { transform: scale(1.02); opacity: 1; }
 }

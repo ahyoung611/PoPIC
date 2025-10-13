@@ -2,15 +2,15 @@ import PopupImage from "../components/popupdetail/PopupImage.jsx";
 import PopupInfo from "../components/popupdetail/PopupInfo.jsx";
 import {useEffect, useState} from "react";
 import apiRequest from "../utils/apiRequest.js";
-import '../style/popupDetail.css';
 import PopupReservation from "../components/popupdetail/PopupReservation.jsx";
 import PopupReview from "../components/popupdetail/PopupReview.jsx";
 import PopupTabInfo from "../components/popupdetail/PopupTabInfo.jsx";
 import PopupInquiry from "../components/popupdetail/PopupInquiry.jsx";
-import QrCode from "../components/qr/QrCode.jsx";
 import {useAuth} from "../context/AuthContext.jsx"
 import {useLocation, useParams} from "react-router-dom";
 import PopupReservationModal from "../components/popupdetail/PopupReservationModal.jsx";
+
+import '../style/popupDetail.css';
 
 const PopupDetail = () => {
     const {auth} = useAuth();
@@ -19,7 +19,7 @@ const PopupDetail = () => {
     const [popupDetail, setPopupDetail] = useState(null);
     const location = useLocation();
     const initTab = location.state?.tab || "팝업 정보";
-    const [activeTab, setActiveTab] = useState(initTab); // 기본 탭 | 리뷰에서 넘어올 때는 리뷰 탭으로 바로 갈 수 있게 설정
+    const [activeTab, setActiveTab] = useState(initTab);
     const [tabs, setTabs] = useState(["팝업 정보", "예약", "리뷰", "문의"]);
     const {id} = useParams();
 
@@ -48,10 +48,9 @@ const PopupDetail = () => {
         fetchPopupDetail();
     }, [token, id]);
 
-    // 예약 버튼 클릭 시 모달 열기
     const openModal = (reservationData) => {
-        setReservationData(reservationData); // 예약 정보 설정
-        setModalOpen(true); // 모달 열기
+        setReservationData(reservationData);
+        setModalOpen(true);
     };
 
     return (
@@ -86,11 +85,11 @@ const PopupDetail = () => {
                         {activeTab === "문의" && (
                             <PopupInquiry popup={popupDetail}></PopupInquiry>
                         )}
-                        {/* 모달 컴포넌트 추가 */}
+                        {/* 모달 컴포넌트*/}
                         <PopupReservationModal
                             isOpen={modalOpen}
-                            onClose={() => setModalOpen(false)} // 모달 닫기
-                            reservationData={reservationData} // 예약 정보 전달
+                            onClose={() => setModalOpen(false)}
+                            reservationData={reservationData}
                         />
                     </>
                 ) : (<p>loading...</p>)}

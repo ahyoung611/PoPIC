@@ -1,5 +1,4 @@
 import React from "react";
-import "../../style/mainPopupCard.css";
 import MainPopupCardImg from "./MainPopupCardImg.jsx";
 
 export default function MainPopupCardA({

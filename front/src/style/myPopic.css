@@ -1,110 +1,161 @@
-.my-popic {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* 예약 현황 & 현장 대기 */
+:root{
+  --myPopic-card-min-h: 200px;
+  --myPopic-list-gap: 10px;
+  --myPopic-pagination-h: 60px;
 }
 
-.my-popic .tab-menu {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 12px;
-    width: 100%;
+.myPopic {
+  display: flex;
+  flex-direction: column;
 }
 
-.my-popic .tab-menu button {
-    flex: 1;
-    text-align: center;
-    padding: 8px 0;
-    background: none;
-    border: none;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--black-color);
-    cursor: pointer;
-    position: relative;
-    transition: color 0.2s ease;
+.myPopic .panel{
+  display:flex;
+  flex-direction:column;
+  height:calc(
+      var(--myPopic-list-rows) * var(--myPopic-card-min-h) +
+      (var(--myPopic-list-rows) - 1) * var(--myPopic-list-gap) +
+      var(--myPopic-pagination-h) + 10px
+    );
 }
 
-.my-popic .tab-menu button:hover {
-    font-weight: 600;
+.myPopic .pagination-keeper{
+  height:var(--myPopic-pagination-h);
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.my-popic .tab-menu .active {
-    font-weight: 600;
+/* 탭 */
+.myPopic .tab-menu {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 10px;
+  width: 100%;
 }
 
-.my-popic .tab-menu .active:after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    width: 100%;
-    height: 3.5px;
-    background-color: var(--main-color);
-    border-radius: 100px;
+.myPopic .tab-menu button {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  background: none;
+  border: 0;
+  font-size: var(--font-subtitle);
+  font-weight: var(--font-regular);
+  cursor: pointer;
+  position: relative;
 }
 
-.my-popic .reservation-list {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.myPopic .tab-menu button:hover{
+  font-weight: var(--font-semibold);
+}
+.myPopic .tab-menu .active {
+  font-weight: var(--font-semibold);
 }
 
-.my-popic .reservation-list .reservation-card {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border-color);
-    padding: 10px 0;
-    margin-bottom: 12px;
-    width: 100%;
-    cursor: pointer;
+.myPopic .tab-menu .active:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 3px;
+  background: var(--main-color);
+  border-radius: 100px;
 }
 
-.my-popic .reservation-list .reservation-card .thumb {
-    flex-shrink: 0;             /* 이미지 영역 크기 고정 */
-    margin-right: 16px;
+/* 헤더 */
+.myPopic .page-title{
+  text-align: center;
+  font-weight: var(--font-bold);
+  font-size: var(--font-title-m);
+  color: var(--black-color);
+  margin: 30px;
 }
 
-.my-popic .reservation-list .reservation-card .thumb img {
-    width: 100px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 3px;
+/* 리스트/카드 */
+.myPopic .reservation-list{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:var(--myPopic-list-gap);
+  padding-top: 10px;
 }
 
-.my-popic .reservation-list .reservation-card .info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 10px;
+.myPopic .card {
+  background: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  transition: transform .15s ease, box-shadow .2s ease;
 }
 
-.my-popic .reservation-list .reservation-card .title-box {
-    display: flex;
+.myPopic .card:hover{
+border: 1px solid var(--main-color);
+transform: translateY(-2px);
+box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
 }
 
-.my-popic .reservation-list .reservation-card .info .row {
-    display: flex;
-    align-items: center;
+.myPopic .reservation-card{
+  min-height: var(--myPopic-card-min-h);
 }
 
-.my-popic .reservation-list .reservation-card .info .title {
-    width: 80px;             /* 라벨 고정 폭 */
-    font-weight: 500;
-    font-size: var(--font-bold);
-    margin-right: 12px;
-    flex-shrink: 0;
+.myPopic  .reservation-card .card-main {
+  display: flex;
+  cursor: pointer;
+  border-bottom: 0.5px solid var(--border-color);
+  padding: 10px;
 }
 
-.my-popic .reservation-list .reservation-card .info .content {
-    flex: 1;                 /* 오른쪽 공간 채우기 */
-    font-size: var(--font-bold);
+/* 이미지 */
+.myPopic .reservation-card .thumb {
+  flex-shrink: 0; margin-right: 15px;
 }
 
-.my-popic .reservation-list .reservation-card .detail-btn {
-    align-self: flex-end;
+.myPopic .reservation-card .thumb img {
+  width: 100px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+/* 본문 */
+.myPopic .meta {
+  display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:10px;
+    font-size:var(--font-size-base);
+    font-weight:var(--font-regular);
+    line-height:1.5;
+}
+
+.myPopic .meta-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.myPopic .meta-bold{
+  font-weight: var(--font-semibold);
+  font-size: var(--font-body);
+}
+
+.myPopic .meta-row .icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+/* 하단 버튼 */
+.myPopic .reservation-list .reservation-card .btn-box {
+  padding: 5px 20px;
+  text-align: right;
+}
+
+/* 반응형 */
+@media (max-width: 520px) {
+  .myPopic .reservation-card .thumb img { width: 90px; height: 110px; }
+  .myPopic .meta-row .icon { width: 16px; height: 16px; }
 }

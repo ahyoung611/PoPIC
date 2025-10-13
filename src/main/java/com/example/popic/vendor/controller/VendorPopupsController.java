@@ -114,6 +114,15 @@ public class VendorPopupsController {
     // 팝업 수정
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiRes> update(@PathVariable Long vendorId, @PathVariable Long id, @RequestBody PopupDTO dto) {
+/*        service.updatePopupOwnedBy(vendorId, id, dto);
+        return ResponseEntity.ok(ApiRes.ok(id));*/
+        // 1) 기존 팝업 상태 조회
+        PopupDTO existing = service.findPopupOwnedBy(vendorId, id);
+        // 2) 기존이 '승인 반려(3)'였다면, 수정 저장 시 자동으로 '승인 대기(2)'
+        if (existing != null && existing.getStatus() == 3) {
+                dto.setStatus(2);
+        }
+        // 3) 업데이트
         service.updatePopupOwnedBy(vendorId, id, dto);
         return ResponseEntity.ok(ApiRes.ok(id));
     }

@@ -1,14 +1,4 @@
-
-* {
-    box-sizing: border-box;
-}
-
-html, body {
-    height: 100%;
-}
-
-
-/* 레이아웃 */
+/* 회원가입 */
 .join {
     min-height: 100dvh;
     display: grid;
@@ -21,39 +11,40 @@ html, body {
     max-width: 440px;
     background: var(--white-color);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 32px 28px 24px;
-    box-shadow: 0 8px 28px rgba(27, 39, 51, 0.06);
+    border-radius: 15px;
+   padding: 30px;
+    box-shadow: var(--shadow);
 }
 
 /* 헤더 */
 .join-header {
     display: flex;
     justify-content: center;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .join-logo {
-    height: 34px;
-    user-select: none;
+    height: 40px;
 }
 
 /* 폼 */
 .join-form {
-    margin-top: 8px;
+     margin: 10px 0;
 }
 
 .join-field {
     position: relative;
-    margin-top: 12px;
+    margin-top: 10px;
+    display: flex;
+    gap:5px;
 }
 
 .join-input {
     width: 100%;
-    height: 44px;
-    padding: 0 12px;
+    height: 45px;
+    padding: 0 15px;
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--white-color);
     outline: 0;
     font-size: var(--font-size-base);
@@ -65,22 +56,19 @@ html, body {
 }
 
 .join-input:focus {
-    border-color: var(--blue-color);
-    box-shadow: 0 0 0 3px rgba(40, 126, 216, 0.2);
+    border-color: var(--main-color);
 }
 
-/* ----- 비밀번호 & 눈 이미지 토글 여기까지 ----- */
-/* 컨테이너를 기준점으로 */
 .join-field {
     position: relative;
 }
 
-/* 비밀번호 필드는 아이콘 공간만큼 우측 패딩 */
+/* 비밀번호 토글 */
 .join-field--password .join-input {
-    padding-right: 44px; /* 아이콘이 겹치지 않도록 */
+    padding-right: 45px;
 }
 
-/* 아이콘 버튼: 절대 배치 + 선(테두리) 제거 */
+/* 아이콘 버튼 */
 .join-field--password .join-icon-btn {
     position: absolute;
     right: 10px;
@@ -88,14 +76,13 @@ html, body {
     transform: translateY(-50%);
     width: 28px;
     height: 28px;
-    border: none;                 /* ← 선 제거 */
-    background: transparent;      /* ← 배경 제거 */
+    border: none;
+    background: transparent;
     padding: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent; /* 모바일 클릭 하이라이트 제거 */
 }
 
 /* 아이콘 이미지 크기 */
@@ -104,7 +91,6 @@ html, body {
     height: 20px;
 }
 
-/* 포커스 링(접근성). 완전 제거하고 싶으면 outline: none; 만 남겨도 되지만 추천은 커스텀 링 */
 .join-field--password .join-icon-btn:focus {
     outline: none;
 }
@@ -112,20 +98,9 @@ html, body {
     outline: 2px solid var(--main-color);
     border-radius: 6px;
 }
-/* ----- 비밀번호 & 눈 이미지 토글 여기까지 ----- */
-
-.join-field--password .join-icon-btn:hover {
-    background: var(--gray-hover-color);
-}
-
-/* 한 줄 배치 */
-.join-field--inline {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-}
 
 .join-inline-btn {
+    width:100px;
     height: 44px;
     padding: 0 14px;
     border: 1px solid var(--border-color);
@@ -144,25 +119,14 @@ html, body {
 
 /* 제출 버튼 */
 .join-submit {
-    width: 100%;
-    height: 48px;
-    margin-top: 14px;
-    border: 0;
-    border-radius: 12px;
-    background: var(--main-color);
-    color: var(--white-color);
-    font-weight: 800;
-    font-size: var(--font-button);
-    cursor: pointer;
-    transition: background 0.15s ease, transform 0.04s ease;
-}
-
-.join-submit:hover {
-    background: var(--main-hover-color);
+     width: 100%;
+     margin-top: 10px;
+     height:45px;
+     border-radius: 10px;
 }
 
 .join-submit:active {
-    transform: translateY(1px);
+    transform: none;
 }
 
 .join-submit:disabled {
@@ -186,7 +150,6 @@ html, body {
     color: var(--main-color);
 }
 
-/* 푸터 (역할 선택) */
 .join-footer {
     margin-top: 18px;
     display: flex;

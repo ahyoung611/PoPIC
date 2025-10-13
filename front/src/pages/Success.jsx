@@ -1,8 +1,18 @@
 import {useEffect, useState} from "react";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {replace, useNavigate, useSearchParams} from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
 import Button from "../components/commons/Button.jsx";
 import "../style/success.css"
+import FloatingBg from "../components/commons/FloatingBg";
+
+const bgImgs = [
+  "/favicon.png",
+  "/bgIcon/Picon.png",
+  "/bgIcon/Oicon.png",
+  "/bgIcon/Picon.png",
+  "/bgIcon/Iicon.png",
+  "/bgIcon/Cicon.png",
+];
 
 const host = (typeof window !== "undefined" && window.location?.hostname) || "localhost";
 const URL = (import.meta?.env?.VITE_API_BASE_URL?.trim()) || `http://${host}:8080`;
@@ -28,10 +38,12 @@ export default function SuccessPage() {
     useEffect(() => {
         if (!user) return;
 
+        sessionStorage.setItem("reservationConfirmed", "true");
+
         const requestData = {
             reservationCount: peopleCount,
             status: 0,
-            price: price * peopleCount,
+            depositAmount: price * peopleCount,
             paymentKey: searchParams.get("paymentKey") || null,
             user: {user_id: user?.user_id || null},
             popup: {store_id: popupId},
@@ -85,7 +97,8 @@ export default function SuccessPage() {
     }, [popupId, slotId, date, token]);
 
     return (
-        <main className="container">
+        <div className="container">
+            <FloatingBg images={bgImgs} count={8} opacity={0.5} />
             <div className="success-wrapper">
                 <div className="success-card">
                     <div className="success-illustration">
@@ -113,6 +126,6 @@ export default function SuccessPage() {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }

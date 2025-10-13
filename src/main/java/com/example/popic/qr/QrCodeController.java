@@ -1,6 +1,5 @@
 package com.example.popic.qr;
 
-import com.example.popic.CustomUserPrincipal;
 import com.example.popic.popup.dto.PopupReservationDTO;
 import com.example.popic.popup.service.ReservationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,9 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.awt.*;
@@ -38,7 +35,7 @@ public class QrCodeController {
     private final ReservationService reservationService;
 
     @GetMapping(value = "/generate-qr", produces = "application/json")
-    public ResponseEntity<Map<String, Object>> generateQr(HttpServletResponse response, @RequestParam(name="reservationId")Long reservationId) throws Exception {
+    public ResponseEntity<Map<String, Object>> generateQr(HttpServletResponse response, @RequestParam Long reservationId) throws Exception {
         // 입장권 확인
         PopupReservationDTO reservationDTO = reservationService.findbyId(reservationId);
 
@@ -62,7 +59,7 @@ public class QrCodeController {
         Graphics2D g = image.createGraphics();
         g.setColor(Color.black);
         g.fillRect(0, 0, width, height);
-        String qrData = "http://10.5.4.14:8080/scan-qr?token=" + token;
+        String qrData = "http://3.34.97.40:8080/scan-qr?token=" + token;
         BitMatrix matrix = new MultiFormatWriter().encode(qrData, BarcodeFormat.QR_CODE, width, height);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -76,7 +73,7 @@ public class QrCodeController {
     }
 
     @GetMapping("/scan-qr")
-    public Map<String, Object> scanQr(@RequestParam("token") String token) throws JsonProcessingException {
+    public Map<String, Object> scanQr(@RequestParam String token) throws JsonProcessingException {
         Map<String, Object> response = new HashMap<>();
 
         String reservationData = redisTemplate.opsForValue().get(token);
@@ -92,7 +89,7 @@ public class QrCodeController {
         PopupReservationDTO reservationDTO = objectMapper.readValue(reservationData, PopupReservationDTO.class);
         System.out.println("reservationDTO: " + reservationDTO);
 
-        if(reservationDTO.getStatus() != 1){
+        if (reservationDTO.getStatus() != 1) {
             throw new RuntimeException("유효하지 않은 티켓입니다.");
         }
         reservationService.entryReservationById(reservationDTO.getReservationId());
@@ -104,6 +101,7 @@ public class QrCodeController {
 
         return response;
     }
+
 
     // ----------------- SSE 실시간 상태 -----------------
     @GetMapping(value = "/qr-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

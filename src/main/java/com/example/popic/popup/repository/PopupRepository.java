@@ -45,9 +45,7 @@ public interface PopupRepository extends JpaRepository<PopupStore, Long> {
     List<PopupStore> findRejectedPopup(String keyword);
 
     // young 이달의 팝업
-    @Query("SELECT p FROM PopupStore p " +
-            "WHERE (p.start_date <= CURRENT_DATE AND p.end_date >= CURRENT_DATE) " +
-            "AND p.status = 1")
+    @Query("SELECT p FROM PopupStore p WHERE (MONTH(p.start_date) = MONTH(CURRENT_DATE) OR MONTH(p.end_date) = MONTH(CURRENT_DATE))AND p.status = 1")
     List<PopupStore> findByThisMonth();
 
     List<PopupStore> findAllByStatus(int status);
@@ -56,4 +54,8 @@ public interface PopupRepository extends JpaRepository<PopupStore, Long> {
     @Query("SELECT DISTINCT p FROM PopupStore p JOIN p.categories c LEFT JOIN FETCH p.images i WHERE p.status = :status AND c.category_id = :categoryId")
     List<PopupStore> findAllByStatusAndCategory(@Param("status") int status, @Param("categoryId") Long categoryId);
 
+
+    @Modifying
+    @Query("UPDATE PopupStore p SET p.status = -1 WHERE p.status = :status AND p.end_date < :today")
+    void updateEndedStores(LocalDate today, int status);
 }
