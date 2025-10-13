@@ -83,7 +83,8 @@ const Login = () => {
                 const base = role === "USER"
                     ? "http://3.34.97.40:8080/user/login"
                     : "http://3.34.97.40:8080/vendor/login";
-                endpoint = `${base}?keep=${keep ? "true" : "false"}`;
+                // endpoint = `${base}?keep=${keep ? "true" : "false"}`;
+                endpoint = `${base}?keep=true`;
             }
 
             const res = await fetch(endpoint, {
