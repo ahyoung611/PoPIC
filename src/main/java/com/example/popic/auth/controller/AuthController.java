@@ -98,7 +98,7 @@ public class AuthController {
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
                 .httpOnly(true)
                 .secure(false)      // 배포 HTTPS면 true
-                .sameSite("Lax")
+                .sameSite("None")
                 .path("/")
                 .maxAge(maxAge)
                 .build();
@@ -162,7 +162,7 @@ public class AuthController {
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
                 .httpOnly(true)
                 .secure(false)     // 배포 HTTPS면 true
-                .sameSite("Lax")
+                .sameSite("None")
                 .path("/")
                 .maxAge(maxAge)
                 .build();
@@ -213,7 +213,7 @@ public class AuthController {
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
                 .httpOnly(true)
                 .secure(false)   // HTTPS면 true
-                .sameSite("Lax")
+                .sameSite("None")
                 .path("/")
                 .maxAge(maxAge)
                 .build();
