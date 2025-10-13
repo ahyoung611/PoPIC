@@ -37,7 +37,7 @@ const Login = () => {
     const [role, setRole] = useState(initialRole);
     const [showPw, setShowPw] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [keep, setKeep] = useState(false);
+    const [keep, setKeep] = useState(true);
     const [form, setForm] = useState({
         login_id: "",
         password: "",
