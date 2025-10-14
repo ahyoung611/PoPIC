@@ -78,11 +78,11 @@ const Login = () => {
             const isAdminLogin = form.login_id.trim().toLowerCase() === "admin";
             let endpoint;
             if (isAdminLogin) {
-                endpoint = "http://13.209.99.96:8080/admin/login";
+                endpoint = "http://3.36.103.80:8080/admin/login";
             } else {
                 const base = role === "USER"
-                    ? "http://13.209.99.96:8080/user/login"
-                    : "http://13.209.99.96:8080/vendor/login";
+                    ? "http://3.36.103.80:8080/user/login"
+                    : "http://3.36.103.80:8080/vendor/login";
                 endpoint = `${base}?keep=${keep ? "true" : "false"}`;
                 // endpoint = `${base}?keep=true`;
             }
