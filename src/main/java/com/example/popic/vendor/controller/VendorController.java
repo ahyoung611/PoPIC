@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.example.popic.security.JwtUtil;
 
+import java.time.Duration;
 import java.util.Map;
 
 @RestController
@@ -70,28 +71,23 @@ public class VendorController {
             String access  = jwtUtil.createAccessToken(v.getLogin_id(), String.valueOf(v.getRole()), v.getVendor_id());
             String refresh = jwtUtil.createRefreshToken(v.getLogin_id());
 
-            Cookie refreshCookie = new Cookie("refreshToken", refresh);
-            refreshCookie.setHttpOnly(true);
-            refreshCookie.setPath("/");
+            // 리프레시 쿠키 수동 생성
+            StringBuilder cookieBuilder = new StringBuilder();
+            cookieBuilder.append("refreshToken=").append(refresh).append("; ");
+            cookieBuilder.append("Path=/; ");
+            cookieBuilder.append("HttpOnly; ");
+            cookieBuilder.append("Secure; "); // HTTPS 필수
+            cookieBuilder.append("SameSite=None; "); // 크로스사이트 허용
 
-            // 배포 환경용 설정 추가
-            refreshCookie.setSecure(true); // HTTPS에서만 전송
-            refreshCookie.setAttribute("SameSite", "None"); // 크로스사이트 허용
-            refreshCookie.setDomain("13.209.99.96");
-
-            // 로그인유지(true) = 리프레시 쿠키 만료 시간 그대로, 로그인유지x(false) 세션쿠키(브라우저 종료 시 삭제)
-//            refreshCookie.setMaxAge((int) Duration.ofDays(14).getSeconds()); 기존 코드
+            // 로그인 유지 설정
             if (keep) {
-                refreshCookie.setMaxAge((int) java.time.Duration.ofDays(14).getSeconds()); // 수정
-            } else {
-                refreshCookie.setMaxAge(-1);
+                cookieBuilder.append("Max-Age=").append(Duration.ofDays(14).getSeconds()).append("; ");
             }
+            // 쿠키 문자열 생성
+            String cookieHeader = cookieBuilder.toString();
 
-            response.addCookie(refreshCookie);
-
-//            return ResponseEntity.ok()
-//                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-//                    .body(ApiRes.okLogin("로그인 성공", access, dto));
+            // 응답 헤더에 직접 설정
+            response.setHeader("Set-Cookie", cookieHeader);
             return ResponseEntity.ok(ApiRes.okLogin("로그인 성공", access, dto));
 
         } catch (IllegalArgumentException | IllegalStateException e) {
