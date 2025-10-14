@@ -57,6 +57,30 @@ const Login = () => {
         });
     };
 
+    // 컴포넌트 위쪽에 추가
+    const safeUUID = () => {
+        // 1) 최신 브라우저(HTTPS/localhost) 우선
+        if (typeof window !== "undefined" && window.crypto?.randomUUID) {
+            return window.crypto.randomUUID();
+        }
+        // 2) 표준 난수로 v4 UUID 생성 (HTTP/인앱 웹뷰 등)
+        if (typeof window !== "undefined" && window.crypto?.getRandomValues) {
+            const buf = new Uint8Array(16);
+            window.crypto.getRandomValues(buf);
+            buf[6] = (buf[6] & 0x0f) | 0x40; // version 4
+            buf[8] = (buf[8] & 0x3f) | 0x80; // variant
+            const hex = [...buf].map(b => b.toString(16).padStart(2, "0")).join("");
+            return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+        }
+        // 3) 최후의 수단(크립토 없음): 보안성 낮음 → 가능하면 피하세요
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+            const r = (Math.random() * 16) | 0;
+            const v = c === "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
+    };
+
+
     const onSubmit = async (e) => {
         e.preventDefault();
         if (!form.login_id || !form.password) return;
@@ -169,7 +193,7 @@ const Login = () => {
         const handleNaverLogin = () => {
             // const state = crypto.randomUUID(); // CSRF 방지용 state
             // keep 추가
-            const state = `${crypto.randomUUID()}:${keep ? "1" : "0"}`;
+            const state = `${safeUUID()}:${keep ? "1" : "0"}`;
 
             localStorage.setItem("naver_oauth_state", state);
 
@@ -201,7 +225,7 @@ const Login = () => {
         const scope = encodeURIComponent("openid email profile");
 
         // keep 추가
-        const googleState = `${crypto.randomUUID()}:${keep ? "1" : "0"}`;
+        const googleState = `${safeUUID()}:${keep ? "1" : "0"}`;
         localStorage.setItem("google_oauth_state", googleState);
 
         const url =
@@ -222,7 +246,7 @@ const Login = () => {
 
         // const state = crypto.randomUUID();
         // keep 추가
-        const state = `${crypto.randomUUID()}:${keep ? "1" : "0"}`;
+        const state = `${safeUUID()}:${keep ? "1" : "0"}`;
         localStorage.setItem("kakao_oauth_state", state);
 
         const url =
