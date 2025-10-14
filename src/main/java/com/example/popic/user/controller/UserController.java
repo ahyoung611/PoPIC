@@ -69,8 +69,8 @@ public class UserController {
             cookieBuilder.append("refreshToken=").append(refresh).append("; ");
             cookieBuilder.append("Path=/; ");
             cookieBuilder.append("HttpOnly; ");
-            cookieBuilder.append("Secure; "); // HTTPS 필수
-            cookieBuilder.append("SameSite=None; "); // 크로스사이트 허용
+//            cookieBuilder.append("Secure; "); // HTTPS 필수
+            cookieBuilder.append("SameSite=lax; "); // 크로스사이트 허용
 
             // 로그인 유지 설정
             if (keep) {
