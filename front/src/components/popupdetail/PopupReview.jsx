@@ -221,7 +221,7 @@ const PopupReview = ({ popup }) => {
                         {Array.isArray(item.images) && item.images.length > 0 ? (
                           <img
                             className="review-image-lg"
-                            src={`http://localhost:8080/images?type=review&id=${item.images[0]}`}
+                            src={`http://3.36.103.80:8080/images?type=review&id=${item.images[0]}`}
                             alt="review"
                             loading="lazy"
                             decoding="async"

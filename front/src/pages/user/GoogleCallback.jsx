@@ -16,7 +16,7 @@ const GoogleCallback = () => {
         }
 
         window.location.replace(
-            `http://localhost:8080/auth/google/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state ?? "")}`
+            `http://3.36.103.80:8080/auth/google/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state ?? "")}`
         );
 
     }, []);

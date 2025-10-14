@@ -31,7 +31,7 @@ export default function VendorPopupCard({
             <div className="popup-thumb">
                 {thumb ? (
                     <img
-                        src={`http://localhost:8080/images?type=popup&id=${imageId}`}
+                        src={`http://3.36.103.80:8080/images?type=popup&id=${imageId}`}
                         alt={title}
                     />
                 ) : (

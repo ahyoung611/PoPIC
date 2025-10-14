@@ -126,7 +126,7 @@ export default function ReviewModal({ isOpen, onClose, popupId, onSubmitSuccess,
             <div className="modalField existing-image-preview">
               <div className="thumb" role="img"
                    style={{
-                     backgroundImage: `url('http://localhost:8080/images?type=review&id=${existingImage}')`
+                     backgroundImage: `url('http://3.36.103.80:8080/images?type=review&id=${existingImage}')`
                    }}
               />
               <button type="button" className="btn-text" onClick={() => setExistingImage(null)}>

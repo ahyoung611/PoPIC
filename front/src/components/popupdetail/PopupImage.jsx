@@ -9,7 +9,7 @@ export default function PopupImage({ images = [] }) {
   }
 
   const urlOf = (id) =>
-    `http://localhost:8080/images?type=popup&id=${id}`;
+    `http://3.36.103.80:8080/images?type=popup&id=${id}`;
 
   return (
     <div className="popupStore-detail">

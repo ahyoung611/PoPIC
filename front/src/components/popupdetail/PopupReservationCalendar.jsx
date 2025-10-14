@@ -45,7 +45,7 @@ export default function PopupReservationCalendar({popup, value, onChange}) {
         (async () => {
             try {
                 setLoadingCal(true);
-                const res = await fetch(`http://localhost:8080/popupStore/popupSchedule?popupId=${storeId}`,
+                const res = await fetch(`http://3.36.103.80:8080/popupStore/popupSchedule?popupId=${storeId}`,
                     {
                         headers: {
                             "Authorization": `Bearer ${token}`,
@@ -77,7 +77,7 @@ export default function PopupReservationCalendar({popup, value, onChange}) {
         (async () => {
             try {
                 setLoadingSlots(true);
-                const res = await fetch(`http://localhost:8080/popupStore/slots?popupId=${storeId}&date=${selectedDate}`, {
+                const res = await fetch(`http://3.36.103.80:8080/popupStore/slots?popupId=${storeId}&date=${selectedDate}`, {
                         headers: {
                             "Authorization": `Bearer ${token}`,
                             "Content-Type": "application/json",
