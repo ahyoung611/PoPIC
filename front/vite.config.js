@@ -8,6 +8,7 @@ export default defineConfig({
         host: true, // true = 0.0.0.0
         port: 5173,
         strictPort: true, // 포트가 이미 사용 중이면 에러
+        allowedHosts: ['www.popic.store', 'popic.store', '3.36.103.80'],
         proxy: {
             "/waiting":{ target: "http://3.34.97.40:8080", changeOrigin: true },
             "/api": {
