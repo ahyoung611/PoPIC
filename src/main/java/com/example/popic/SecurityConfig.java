@@ -45,7 +45,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://3.36.103.80:5173")); // 프론트 주소
+        configuration.setAllowedOrigins(List.of(
+                "http://3.36.103.80:5173",       // 기존 IP (테스트용)
+                "http://www.popic.store:5173",   // 🚨 [재추가] 프론트엔드 실행 포트 포함 🚨
+                "http://www.popic.store",        // 상용 배포용 (포트 생략)
+                "http://popic.store"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowCredentials(true); // credentials 허용
         configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
