@@ -78,7 +78,6 @@ public class VendorController {
             cookieBuilder.append("HttpOnly; ");
 //            cookieBuilder.append("Secure; "); // HTTPS 필수
             cookieBuilder.append("SameSite=lax; "); // 크로스사이트 허용
-            cookieBuilder.append("Domain=popic.store; ");
 
             // 로그인 유지 설정
             if (keep) {
