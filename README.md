@@ -106,7 +106,7 @@
 | **Backend** | Spring Boot, Java 17 |
 | **API** | Kakao맵 API, OAuth API(카카오·구글·네이버), 사업자등록번호 검증 API |
 | **DB** | MySQL, JPA, Redis |
-| **Deployment** | AWS EC2, S3, RDS, GitHub, IntelliJ, VSCode |
+| **Deployment** | AWS EC2, S3, RDS, GitHub, IntelliJ |
 
 </br>
 
